@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/welcome_screen.dart';
 import 'package:quadraclub_app/utils/components/blue_app_bar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
@@ -64,7 +63,7 @@ class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
           if (state.status == AuthStateStatus.unAuthenticated) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+              MaterialPageRoute(builder: (context) => const SignInScreen()),
               (route) => true,
             );
 

@@ -2,11 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/welcome_screen.dart';
-import 'package:quadraclub_app/presentation/home/bloc/home_bloc.dart';
 import 'package:quadraclub_app/presentation/onboarding/onboarding_screens.dart';
-import 'package:quadraclub_app/presentation/team_roster/bloc/team_roster_bloc.dart';
-import 'package:quadraclub_app/presentation/teams/bloc/teams_bloc.dart';
 import 'package:quadraclub_app/utils/components/safe_area_wrapper.dart';
 
 import 'di/locator.dart';
@@ -80,7 +76,7 @@ class MyApp extends StatelessWidget {
             }
             if (state.status == AuthStateStatus.failure ||
                 state.status == AuthStateStatus.unAuthenticated) {
-              return const WelcomeScreen();
+              return const SignInScreen();
             }
             return const SplashScreen();
           },

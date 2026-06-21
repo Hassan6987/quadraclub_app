@@ -1,5 +1,4 @@
 import 'package:quadraclub_app/data/storage_service.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/welcome_screen.dart';
 
 import '/app_exports.dart';
 import 'data/onboarding_model.dart';
@@ -30,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     StorageService().saveOnboarding();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+      MaterialPageRoute(builder: (_) => const SignInScreen()),
     );
   }
 

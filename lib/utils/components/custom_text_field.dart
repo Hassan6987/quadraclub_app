@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import '/app_exports.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -138,19 +139,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
             filled: true,
             fillColor: widget.fillColor ?? const Color(0xFFF5F5F5),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kBorderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kBorderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kBlackColor, width: 2),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Colors.red),
             ),
           ),

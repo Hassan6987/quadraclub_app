@@ -14,6 +14,7 @@ const kTertiaryColor = Color(0xFFDBDBDB);
 const kTextColor = Color(0xFF606060);
 const kErrorColor = Color(0xFFE13030);
 const kCardColor = Color(0xFFF5F5F5);
+const kBorderColor = Color(0xFFE4E4E7);
 
 const kBlueColor = Color(0XFF5286FF);
 const kWhiteColor = Color(0xFFFFFFFF);

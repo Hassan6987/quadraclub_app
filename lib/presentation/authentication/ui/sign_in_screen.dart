@@ -84,13 +84,15 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 100.heightBox,
                 Text(
-                  "Login",
-                  style: AppStyles.headingSemibold.copyWith(color: kBlackColor),
+                  "Sign In",
+                  style: AppStyles.subtitleMedium.copyWith(
+                      color: kBlackColor, fontSize: 24),
                 ),
                 8.heightBox,
                 Text(
-                  "Welcome Back!",
-                  style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
+                  "Enter your credentials to manage your bookings.",
+                  style: AppStyles.titleSemibold.copyWith(
+                      color: kTextColor, fontWeight: FontWeight.w400),
                 ),
                 24.heightBox,
                 CustomTextField(
