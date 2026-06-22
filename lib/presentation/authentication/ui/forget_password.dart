@@ -3,6 +3,7 @@ import 'package:quadraclub_app/presentation/authentication/ui/otp_verifictaion.d
 import 'package:quadraclub_app/presentation/authentication/ui/widgets/auth_appbar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
+import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 import '/app_exports.dart';
 
@@ -38,82 +39,67 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   }
 
   void _onContinue() {
-    if (_isButtonEnabled) {
+
       if (_formKey.currentState!.validate()) {
         final email = _emailController.text.trim();
-        context.read<AuthBloc>().add(ForgotPassword(email: email));
-      }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OtpVerificationScreen(
+              email: email,
+              isReset: true,
+            ),
+          ),
+        );
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AuthAppBar(title: ""),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStateStatus.failure) {
-            context.showToast(
-              state.error ?? 'something is wrong',
-              isError: true,
-            );
-          } else if (state.status == AuthStateStatus.otpSent) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => OtpVerificationScreen(
-                  email: _emailController.text,
-                  isReset: true,
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              32.heightBox,
+              Text(
+                "Forgot Password",
+                style: AppStyles.w500f24inter.copyWith(
+                  color: kTextPrimaryColor,
                 ),
               ),
-            );
-          }
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: Dim.PADDING_SIZE_LARGE),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                10.heightBox,
-                Text(
-                  "Forgot Password",
-                  style: AppStyles.headingSemibold.copyWith(color: kBlackColor),
+              8.heightBox,
+              Text(
+                "Enter the email address associated with account and we'll send you a recovery code.",
+                style: AppStyles.w400f16inter.copyWith(
+                  color: kGreen37.withValues(alpha: 0.60),
                 ),
-                8.heightBox,
-                Text(
-                  "Reset Password OTP will be sent to your email",
-                  style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
-                ),
-                10.heightBox,
-                CustomTextField(
-                  hintText: "Enter your email",
-                  controller: _emailController,
-                  keyboardType: TextInputType.text,
-                  validator: ValidateForm.validateEmail,
-                  label: 'Email',
-                ),
-                40.heightBox,
-                BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    if (state.status == AuthStateStatus.loading) {
-                      return Center(child: CustomLoadingView());
-                    }
-                    return CustomActionButton(
-                      buttonText: "Send Reset Link",
-                      onTap: _onContinue,
-                      isEnabled: _isButtonEnabled,
-                      backgroundColor: kSecondaryColor,
-                    );
-                  },
-                ),
-              ],
-            ),
+              ),
+              40.heightBox,
+              CustomTextField(
+                label: "Email",
+                controller: _emailController,
+                hintText: "Enter your email",
+                prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
+                keyboardType: TextInputType.emailAddress,
+                validator: ValidateForm.validateCoachEmail,
+                onChanged: (_) => _updateButtonState(),
+              ),
+
+              24.heightBox,
+              CustomActionButton(
+                buttonText: "Send Code",
+                onTap: _onContinue,
+                backgroundColor: kNewBallGreen,
+                buttonTextColor: kDarkColor,
+              ),
+            ],
           ),
-        ),
+        ).withPaddingAll(24),
       ),
     );
   }

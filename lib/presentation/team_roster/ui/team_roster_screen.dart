@@ -423,7 +423,7 @@ class _MyTeamRosterScreenState extends State<MyTeamRosterScreen> {
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.grey[300]!),
                           ),
-                          child: SvgPicture.asset(Assets.svgFilterIcon),
+                          child: SvgPicture.asset(Assets.svg.filterIcon.path),
                         ),
                       ),
                     ],
@@ -559,7 +559,7 @@ class _MyTeamRosterScreenState extends State<MyTeamRosterScreen> {
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(Assets.pngNfcLinked, height: 50, width: 50),
+            Image.asset(Assets.svg.nfcLinked.path, height: 50, width: 50),
             Text(
               'Wristband scanned successfully!',
               style: AppStyles.titleMedium.copyWith(color: kBlackColor),

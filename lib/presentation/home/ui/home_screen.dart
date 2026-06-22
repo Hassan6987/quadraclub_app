@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(Assets.pngNfcLinked, height: 50, width: 50),
+            Image.asset(Assets.svg.nfcLinked.path, height: 50, width: 50),
             Text(
               'Wristband scanned successfully!',
               style: AppStyles.titleMedium.copyWith(color: kBlackColor),

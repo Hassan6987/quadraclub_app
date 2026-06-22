@@ -4,7 +4,6 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/onboarding/onboarding_screens.dart';
 import 'package:quadraclub_app/utils/components/safe_area_wrapper.dart';
-
 import 'di/locator.dart';
 
 void main() async {

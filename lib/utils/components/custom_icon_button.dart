@@ -26,7 +26,7 @@ class CustomIconButton extends StatelessWidget {
           fontWeight: FontWeight.w700,
         ),
       ),
-      icon: SvgPicture.asset(Assets.pngSplashLogo),
+      icon: SvgPicture.asset(Assets.png.splashLogo.path),
     );
   }
 }

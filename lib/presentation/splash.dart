@@ -12,7 +12,7 @@ class SplashScreen extends StatelessWidget {
           width: 180,
           height: 180,
           alignment: Alignment.center,
-          child: Image.asset(Assets.pngSplashLogo, fit: BoxFit.contain),
+          child: Image.asset(Assets.png.splashLogo.path, fit: BoxFit.contain),
         ),
       ),
     );

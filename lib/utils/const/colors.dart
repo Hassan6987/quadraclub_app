@@ -6,6 +6,9 @@ const kOffGreen = Color(0xFFEBF3DE);
 const kDeepGreen = Color(0xFF131410);
 const kCourtBlue = Color(0xFF162837);
 const kCourtLightBlue = Color(0xFF3E6D81);
+const kTextPrimaryColor = Color(0xFF13140F);
+const kGreen37 = Color(0xFF162737);
+const kDarkColor = Color(0xFF212121);
 
 const kPrimaryColor = Color(0xFF061840);
 const kSecondaryColor = Color(0xFFC79B26);

@@ -8,6 +8,7 @@ import 'package:quadraclub_app/presentation/authentication/ui/reset_password_scr
 import 'package:quadraclub_app/presentation/authentication/ui/widgets/auth_appbar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
+import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 import '/app_exports.dart';
 import 'create_password_screen.dart';
@@ -87,136 +88,109 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
-      width: 50,
+      width: 48,
       height: 48,
       textStyle: AppStyles.titleMedium.copyWith(color: kBlackColor),
       decoration: BoxDecoration(
         color: kWhiteColor,
-        border: Border.all(color: kTertiaryColor),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: kBorderColor, width: 1),
+        borderRadius: BorderRadius.circular(12),
       ),
     );
 
     return Scaffold(
-      backgroundColor: kWhiteColor,
-      appBar: const AuthAppBar(showBackButton: true),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStateStatus.verified) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => CreatePasswordScreen(email: widget.email),
-              ),
-            );
-          } else if (state.status == AuthStateStatus.failure) {
-            context.showToast(
-              state.error ?? "something went wrong, try again",
-              isError: true,
-            );
-          }
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: Dim.PADDING_SIZE_LARGE),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Verification",
-                style: AppStyles.headingSemibold.copyWith(color: kBlackColor),
-              ),
-              8.heightBox,
-              Text.rich(
-                TextSpan(
-                  text: "We have sent an email verification code to:\n",
-                  style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
-                  children: [
-                    TextSpan(
-                      text: widget.email,
-                      style: AppStyles.subtitleSemiBold.copyWith(
-                        color: kBlackColor,
-                      ),
-                    ),
-                  ],
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            32.heightBox,
+
+            Text(
+              "OTP Verification",
+              style: AppStyles.w500f24inter.copyWith(color: kTextPrimaryColor),
+            ),
+            8.heightBox,
+            Text.rich(
+              TextSpan(
+                text: "Enter the 6-digit code sent to you at:\n",
+                style: AppStyles.w400f16inter.copyWith(
+                  color: kGreen37.withValues(alpha: 0.60),
                 ),
+                children: [
+                  TextSpan(
+                    text: widget.email,
+                    style: AppStyles.w500f16inter.copyWith(color: kGreen37),
+                  ),
+                ],
               ),
-              32.heightBox,
-              Text(
-                "Enter Verification Code",
-                style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
-              ),
-              8.heightBox,
-              Center(
-                child: Pinput(
-                  length: 6,
-                  controller: _otpController,
-                  onChanged: _updateButtonState,
-                  defaultPinTheme: defaultPinTheme,
-                  focusedPinTheme: defaultPinTheme.copyWith(
-                    decoration: defaultPinTheme.decoration!.copyWith(
-                      border: Border.all(color: kSecondaryColor, width: 2),
-                    ),
+            ),
+            40.heightBox,
+            Center(
+              child: Pinput(
+                length: 6,
+                controller: _otpController,
+                onChanged: _updateButtonState,
+                defaultPinTheme: defaultPinTheme,
+                focusedPinTheme: defaultPinTheme.copyWith(
+                  decoration: defaultPinTheme.decoration!.copyWith(
+                    border: Border.all(color: kDarkColor, width: 2),
                   ),
                 ),
               ),
-              40.heightBox,
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state.status == AuthStateStatus.loading) {
-                    return Center(child: CustomLoadingView());
-                  }
-                  return CustomActionButton(
-                    buttonText: "Verify & Continue",
-                    onTap: _onVerify,
-                    isEnabled: _isButtonEnabled,
-                    backgroundColor: kSecondaryColor,
-                    buttonTextColor: kWhiteColor,
-                  );
-                },
-              ),
-              30.heightBox,
-              Align(
-                alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Text(
-                      "Didn't receive the code?",
-                      style: AppStyles.subtitleRegular.copyWith(
-                        color: kBlackColor,
-                      ),
-                    ),
-                    4.heightBox,
-                    _secondsRemaining > 0
-                        ? Text(
-                            "Resend in (0:$_secondsRemaining)",
-                            style: AppStyles.subtitleSemiBold.copyWith(
-                              color: kTextColor,
+            ),
+            24.heightBox,
+            CustomActionButton(
+              buttonText: "Verify",
+              onTap: _onVerify,
+              isEnabled: _isButtonEnabled,
+              backgroundColor: kNewBallGreen,
+              buttonTextColor: kDarkColor,
+            ),
+            24.heightBox,
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  _secondsRemaining > 0
+                      ? RichText(
+                          text: TextSpan(
+                            text: "I didn't receive a code ",
+                            style: AppStyles.subtitleRegular.copyWith(
+                              color: kGreen37.withValues(alpha: 0.70),
                             ),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              widget.isReset
-                                  ? context.read<AuthBloc>().add(
-                                      ForgotPassword(email: widget.email),
-                                    )
-                                  : context.read<AuthBloc>().add(
-                                      RequestCode(email: widget.email),
-                                    );
-                              _startTimer();
-                            },
-                            child: Text(
-                              "Resend Code",
-                              style: AppStyles.subtitleSemiBold.copyWith(
-                                color: kSecondaryColor,
+                            children: [
+                              TextSpan(
+                                text: " (0:$_secondsRemaining)",
+                                style: AppStyles.w500f14inter.copyWith(
+                                  color: kTextPrimaryColor,
+                                ),
                               ),
+                            ],
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            widget.isReset
+                                ? context.read<AuthBloc>().add(
+                                    ForgotPassword(email: widget.email),
+                                  )
+                                : context.read<AuthBloc>().add(
+                                    RequestCode(email: widget.email),
+                                  );
+                            _startTimer();
+                          },
+                          child: Text(
+                            "Resend Code",
+                            style: AppStyles.subtitleSemiBold.copyWith(
+                              color: kPrimaryColor,
                             ),
                           ),
-                  ],
-                ),
+                        ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          ],
+        ).withPaddingAll(24),
       ),
     );
   }

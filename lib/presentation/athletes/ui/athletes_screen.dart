@@ -367,7 +367,7 @@ class _AthletesScreenState extends State<AthletesScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.grey[300]!),
                         ),
-                        child: SvgPicture.asset(Assets.svgFilterIcon),
+                        child: SvgPicture.asset(Assets.svg.filterIcon.path),
                       ),
                     ),
                   ],

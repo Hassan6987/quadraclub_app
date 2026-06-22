@@ -67,7 +67,6 @@ class CustomActionButton extends StatelessWidget {
                     buttonTextStyle ??
                     AppStyles.w500f15inter.copyWith(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
                       color: isOutlined ? borderColor : buttonTextColor,
                     ),
               ),

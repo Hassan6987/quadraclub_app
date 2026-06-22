@@ -68,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               height: 150,
                               alignment: Alignment.center,
                               child: Image.asset(
-                                Assets.pngSplashLogo,
+                                Assets.png.splashLogo.path,
                                 fit: BoxFit.contain,
                                 color: kNewBallGreen,
                               ),

@@ -375,7 +375,7 @@ class _EditProfileState extends State<EditProfile> {
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(Assets.svgSuccessIcon),
+            SvgPicture.asset(Assets.svg.successIcon.path),
             Text(
               'Profile Updated Successfully!',
               style: AppStyles.titleMedium.copyWith(color: kBlackColor),

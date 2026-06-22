@@ -1,115 +1,114 @@
 import '../../app_exports.dart';
 
 class AppStyles {
-  static TextStyle w500f15inter = const TextStyle(
+  // 🔹 Base Style (defined once)
+  static const TextStyle _baseStyle = TextStyle(
     fontFamily: "ZalandoSans",
+    color: kWhiteColor,
+  );
+
+  static TextStyle w500f15inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 15,
-    color: kWhiteColor,
+  );  static TextStyle w500f16inter = _baseStyle.copyWith(
+    fontWeight: FontWeight.w500,
+    fontSize: 16,
+  );  static TextStyle w500f14inter = _baseStyle.copyWith(
+    fontWeight: FontWeight.w500,
+    fontSize: 14,
   );
-  static TextStyle w400f16inter = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle w400f16inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 16,
-    color: kWhiteColor,
   );
-  static TextStyle w600f32inter = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle w600f32inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 32,
-    color: kWhiteColor,
+  );
+  static TextStyle w500f24inter = _baseStyle.copyWith(
+    fontWeight: FontWeight.w500,
+    fontSize: 24,
   );
 
-  static TextStyle w400f12inter = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle w400f12inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 12,
-    color: kWhiteColor,
   );
-  static TextStyle w400f14inter = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle w400f14inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 14,
-    color: kWhiteColor,
   );
-  static TextStyle w500f8inter = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle w500f8inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 8,
-    color: kWhiteColor,
   );
 
-  static TextStyle w600f24inter = const TextStyle(
-    fontFamily: "ZalandoSans",
+  static TextStyle w600f24inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 20,
-    color: kWhiteColor,
   );
 
-  static TextStyle bodyRegular = const TextStyle(
-    fontFamily: "ZalandoSans",
+  // 🔹 Body
+  static TextStyle bodyRegular = _baseStyle.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 12,
-    color: kWhiteColor,
   );
-  static TextStyle bodyMedium = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle bodyMedium = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 12,
-    color: kWhiteColor,
   );
-  static TextStyle bodySemiBold = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle bodySemiBold = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 12,
-    color: kWhiteColor,
   );
-  static TextStyle subtitleRegular = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  // 🔹 Subtitle
+  static TextStyle subtitleRegular = _baseStyle.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 14,
-    color: kWhiteColor,
   );
-  static TextStyle subtitleMedium = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle subtitleMedium = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 14,
-    color: kWhiteColor,
   );
-  static TextStyle subtitleSemiBold = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle subtitleSemiBold = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 14,
-    color: kWhiteColor,
   );
-  static TextStyle titleRegular = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  // 🔹 Title
+  static TextStyle titleRegular = _baseStyle.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 16,
-    color: kWhiteColor,
   );
-  static TextStyle titleMedium = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle titleMedium = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 16,
-    color: kWhiteColor,
   );
-  static TextStyle titleSemibold = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle titleSemibold = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 16,
-    color: kWhiteColor,
   );
-  static TextStyle subHeadingSemibold = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  // 🔹 Headings
+  static TextStyle subHeadingSemibold = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 18,
-    color: kWhiteColor,
   );
-  static TextStyle headingSemibold = const TextStyle(
-    fontFamily: "ZalandoSans",
+
+  static TextStyle headingSemibold = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 20,
-    color: kWhiteColor,
   );
 }

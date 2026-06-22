@@ -50,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ProfileMenuItem> menuItems = [
       ProfileMenuItem(
-        icon: Assets.svgProfile,
+        icon: Assets.svg.profile.path,
         title: 'My Profile',
         color: kPrimaryColor,
         onTap: () {
@@ -58,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
       ProfileMenuItem(
-        icon: Assets.svgPrivacyPolicyIcon,
+        icon: Assets.svg.privacyPolicyIcon.path,
         title: 'Privacy Policy',
         color: kPrimaryColor,
         onTap: () {
@@ -66,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
       ProfileMenuItem(
-        icon: Assets.svgTermsConditionIcon,
+        icon: Assets.svg.termsConditionIcon.path,
         title: 'Term & Conditions',
         color: kPrimaryColor,
         onTap: () {
@@ -74,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
       ProfileMenuItem(
-        icon: Assets.svgLogoutIcon,
+        icon: Assets.svg.logoutIcon.path,
         title: 'Logout',
         color: kPrimaryColor,
         onTap: () {
@@ -82,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
       ProfileMenuItem(
-        icon: Assets.svgDeleteIcon,
+        icon: Assets.svg.deleteIcon.path,
         title: 'Delete Account',
         color: kRedColor,
         onTap: () {

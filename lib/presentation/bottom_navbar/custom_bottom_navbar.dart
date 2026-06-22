@@ -40,17 +40,17 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     ];
     final labels = ["Home", "Athletes", "Team Roster", "Profile"];
     final icons = [
-      Assets.svgHome,
-      Assets.svgAthletes,
-      Assets.svgRosterIcon,
-      Assets.svgProfile,
+      Assets.svg.home.path,
+      Assets.svg.athelete.path,
+      Assets.svg.rosterIcon.path,
+      Assets.svg.profile.path,
     ];
 
     final iconsFilled = [
-      Assets.svgHomeFill,
-      Assets.svgAthletesFill,
-      Assets.svgRosterFillIcon,
-      Assets.svgProfileFill,
+      Assets.svg.homeFill.path,
+      Assets.svg.atheleteFill.path,
+      Assets.svg.rosterFillIcon.path,
+      Assets.svg.profileFill.path,
     ];
 
     return PopScope(
