@@ -5,13 +5,9 @@ import 'dart:async';
 import 'package:pinput/pinput.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/reset_password_screen.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/widgets/auth_appbar.dart';
-import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
-import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
 import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 import '/app_exports.dart';
-import 'create_password_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
@@ -114,12 +110,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               TextSpan(
                 text: "Enter the 6-digit code sent to you at:\n",
                 style: AppStyles.w400f16inter.copyWith(
-                  color: kGreen37.withValues(alpha: 0.60),
+                  color: kTextSecondary.withValues(alpha: 0.60),
                 ),
                 children: [
                   TextSpan(
                     text: widget.email,
-                    style: AppStyles.w500f16inter.copyWith(color: kGreen37),
+                    style: AppStyles.w500f16inter.copyWith(color: kTextSecondary),
                   ),
                 ],
               ),
@@ -143,7 +139,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               buttonText: "Verify",
               onTap: _onVerify,
               isEnabled: _isButtonEnabled,
-              backgroundColor: kNewBallGreen,
+              backgroundColor: kPrimaryColor,
               buttonTextColor: kDarkColor,
             ),
             24.heightBox,
@@ -156,7 +152,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           text: TextSpan(
                             text: "I didn't receive a code ",
                             style: AppStyles.subtitleRegular.copyWith(
-                              color: kGreen37.withValues(alpha: 0.70),
+                              color: kTextSecondary.withValues(alpha: 0.70),
                             ),
                             children: [
                               TextSpan(

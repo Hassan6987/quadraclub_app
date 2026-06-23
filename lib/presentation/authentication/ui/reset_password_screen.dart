@@ -1,8 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/widgets/auth_appbar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
-import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
+import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String email;
@@ -60,13 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   void _onContinue() {
     if (_isButtonEnabled) {
       if (_formKey.currentState!.validate()) {
-        context.read<AuthBloc>().add(
-          ResetPassword(
-            email: widget.email,
-            otp: widget.otp,
-            password: _passwordController.text,
-          ),
-        );
+       context.showToast("Password Changed Successfully");
       }
     }
   }
@@ -84,79 +77,64 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kWhiteColor,
-      appBar: AuthAppBar(showBackButton: true),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStateStatus.verified) {
-            context.showToast('Password Reset Successfully');
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteName.signIn,
-              (route) => false,
-            );
-          } else if (state.status == AuthStateStatus.failure) {
-            context.showToast(
-              state.error ?? "something went wrong, try again",
-              isError: true,
-            );
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dim.PADDING_SIZE_LARGE,
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              32.heightBox,
+              Text(
+                  "Set New Password",
+                  style: AppStyles.w500f24inter.copyWith(
+                      color:kTextPrimaryColor
+                  )
+              ),
+              8.heightBox,
+              Text(
+                  "Set new password to secure your account.",
+                  style: AppStyles.w400f16inter.copyWith(
+                      color:kTextSecondary.withValues(alpha: 0.60)
+                  )
+              ),
+              40.heightBox,
+              CustomTextField(
+                label: "Password",
+                controller: _passwordController,
+                hintText: "Enter new password",
+                prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
+                obscureText: true,
+                keyboardType: TextInputType.visiblePassword,
+                validator: ValidateForm.passwordValidator,
+              ),
+              12.heightBox,
+              CustomTextField(
+                label: "Confirm Password",
+                controller: _confirmPasswordController,
+                hintText: "Confirm new password",
+                prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
+                obscureText: true,
+                keyboardType: TextInputType.visiblePassword,
+                validator: _confirmPasswordValidator,
+              ),
+              40.heightBox,
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state.status == AuthStateStatus.loading) {
+                    return Center(child: CustomLoadingView());
+                  }
+                  return CustomActionButton(
+                    buttonText:"Done",
+                    onTap: _onContinue,
+                    isEnabled: true,
+                    backgroundColor: kPrimaryColor,
+                    buttonTextColor: kTextPrimaryColor,
+                  );
+                },
+              ),
+            ],
           ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Create New Password",
-                  style: AppStyles.headingSemibold.copyWith(color: kBlackColor),
-                ),
-                8.heightBox,
-                Text(
-                  "Create your new password",
-                  style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
-                ),
-                32.heightBox,
-                CustomTextField(
-                  label: "Password",
-                  controller: _passwordController,
-                  hintText: "Enter new password",
-                  obscureText: true,
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: ValidateForm.passwordValidator,
-                ),
-                20.heightBox,
-                CustomTextField(
-                  label: "Confirm Password",
-                  controller: _confirmPasswordController,
-                  hintText: "Confirm new password",
-                  obscureText: true,
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: _confirmPasswordValidator,
-                ),
-                40.heightBox,
-                BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    if (state.status == AuthStateStatus.loading) {
-                      return Center(child: CustomLoadingView());
-                    }
-                    return CustomActionButton(
-                      buttonText: _isButtonEnabled ? "Done" : "Update",
-                      onTap: _onContinue,
-                      isEnabled: _isButtonEnabled,
-                      backgroundColor: kSecondaryColor,
-                      buttonTextColor: kWhiteColor,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+        ).withPaddingAll(24),
       ),
     );
   }

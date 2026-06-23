@@ -4,7 +4,7 @@ class AppStyles {
   // 🔹 Base Style (defined once)
   static const TextStyle _baseStyle = TextStyle(
     fontFamily: "ZalandoSans",
-    color: kWhiteColor,
+    color: kTextPrimaryColor,
   );
 
   static TextStyle w500f15inter = _baseStyle.copyWith(
@@ -50,7 +50,10 @@ class AppStyles {
 
   static TextStyle w600f24inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
-    fontSize: 20,
+    fontSize: 24,
+  );static TextStyle w600f18inter = _baseStyle.copyWith(
+    fontWeight: FontWeight.w600,
+    fontSize: 18,
   );
 
   // 🔹 Body

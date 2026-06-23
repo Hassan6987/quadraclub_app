@@ -36,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kNewBallGreen,
+      backgroundColor: kPrimaryColor,
       body: PageView.builder(
         controller: _pageController,
         itemCount: onboardingPages.length,
@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               child: Image.asset(
                                 Assets.png.splashLogo.path,
                                 fit: BoxFit.contain,
-                                color: kNewBallGreen,
+                                color: kPrimaryColor,
                               ),
                             ),
                           ),
@@ -78,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Text(
                             page.title,
                             style: AppStyles.w600f24inter.copyWith(
-                              color: kNewBallGreen,
+                              color: kPrimaryColor,
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -99,7 +99,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           CustomActionButton(
                             buttonText: "Continue",
                             onTap: _onNext,
-                            backgroundColor: kNewBallGreen,
+                            backgroundColor: kPrimaryColor,
                             buttonTextStyle: AppStyles.titleMedium.copyWith(
                               color: kBlackColor,
                             ),
@@ -120,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(3),
                                     color: _currentPage == index
-                                        ? kNewBallGreen
+                                        ? kPrimaryColor
                                         : kWhiteColor,
                                   ),
                                 ),

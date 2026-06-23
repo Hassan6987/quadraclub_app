@@ -1,7 +1,5 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/athletes/ui/athletes_screen.dart';
-import 'package:quadraclub_app/presentation/home/bloc/home_bloc.dart';
-import 'package:quadraclub_app/presentation/team_roster/bloc/team_roster_bloc.dart';
 import 'package:quadraclub_app/presentation/team_roster/ui/team_roster_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
@@ -20,8 +18,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   void initState() {
     super.initState();
     selectedIndex = ValueNotifier<int>(widget.index);
-    context.read<HomeBloc>().add(GetScannedAthletes());
-    context.read<TeamRosterBloc>().add(FetchTeamRoster());
+    // context.read<HomeBloc>().add(GetScannedAthletes());
+    // context.read<TeamRosterBloc>().add(FetchTeamRoster());
   }
 
   @override

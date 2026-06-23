@@ -15,15 +15,20 @@ class $AssetsPngGen {
   const $AssetsPngGen();
 
   final AssetGenImage appIconn = const AssetGenImage(
-      'assets/png/app_iconn.png');
+    'assets/png/app_iconn.png',
+  );
   final AssetGenImage onboardingOne = const AssetGenImage(
-      'assets/png/onboarding_one.jpg');
+    'assets/png/onboarding_one.jpg',
+  );
   final AssetGenImage onboardingThree = const AssetGenImage(
-      'assets/png/onboarding_three.jpg');
+    'assets/png/onboarding_three.jpg',
+  );
   final AssetGenImage onboardingTwo = const AssetGenImage(
-      'assets/png/onboarding_two.jpg');
+    'assets/png/onboarding_two.jpg',
+  );
   final AssetGenImage splashLogo = const AssetGenImage(
-      'assets/png/splash_logo.png');
+    'assets/png/splash_logo.png',
+  );
 }
 
 class $AssetsSvgGen {
@@ -31,35 +36,55 @@ class $AssetsSvgGen {
 
   final SvgGenImage athelete = const SvgGenImage('assets/svg/Athelete.svg');
   final SvgGenImage atheleteFill = const SvgGenImage(
-      'assets/svg/Athelete fill.svg');
+    'assets/svg/Athelete fill.svg',
+  );
   final SvgGenImage deleteIcon = const SvgGenImage('assets/svg/DeleteIcon.svg');
   final SvgGenImage home = const SvgGenImage('assets/svg/Home.svg');
   final SvgGenImage homeFill = const SvgGenImage('assets/svg/HomeFill.svg');
   final SvgGenImage logoutIcon = const SvgGenImage('assets/svg/LogoutIcon.svg');
   final SvgGenImage nfcLinked = const SvgGenImage('assets/svg/NfcLinked.svg');
   final SvgGenImage nfcUnlinked = const SvgGenImage(
-      'assets/svg/NfcUnlinked.svg');
+    'assets/svg/NfcUnlinked.svg',
+  );
   final SvgGenImage premiumIcon = const SvgGenImage(
-      'assets/svg/PremiumIcon.svg');
+    'assets/svg/PremiumIcon.svg',
+  );
   final SvgGenImage privacyPolicyIcon = const SvgGenImage(
-      'assets/svg/PrivacyPolicyIcon.svg');
+    'assets/svg/PrivacyPolicyIcon.svg',
+  );
   final SvgGenImage profile = const SvgGenImage('assets/svg/Profile.svg');
   final SvgGenImage profileFill = const SvgGenImage(
-      'assets/svg/ProfileFill.svg');
+    'assets/svg/ProfileFill.svg',
+  );
   final SvgGenImage successIcon = const SvgGenImage(
-      'assets/svg/SuccessIcon.svg');
+    'assets/svg/SuccessIcon.svg',
+  );
   final SvgGenImage wristbandFill = const SvgGenImage(
-      'assets/svg/WristbandFill.svg');
+    'assets/svg/WristbandFill.svg',
+  );
+  final SvgGenImage calendarBlank = const SvgGenImage(
+    'assets/svg/calendar_blank.svg',
+  );
   final SvgGenImage emailIcon = const SvgGenImage('assets/svg/email_icon.svg');
   final SvgGenImage filterIcon = const SvgGenImage(
-      'assets/svg/filter_icon.svg');
+    'assets/svg/filter_icon.svg',
+  );
+  final SvgGenImage locationIcon = const SvgGenImage(
+    'assets/svg/location_icon.svg',
+  );
   final SvgGenImage lockIcon = const SvgGenImage('assets/svg/lock_icon.svg');
   final SvgGenImage rosterFillIcon = const SvgGenImage(
-      'assets/svg/roster_fill_icon.svg');
+    'assets/svg/roster_fill_icon.svg',
+  );
   final SvgGenImage rosterIcon = const SvgGenImage(
-      'assets/svg/roster_icon.svg');
+    'assets/svg/roster_icon.svg',
+  );
   final SvgGenImage termsConditionIcon = const SvgGenImage(
-      'assets/svg/termsConditionIcon.svg');
+    'assets/svg/termsConditionIcon.svg',
+  );
+  final SvgGenImage uploadPhoto = const SvgGenImage(
+    'assets/svg/upload_photo.svg',
+  );
   final SvgGenImage wristband = const SvgGenImage('assets/svg/wristband.svg');
 }
 
@@ -74,7 +99,6 @@ class AssetGenImage {
   const AssetGenImage(this._assetName, {this.size, this.flavors = const {}});
 
   final String _assetName;
-
 
   final Size? size;
   final Set<String> flavors;
@@ -132,15 +156,8 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({
-    AssetBundle? bundle,
-    String? package,
-  }) {
-    return AssetImage(
-      _assetName,
-      bundle: bundle,
-      package: package,
-    );
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
   Widget custom({
@@ -218,4 +235,3 @@ class SvgGenImage {
 
   String get keyName => _assetName;
 }
-

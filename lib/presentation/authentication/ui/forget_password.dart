@@ -1,8 +1,4 @@
-import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/otp_verifictaion.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/widgets/auth_appbar.dart';
-import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
-import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
 import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 import '/app_exports.dart';
@@ -76,7 +72,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               Text(
                 "Enter the email address associated with account and we'll send you a recovery code.",
                 style: AppStyles.w400f16inter.copyWith(
-                  color: kGreen37.withValues(alpha: 0.60),
+                  color: kTextSecondary.withValues(alpha: 0.60),
                 ),
               ),
               40.heightBox,
@@ -86,7 +82,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 hintText: "Enter your email",
                 prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
                 keyboardType: TextInputType.emailAddress,
-                validator: ValidateForm.validateCoachEmail,
+                validator: ValidateForm.validateEmail,
                 onChanged: (_) => _updateButtonState(),
               ),
 
@@ -94,7 +90,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               CustomActionButton(
                 buttonText: "Send Code",
                 onTap: _onContinue,
-                backgroundColor: kNewBallGreen,
+                backgroundColor: kPrimaryColor,
                 buttonTextColor: kDarkColor,
               ),
             ],
