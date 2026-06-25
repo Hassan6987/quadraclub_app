@@ -129,7 +129,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: defaultPinTheme.copyWith(
                   decoration: defaultPinTheme.decoration!.copyWith(
-                    border: Border.all(color: kDarkColor, width: 2),
+                    border: Border.all(color: kDarkTextColor, width: 2),
                   ),
                 ),
               ),
@@ -140,7 +140,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               onTap: _onVerify,
               isEnabled: _isButtonEnabled,
               backgroundColor: kPrimaryColor,
-              buttonTextColor: kDarkColor,
+              buttonTextColor: kDarkTextColor,
             ),
             24.heightBox,
             Align(

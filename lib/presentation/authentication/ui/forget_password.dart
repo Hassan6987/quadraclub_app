@@ -91,7 +91,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 buttonText: "Send Code",
                 onTap: _onContinue,
                 backgroundColor: kPrimaryColor,
-                buttonTextColor: kDarkColor,
+                buttonTextColor: kDarkTextColor,
               ),
             ],
           ),

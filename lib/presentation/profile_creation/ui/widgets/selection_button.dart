@@ -1,53 +1,50 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 class SelectionButton extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
-  final Widget? icon;
+  final String? icon;
+  final double borderRadius;
+  final TextStyle? labelStyle;
+  final double? verticalPadding;
+  final double? width;
+
 
   const SelectionButton({
     super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
-    this.icon,
+    this.icon, this.borderRadius=12, this.labelStyle, this.verticalPadding,
+    this.width
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
+        width:width ,
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF01386C) : kWhiteColor,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? kLightPrimaryColor : kWhiteColor,
+          borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF01386C)
-                : const Color(0xFFE4E4E7),
-            width: 1,
+            color: isSelected ? kPrimaryColor : kBorderColor,
+            width: isSelected ? 1.5 : 1,
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Column(
+
           children: [
-            if (icon != null) ...[
-              icon!,
-              8.widthBox,
-            ],
+            if (icon != null) ...[SvgPicture.asset(icon!), 12.heightBox],
             Text(
               label,
-              style: AppStyles.w500f14inter.copyWith(
-                color: isSelected ? kWhiteColor : kTextPrimaryColor,
-              ),
+              style:labelStyle?? AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
             ),
           ],
-        ),
+        ).withPaddingSymmetric(16, verticalPadding??12),
       ),
     );
   }

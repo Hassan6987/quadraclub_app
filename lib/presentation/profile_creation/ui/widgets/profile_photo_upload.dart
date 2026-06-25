@@ -49,7 +49,7 @@ class ProfilePhotoUpload extends StatelessWidget {
             Text(
               'Profile Photo',
               style: AppStyles.w500f14inter.copyWith(
-                color: kDarkColor,
+                color: kDarkTextColor,
               ),
             ),
             2.heightBox,

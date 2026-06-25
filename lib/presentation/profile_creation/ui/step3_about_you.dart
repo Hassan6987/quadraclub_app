@@ -1,7 +1,5 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/profile_creation/ui/widgets/profile_creation_app_bar.dart';
-import 'package:quadraclub_app/presentation/profile_creation/ui/widgets/selection_button.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
+
 
 class Step3AboutYou extends StatefulWidget {
   const Step3AboutYou({super.key});
@@ -30,8 +28,10 @@ class _Step3AboutYouState extends State<Step3AboutYou> {
 
   void _onContinue() {
     if (_formKey.currentState!.validate()) {
-      // Navigate to next step
-      // TODO: Implement navigation
+      Navigator.pushNamed(
+        context,
+        RouteName.gamePreferences,
+      );
     }
   }
 
@@ -59,13 +59,7 @@ class _Step3AboutYouState extends State<Step3AboutYou> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-
-                      Text(
-                        'About you',
-                        style: AppStyles.w600f18inter,
-
-                      ),
+                      Text('About you', style: AppStyles.w600f18inter),
                       Text(
                         'This helps you find courts and players near you.',
                         style: AppStyles.w400f14inter.copyWith(
@@ -74,14 +68,14 @@ class _Step3AboutYouState extends State<Step3AboutYou> {
                       ),
                       40.heightBox,
                       Row(
-
                         children: [
                           Text(
                             'Location',
                             style: AppStyles.w500f14inter.copyWith(
                               color: kTextPrimaryColor,
                             ),
-                          ),Spacer(),
+                          ),
+                          Spacer(),
                           SvgPicture.asset(Assets.svg.locationIcon.path),
                           2.widthBox,
                           InkWell(
@@ -89,35 +83,29 @@ class _Step3AboutYouState extends State<Step3AboutYou> {
                             child: Text(
                               'Use my location',
                               style: AppStyles.w500f14inter.copyWith(
-                                color:kBlueColor
+                                color: kBlueColor,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      8.heightBox,
+                      6.heightBox,
                       CustomTextField(
                         controller: _locationController,
                         hintText: 'City/area',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your location';
-                          }
-                          return null;
-                        },
                       ),
 
                       32.heightBox,
                       Text(
                         'Gender',
                         style: AppStyles.w500f14inter.copyWith(
-                          color: kDarkColor,
+                          color: kDarkTextColor,
                         ),
                       ),
                       8.heightBox,
                       Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                        spacing: getProportionateScreenWidth(8),
+                        runSpacing: getProportionateScreenHeight(8),
                         children: _genderOptions.map((gender) {
                           return SelectionButton(
                             label: gender,
@@ -130,55 +118,43 @@ class _Step3AboutYouState extends State<Step3AboutYou> {
                           );
                         }).toList(),
                       ),
-                      24.heightBox,
+                      32.heightBox,
+
                       Text(
                         'Dominant Hand',
                         style: AppStyles.w500f14inter.copyWith(
-                          color: kTextPrimaryColor,
+                          color: kDarkTextColor,
                         ),
                       ),
-                      12.heightBox,
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                      8.heightBox,
+                      Row(
+                        spacing: getProportionateScreenWidth(8),
                         children: _handOptions.map((hand) {
-                          return SelectionButton(
-                            label: hand,
-                            isSelected: _selectedHand == hand,
-                            onTap: () {
-                              setState(() {
-                                _selectedHand = hand;
-                              });
-                            },
-                            icon: Icon(
-                              hand == 'Left' ? Icons.back_hand : Icons.front_hand,
-                              size: 20,
-                              color: _selectedHand == hand
-                                  ? kWhiteColor
-                                  : kTextPrimaryColor,
+                          return Expanded(
+                            child: SelectionButton(
+                              label: hand,
+                              borderRadius: 16,
+                              verticalPadding: 18,
+                              isSelected: _selectedHand == hand,
+                              onTap: () {
+                                setState(() {
+                                  _selectedHand = hand;
+                                });
+                              },
+                              icon: hand == "Right"
+                                  ? Assets.svg.rightHand.path
+                                  : Assets.svg.leftHand.path,
                             ),
                           );
                         }).toList(),
                       ),
                       32.heightBox,
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: _onContinue,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF01386C),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'Continue',
-                            style: AppStyles.w500f16inter.copyWith(
-                              color: kWhiteColor,
-                            ),
-                          ),
-                        ),
+                      CustomActionButton(
+                        buttonText: "Continue",
+                        onTap: _onContinue,
+                        isEnabled: true,
+                        backgroundColor: kPrimaryColor,
+                        buttonTextColor: kTextPrimaryColor,
                       ),
                       24.heightBox,
                     ],

@@ -118,7 +118,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           hidePassword
                               ? Icons.visibility_off
                               : Icons.visibility,
-                          color: kDarkColor.withValues(alpha: 0.60),
+                          color: kDarkTextColor.withValues(alpha: 0.60),
                         ),
                       )
                     : null),

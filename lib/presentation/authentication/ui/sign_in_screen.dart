@@ -43,16 +43,16 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _onContinue() {
-    if (_isButtonEnabled) {
-      if (_formKey.currentState!.validate()) {
+    // if (_isButtonEnabled) {
+    //   if (_formKey.currentState!.validate()) {
         Navigator.pushReplacementNamed(context, RouteName.profileCreation);
         // final email = _emailController.text.trim();
         // final password = _passwordController.text.trim();
         // context.read<AuthBloc>().add(
         //   LoginEvent(email: email, password: password),
         // );
-      }
-    }
+    //   }
+    // }
   }
 
   @override
@@ -122,7 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
             buttonText: "Sign In",
             onTap: _onContinue,
             backgroundColor: kPrimaryColor,
-            buttonTextColor: kDarkColor,
+            buttonTextColor: kDarkTextColor,
           ),
 
           const Spacer(),

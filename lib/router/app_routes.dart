@@ -6,9 +6,12 @@ import 'package:quadraclub_app/presentation/profile/ui/screens/edit_profile.dart
 import 'package:quadraclub_app/presentation/profile/ui/screens/my_profile.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/privacy_policy.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/terms_screen.dart';
+import 'package:quadraclub_app/presentation/profile_creation/ui/confirmation.dart';
 import 'package:quadraclub_app/presentation/profile_creation/ui/step1_create_account.dart';
 import 'package:quadraclub_app/presentation/profile_creation/ui/step2_otp_verification.dart';
 import 'package:quadraclub_app/presentation/profile_creation/ui/step3_about_you.dart';
+import 'package:quadraclub_app/presentation/profile_creation/ui/step4_select_sports.dart';
+import 'package:quadraclub_app/presentation/profile_creation/ui/step5_define_level.dart';
 
 import '/app_exports.dart';
 
@@ -28,6 +31,13 @@ class AppGenerateRoute {
         return _navigateScreen( Step2OtpVerification(email: email));
         case RouteName.aboutYou:
         return _navigateScreen(Step3AboutYou());
+        case RouteName.gamePreferences:
+        return _navigateScreen(const Step4SelectSports());
+        case RouteName.defineLevel:
+        return _navigateScreen(const Step5DefineLevel());
+        case RouteName.confirmation:
+
+        return _navigateScreen(const ConfirmationScreen());
         case RouteName.customBottomNavbar:
         return _navigateScreen(CustomBottomNavBar());
       case RouteName.homeScreen:
@@ -81,6 +91,9 @@ class RouteName {
   static const profileCreation = "/profileCreation";
   static const otpVerification = "/otpVerification";
   static const aboutYou = "/aboutYou";
+  static const gamePreferences = "/gamePreferences";
+  static const defineLevel = "/defineLevel";
+  static const confirmation = "/confirmation";
   static const customBottomNavbar="/customBottomNavbar";
   static const homeScreen = "/homeScreen";
   static const dotRegulationScreen = "/dotRegulationScreen";

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:pinput/pinput.dart';
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/profile_creation/ui/widgets/profile_creation_app_bar.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
+
+
 
 class Step2OtpVerification extends StatefulWidget {
   final String email;
@@ -138,7 +138,7 @@ class _Step2OtpVerificationState extends State<Step2OtpVerification> {
                                 decoration: defaultPinTheme.decoration!
                                     .copyWith(
                                       border: Border.all(
-                                        color: kDarkColor,
+                                        color: kDarkTextColor,
                                         width: 2,
                                       ),
                                     ),

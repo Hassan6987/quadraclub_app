@@ -8,13 +8,18 @@ const kCourtBlue = Color(0xFF162837);
 const kCourtLightBlue = Color(0xFF3E6D81);
 const kTextPrimaryColor = Color(0xFF13140F);
 const kTextSecondary = Color(0xFF162737);
-const kDarkColor = Color(0xFF212121);
+const kDarkTextColor = Color(0xFF212121);
 const kCardColor = Color(0xFFF5F5F5);
 const kGreyColor=Color(0xFFE6E8EA);
 const kTextColor = Color(0xFF666C7E);
 const kBlack12Color=Color(0xFF161212);
 const kLightColor=Color(0xFFFFF7E5);
 const kBlueColor=Color(0xFF2B5BEE);
+const kLightPrimaryColor=Color(0xFFFAFCEC);
+const kDividerColor=Color(0xFFEEEEEE);
+const kCard2Color=Color(0xFFF6F8FA);
+
+
 
 
 const kSecondaryColor = Color(0xFFC79B26);

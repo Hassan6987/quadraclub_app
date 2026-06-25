@@ -62,6 +62,9 @@ class $AssetsSvgGen {
   final SvgGenImage wristbandFill = const SvgGenImage(
     'assets/svg/WristbandFill.svg',
   );
+  final SvgGenImage beachTennis = const SvgGenImage(
+    'assets/svg/beach_tennis.svg',
+  );
   final SvgGenImage calendarBlank = const SvgGenImage(
     'assets/svg/calendar_blank.svg',
   );
@@ -69,15 +72,23 @@ class $AssetsSvgGen {
   final SvgGenImage filterIcon = const SvgGenImage(
     'assets/svg/filter_icon.svg',
   );
+  final SvgGenImage infoIcon = const SvgGenImage('assets/svg/info_icon.svg');
+  final SvgGenImage leftHand = const SvgGenImage('assets/svg/left_hand.svg');
   final SvgGenImage locationIcon = const SvgGenImage(
     'assets/svg/location_icon.svg',
   );
   final SvgGenImage lockIcon = const SvgGenImage('assets/svg/lock_icon.svg');
+  final SvgGenImage padelIcon = const SvgGenImage('assets/svg/padel_icon.svg');
+  final SvgGenImage pickleball = const SvgGenImage('assets/svg/pickleball.svg');
+  final SvgGenImage rightHand = const SvgGenImage('assets/svg/right_hand.svg');
   final SvgGenImage rosterFillIcon = const SvgGenImage(
     'assets/svg/roster_fill_icon.svg',
   );
   final SvgGenImage rosterIcon = const SvgGenImage(
     'assets/svg/roster_icon.svg',
+  );
+  final SvgGenImage tennisIcon = const SvgGenImage(
+    'assets/svg/tennis_icon.svg',
   );
   final SvgGenImage termsConditionIcon = const SvgGenImage(
     'assets/svg/termsConditionIcon.svg',

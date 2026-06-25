@@ -29,3 +29,6 @@ export 'package:quadraclub_app/utils/const/responsive_config.dart';
 export 'package:quadraclub_app/utils/const/styles.dart';
 export 'package:quadraclub_app/utils/extensions/alert_extension.dart';
 export 'package:quadraclub_app/utils/form_validate.dart';
+export 'package:quadraclub_app/presentation/profile_creation/ui/widgets/profile_creation_app_bar.dart';
+export 'package:quadraclub_app/presentation/profile_creation/ui/widgets/selection_button.dart';
+export 'package:quadraclub_app/utils/extensions/padding_extension.dart';
