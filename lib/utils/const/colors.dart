@@ -18,6 +18,10 @@ const kBlueColor=Color(0xFF2B5BEE);
 const kLightPrimaryColor=Color(0xFFFAFCEC);
 const kDividerColor=Color(0xFFEEEEEE);
 const kCard2Color=Color(0xFFF6F8FA);
+const kGreyTextColor=Color(0xFF64748B);
+const kRedColor = Color(0xFFDC2626);
+
+
 
 
 
@@ -31,7 +35,6 @@ const kBorderColor = Color(0xFFE4E4E7);
 const kWhiteColor = Color(0xFFFFFFFF);
 const kBlackColor = Color(0xFF1A1A1A);
 const kGreenColor = Color(0xFF61BA47);
-const kRedColor = Color(0xFFFF3B30);
 const kPurpleLightColor = Color(0xFFDADAFF);
 const kYellowLightColor = Color(0xFFF8E9BF);
 

@@ -52,7 +52,6 @@ class $AssetsSvgGen {
   final SvgGenImage privacyPolicyIcon = const SvgGenImage(
     'assets/svg/PrivacyPolicyIcon.svg',
   );
-  final SvgGenImage profile = const SvgGenImage('assets/svg/Profile.svg');
   final SvgGenImage profileFill = const SvgGenImage(
     'assets/svg/ProfileFill.svg',
   );
@@ -62,13 +61,23 @@ class $AssetsSvgGen {
   final SvgGenImage wristbandFill = const SvgGenImage(
     'assets/svg/WristbandFill.svg',
   );
+  final SvgGenImage agenda = const SvgGenImage('assets/svg/agenda.svg');
+  final SvgGenImage aimIcon = const SvgGenImage('assets/svg/aim_icon.svg');
   final SvgGenImage beachTennis = const SvgGenImage(
     'assets/svg/beach_tennis.svg',
   );
   final SvgGenImage calendarBlank = const SvgGenImage(
     'assets/svg/calendar_blank.svg',
   );
+  final SvgGenImage chatIcon = const SvgGenImage('assets/svg/chat_icon.svg');
+  final SvgGenImage chessIcon = const SvgGenImage('assets/svg/chess_icon.svg');
+  final SvgGenImage circleTick = const SvgGenImage(
+    'assets/svg/circle_tick.svg',
+  );
+  final SvgGenImage classes = const SvgGenImage('assets/svg/classes.svg');
+  final SvgGenImage courts = const SvgGenImage('assets/svg/courts.svg');
   final SvgGenImage emailIcon = const SvgGenImage('assets/svg/email_icon.svg');
+  final SvgGenImage emoji = const SvgGenImage('assets/svg/emoji.svg');
   final SvgGenImage filterIcon = const SvgGenImage(
     'assets/svg/filter_icon.svg',
   );
@@ -78,8 +87,17 @@ class $AssetsSvgGen {
     'assets/svg/location_icon.svg',
   );
   final SvgGenImage lockIcon = const SvgGenImage('assets/svg/lock_icon.svg');
+  final SvgGenImage matches = const SvgGenImage('assets/svg/matches.svg');
+  final SvgGenImage notification = const SvgGenImage(
+    'assets/svg/notification.svg',
+  );
   final SvgGenImage padelIcon = const SvgGenImage('assets/svg/padel_icon.svg');
+  final SvgGenImage personsIcon = const SvgGenImage(
+    'assets/svg/persons_icon.svg',
+  );
   final SvgGenImage pickleball = const SvgGenImage('assets/svg/pickleball.svg');
+  final SvgGenImage profile = const SvgGenImage('assets/svg/profile.svg');
+  final SvgGenImage redCross = const SvgGenImage('assets/svg/red_cross.svg');
   final SvgGenImage rightHand = const SvgGenImage('assets/svg/right_hand.svg');
   final SvgGenImage rosterFillIcon = const SvgGenImage(
     'assets/svg/roster_fill_icon.svg',
@@ -87,11 +105,18 @@ class $AssetsSvgGen {
   final SvgGenImage rosterIcon = const SvgGenImage(
     'assets/svg/roster_icon.svg',
   );
+  final SvgGenImage shieldIcon = const SvgGenImage(
+    'assets/svg/shield_icon.svg',
+  );
   final SvgGenImage tennisIcon = const SvgGenImage(
     'assets/svg/tennis_icon.svg',
   );
   final SvgGenImage termsConditionIcon = const SvgGenImage(
     'assets/svg/termsConditionIcon.svg',
+  );
+  final SvgGenImage timerIcon = const SvgGenImage('assets/svg/timer_icon.svg');
+  final SvgGenImage trophyIcon = const SvgGenImage(
+    'assets/svg/trophy_icon.svg',
   );
   final SvgGenImage uploadPhoto = const SvgGenImage(
     'assets/svg/upload_photo.svg',

@@ -1,11 +1,9 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/athletes/ui/athletes_screen.dart';
-import 'package:quadraclub_app/presentation/team_roster/ui/team_roster_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   final int index;
 
-  const CustomBottomNavBar({super.key, this.index = 0});
+  const CustomBottomNavBar({super.key, this.index = 2});
 
   @override
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
@@ -18,8 +16,6 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   void initState() {
     super.initState();
     selectedIndex = ValueNotifier<int>(widget.index);
-    // context.read<HomeBloc>().add(GetScannedAthletes());
-    // context.read<TeamRosterBloc>().add(FetchTeamRoster());
   }
 
   @override
@@ -31,24 +27,19 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final screens = [
-      HomeScreen(),
-      AthletesScreen(),
-      MyTeamRosterScreen(),
+      Center(child: Text('Classes')),
+      Center(child: Text('Matches')),
+      Center(child: Text('Courts')),
+      Center(child: Text('Agenda')),
       ProfileScreen(),
     ];
-    final labels = ["Home", "Athletes", "Team Roster", "Profile"];
+    final labels = ["Classes", "Matches", "Courts", "Agenda", "Profile"];
     final icons = [
-      Assets.svg.home.path,
-      Assets.svg.athelete.path,
-      Assets.svg.rosterIcon.path,
+      Assets.svg.classes.path,
+      Assets.svg.matches.path,
+      Assets.svg.courts.path,
+      Assets.svg.agenda.path,
       Assets.svg.profile.path,
-    ];
-
-    final iconsFilled = [
-      Assets.svg.homeFill.path,
-      Assets.svg.atheleteFill.path,
-      Assets.svg.rosterFillIcon.path,
-      Assets.svg.profileFill.path,
     ];
 
     return PopScope(
@@ -59,42 +50,39 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           return Scaffold(
             body: screens[index],
             bottomNavigationBar: Container(
-              decoration: BoxDecoration(
-                color: kWhiteColor.withAlpha(190),
-                border: const Border(
-                  top: BorderSide(color: Color(0x30000000), width: 0.33),
-                ),
-              ),
-              child: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                currentIndex: index,
-                onTap: (i) => selectedIndex.value = i,
-                selectedLabelStyle: AppStyles.w400f14inter.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 10,
-                  color: const Color(0XFFFE9CC5),
-                ),
-                unselectedLabelStyle: AppStyles.w400f14inter.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 10,
-                  color: const Color(0XFF999999),
-                ),
-                selectedItemColor: kSecondary2Color,
-                unselectedItemColor: const Color(0XFF999999),
-                items: List.generate(icons.length, (i) {
+              height: 75,
+              decoration: BoxDecoration(color: kCardColor),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(icons.length, (i) {
                   final isSelected = i == index;
-                  final color = isSelected
-                      ? kSecondary2Color
-                      : const Color(0xFFACBEC5);
-                  return BottomNavigationBarItem(
-                    icon: SvgPicture.asset(
-                      isSelected ? iconsFilled[i] : icons[i],
-                      height: getProportionateScreenHeight(25),
-                      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                  final color = isSelected ? kPrimaryColor : kDarkTextColor;
+
+                  return GestureDetector(
+                    onTap: () => selectedIndex.value = i,
+                    behavior: HitTestBehavior.opaque,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width / icons.length,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            icons[i],
+                            height: getProportionateScreenHeight(25),
+                            colorFilter:
+                            ColorFilter.mode(color, BlendMode.srcIn),
+                          ),
+                          6.heightBox,
+                          Text(
+                            labels[i],
+                            style: (isSelected
+                                ? AppStyles.w500f12inter
+                                : AppStyles.w400f12inter)
+                                .copyWith(color: color),
+                          ),
+                        ],
+                      ),
                     ),
-                    label: labels[i],
                   );
                 }),
               ),

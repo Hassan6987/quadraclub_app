@@ -8,7 +8,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({
     super.key,
-    this.showBackIcon = true,
+    this.showBackIcon = false,
     this.centerTile = true,
     this.title,
     this.height,
@@ -17,34 +17,39 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        title ?? 'Custom AppBar',
-        style: AppStyles.w600f24inter.copyWith(
-          fontSize: 16,
-          color: kBlackColor,
-        ),
+      actionsPadding: EdgeInsets.symmetric(
+        horizontal: getProportionateScreenWidth(16),
       ),
-      systemOverlayStyle: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-      leading: showBackIcon
-          ? IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, size: 24),
-              style: IconButton.styleFrom(padding: EdgeInsets.zero),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+      shape: RoundedRectangleBorder(side: BorderSide(color: kCardColor)),
+      title: title != null
+          ? Text(
+              title!,
+              style: AppStyles.w600f24inter.copyWith(
+                color: kDarkTextColor,
+                fontSize: 22,
+              ),
             )
           : null,
-      toolbarHeight: getProportionateScreenHeight(173),
-      centerTitle: centerTile,
-      automaticallyImplyLeading: false,
+      actions: [
+        buildContainer(Assets.svg.notification.path),
+        8.widthBox,
+        buildContainer(Assets.svg.chatIcon.path),
+      ],
+    );
+  }
+
+  Container buildContainer(String icon) {
+    return Container(
+      decoration: BoxDecoration(
+        color: kWhiteColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: kBorderColor),
+      ),
+      child: SvgPicture.asset(icon).withPaddingAll(8),
     );
   }
 
   @override
   Size get preferredSize =>
-      Size.fromHeight(getProportionateScreenHeight(height ?? 80));
+      Size.fromHeight(getProportionateScreenHeight(height ?? 68));
 }

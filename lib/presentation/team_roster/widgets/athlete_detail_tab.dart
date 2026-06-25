@@ -4,14 +4,11 @@ import 'package:quadraclub_app/presentation/home/bloc/home_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/rating_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/video_player_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/videos_list_widget.dart';
-import 'package:quadraclub_app/presentation/profile/ui/widgets/pdf_viewer.dart';
 import 'package:quadraclub_app/presentation/team_roster/bloc/team_roster_bloc.dart';
 import 'package:quadraclub_app/presentation/teams/ui/player_detail_tab.dart';
 import 'package:quadraclub_app/utils/components/alert_dialogue.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
-
 import '/app_exports.dart';
 
 class AthleteDetailTab extends StatelessWidget {
@@ -233,13 +230,7 @@ class AthleteDetailTab extends StatelessWidget {
             style: AppStyles.bodyRegular.copyWith(color: kBlackColor),
           ),
           InkWell(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    PdfViewerScreen(pdfUrl: transcript, title: 'Transcript'),
-              ),
-            ),
+            onTap: () {},
             child: Text(
               'Transcript.pdf',
               style: AppStyles.bodyMedium.copyWith(

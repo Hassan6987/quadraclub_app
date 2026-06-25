@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:shimmer/shimmer.dart';
-import 'package:quadraclub_app/presentation/athletes/ui/athlete_detail_screen.dart';
 import 'package:quadraclub_app/presentation/athletes/ui/widgets/scanned_athlete_card_widget.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/widgets/nfc_scan_dialog.dart';
 import 'package:quadraclub_app/presentation/home/bloc/home_bloc.dart';
@@ -120,19 +119,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   debugPrint(
                                     'Tapped on ${athletes[index].scannedUserProfile?.fullName}',
                                   );
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AthleteProfileScreen(
-                                            athleteId:
-                                                athletes[index]
-                                                    .scannedUserProfile
-                                                    ?.id ??
-                                                -1,
-                                          ),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) =>
+                                  //         AthleteProfileScreen(
+                                  //           athleteId:
+                                  //               athletes[index]
+                                  //                   .scannedUserProfile
+                                  //                   ?.id ??
+                                  //               -1,
+                                  //         ),
+                                  //   ),
+                                  // );
                                 },
                               ),
                             );

@@ -35,7 +35,7 @@ class _SafeAreaWrapperState extends State<SafeAreaWrapper> {
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
-      bottom: isAndroid14OrAbove,
+      bottom: true,
       right: false,
       left: false,
       child: widget.child,
