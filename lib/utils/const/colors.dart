@@ -15,11 +15,13 @@ const kTextColor = Color(0xFF666C7E);
 const kBlack12Color=Color(0xFF161212);
 const kLightColor=Color(0xFFFFF7E5);
 const kBlueColor=Color(0xFF2B5BEE);
+const kBlueF1=Color(0xFF397FF1);
 const kLightPrimaryColor=Color(0xFFFAFCEC);
 const kDividerColor=Color(0xFFEEEEEE);
 const kCard2Color=Color(0xFFF6F8FA);
 const kGreyTextColor=Color(0xFF64748B);
 const kRedColor = Color(0xFFDC2626);
+const kDottedBorderColor=Color(0xFFCBD5E1);
 
 
 
@@ -33,10 +35,15 @@ const kErrorColor = Color(0xFFE13030);
 const kBorderColor = Color(0xFFE4E4E7);
 
 const kWhiteColor = Color(0xFFFFFFFF);
+const kWhiteFo = Color(0xFFF0F0F0);
+const kWhiteF9 = Color(0xFFF1F5F9);
 const kBlackColor = Color(0xFF1A1A1A);
 const kGreenColor = Color(0xFF61BA47);
+const kDarkGreenColor = Color(0xFF119F04);
+
 const kPurpleLightColor = Color(0xFFDADAFF);
 const kYellowLightColor = Color(0xFFF8E9BF);
+const kOrangeColor = Color(0xFFF59E0B);
 
 const int _primaryPrimaryValue = 0xFFD4EA23;
 

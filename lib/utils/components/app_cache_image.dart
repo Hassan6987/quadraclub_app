@@ -9,6 +9,8 @@ class AppCachedImage extends StatelessWidget {
   final double? width;
   final BoxFit fit;
   final BorderRadius? borderRadius;
+  final Border? border;
+  final Color? fillColor;
 
   const AppCachedImage({
     super.key,
@@ -18,38 +20,40 @@ class AppCachedImage extends StatelessWidget {
     this.width,
     this.fit = BoxFit.contain,
     this.borderRadius,
+    this.border, this.fillColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final Widget imageWidget = localFile != null
-        ? Image.file(
-      localFile!,
-      height: height,
-      width: width,
-      fit: fit,
-    )
+        ? Image.file(localFile!, height: height, width: width, fit: fit)
         : CachedNetworkImage(
-      imageUrl: imageUrl ?? '',
-      height: height,
-      width: width,
-      fit: fit,
-      placeholder: (context, url) => Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
-        child: Container(
-          height: height,
-          width: width ?? double.infinity,
-          color: Colors.white,
-        ),
-      ),
-      errorWidget: (context, url, error) => Container(
-        height: height,
-        width: width,
-        color: kGreyColor,
+            imageUrl: imageUrl ?? '',
+            height: height,
+            width: width,
+            fit: fit,
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor:fillColor?? Colors.grey.shade300,
+              highlightColor:fillColor?? Colors.grey.shade100,
+              child: Container(
+                height: height,
+                width: width ?? double.infinity,
 
-      ),
-    );
+                decoration: BoxDecoration(border: border, color: Colors.white),
+              ),
+            ),
+            errorWidget: (context, url, error) => Container(
+              height: height,
+              width: width,
+
+              decoration: BoxDecoration(
+                border: border,
+                color:fillColor?? kGreyColor,
+                borderRadius: borderRadius,
+              ),
+              child: Icon(Icons.person),
+            ),
+          );
 
     if (borderRadius != null) {
       return ClipRRect(borderRadius: borderRadius!, child: imageWidget);

@@ -73,7 +73,7 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: titleWidget,
 
       // Use a fixed width SizedBox in actions to visually center the title/indicator
-      // when the 'leading' widget is an IconButton (which is 48 wide).
+      // when the 'leading' widgets is an IconButton (which is 48 wide).
       actions: const [SizedBox(width: 48)],
     );
   }

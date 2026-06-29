@@ -61,6 +61,9 @@ class $AssetsSvgGen {
   final SvgGenImage wristbandFill = const SvgGenImage(
     'assets/svg/WristbandFill.svg',
   );
+  final SvgGenImage accontIcon = const SvgGenImage(
+    'assets/svg/accont_icon.svg',
+  );
   final SvgGenImage agenda = const SvgGenImage('assets/svg/agenda.svg');
   final SvgGenImage aimIcon = const SvgGenImage('assets/svg/aim_icon.svg');
   final SvgGenImage beachTennis = const SvgGenImage(
@@ -75,11 +78,20 @@ class $AssetsSvgGen {
     'assets/svg/circle_tick.svg',
   );
   final SvgGenImage classes = const SvgGenImage('assets/svg/classes.svg');
+  final SvgGenImage clockTimer = const SvgGenImage(
+    'assets/svg/clock_timer.svg',
+  );
   final SvgGenImage courts = const SvgGenImage('assets/svg/courts.svg');
+  final SvgGenImage creditCard = const SvgGenImage(
+    'assets/svg/credit_card.svg',
+  );
   final SvgGenImage emailIcon = const SvgGenImage('assets/svg/email_icon.svg');
   final SvgGenImage emoji = const SvgGenImage('assets/svg/emoji.svg');
   final SvgGenImage filterIcon = const SvgGenImage(
     'assets/svg/filter_icon.svg',
+  );
+  final SvgGenImage filterLines = const SvgGenImage(
+    'assets/svg/filter_lines.svg',
   );
   final SvgGenImage infoIcon = const SvgGenImage('assets/svg/info_icon.svg');
   final SvgGenImage leftHand = const SvgGenImage('assets/svg/left_hand.svg');
@@ -87,6 +99,7 @@ class $AssetsSvgGen {
     'assets/svg/location_icon.svg',
   );
   final SvgGenImage lockIcon = const SvgGenImage('assets/svg/lock_icon.svg');
+  final SvgGenImage mapMarker = const SvgGenImage('assets/svg/map_marker.svg');
   final SvgGenImage matches = const SvgGenImage('assets/svg/matches.svg');
   final SvgGenImage notification = const SvgGenImage(
     'assets/svg/notification.svg',
@@ -107,6 +120,9 @@ class $AssetsSvgGen {
   );
   final SvgGenImage shieldIcon = const SvgGenImage(
     'assets/svg/shield_icon.svg',
+  );
+  final SvgGenImage starYellow = const SvgGenImage(
+    'assets/svg/star_yellow.svg',
   );
   final SvgGenImage tennisIcon = const SvgGenImage(
     'assets/svg/tennis_icon.svg',

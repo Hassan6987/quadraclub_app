@@ -28,7 +28,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _initializePlayer() async {
     try {
-      // Check if widget is still mounted
+      // Check if widgets is still mounted
       if (_isDisposed) return;
 
       // Get cached file

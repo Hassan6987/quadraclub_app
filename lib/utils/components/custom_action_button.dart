@@ -22,7 +22,7 @@ class CustomActionButton extends StatelessWidget {
     this.width,
     this.isEnabled = true,
     this.backgroundColor = kPrimaryColor,
-    this.buttonTextColor = kWhiteColor,
+    this.buttonTextColor = kDarkTextColor,
     this.buttonTextStyle,
     this.borderColor,
     this.margin = EdgeInsets.zero,
@@ -45,11 +45,9 @@ class CustomActionButton extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
-          color: isOutlined
-              ? backgroundColor?.withValues(alpha: 0.1)
-              : (isEnabled
+          color:isEnabled
                     ? backgroundColor
-                    : backgroundColor?.withValues(alpha: 0.5)),
+                    : backgroundColor?.withValues(alpha: 0.5),
           border: isOutlined ? Border.all(color: borderColor!, width: 1) : null,
         ),
         child: Center(
@@ -67,7 +65,7 @@ class CustomActionButton extends StatelessWidget {
                     buttonTextStyle ??
                     AppStyles.w500f15inter.copyWith(
                       fontSize: 16,
-                      color: isOutlined ? borderColor : buttonTextColor,
+                      color: buttonTextColor,
                     ),
               ),
             ],

@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/profile_creation/ui/widgets/profile_summary_card.dart';
 import 'package:quadraclub_app/presentation/profile_creation/ui/widgets/sports_cartegory_card.dart';
+import 'package:quadraclub_app/utils/components/common_success_check.dart';
 
 class ConfirmationScreen extends StatelessWidget {
   const ConfirmationScreen({super.key});
@@ -12,7 +13,7 @@ class ConfirmationScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SuccessIcon(),
+              const CommonSuccessCheck(),
               20.heightBox,
               Text(
                 "Everything's ready , Sami!",
@@ -88,24 +89,6 @@ class ConfirmationScreen extends StatelessWidget {
   }
 }
 
-class SuccessIcon extends StatelessWidget {
-  const SuccessIcon({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 76,
-      height: 76,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: kPrimaryColor, width: 12),
-      ),
-      child: const Center(
-        child: Icon(Icons.check, size: 30, color: kDarkTextColor),
-      ),
-    );
-  }
-}
 
 
 

@@ -9,50 +9,54 @@ class AccountSection extends StatelessWidget {
       padding: EdgeInsets.all(0),
       child: Column(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: kPrimaryColor.withValues(alpha: 0.20),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SvgPicture.asset(
-                  Assets.svg.profile.path,
-                  colorFilter: ColorFilter.mode(
-                    kDarkTextColor,
-                    BlendMode.srcIn,
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, RouteName.myAccount);
+            },
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor.withValues(alpha: 0.20),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SvgPicture.asset(
+                    Assets.svg.profile.path,
+                    colorFilter: ColorFilter.mode(
+                      kDarkTextColor,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
-              ),
-              8.widthBox,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'My Account',
-                      style: AppStyles.w500f14inter.copyWith(
-                        color: kDarkTextColor,
+                8.widthBox,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'My Account',
+                        style: AppStyles.w500f14inter.copyWith(
+                          color: kDarkTextColor,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Manage your account details',
-                      style: AppStyles.w400f14inter.copyWith(
-                        color: kGreyTextColor,
+                      SizedBox(height: 2),
+                      Text(
+                        'Manage your account details',
+                        style: AppStyles.w400f14inter.copyWith(
+                          color: kGreyTextColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: kDarkTextColor.withValues(alpha: 0.40),
-              ),
-            ],
+                Icon(
+                  Icons.chevron_right,
+                  color: kDarkTextColor.withValues(alpha: 0.40),
+                ),
+              ],
+            ).withPaddingAll(16),
           ),
-          withPaddingAll(16),
           Divider(color: kDividerColor),
           Row(
             children: [

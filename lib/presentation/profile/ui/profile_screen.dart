@@ -18,7 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kCardColor,
-      appBar: CustomAppBar(title: "Profile"),
+      appBar: CustomAppBar(title: "Profile", centerTile: false),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,4 +42,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-

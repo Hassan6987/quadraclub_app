@@ -27,6 +27,7 @@ class CustomTextField extends StatefulWidget {
   final double alphaColor;
   final TextStyle? hintStyle;
   final TextStyle? textStyle;
+  final double borderRadius;
 
   const CustomTextField({
     super.key,
@@ -53,7 +54,7 @@ class CustomTextField extends StatefulWidget {
     this.focusNode,
     this.alphaColor = 0.8,
     this.hintStyle,
-    this.textStyle,
+    this.textStyle, this.borderRadius=12,
   });
 
   @override
@@ -68,7 +69,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// ✅ Label on top (like "Email")
         if (widget.label != null) ...[
           Text(
             widget.label!,
@@ -138,19 +138,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
             filled: true,
             fillColor: widget.fillColor ?? kWhiteColor,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: const BorderSide(color: kBorderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: const BorderSide(color: kBorderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: const BorderSide(color: kBlackColor, width: 2),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: const BorderSide(color: Colors.red),
             ),
           ),

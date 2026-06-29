@@ -1,6 +1,10 @@
 import 'package:quadraclub_app/presentation/authentication/ui/create_account_screen.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/forget_password.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dart';
+import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
+import 'package:quadraclub_app/presentation/home/ui/widgets/notification_screen.dart';
+import 'package:quadraclub_app/presentation/notifications/ui/notification_screen.dart';
+import 'package:quadraclub_app/presentation/profile/ui/my_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/delete_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/edit_profile.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/my_profile.dart';
@@ -40,8 +44,13 @@ class AppGenerateRoute {
         return _navigateScreen(const ConfirmationScreen());
         case RouteName.customBottomNavbar:
         return _navigateScreen(CustomBottomNavBar());
-      case RouteName.homeScreen:
-        return _navigateScreen(const HomeScreen());
+      case RouteName.myAccount:
+        return _navigateScreen(const MyAccount());
+        case RouteName.notifications:
+        return _navigateScreen(const NotificationsScreen());
+        case RouteName.classDetails:
+          final ClassModel classModel = setting.arguments as ClassModel;
+        return _navigateScreen( ClassDetailsScreen(classModel: classModel));
       case RouteName.termsConditionScreen:
         return _navigateScreen(const TermsScreen());
       case RouteName.privacyPolicyScreen:
@@ -95,6 +104,9 @@ class RouteName {
   static const defineLevel = "/defineLevel";
   static const confirmation = "/confirmation";
   static const customBottomNavbar="/customBottomNavbar";
+  static const myAccount = "/myAccount";
+  static const notifications = "/notifications";
+  static const classDetails = "/classDetails";
   static const homeScreen = "/homeScreen";
   static const dotRegulationScreen = "/dotRegulationScreen";
   static const myProfileScreen = "/myProfileScreen";

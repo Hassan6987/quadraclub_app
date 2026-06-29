@@ -185,7 +185,7 @@ class AthleteCardWidget extends StatelessWidget {
   }
 }
 
-// ── Standalone remove button widget ─────────────────────────────────────────
+// ── Standalone remove button widgets ─────────────────────────────────────────
 
 class _RemoveButton extends StatelessWidget {
   final VoidCallback onTap;
