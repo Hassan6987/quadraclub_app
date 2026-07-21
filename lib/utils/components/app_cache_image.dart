@@ -18,9 +18,10 @@ class AppCachedImage extends StatelessWidget {
     this.localFile,
     this.height,
     this.width,
-    this.fit = BoxFit.contain,
+    this.fit = BoxFit.cover,
     this.borderRadius,
-    this.border, this.fillColor,
+    this.border,
+    this.fillColor,
   });
 
   @override
@@ -28,37 +29,48 @@ class AppCachedImage extends StatelessWidget {
     final Widget imageWidget = localFile != null
         ? Image.file(localFile!, height: height, width: width, fit: fit)
         : CachedNetworkImage(
-            imageUrl: imageUrl ?? '',
-            height: height,
-            width: width,
-            fit: fit,
-            placeholder: (context, url) => Shimmer.fromColors(
-              baseColor:fillColor?? Colors.grey.shade300,
-              highlightColor:fillColor?? Colors.grey.shade100,
-              child: Container(
-                height: height,
-                width: width ?? double.infinity,
+      imageUrl: imageUrl ?? '',
+      height: height,
+      width: width,
+      fit: fit,
+      placeholder: (context, url) => Shimmer.fromColors(
+        baseColor: fillColor ?? Colors.grey.shade300,
+        highlightColor: fillColor ?? Colors.grey.shade100,
+        child: Container(
+          height: height,
+          width: width,
+          decoration: const BoxDecoration(color: Colors.white),
+        ),
+      ),
+      errorWidget: (context, url, error) => Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: fillColor ?? kGreyColor,
+          borderRadius: borderRadius,
+        ),
+        child: const Icon(Icons.person, size: 20),
+      ),
+    );
 
-                decoration: BoxDecoration(border: border, color: Colors.white),
-              ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              height: height,
-              width: width,
-
-              decoration: BoxDecoration(
-                border: border,
-                color:fillColor?? kGreyColor,
-                borderRadius: borderRadius,
-              ),
-              child: Icon(Icons.person),
-            ),
-          );
+    Widget result = imageWidget;
 
     if (borderRadius != null) {
-      return ClipRRect(borderRadius: borderRadius!, child: imageWidget);
+      result = ClipRRect(borderRadius: borderRadius!, child: result);
     }
 
-    return imageWidget;
+    if (border != null) {
+      result = Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          border: border,
+          borderRadius: borderRadius,
+        ),
+        child: result,
+      );
+    }
+
+    return result;
   }
 }

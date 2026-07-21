@@ -1,4 +1,4 @@
-import '../../../../app_exports.dart';
+import '../../../app_exports.dart';
 
 class SportBadge extends StatelessWidget {
   final SportType sport;

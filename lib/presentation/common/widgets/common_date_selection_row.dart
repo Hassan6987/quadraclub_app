@@ -1,33 +1,19 @@
 
 import 'package:quadraclub_app/app_exports.dart';
 
-class DateSelector extends StatelessWidget {
+class CommonDateSelectionRow extends StatelessWidget {
   final List<DateTime> dates;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
-  const DateSelector({
+  const CommonDateSelectionRow({
     super.key,
     required this.dates,
     required this.selectedDate,
     required this.onDateSelected,
   });
 
-  static const _dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  static const _monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +22,17 @@ class DateSelector extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: dates.length,
-        padding: EdgeInsets.zero,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         separatorBuilder: (_, _) => 8.widthBox,
         itemBuilder: (context, index) {
           final date = dates[index];
           final isSelected = _isSameDay(date, selectedDate);
-          final dayName = _dayNames[date.weekday - 1];
-          final month = _monthNames[date.month - 1];
+          final dayName = dayNames[date.weekday - 1];
+          final month = monthNames[date.month - 1];
 
           return GestureDetector(
             onTap: () => onDateSelected(date),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+            child: Container(
               width: getProportionateScreenWidth(65),
               height: getProportionateScreenHeight(65),
               decoration: BoxDecoration(

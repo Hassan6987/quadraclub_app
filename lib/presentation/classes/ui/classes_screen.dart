@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
 import 'package:quadraclub_app/presentation/classes/ui/widgets/filter_bottom_sheet.dart';
+import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
 import '/app_exports.dart';
 
 class ClassesScreen extends StatefulWidget {
@@ -10,17 +11,17 @@ class ClassesScreen extends StatefulWidget {
 }
 
 class _ClassesScreenState extends State<ClassesScreen> {
-  SportType? _selectedSport;
+  final List<SportType> _selectedSports = [];
   DateTime _selectedDate = DateTime(2025, 4, 1);
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
+final String _searchQuery = '';
 
   List<DateTime> get _dates =>
       List.generate(7, (i) => DateTime(2025, 4, 1).add(Duration(days: i)));
 
   List<ClassModel> get _filtered {
     return dummyClasses.where((c) {
-      final matchesSport = _selectedSport == null || c.sport == _selectedSport;
+      final matchesSport = _selectedSports.isEmpty || _selectedSports.contains(c.sport);
       final matchesSearch =
           _searchQuery.isEmpty ||
           c.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
@@ -64,7 +65,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
       appBar: CustomAppBar(
         title: "Available Classes",
         centerTile: false,
-        backgroundColor: kCardColor,
+        backgroundColor: kWhiteColor,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,20 +77,23 @@ class _ClassesScreenState extends State<ClassesScreen> {
             ),
             child: Column(
               children: [
+                12.heightBox,
                 SizedBox(
-                  height: 38,
+                  height: 33,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
 
                     children: [
                       for (final sport in SportType.values) ...[
-                        SportFilterChip(
-                          sport: sport,
-                          isSelected: _selectedSport == sport,
+                        CommonChip(
+                          label: sport.label,
+                          isSelected: _selectedSports.contains(sport),
                           onTap: () => setState(() {
-                            _selectedSport = _selectedSport == sport
-                                ? null
-                                : sport;
+                            if (_selectedSports.contains(sport)) {
+                              _selectedSports.remove(sport);
+                            } else {
+                              _selectedSports.add(sport);
+                            }
                           }),
                         ).paddingOnly(
                           right: sport.index == SportType.values.length - 1
@@ -128,11 +132,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 ).withPaddingSymmetric(16, 0),
                 12.heightBox,
 
-                DateSelector(
+                CommonDateSelectionRow(
                   dates: _dates,
                   selectedDate: _selectedDate,
                   onDateSelected: (d) => setState(() => _selectedDate = d),
-                ).paddingOnly(left: 16),
+                ),
                 16.heightBox,
               ],
             ),
@@ -162,7 +166,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                   ),
           ),
         ],
-      ).withPaddingSymmetric(0, 12),
+      ),
     );
   }
 

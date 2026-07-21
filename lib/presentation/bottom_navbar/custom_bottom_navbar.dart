@@ -1,5 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/agenda_screen.dart';
 import 'package:quadraclub_app/presentation/classes/ui/classes_screen.dart';
+import 'package:quadraclub_app/presentation/matches/ui/matches_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   final int index;
@@ -29,9 +31,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   Widget build(BuildContext context) {
     final screens = [
       ClassesScreen(),
-      Center(child: Text('Matches')),
-      Center(child: Text('Courts')),
-      Center(child: Text('Agenda')),
+      MatchesScreen(),
+      const HomeScreen(),
+AgendaScreen(),
       ProfileScreen(),
     ];
     final labels = ["Classes", "Matches", "Courts", "Agenda", "Profile"];

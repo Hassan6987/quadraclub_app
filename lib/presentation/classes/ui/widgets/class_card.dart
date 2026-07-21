@@ -14,7 +14,7 @@ class ClassCard extends StatelessWidget {
     return GestureDetector(
       onTap: classModel.status == ClassStatus.full ? null : onTap,
       child: Opacity(
-        opacity: classModel.status == ClassStatus.full ? 0.7 : 1,
+        opacity: classModel.status == ClassStatus.full ? 0.3 : 1,
         child: Container(
           margin: EdgeInsets.symmetric(
             horizontal: getProportionateScreenWidth(20),
@@ -96,4 +96,5 @@ class ClassCard extends StatelessWidget {
   }
 
 }
+
 
