@@ -1,14 +1,18 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 
 class CourtMapView extends StatefulWidget {
   final List<CourtModel> courts;
   final String currentLocation;
-  final Function(String) onLocationChanged;
+  final LatLng initialCenter;
+  final Function(LocationResult) onLocationChanged;
   final VoidCallback onBackToList;
-  final Function(String? timeOfDay, String? city, double distance) onApplyFilters;
+  final Function(String? timeOfDay, String? city, double distance)
+  onApplyFilters;
   final SportType? selectedSport;
   final Function(SportType?) onSportSelected;
 
@@ -16,6 +20,7 @@ class CourtMapView extends StatefulWidget {
     super.key,
     required this.courts,
     required this.currentLocation,
+    required this.initialCenter,
     required this.onLocationChanged,
     required this.onBackToList,
     required this.onApplyFilters,
@@ -28,10 +33,9 @@ class CourtMapView extends StatefulWidget {
 }
 
 class _CourtMapViewState extends State<CourtMapView> {
+  GoogleMapController? _mapController;
   late final PageController _pageController;
   int _activePageIndex = 0;
-  double _zoomLevel = 13.0;
-  Offset _mapOffset = Offset.zero;
 
   @override
   void initState() {
@@ -42,18 +46,35 @@ class _CourtMapViewState extends State<CourtMapView> {
   @override
   void dispose() {
     _pageController.dispose();
+    _mapController?.dispose();
     super.dispose();
   }
 
-  void _onPageChanged(int index) {
-    setState(() {
-      _activePageIndex = index;
-      // Animate map view center to selected court coordinates (simulated)
-      _mapOffset = Offset(
-        (widget.courts[index].latitude - widget.courts[0].latitude) * 500,
-        (widget.courts[index].longitude - widget.courts[0].longitude) * 500,
+  Set<Marker> get _markers {
+    return widget.courts
+        .asMap()
+        .entries
+        .map((entry) {
+      final index = entry.key;
+      final court = entry.value;
+      final isActive = index == _activePageIndex;
+      return Marker(
+        markerId: MarkerId(court.id.toString()),
+        position: LatLng(court.latitude, court.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          isActive ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed,
+        ),
+        onTap: () => _onMarkerTap(index),
       );
-    });
+    }).toSet();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() => _activePageIndex = index);
+    final court = widget.courts[index];
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLng(LatLng(court.latitude, court.longitude)),
+    );
   }
 
   void _onMarkerTap(int index) {
@@ -64,131 +85,84 @@ class _CourtMapViewState extends State<CourtMapView> {
     );
   }
 
+  Future<void> _openLocationSearch() async {
+    await ChangeLocationSheet.show(
+      context,
+      onLocationSelected: (location) {
+        widget.onLocationChanged(location);
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(
+            LatLng(location.latitude, location.longitude),
+            13,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Map center image representing the satellite map
-    const mapBackgroundUrl = 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&auto=format&fit=crop&q=80';
-
     return Scaffold(
-      body: Stack(
+      body: Column(
         children: [
-          // 1. Draggable Simulated Map Canvas
-          GestureDetector(
-            onPanUpdate: (details) {
-              setState(() {
-                _mapOffset += details.delta;
-              });
-            },
-            child: Transform.scale(
-              scale: _zoomLevel / 13.0,
-              child: Transform.translate(
-                offset: _mapOffset,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(mapBackgroundUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Stack(
-                    children: List.generate(widget.courts.length, (index) {
-                      final court = widget.courts[index];
-                      final isActive = index == _activePageIndex;
-
-                      // Simulated marker placement offset from center
-                      final double markerX = 180 + (court.latitude - 34.0) * 1500;
-                      final double markerY = 320 + (court.longitude + 118.0) * 1500;
-
-                      return Positioned(
-                        left: markerX,
-                        top: markerY,
-                        child: GestureDetector(
-                          onTap: () => _onMarkerTap(index),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: isActive ? kPrimaryColor : kWhiteColor,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.location_on,
-                              color: isActive ? kBlackColor : kPrimaryColor,
-                              size: isActive ? 28 : 22,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // 2. Top Float Panel Controls
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Upper Buttons Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Back to list
                       GestureDetector(
                         onTap: widget.onBackToList,
                         child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: const BoxDecoration(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
                             color: kWhiteColor,
                             shape: BoxShape.circle,
+                              border: Border.all(color: kBorderColor, width: 1)
                           ),
                           child: const Center(
-                            child: Icon(Icons.arrow_back, color: kDarkTextColor),
+                            child: Icon(
+                              Icons.arrow_back,
+                              color: kDarkTextColor,
+                            ),
                           ),
                         ),
                       ),
-                      // Dropdown selection for city
                       GestureDetector(
-                        onTap: () {
-                          ChangeLocationSheet.show(
-                            context,
-                            onLocationSelected: widget.onLocationChanged,
-                          );
-                        },
+                        onTap: _openLocationSearch,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: kWhiteColor,
                             borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: kBorderColor, width: 1)
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 widget.currentLocation,
-                                style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
+                                style: AppStyles.w500f14inter.copyWith(
+                                  color: kDarkTextColor,
+                                ),
                               ),
                               const SizedBox(width: 6),
-                              const Icon(Icons.keyboard_arrow_down, color: kDarkTextColor, size: 18),
+                              const Icon(
+                                Icons.keyboard_arrow_down,
+                                color: kDarkTextColor,
+                                size: 18,
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      // Filter icon
                       GestureDetector(
                         onTap: () {
                           CourtFilterBottomSheet.show(
@@ -198,24 +172,32 @@ class _CourtMapViewState extends State<CourtMapView> {
                           );
                         },
                         child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: const BoxDecoration(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
                             color: kWhiteColor,
                             shape: BoxShape.circle,
+                              border: Border.all(color: kBorderColor, width: 1)
                           ),
                           child: Center(
                             child: SvgPicture.asset(
                               Assets.svg.filterLines.path,
-                              colorFilter: const ColorFilter.mode(kDarkTextColor, BlendMode.srcIn),
+                              colorFilter: const ColorFilter.mode(
+                                kDarkTextColor,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // Sport Filter tags
+                  4.heightBox,
+                  Divider(
+                    color: kBorderColor,
+                    thickness: 1,
+                  ),
+                  4.heightBox,
                   SizedBox(
                     height: 38,
                     child: ListView.separated(
@@ -226,20 +208,24 @@ class _CourtMapViewState extends State<CourtMapView> {
                         final sport = SportType.values[index];
                         final isSelected = widget.selectedSport == sport;
                         return GestureDetector(
-                          onTap: () {
-                            widget.onSportSelected(isSelected ? null : sport);
-                          },
+                          onTap: () =>
+                              widget.onSportSelected(isSelected ? null : sport),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: isSelected ? kPrimaryColor : kWhiteColor,
-                              borderRadius: BorderRadius.circular(100),
-                              border: isSelected ? null : Border.all(color: kBorderColor),
+                              borderRadius: BorderRadius.circular(12),
+                              border: isSelected
+                                  ? null
+                                  : Border.all(color: kBorderColor),
                             ),
                             child: Center(
                               child: Text(
                                 sport.label,
-                                style: AppStyles.w500f12inter.copyWith(
+                                style: AppStyles.w400f14inter.copyWith(
                                   color: kDarkTextColor,
                                 ),
                               ),
@@ -253,176 +239,205 @@ class _CourtMapViewState extends State<CourtMapView> {
               ),
             ),
           ),
-
-          // 3. Zoom Controls on the Right
-          Positioned(
-            right: 16,
-            top: MediaQuery.of(context).size.height * 0.35,
-            child: Column(
+          Expanded(
+            child: Stack(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (_zoomLevel < 18) _zoomLevel += 1;
-                    });
-                  },
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: kWhiteColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.add, color: kDarkTextColor),
-                    ),
+                // 1. Real Google Map
+                GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: widget.initialCenter,
+                    zoom: 13,
                   ),
+                  onMapCreated: (controller) => _mapController = controller,
+                  markers: _markers,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                  onTap: (_) {}, // reserved for future "drop pin" support
                 ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (_zoomLevel > 10) _zoomLevel -= 1;
-                    });
-                  },
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: kWhiteColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.remove, color: kDarkTextColor),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Compass navigation pointer
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _mapOffset = Offset.zero;
-                      _zoomLevel = 13.0;
-                    });
-                  },
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: kWhiteColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.navigation, color: Colors.blue, size: 24),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
 
-          // 4. Bottom Horizontal Court Slider Pager
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 32,
-            child: SizedBox(
-              height: 110,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.courts.length,
-                onPageChanged: _onPageChanged,
-                itemBuilder: (context, index) {
-                  final court = widget.courts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      // Navigate to details or click event
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: kWhiteColor,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
+                // 2. Top Float Panel Controls
+
+                // 3. Zoom + locate controls
+                Positioned(
+                  right: 16,
+                  top: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.35,
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () =>
+                            _mapController?.animateCamera(
+                              CameraUpdate.zoomIn(),
+                            ),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: const BoxDecoration(
+                            color: kWhiteColor,
+                            shape: BoxShape.circle,
                           ),
-                        ],
+                          child: const Center(
+                            child: Icon(Icons.add, color: kDarkTextColor),
+                          ),
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          // Court Left Image
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: AppCachedImage(
-                              imageUrl: court.imageUrl,
-                              width: 90,
-                              height: 90,
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () =>
+                            _mapController?.animateCamera(
+                              CameraUpdate.zoomOut(),
+                            ),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: const BoxDecoration(
+                            color: kWhiteColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.remove, color: kDarkTextColor),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () {
+                          _mapController?.animateCamera(
+                            CameraUpdate.newLatLngZoom(
+                              widget.initialCenter,
+                              13,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: const BoxDecoration(
+                            color: kWhiteColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.navigation,
+                              color: Colors.blue,
+                              size: 24,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          // Court Right Info
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 4. Bottom horizontal court pager (unchanged UI)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 32,
+                  child: SizedBox(
+                    height: 110,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: widget.courts.length,
+                      onPageChanged: _onPageChanged,
+                      itemBuilder: (context, index) {
+                        final court = widget.courts[index];
+                        return GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: kWhiteColor,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.15),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
                               children: [
-                                Text(
-                                  court.name,
-                                  style: AppStyles.w600f14inter.copyWith(
-                                    color: kDarkTextColor,
-                                    fontSize: 15,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${court.location} • ${court.distanceMiles} miles',
-                                  style: AppStyles.w400f12inter.copyWith(
-                                    color: kTextColor,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: AppCachedImage(
+                                    imageUrl: court.imageUrl,
+                                    width: 90,
+                                    height: 90,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                // Sports Badges
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: court.sports.map((sport) {
-                                      return Container(
-                                        margin: const EdgeInsets.only(right: 4),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 3,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        court.name,
+                                        style: AppStyles.w600f14inter.copyWith(
+                                          color: kDarkTextColor,
+                                          fontSize: 15,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: kPrimaryColor,
-                                          borderRadius: BorderRadius.circular(100),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        '${court.location} • ${court
+                                            .distanceMiles} miles',
+                                        style: AppStyles.w400f12inter.copyWith(
+                                          color: kTextColor,
                                         ),
-                                        child: Text(
-                                          sport.label,
-                                          style: AppStyles.w500f8inter.copyWith(
-                                            color: kDarkTextColor,
-                                            fontSize: 9,
-                                          ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: court.sports.map((sport) {
+                                            return Container(
+                                              margin: const EdgeInsets.only(
+                                                right: 4,
+                                              ),
+                                              padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal: 6,
+                                                vertical: 3,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: kPrimaryColor,
+                                                borderRadius:
+                                                BorderRadius.circular(100),
+                                              ),
+                                              child: Text(
+                                                sport.label,
+                                                style: AppStyles.w500f8inter
+                                                    .copyWith(
+                                                  color: kDarkTextColor,
+                                                  fontSize: 9,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
                                         ),
-                                      );
-                                    }).toList(),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

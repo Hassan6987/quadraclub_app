@@ -1,17 +1,20 @@
+import 'dart:async';
+
+import 'package:geolocator/geolocator.dart';
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/ui/widgets/mock_keyboard.dart';
+import 'package:quadraclub_app/data/places_service.dart';
+import 'package:quadraclub_app/presentation/home/data/location_result.dart';
 
 class ChangeLocationSheet extends StatefulWidget {
-  final Function(String) onLocationSelected;
+  final Function(LocationResult) onLocationSelected;
 
   const ChangeLocationSheet({
     super.key,
     required this.onLocationSelected,
   });
 
-  static Future<void> show(
-    BuildContext context, {
-    required Function(String) onLocationSelected,
+  static Future<void> show(BuildContext context, {
+    required Function(LocationResult) onLocationSelected,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -32,45 +35,104 @@ class ChangeLocationSheet extends StatefulWidget {
 
 class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
   final TextEditingController _controller = TextEditingController();
-  final List<String> _locations = [
-    'London, UK',
-    'New York, USA',
-    'Los Angeles, USA',
-    'Chicago, USA',
-  ];
-  List<String> _filteredLocations = [];
+  final FocusNode _focusNode = FocusNode();
+  List<PlacePrediction> _predictions = [];
+  bool _isSearching = false;
+  bool _isLocating = false;
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     _controller.addListener(_onSearchChanged);
+    // Auto-focus so the real keyboard pops up immediately.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.removeListener(_onSearchChanged);
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _onSearchChanged() {
-    final query = _controller.text.trim().toLowerCase();
+    final query = _controller.text.trim();
+
+    _debounce?.cancel();
     if (query.isEmpty) {
       setState(() {
-        _filteredLocations = [];
+        _predictions = [];
+        _isSearching = false;
       });
-    } else {
+      return;
+    }
+
+    setState(() => _isSearching = true);
+
+    // Debounce so we don't hammer the Places API on every keystroke.
+    _debounce = Timer(const Duration(milliseconds: 400), () async {
+      final results = await PlacesService.autocomplete(query);
+      if (!mounted) return;
       setState(() {
-        _filteredLocations = _locations
-            .where((loc) => loc.toLowerCase().contains(query))
-            .toList();
+        _predictions = results;
+        _isSearching = false;
       });
+    });
+  }
+
+  Future<void> _selectPrediction(PlacePrediction prediction) async {
+    setState(() => _isSearching = true);
+    final details = await PlacesService.getPlaceDetails(prediction.placeId);
+    if (!mounted) return;
+    setState(() => _isSearching = false);
+
+    if (details != null) {
+      widget.onLocationSelected(details);
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _useCurrentLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        final requested = await Geolocator.requestPermission();
+        if (requested == LocationPermission.denied ||
+            requested == LocationPermission.deniedForever) {
+          setState(() => _isLocating = false);
+          return;
+        }
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      if (!mounted) return;
+      widget.onLocationSelected(
+        LocationResult(
+          address: 'Current location',
+          latitude: position.latitude,
+          longitude: position.longitude,
+        ),
+      );
+      Navigator.pop(context);
+    } catch (_) {
+      // Swallow — user can still type a location manually.
+    } finally {
+      if (mounted) setState(() => _isLocating = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height * 0.9,
       child: Column(
         children: [
@@ -90,16 +152,13 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: const Icon(
-                    Icons.close,
-                    color: kDarkTextColor,
-                    size: 24,
-                  ),
+                      Icons.close, color: kDarkTextColor, size: 24),
                 ),
               ],
             ),
           ),
           const Divider(height: 1, color: kBorderColor),
-          // Search Location field
+          // Search Location field (real keyboard now)
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -116,7 +175,7 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      readOnly: true, // we use mock keyboard
+                      focusNode: _focusNode,
                       decoration: const InputDecoration(
                         hintText: 'Search location',
                         border: InputBorder.none,
@@ -126,85 +185,52 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
                       style: AppStyles.w400f14inter,
                     ),
                   ),
+                  if (_isSearching)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 12),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
-          // Skeletons or list results
+          // Use current location
+          const SizedBox(height: 8),
+          // Predictions list
           Expanded(
             child: _controller.text.isEmpty
-                ? _buildSkeletonRows()
-                : _filteredLocations.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No locations found',
-                          style: AppStyles.w400f14inter.copyWith(color: kTextColor),
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: _filteredLocations.length,
-                        separatorBuilder: (_, __) => const Divider(color: kBorderColor),
-                        itemBuilder: (context, index) {
-                          final loc = _filteredLocations[index];
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(Icons.location_on, color: kTextColor),
-                            title: Text(
-                              loc,
-                              style: AppStyles.w500f14inter.copyWith(
-                                color: kDarkTextColor,
-                              ),
-                            ),
-                            onTap: () {
-                              widget.onLocationSelected(loc);
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ),
-          ),
-          // Mock Keyboard
-          MockKeyboard(
-            controller: _controller,
-            onSend: () {
-              if (_controller.text.isNotEmpty) {
-                widget.onLocationSelected(_controller.text);
-              }
-              Navigator.pop(context);
-            },
+                ? const SizedBox.shrink()
+                : _predictions.isEmpty && !_isSearching
+                ? Center(
+              child: Text(
+                'No locations found',
+                style: AppStyles.w400f14inter.copyWith(color: kTextColor),
+              ),
+            )
+                : ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _predictions.length,
+              separatorBuilder: (_, __) => const Divider(color: kBorderColor),
+              itemBuilder: (context, index) {
+                final prediction = _predictions[index];
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.location_on, color: kTextColor),
+                  title: Text(
+                    prediction.description,
+                    style: AppStyles.w500f14inter.copyWith(
+                        color: kDarkTextColor),
+                  ),
+                  onTap: () => _selectPrediction(prediction),
+                );
+              },
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSkeletonRows() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-          _buildSkeletonLine(width: double.infinity),
-          const SizedBox(height: 12),
-          _buildSkeletonLine(width: 240),
-          const SizedBox(height: 24),
-          _buildSkeletonLine(width: double.infinity),
-          const SizedBox(height: 12),
-          _buildSkeletonLine(width: 200),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSkeletonLine({required double width}) {
-    return Container(
-      height: 16,
-      width: width,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

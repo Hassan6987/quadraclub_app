@@ -1,5 +1,7 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
@@ -16,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _isMapView = false;
   String _currentLocation = 'London, UK';
+  LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
   SportType? _selectedSport;
   DateTime _selectedDate = DateTime(2025, 4, 1);
   String _searchQuery = '';
@@ -84,16 +87,14 @@ class _HomeScreenState extends State<HomeScreen> {
       return CourtMapView(
         courts: _filteredCourts,
         currentLocation: _currentLocation,
-        onLocationChanged: (newLoc) {
+        initialCenter: _currentLatLng,
+        onLocationChanged: (LocationResult location) {
           setState(() {
-            _currentLocation = newLoc;
+            _currentLocation = location.address;
+            _currentLatLng = LatLng(location.latitude, location.longitude);
           });
         },
-        onBackToList: () {
-          setState(() {
-            _isMapView = false;
-          });
-        },
+        onBackToList: () => setState(() => _isMapView = false),
         onApplyFilters: (timeOfDay, city, dist) {
           setState(() {
             _filterTimeOfDay = timeOfDay;
@@ -102,11 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         selectedSport: _selectedSport,
-        onSportSelected: (sport) {
-          setState(() {
-            _selectedSport = sport;
-          });
-        },
+        onSportSelected: (sport) => setState(() => _selectedSport = sport),
       );
     }
 
