@@ -89,6 +89,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             page.subtitle,
                             style: AppStyles.w400f16inter.copyWith(
                               fontSize: 16,
+                              color: kWhiteColor,
                               fontWeight: FontWeight.w500,
                             ),
                             textAlign: TextAlign.center,

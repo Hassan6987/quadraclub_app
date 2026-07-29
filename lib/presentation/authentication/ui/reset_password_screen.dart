@@ -1,7 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/utils/components/custom_auth_app_bar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String email;
@@ -77,6 +77,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAuthAppBar(showBackIcon: true,),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,

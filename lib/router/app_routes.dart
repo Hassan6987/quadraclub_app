@@ -1,4 +1,4 @@
-import 'package:quadraclub_app/presentation/authentication/ui/create_account_screen.dart';
+import 'package:quadraclub_app/presentation/authentication/ui/signup/about_you_screen.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/forget_password.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dart';
 import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
@@ -28,7 +28,7 @@ class AppGenerateRoute {
       case RouteName.signIn:
         return _navigateScreen(const SignInScreen());
       case RouteName.signUp:
-        return _navigateScreen(const SignupScreen());
+        return _navigateScreen(const CreateAccountScreen());
       case RouteName.forgetPassword:
         return _navigateScreen(const ForgetPassword());
         case RouteName.profileCreation:

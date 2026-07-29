@@ -33,8 +33,7 @@ class CommonDateSelectionRow extends StatelessWidget {
           return GestureDetector(
             onTap: () => onDateSelected(date),
             child: Container(
-              width: getProportionateScreenWidth(65),
-              height: getProportionateScreenHeight(65),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 color: isSelected ? kPrimaryColor : kWhiteColor,
                 borderRadius: BorderRadius.circular(14),
@@ -49,15 +48,12 @@ class CommonDateSelectionRow extends StatelessWidget {
                       color: kDarkTextColor,
                     ),
                   ),
-
                   Text(
                     '${date.day}',
                     style: AppStyles.w600f18inter.copyWith(
                       color: kDarkTextColor,
-                      fontSize: 14,
                     ),
                   ),
-
                   Text(
                     month,
                     style: AppStyles.w400f10inter.copyWith(

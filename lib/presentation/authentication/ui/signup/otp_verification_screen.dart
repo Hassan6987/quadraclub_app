@@ -1,29 +1,23 @@
-// otp_verification_screen.dart
-
 import 'dart:async';
 
 import 'package:pinput/pinput.dart';
-import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/reset_password_screen.dart';
-import 'package:quadraclub_app/utils/components/custom_auth_app_bar.dart';
+import 'package:quadraclub_app/presentation/authentication/data/model/signup_data.dart';
+import 'package:quadraclub_app/presentation/authentication/ui/signup/about_you_screen.dart';
+import 'package:quadraclub_app/presentation/authentication/ui/signup/onboarding_app_bar.dart';
+import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
 
 import '/app_exports.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
-  final String email;
-  final bool isReset;
+class OtpVerificationScr extends StatefulWidget {
+  final SignupData data;
 
-  const OtpVerificationScreen({
-    super.key,
-    required this.email,
-    this.isReset = false,
-  });
+  const OtpVerificationScr({super.key, required this.data});
 
   @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+  State<OtpVerificationScr> createState() => _OtpVerificationScrState();
 }
 
-class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+class _OtpVerificationScrState extends State<OtpVerificationScr> {
   final TextEditingController _otpController = TextEditingController();
   bool _isButtonEnabled = false;
 
@@ -65,19 +59,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   void _onVerify() {
     if (_isButtonEnabled) {
-      widget.isReset
-          ? Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ResetPasswordScreen(
-                  email: widget.email,
-                  otp: _otpController.text,
-                ),
-              ),
-            )
-          : context.read<AuthBloc>().add(
-              VerifyCode(email: widget.email, otp: _otpController.text),
-            );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => AboutYouScreen(data: widget.data)),
+      );
     }
   }
 
@@ -93,35 +78,35 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
     );
-
     return Scaffold(
-      appBar: CustomAuthAppBar(showBackIcon: true),
-      bbody: SafeArea(
+      backgroundColor: kWhiteColor,
+      appBar: const OnboardingAppBar(currentStep: 2, totalSteps: 5),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: Dim.PADDING_SIZE_LARGE),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            32.heightBox,
-
+            24.heightBox,
             Text(
               "OTP Verification",
-              style: AppStyles.w500f24inter.copyWith(color: kTextPrimaryColor),
+              style: AppStyles.w600f18inter.copyWith(color: kTextPrimaryColor),
             ),
             8.heightBox,
             Text.rich(
               TextSpan(
                 text: "Enter the 6-digit code sent to you at:\n",
-                style: AppStyles.w400f16inter.copyWith(
+                style: AppStyles.w400f14inter.copyWith(
                   color: kTextSecondary.withValues(alpha: 0.60),
                 ),
                 children: [
                   TextSpan(
-                    text: widget.email,
-                    style: AppStyles.w500f16inter.copyWith(color: kTextSecondary),
+                    text: widget.data.email,
+                    style: AppStyles.w500f14inter.copyWith(color: kBlackColor),
                   ),
                 ],
               ),
             ),
-            40.heightBox,
+            32.heightBox,
             Center(
               child: Pinput(
                 length: 6,
@@ -134,14 +119,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                 ),
               ),
-            ),
-            24.heightBox,
-            CustomActionButton(
-              buttonText: "Verify",
-              onTap: _onVerify,
-              isEnabled: _isButtonEnabled,
-              backgroundColor: kPrimaryColor,
-              buttonTextColor: kDarkTextColor,
             ),
             24.heightBox,
             Align(
@@ -167,13 +144,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         )
                       : GestureDetector(
                           onTap: () {
-                            widget.isReset
-                                ? context.read<AuthBloc>().add(
-                                    ForgotPassword(email: widget.email),
-                                  )
-                                : context.read<AuthBloc>().add(
-                                    RequestCode(email: widget.email),
-                                  );
+                            // context.read<AuthBloc>().add(RequestCode(email: widget.email));
                             _startTimer();
                           },
                           child: Text(
@@ -186,8 +157,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 ],
               ),
             ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF6E0),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                "Didn't receive the code? Check your spam folder or try resending it.",
+                style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
+              ),
+            ),
+            16.heightBox,
+            CustomActionButton(
+              buttonText: "Verify & Continue",
+              onTap: _onVerify,
+              isEnabled: _isButtonEnabled,
+              backgroundColor: kPrimaryColor,
+              buttonTextColor: kBlackColor,
+              width: double.infinity,
+            ),
+            24.heightBox,
           ],
-        ).withPaddingAll(24),
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/onboarding/onboarding_screens.dart';
 import 'package:quadraclub_app/utils/components/safe_area_wrapper.dart';
+
 import 'di/locator.dart';
 
 void main() async {
@@ -71,7 +72,7 @@ class MyApp extends StatelessWidget {
               return const OnboardingScreen();
             }
             if (state.status == AuthStateStatus.success) {
-              return const CustomBottomNavBar();
+              return const CustomBottomNavBar(index: 2,);
             }
             if (state.status == AuthStateStatus.failure ||
                 state.status == AuthStateStatus.unAuthenticated) {

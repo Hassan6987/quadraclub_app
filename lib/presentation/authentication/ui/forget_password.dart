@@ -1,5 +1,5 @@
 import 'package:quadraclub_app/presentation/authentication/ui/otp_verifictaion.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
+import 'package:quadraclub_app/utils/components/custom_auth_app_bar.dart';
 
 import '/app_exports.dart';
 
@@ -54,6 +54,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAuthAppBar(showBackIcon: true,),
       body: SafeArea(
         child: Form(
           key: _formKey,

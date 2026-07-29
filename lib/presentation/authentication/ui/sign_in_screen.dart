@@ -71,7 +71,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      32.heightBox,
+                      50.heightBox,
                       Text(
                         "Sign In",
                         style: AppStyles.w500f24inter.copyWith(
@@ -92,7 +92,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         hintText: "Enter your email",
                         prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
                         keyboardType: TextInputType.emailAddress,
-                        validator: ValidateForm.validateCoachEmail,
+                        validator: ValidateForm.validateEmail,
                         onChanged: (_) => _updateButtonState(),
                       ),
                       12.heightBox,
@@ -145,7 +145,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                             InkWell(
                               onTap: () {
-                                Navigator.pushReplacementNamed(
+                                Navigator.pushNamed(
                                   context,
                                   RouteName.signUp,
                                 );

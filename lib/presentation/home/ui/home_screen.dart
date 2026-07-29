@@ -1,9 +1,8 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/court_model.dart';
-import 'package:quadraclub_app/presentation/home/data/home_dummy_data.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.dart';
-import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
+import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/search_courts_sheet.dart';
 
 
@@ -114,14 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final courtsList = _filteredCourts;
 
     return Scaffold(
-      backgroundColor: kWhiteColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Header Row
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 16, bottom: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -129,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Find courts near you.',
                     style: AppStyles.w600f24inter.copyWith(
                       color: kDarkTextColor,
-                      fontWeight: FontWeight.bold,
+                        fontSize: 22
                     ),
                   ),
                   Row(
@@ -140,17 +139,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.pushNamed(context, RouteName.notifications);
                         },
                         child: Container(
-                          width: 40,
-                          height: 40,
+                          width: 35,
+                          height: 35,
+                          padding: EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: kCardColor,
+                            color: kWhiteColor,
                             shape: BoxShape.circle,
+                            border: Border.all(color: kBorderColor),
                           ),
-                          child: const Icon(
-                            Icons.notifications_none,
-                            color: kOrangeColor,
-                            size: 22,
-                          ),
+                          child: SvgPicture.asset(Assets.svg.notification.path),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -160,17 +157,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.pushNamed(context, RouteName.myChats);
                         },
                         child: Container(
-                          width: 40,
-                          height: 40,
+                          width: 35,
+                          height: 35,
+                          padding: EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: kCardColor,
+                            color: kWhiteColor,
                             shape: BoxShape.circle,
+                            border: Border.all(color: kBorderColor),
                           ),
-                          child: const Icon(
-                            Icons.chat_bubble_outline,
-                            color: kOrangeColor,
-                            size: 20,
-                          ),
+                          child: SvgPicture.asset(Assets.svg.chatIcon.path),
                         ),
                       ),
                     ],
@@ -197,16 +192,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: isSelected ? kPrimaryColor : kCardColor,
-                        borderRadius: BorderRadius.circular(100),
+                        color: isSelected ? kPrimaryColor : kGreyColor,
+                        borderRadius: BorderRadius.circular(12),
                         border: isSelected ? null : Border.all(color: kBorderColor),
                       ),
                       child: Center(
                         child: Text(
                           sport.label,
-                          style: AppStyles.w500f12inter.copyWith(
+                          style: AppStyles.w400f14inter.copyWith(
                             color: kDarkTextColor,
                           ),
                         ),
@@ -216,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 12),
+            12.heightBox,
 
             // 3. Search and Action Row
             Padding(
@@ -239,18 +235,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         height: 44,
                         decoration: BoxDecoration(
-                          color: kCardColor,
+                          color: kWhiteColor,
                           borderRadius: BorderRadius.circular(100),
+                          border: Border.all(color: kBorderColor),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           children: [
-                            const Icon(Icons.search, color: kTextColor, size: 20),
+                            const Icon(
+                                Icons.search, color: kDarkTextColor, size: 20),
                             const SizedBox(width: 8),
                             Text(
                               _searchQuery.isNotEmpty ? _searchQuery : 'Search by name...',
                               style: AppStyles.w400f14inter.copyWith(
-                                color: _searchQuery.isNotEmpty ? kDarkTextColor : kTextColor,
+                                  color: kDarkTextColor
                               ),
                             ),
                           ],
@@ -258,8 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  // Filter Sheet Button
+                  8.widthBox,
                   GestureDetector(
                     onTap: () {
                       CourtFilterBottomSheet.show(
@@ -280,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: kCardColor,
+                        color: kWhiteColor,
                         shape: BoxShape.circle,
                         border: Border.all(color: kBorderColor),
                       ),
@@ -292,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  8.widthBox,
                   // Map View Toggle Button
                   GestureDetector(
                     onTap: () {
@@ -304,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: kCardColor,
+                        color: kWhiteColor,
                         shape: BoxShape.circle,
                         border: Border.all(color: kBorderColor),
                       ),
@@ -316,22 +313,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            12.heightBox,
 
             // 4. Date Selector Row
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: CommonDateSelectionRow(
-                dates: _dates,
-                selectedDate: _selectedDate,
-                onDateSelected: (date) {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                },
-              ),
+            CommonDateSelectionRow(
+              dates: _dates,
+              selectedDate: _selectedDate,
+              onDateSelected: (date) {
+                setState(() {
+                  _selectedDate = date;
+                });
+              },
             ),
-            const SizedBox(height: 8),
+            12.heightBox,
 
             // 5. Scrollable Court Cards List
             Expanded(
