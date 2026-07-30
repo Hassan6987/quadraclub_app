@@ -14,9 +14,6 @@ class Assets {
 class $AssetsPngGen {
   const $AssetsPngGen();
 
-  final AssetGenImage appIconn = const AssetGenImage(
-    'assets/png/app_iconn.png',
-  );
   final AssetGenImage onboardingOne = const AssetGenImage(
     'assets/png/onboarding_one.jpg',
   );
@@ -26,6 +23,9 @@ class $AssetsPngGen {
   final AssetGenImage onboardingTwo = const AssetGenImage(
     'assets/png/onboarding_two.jpg',
   );
+  final AssetGenImage profilePlaceholder = const AssetGenImage(
+    'assets/png/profile_placeholder.png',
+  );
   final AssetGenImage splashLogo = const AssetGenImage(
     'assets/png/splash_logo.png',
   );
@@ -34,32 +34,13 @@ class $AssetsPngGen {
 class $AssetsSvgGen {
   const $AssetsSvgGen();
 
-  final SvgGenImage athelete = const SvgGenImage('assets/svg/Athelete.svg');
-  final SvgGenImage atheleteFill = const SvgGenImage(
-    'assets/svg/Athelete fill.svg',
-  );
   final SvgGenImage deleteIcon = const SvgGenImage('assets/svg/DeleteIcon.svg');
-  final SvgGenImage home = const SvgGenImage('assets/svg/Home.svg');
-  final SvgGenImage homeFill = const SvgGenImage('assets/svg/HomeFill.svg');
   final SvgGenImage logoutIcon = const SvgGenImage('assets/svg/LogoutIcon.svg');
-  final SvgGenImage nfcLinked = const SvgGenImage('assets/svg/NfcLinked.svg');
-  final SvgGenImage nfcUnlinked = const SvgGenImage(
-    'assets/svg/NfcUnlinked.svg',
-  );
-  final SvgGenImage premiumIcon = const SvgGenImage(
-    'assets/svg/PremiumIcon.svg',
-  );
   final SvgGenImage privacyPolicyIcon = const SvgGenImage(
     'assets/svg/PrivacyPolicyIcon.svg',
   );
-  final SvgGenImage profileFill = const SvgGenImage(
-    'assets/svg/ProfileFill.svg',
-  );
   final SvgGenImage successIcon = const SvgGenImage(
     'assets/svg/SuccessIcon.svg',
-  );
-  final SvgGenImage wristbandFill = const SvgGenImage(
-    'assets/svg/WristbandFill.svg',
   );
   final SvgGenImage accontIcon = const SvgGenImage(
     'assets/svg/accont_icon.svg',
@@ -112,12 +93,6 @@ class $AssetsSvgGen {
   final SvgGenImage profile = const SvgGenImage('assets/svg/profile.svg');
   final SvgGenImage redCross = const SvgGenImage('assets/svg/red_cross.svg');
   final SvgGenImage rightHand = const SvgGenImage('assets/svg/right_hand.svg');
-  final SvgGenImage rosterFillIcon = const SvgGenImage(
-    'assets/svg/roster_fill_icon.svg',
-  );
-  final SvgGenImage rosterIcon = const SvgGenImage(
-    'assets/svg/roster_icon.svg',
-  );
   final SvgGenImage shieldIcon = const SvgGenImage(
     'assets/svg/shield_icon.svg',
   );
@@ -137,7 +112,6 @@ class $AssetsSvgGen {
   final SvgGenImage uploadPhoto = const SvgGenImage(
     'assets/svg/upload_photo.svg',
   );
-  final SvgGenImage wristband = const SvgGenImage('assets/svg/wristband.svg');
 }
 
 class $AssetsFontsGen {
@@ -247,9 +221,6 @@ class SvgGenImage {
     bool excludeFromSemantics = false,
     SvgTheme? theme,
     Clip clipBehavior = Clip.hardEdge,
-    Color? color,
-    BlendMode colorBlendMode = BlendMode.srcIn,
-    bool cacheColorFilter = false,
   }) {
     return SvgPicture.asset(
       _assetName,
@@ -266,10 +237,7 @@ class SvgGenImage {
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
       theme: theme,
-      color: color,
-      colorBlendMode: colorBlendMode,
       clipBehavior: clipBehavior,
-      cacheColorFilter: cacheColorFilter,
     );
   }
 

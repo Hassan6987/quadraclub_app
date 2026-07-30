@@ -21,7 +21,7 @@ extension SportTypeExtension on SportType {
 
 class CoachModel {
   final String name;
-  final String avatarAsset; // e.g. 'assets/images/coach_thiago.png'
+  final String avatarAsset;
   final int category;
 
   const CoachModel({

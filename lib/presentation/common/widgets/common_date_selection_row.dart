@@ -21,8 +21,8 @@ class CommonDateSelectionRow extends StatelessWidget {
       height: getProportionateScreenHeight(70),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: 16),
         itemCount: dates.length,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
         separatorBuilder: (_, _) => 8.widthBox,
         itemBuilder: (context, index) {
           final date = dates[index];
@@ -48,12 +48,14 @@ class CommonDateSelectionRow extends StatelessWidget {
                       color: kDarkTextColor,
                     ),
                   ),
+                  4.heightBox,
                   Text(
                     '${date.day}',
                     style: AppStyles.w600f18inter.copyWith(
                       color: kDarkTextColor,
                     ),
                   ),
+                  4.heightBox,
                   Text(
                     month,
                     style: AppStyles.w400f10inter.copyWith(

@@ -2,6 +2,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/court_model.dart';
 import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
@@ -360,7 +361,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         return CourtCardWidget(
                           court: courtsList[index],
                           onTap: () {
-                            // Navigate to detail screen if required
+                            Navigator.push(context, MaterialPageRoute(builder: (
+                                _) =>
+                                CourtDetailScreen(court: courtsList[index],)));
                           },
                         );
                       },
