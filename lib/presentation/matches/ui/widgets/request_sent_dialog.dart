@@ -6,9 +6,7 @@ class RequestSentDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         decoration: BoxDecoration(
@@ -19,39 +17,68 @@ class RequestSentDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Success icon
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: kGreenColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check,
-                size: 48,
-                color: kGreenColor,
+            Center(
+              child: Container(
+                width: 84,
+                height: 84,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: kPrimaryColor, width: 10),
+                ),
+                child: const Icon(Icons.check, color: kBlackColor, size: 40),
               ),
             ),
-            24.heightBox,
-            
+            20.heightBox,
+
             // Title
             Text(
-              'Request Sent!',
-              style: AppStyles.w600f24inter.copyWith(color: kDarkTextColor),
+              'Request Sent',
+              style: AppStyles.w600f18inter.copyWith(
+                color: kDarkTextColor,
+                fontSize: 20,
+              ),
             ),
-            12.heightBox,
-            
+            8.heightBox,
+
             // Message
             Text(
-              'Your request to join the match has been sent successfully. You will be notified once the admin responds.',
+              'Your request was sent to the match owner. We\'ll notify you once it\'s approved.',
               textAlign: TextAlign.center,
-              style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+              style: AppStyles.w500f14inter.copyWith(color: kTextColor),
+            ),
+            8.heightBox,
+            Text(
+              'If you’re not accepted, you will receive your money back automatically',
+              textAlign: TextAlign.center,
+              style: AppStyles.w500f14inter.copyWith(color: kTextColor),
+            ),
+            8.heightBox,
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text:
+                        'View your pending, accepted, and past matches anytime in',
+                    style: AppStyles.w500f14inter.copyWith(color: kTextColor),
+                  ),
+                  TextSpan(
+                    text: ' Agenda.',
+                    style: AppStyles.w500f14inter.copyWith(
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
             24.heightBox,
-            
+
             // OK button
             CustomActionButton(
-              buttonText: "OK",
+              buttonText: "Close",
+              backgroundColor: kWhiteColor,
+              borderColor: kBorderColor,
+              height: 48,
               onTap: () => Navigator.pop(context),
             ),
           ],

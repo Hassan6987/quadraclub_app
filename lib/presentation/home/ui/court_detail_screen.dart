@@ -7,7 +7,6 @@ import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_shee
 class _TimeSlot {
   final String time;
   final bool available;
-
   const _TimeSlot(this.time, this.available);
 }
 

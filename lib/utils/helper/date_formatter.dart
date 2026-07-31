@@ -1,4 +1,6 @@
 // Helper method to get formatted date string
+import 'package:intl/intl.dart';
+
 String getFormattedDate(DateTime viewedDate) {
   final now = DateTime.now();
   final difference = now.difference(viewedDate);
@@ -19,4 +21,12 @@ String getFormattedDate(DateTime viewedDate) {
     final years = (difference.inDays / 365).floor();
     return years == 1 ? '1 year ago' : '$years years ago';
   }
+}
+
+String getFormatDateMonth(DateTime date) {
+  return DateFormat('d MMM').format(date);
+}
+
+String getFormatDateMonthYear(DateTime date) {
+  return DateFormat('d MMM, yyyy').format(date);
 }

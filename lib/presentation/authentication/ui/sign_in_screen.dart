@@ -100,6 +100,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         label: "Password",
                         controller: _passwordController,
                         hintText: "Enter your password",
+                        obscureText: true,
                         prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
                         keyboardType: TextInputType.emailAddress,
                         validator: ValidateForm.passwordValidator,

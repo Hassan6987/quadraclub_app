@@ -5,25 +5,25 @@ final List<PlayerModel> dummyPlayers = [
   const PlayerModel(
     name: 'Alex',
     skillLevel: 'Beginner',
-    avatarAsset: 'assets/images/p1.png',
+    avatarAsset: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSURLhVMWxoKXtHxYzb0Xk4EOaWr8kU0s4Iu1X8POxCgH-XxizY0vwrkt50&s=10',
     isAvailable: false,
   ),
   const PlayerModel(
     name: 'John',
     skillLevel: 'Beginner',
-    avatarAsset: 'assets/images/p2.png',
+    avatarAsset: 'https://static.wikia.nocookie.net/villains/images/2/2b/Cmtspb.jpg/revision/latest?cb=20210513195220',
     isAvailable: false,
   ),
   const PlayerModel(
     name: 'Marco',
     skillLevel: 'Beginner',
-    avatarAsset: 'assets/images/p3.png',
+    avatarAsset: 'https://static.wikia.nocookie.net/base-breaking-character/images/3/32/Jon_Snow.webp/revision/latest?cb=20250712004851',
     isAvailable: false,
   ),
   const PlayerModel(
     name: 'Lucas',
     skillLevel: 'Beginner',
-    avatarAsset: 'assets/images/p1.png',
+    avatarAsset: 'https://i.pinimg.com/736x/6f/e2/f2/6fe2f2bb06bf5d447557c858c126889b.jpg',
     isAvailable: false,
   ),
 ];
@@ -51,7 +51,7 @@ final List<MatchModel> dummyMatches = [
       const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Left'),
       const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
     ],
-    imageAsset: 'assets/images/tennis_court_1.png',
+    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Today - Pedal
@@ -76,7 +76,7 @@ final List<MatchModel> dummyMatches = [
       dummyPlayers[0],
       const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
     ],
-    imageAsset: 'assets/images/pedal_court_1.png',
+    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Tomorrow - Pickleball
@@ -101,7 +101,7 @@ final List<MatchModel> dummyMatches = [
       const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Left'),
       const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
     ],
-    imageAsset: 'assets/images/pickleball_court_1.png',
+    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Apr 9 - Tennis (Full)
@@ -126,7 +126,7 @@ final List<MatchModel> dummyMatches = [
       dummyPlayers[2],
       dummyPlayers[3],
     ],
-    imageAsset: 'assets/images/tennis_court_2.png',
+    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Apr 9 - Beach Tennis

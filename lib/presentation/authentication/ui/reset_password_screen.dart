@@ -60,6 +60,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (_isButtonEnabled) {
       if (_formKey.currentState!.validate()) {
        context.showToast("Password Changed Successfully");
+       Navigator.popUntil(context, (route) => route.isFirst);
       }
     }
   }

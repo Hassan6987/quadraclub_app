@@ -83,11 +83,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           onTap: () => Navigator.pop(context),
           child: Container(
             margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: kBorderColor),
+            decoration: BoxDecoration(shape: BoxShape.circle,
+                border: Border.all(color: kBorderColor)),
+            child: Icon(
+              Icons.arrow_back,
+              size: 24,
+              color: kDarkTextColor,
             ),
-            child: Icon(Icons.arrow_back, size: 24, color: kDarkTextColor),
           ),
         ),
         title: Text(
@@ -114,17 +116,15 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     decoration: BoxDecoration(
                       color: kWhiteColor,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: kBorderF0),
+                        border: Border.all(color: kBorderF0)
                     ),
                     child: Row(
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: AppCachedImage(
-                            imageUrl: widget.court.imageUrl,
-                            width: 95,
-                            height: 95,
-                          ),
+                          child: AppCachedImage(imageUrl: widget.court.imageUrl,
+                              width: 95,
+                              height: 95),
                         ),
                         12.widthBox,
                         Expanded(
@@ -134,20 +134,17 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               Text(
                                 widget.court.name,
                                 style: AppStyles.w600f16inter.copyWith(
-                                  color: kDarkTextColor,
-                                ),
+                                    color: kDarkTextColor),
                               ),
                               Text(
                                 '${widget.court.location} • ${widget.court.distanceMiles} miles',
                                 style: AppStyles.w400f14inter.copyWith(
-                                  color: kTextColor,
-                                ),
+                                    color: kTextColor),
                               ),
                               Text(
                                 '${widget.dateLabel} | ${widget.timeLabel} | ${widget.blockLabel}',
                                 style: AppStyles.w500f12inter.copyWith(
-                                  color: kLightGreenColor,
-                                ),
+                                    color: kLightGreenColor),
                               ),
                             ],
                           ),
@@ -157,10 +154,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                   ),
                   20.heightBox,
 
-                  Text(
-                    'MATCH TYPE',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
-                  ),
+                  Text('MATCH TYPE', style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor)),
                   8.heightBox,
                   Row(
                     children: MatchType.values.map((type) {
@@ -173,22 +168,16 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             decoration: BoxDecoration(
                               color: isSelected ? kPrimaryColor : kWhiteColor,
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(
-                                  type == MatchType.open ? 40 : 0,
-                                ),
-                                bottomLeft: Radius.circular(
-                                  type == MatchType.open ? 40 : 0,
-                                ),
-                                topRight: Radius.circular(
-                                  type == MatchType.open ? 0 : 40,
-                                ),
-                                bottomRight: Radius.circular(
-                                  type == MatchType.open ? 0 : 40,
-                                ),
-                              ),
-                              border: isSelected
-                                  ? null
-                                  : Border.all(color: kBorderColor),
+                                  topLeft: Radius.circular(
+                                      type == MatchType.open ? 40 : 0),
+                                  bottomLeft: Radius.circular(
+                                      type == MatchType.open ? 40 : 0),
+                                  topRight: Radius.circular(
+                                      type == MatchType.open ? 0 : 40),
+                                  bottomRight: Radius.circular(
+                                      type == MatchType.open ? 0 : 40)),
+                              border: isSelected ? null : Border.all(
+                                  color: kBorderColor),
                             ),
                             child: Column(
                               children: [
@@ -206,19 +195,16 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     Text(
                                       type.label,
                                       style: AppStyles.w400f14inter.copyWith(
-                                        color: kDarkTextColor,
-                                        fontWeight: isSelected
-                                            ? FontWeight.w500
-                                            : FontWeight.w400,
-                                      ),
+                                          color: kDarkTextColor,
+                                          fontWeight: isSelected ? FontWeight
+                                              .w500 : FontWeight.w400),
                                     ),
                                   ],
                                 ),
                                 Text(
                                   type.description,
                                   style: AppStyles.w400f10inter.copyWith(
-                                    color: kDarkTextColor,
-                                  ),
+                                      color: kDarkTextColor),
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -229,10 +215,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     }).toList(),
                   ),
                   20.heightBox,
-                  Text(
-                    'FORMAT',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
-                  ),
+                  Text('FORMAT', style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor)),
                   8.heightBox,
                   Row(
                     children: BookingFormat.values.map((format) {
@@ -245,30 +229,23 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             decoration: BoxDecoration(
                               color: isSelected ? kPrimaryColor : kWhiteColor,
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(
-                                  format == BookingFormat.single ? 20 : 0,
-                                ),
-                                bottomLeft: Radius.circular(
-                                  format == BookingFormat.single ? 20 : 0,
-                                ),
-                                topRight: Radius.circular(
-                                  format == BookingFormat.single ? 0 : 20,
-                                ),
-                                bottomRight: Radius.circular(
-                                  format == BookingFormat.single ? 0 : 20,
-                                ),
-                              ),
-                              border: isSelected
-                                  ? null
-                                  : Border.all(color: kBorderColor),
+                                  topLeft: Radius.circular(
+                                      format == BookingFormat.single ? 20 : 0),
+                                  bottomLeft: Radius.circular(
+                                      format == BookingFormat.single ? 20 : 0),
+                                  topRight: Radius.circular(
+                                      format == BookingFormat.single ? 0 : 20),
+                                  bottomRight: Radius.circular(
+                                      format == BookingFormat.single ? 0 : 20)),
+                              border: isSelected ? null : Border.all(
+                                  color: kBorderColor),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  format == BookingFormat.double_
-                                      ? Icons.people_outline
-                                      : Icons.person_outline,
+                                  format == BookingFormat.double_ ? Icons
+                                      .people_outline : Icons.person_outline,
                                   size: 18,
                                   color: kDarkTextColor,
                                 ),
@@ -276,11 +253,10 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                 Text(
                                   format.label,
                                   style: AppStyles.w400f14inter.copyWith(
-                                    color: kDarkTextColor,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w500
-                                        : FontWeight.w400,
-                                  ),
+                                      color: kDarkTextColor,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w500
+                                          : FontWeight.w400),
                                 ),
                               ],
                             ),
@@ -291,10 +267,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                   ),
                   20.heightBox,
 
-                  Text(
-                    'INVITE PLAYERS',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
-                  ),
+                  Text('INVITE PLAYERS', style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor)),
                   8.heightBox,
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -312,21 +286,17 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: kBorderColor),
+                                border: Border.all(color: kBorderColor)
                             ),
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons.search,
-                                  color: kTextColor,
-                                  size: 18,
-                                ),
+                                    Icons.search, color: kTextColor, size: 18),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Search players...',
                                   style: AppStyles.w400f14inter.copyWith(
-                                    color: kTextColor,
-                                  ),
+                                      color: kTextColor),
                                 ),
                               ],
                             ),
@@ -340,9 +310,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             children: _invitedPlayers.map((player) {
                               return Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 6,
-                                ),
+                                    horizontal: 8, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: kPrimaryColor,
                                   borderRadius: BorderRadius.circular(100),
@@ -350,29 +318,22 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 10,
-                                      backgroundImage: NetworkImage(
-                                        player.avatarUrl,
-                                      ),
-                                    ),
+                                    CircleAvatar(radius: 10,
+                                        backgroundImage: NetworkImage(
+                                            player.avatarUrl)),
                                     const SizedBox(width: 6),
                                     Text(
                                       player.name,
                                       style: AppStyles.w500f12inter.copyWith(
-                                        color: kDarkTextColor,
-                                      ),
+                                          color: kDarkTextColor),
                                     ),
                                     const SizedBox(width: 6),
                                     GestureDetector(
-                                      onTap: () => setState(
-                                        () => _invitedPlayers.remove(player),
-                                      ),
-                                      child: const Icon(
-                                        Icons.close,
-                                        size: 14,
-                                        color: kDarkTextColor,
-                                      ),
+                                      onTap: () =>
+                                          setState(() =>
+                                              _invitedPlayers.remove(player)),
+                                      child: const Icon(Icons.close, size: 14,
+                                          color: kDarkTextColor),
                                     ),
                                   ],
                                 ),
@@ -385,10 +346,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                   ),
                   20.heightBox,
 
-                  Text(
-                    'PAYMENT',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
-                  ),
+                  Text('PAYMENT', style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor)),
                   8.heightBox,
                   ..._availablePaymentOptions.map((option) {
                     final isSelected = _paymentOption == option;
@@ -397,13 +356,10 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
+                            horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? kPrimaryColor.withValues(alpha: 0.15)
-                              : kWhiteColor,
+                          color: isSelected ? kPrimaryColor.withValues(
+                              alpha: 0.15) : kWhiteColor,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: kWhiteColor, width: 4),
                         ),
@@ -415,10 +371,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               decoration: BoxDecoration(
                                 color: kWhiteColor,
                                 borderRadius: BorderRadius.circular(100),
-                                border: Border.all(
-                                  color: kPrimaryColor,
-                                  width: isSelected ? 6 : 3,
-                                ),
+                                  border: Border.all(color: kPrimaryColor,
+                                      width: isSelected ? 6 : 3)
                               ),
                             ),
                             12.widthBox,
@@ -429,15 +383,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                   Text(
                                     option.title,
                                     style: AppStyles.w500f14inter.copyWith(
-                                      color: kBlack12Color,
-                                    ),
+                                        color: kBlack12Color),
                                   ),
                                   2.heightBox,
                                   Text(
                                     option.description,
                                     style: AppStyles.w400f12inter.copyWith(
-                                      color: kBlack12Color,
-                                    ),
+                                        color: kBlack12Color),
                                   ),
                                 ],
                               ),
@@ -455,11 +407,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           // Sticky bottom button
           Padding(
             padding: const EdgeInsets.all(16),
-            child: CustomActionButton(
-              buttonText:
-                  'Book - ${formatPrice(widget.court.demoPricePerBooking)}',
-              onTap: _onBookTap,
-            ),
+            child: CustomActionButton(buttonText: 'Book - ${formatPrice(
+                widget.court.demoPricePerBooking)}', onTap: _onBookTap),
           ),
         ],
       ),

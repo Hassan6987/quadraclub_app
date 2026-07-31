@@ -23,24 +23,22 @@ class GameInfoCard extends StatelessWidget {
       ),
     );
   }
-  Widget buildInfoRow({required String label,required String value}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: AppStyles.w400f14inter.copyWith(
-            color: kDarkTextColor.withValues(alpha: 0.70),
-          ),
-        ),
-        Text(
-          value,
-          style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
-        ),
-      ],
-    );
-  }
-
 }
 
-
+Widget buildInfoRow({required String label, required String value}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(
+        label,
+        style: AppStyles.w400f14inter.copyWith(
+          color: kDarkTextColor.withValues(alpha: 0.70),
+        ),
+      ),
+      Text(
+        value,
+        style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+      ),
+    ],
+  );
+}

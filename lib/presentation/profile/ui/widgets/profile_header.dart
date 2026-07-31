@@ -3,8 +3,11 @@ import '../../../../app_exports.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserProfile profile;
+  final String? imageUrl;
+  final String? name;
 
-  const ProfileHeader({super.key, required this.profile});
+  const ProfileHeader(
+      {super.key, required this.profile, this.imageUrl, this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +15,7 @@ class ProfileHeader extends StatelessWidget {
       spacing: getProportionateScreenWidth(12),
       children: [
         AppCachedImage(
+          imageUrl: imageUrl ?? profile.avatarUrl,
           borderRadius: BorderRadius.circular(200),
           width: 80,
           height: 80,
@@ -21,7 +25,7 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                profile.name,
+                name ?? profile.name,
                 style: AppStyles.w600f18inter.copyWith(color: kDarkTextColor),
               ),
               4.heightBox,

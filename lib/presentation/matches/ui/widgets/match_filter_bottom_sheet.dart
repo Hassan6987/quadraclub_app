@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
+
 import '/app_exports.dart';
 
 enum MatchTimeOfDay { morning, afternoon, night }
@@ -54,14 +55,15 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
               ),
             ],
           ).paddingOnly(top: 5, bottom: 21, left: 20, right: 20),
-          CommonDivider().withPaddingSymmetric(0, 20),
+          CommonDivider(),
+          20.heightBox,
           Flexible(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _sectionLabel(label: 'Time of Day'),
-                  6.heightBox,
+                  8.heightBox,
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
@@ -85,9 +87,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       ),
                     ],
                   ),
-                  24.heightBox,
+                  16.heightBox,
                   _sectionLabel(label: 'Level'),
-                  6.heightBox,
+                  8.heightBox,
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
@@ -103,9 +105,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       ),
                     ],
                   ),
-                  24.heightBox,
+                  16.heightBox,
                   _sectionLabel(label: 'Format'),
-                  6.heightBox,
+                  8.heightBox,
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
@@ -121,15 +123,15 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       ),
                     ],
                   ),
-                  24.heightBox,
+                  16.heightBox,
                   _sectionLabel(label: 'City'),
-                  6.heightBox,
+                  8.heightBox,
                   CustomTextField(
                     controller: _searchController,
                     hintText: 'Search...',
                     borderRadius: 999,
                   ),
-                  6.heightBox,
+                  8.heightBox,
                   IntrinsicHeight(
                     child: Row(
                       spacing: getProportionateScreenHeight(6),

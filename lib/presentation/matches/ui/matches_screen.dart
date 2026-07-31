@@ -1,6 +1,11 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
+import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
+import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/matches/data/dummy_match_data.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/create_match_dialog.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_join_bottom_sheet.dart';
@@ -14,10 +19,17 @@ class MatchesScreen extends StatefulWidget {
 }
 
 class _MatchesScreenState extends State<MatchesScreen> {
+  bool _isMapView = false;
+  String _currentLocation = 'London, UK';
+  LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
   SportType? _selectedSport;
   DateTime _selectedDate = DateTime(2025, 4, 1);
   final TextEditingController _searchController = TextEditingController();
   final String _searchQuery = '';
+
+  String? _filterTimeOfDay;
+  String? _filterCity;
+  double _filterDistance = 25.0;
 
   List<DateTime> get _dates =>
       List.generate(7, (i) => DateTime(2025, 4, 1).add(Duration(days: i)));
@@ -59,55 +71,34 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isMapView) {
+      return CourtMapView(
+        courts: dummyCourts,
+        currentLocation: _currentLocation,
+        initialCenter: _currentLatLng,
+        onLocationChanged: (LocationResult location) {
+          setState(() {
+            _currentLocation = location.address;
+            _currentLatLng = LatLng(location.latitude, location.longitude);
+          });
+        },
+        onBackToList: () => setState(() => _isMapView = false),
+        onApplyFilters: (timeOfDay, city, dist) {
+          setState(() {
+            _filterTimeOfDay = timeOfDay;
+            _filterCity = city;
+            _filterDistance = dist;
+          });
+        },
+        selectedSport: _selectedSport,
+        onSportSelected: (sport) => setState(() => _selectedSport = sport),
+      );
+    }
+
     final grouped = _groupedMatches;
 
     return Scaffold(
       backgroundColor: kCardColor,
-      appBar: AppBar(
-        backgroundColor: kCardColor,
-        elevation: 0,
-        title: Text(
-          "Join open matches.",
-          style: AppStyles.w600f24inter.copyWith(
-            color: kDarkTextColor,
-            fontSize: 22,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: SvgPicture.asset(
-              Assets.svg.calendarBlank.path,
-              height: 24,
-              width: 24,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Stack(
-              children: [
-                SvgPicture.asset(
-                  Assets.svg.notification.path,
-                  height: 24,
-                  width: 24,
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: kRedColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -118,6 +109,65 @@ class _MatchesScreenState extends State<MatchesScreen> {
             ),
             child: Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Open Matches.',
+                        style: AppStyles.w600f24inter.copyWith(
+                          color: kDarkTextColor,
+                          fontSize: 22,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          // Notification Bell Button
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                RouteName.notifications,
+                              );
+                            },
+                            child: Container(
+                              width: 35,
+                              height: 35,
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: kWhiteColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: kBorderColor),
+                              ),
+                              child: SvgPicture.asset(
+                                Assets.svg.notification.path,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Chat Button
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, RouteName.myChats);
+                            },
+                            child: Container(
+                              width: 35,
+                              height: 35,
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: kWhiteColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: kBorderColor),
+                              ),
+                              child: SvgPicture.asset(Assets.svg.chatIcon.path),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
                 SizedBox(
                   height: 38,
                   child: ListView(
@@ -149,36 +199,52 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         controller: _searchController,
                         hintText: "Search...",
                         borderRadius: 100,
+                        hintStyle: AppStyles.w400f14inter,
                       ),
                     ),
                     8.widthBox,
                     GestureDetector(
                       onTap: () => MatchFilterBottomSheet.show(context),
                       child: Container(
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
                           color: kWhiteColor,
                           shape: BoxShape.circle,
                           border: Border.all(color: kBorderColor),
                         ),
-                        child: SvgPicture.asset(
-                          Assets.svg.filterLines.path,
-                        ).withPaddingAll(8),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            Assets.svg.filterLines.path,
+                            colorFilter: const ColorFilter.mode(
+                              kDarkTextColor,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     8.widthBox,
                     GestureDetector(
                       onTap: () {
-                        // TODO: Show map view
+                        setState(() {
+                          _isMapView = true;
+                        });
                       },
                       child: Container(
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
                           color: kWhiteColor,
                           shape: BoxShape.circle,
                           border: Border.all(color: kBorderColor),
                         ),
-                        child: SvgPicture.asset(
-                          Assets.svg.mapMarker.path,
-                        ).withPaddingAll(8),
+                        child: const Center(
+                          child: Icon(
+                            Icons.map_outlined,
+                            color: kDarkTextColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -187,8 +253,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 CommonDateSelectionRow(
                   dates: _dates,
                   selectedDate: _selectedDate,
-                  onDateSelected: (d) => setState(() => _selectedDate = d),
-                ).paddingOnly(left: 16),
+                  onDateSelected: (date) {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                  },
+                ),
                 16.heightBox,
               ],
             ),
@@ -219,19 +289,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
         ],
       ).withPaddingSymmetric(0, 12),
       floatingActionButton: Container(
-        decoration: BoxDecoration(
-          color: kBlackColor,
-          shape: BoxShape.circle,
-        ),
+        margin: EdgeInsets.only(bottom: 5),
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(color: kBlackColor, shape: BoxShape.circle),
         child: GestureDetector(
           onTap: () {
-            // TODO: Create new match
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => CreateMatchDialog(),
+            );
           },
-          child: Icon(
-            Icons.add,
-            color: kWhiteColor,
-            size: 32,
-          ),
+          child: Icon(Icons.add, color: kWhiteColor, size: 26),
         ),
       ),
     );

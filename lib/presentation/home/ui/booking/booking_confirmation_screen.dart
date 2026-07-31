@@ -39,10 +39,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                       border: Border.all(color: kBorderColor),
                     ),
                     child: const Icon(
-                      Icons.close,
-                      color: kDarkTextColor,
-                      size: 20,
-                    ),
+                        Icons.close, color: kDarkTextColor, size: 20),
                   ),
                 ),
               ),
@@ -63,9 +60,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 child: Text(
                   'Booking Confirmed!',
                   style: AppStyles.w600f18inter.copyWith(
-                    color: kDarkTextColor,
-                    fontSize: 20,
-                  ),
+                      color: kDarkTextColor, fontSize: 20),
                 ),
               ),
               8.heightBox,
@@ -81,7 +76,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: kBorderF0),
+                    border: Border.all(color: kBorderF0)
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,21 +93,18 @@ class BookingConfirmationScreen extends StatelessWidget {
                     Text(
                       '$dateLabel | $timeLabel | $blockLabel',
                       style: AppStyles.w500f12inter.copyWith(
-                        color: kLightGreenColor,
-                      ),
+                          color: kLightGreenColor),
                     ).withPaddingSymmetric(10, 0),
                     4.heightBox,
                     Text(
                       court.name,
                       style: AppStyles.w600f16inter.copyWith(
-                        color: kDarkTextColor,
-                      ),
+                          color: kDarkTextColor),
                     ).withPaddingSymmetric(10, 0),
                     Text(
                       '${court.location} • ${court.distanceMiles} miles',
                       style: AppStyles.w400f14inter.copyWith(
-                        color: kGreyTextColor,
-                      ),
+                          color: kGreyTextColor),
                     ).withPaddingSymmetric(10, 0),
                     10.heightBox,
                   ],

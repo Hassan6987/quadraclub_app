@@ -1,5 +1,6 @@
 // lib/presentation/booking/ui/payment_method_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/authentication/ui/signup/confirmation_screen.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/court_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
@@ -32,7 +33,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   bool _agreedToTerms = false;
 
   static const double _serviceFee = 2.0;
-
   double get _total => widget.amount + _serviceFee;
 
   @override
@@ -55,42 +55,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           timeLabel: widget.timeLabel,
           blockLabel: widget.blockLabel,
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String hint, {
-    IconData? icon,
-  }) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: kWhiteColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: kBorderColor),
-      ),
-      child: Row(
-        children: [
-          if (icon != null) ...[
-            Icon(icon, color: kTextColor, size: 18),
-            const SizedBox(width: 8),
-          ],
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: AppStyles.w400f14inter.copyWith(color: kTextColor),
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              style: AppStyles.w400f14inter,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -194,13 +158,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                     ),
                     child: Column(
                       children: [
-                        _buildTextField(
+                        buildTextField(
                           _cardholderController,
                           'Cardholder name',
                           icon: Icons.person_outline,
                         ),
                         10.heightBox,
-                        _buildTextField(
+                        buildTextField(
                           _cardNumberController,
                           'Card number',
                           icon: Icons.credit_card,
@@ -209,15 +173,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: _buildTextField(
-                                _expiryController,
+                              child: buildTextField(_expiryController,
                                 'MM/YY',
                               ),
                             ),
                             10.widthBox,
-                            Expanded(
-                              child: _buildTextField(_cvvController, 'CVV'),
-                            ),
+                            Expanded(hild: buildTextField(_cvvController, 'CVV'),
+                            )),
                           ],
                         ),
                       ],
@@ -345,13 +307,47 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: CustomActionButton(
-              buttonText: "Pay Now",
-              isEnabled: _agreedToTerms,
-              onTap: _onPayNow,
-            ),
+                buttonText: "Pay Now",
+                isEnabled: _agreedToTerms,
+                onTap: _onPayNow),
           ),
         ],
       ),
     );
   }
+}
+
+Widget buildTextField(TextEditingController controller,
+    String hint, {
+      IconData? icon,
+    }) {
+  return Container(
+    height: 48,
+    padding: const EdgeInsets.symmetric(horizontal: 14),
+    decoration: BoxDecoration(
+      color: kWhiteColor,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: kBorderColor),
+    ),
+    child: Row(
+      children: [
+        if (icon != null) ...[
+          Icon(icon, color: kTextColor, size: 18),
+          const SizedBox(width: 8),
+        ],
+        Expanded(
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: AppStyles.w400f14inter.copyWith(color: kTextColor),
+              border: InputBorder.none,
+              isDense: true,
+            ),
+            style: AppStyles.w400f14inter,
+          ),
+        ),
+      ],
+    ),
+  );
 }

@@ -8,24 +8,24 @@ class SportBadge extends StatelessWidget {
   Color get _color {
     switch (sport) {
       case SportType.tennis:
-        return kBlueF1;
+        return kOrangeColor;
       case SportType.pickleball:
         return kDarkGreenColor;
       case SportType.beachTennis:
-        return kOrangeColor;
+        return kDarkGreenColor;
       case SportType.pedal:
-        return kRedColor;
+        return kOrangeColor;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(6),
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: _color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _color),
+        border: Border.all(color: _color, width: 0.5),
       ),
       child: Text(
         sport.label,

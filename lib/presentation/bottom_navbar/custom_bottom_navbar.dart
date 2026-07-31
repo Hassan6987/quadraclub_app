@@ -33,7 +33,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       ClassesScreen(),
       MatchesScreen(),
       const HomeScreen(),
-AgendaScreen(),
+      AgendaScreen(),
       ProfileScreen(),
     ];
     final labels = ["Classes", "Matches", "Courts", "Agenda", "Profile"];
@@ -54,7 +54,7 @@ AgendaScreen(),
             body: screens[index],
             bottomNavigationBar: Container(
               height: 75,
-              decoration: BoxDecoration(color: kCardColor),
+              decoration: BoxDecoration(color: kWhiteColor),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(icons.length, (i) {

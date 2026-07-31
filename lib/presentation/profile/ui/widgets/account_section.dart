@@ -58,26 +58,35 @@ class AccountSection extends StatelessWidget {
             ).withPaddingAll(16),
           ),
           Divider(color: kDividerColor),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: kRedColor.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(8),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                RouteName.signIn,
+                (_) => false,
+              );
+            },
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kRedColor.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SvgPicture.asset(
+                    Assets.svg.logoutIcon.path,
+                    colorFilter: ColorFilter.mode(kRedColor, BlendMode.srcIn),
+                  ),
                 ),
-                child: SvgPicture.asset(
-                  Assets.svg.logoutIcon.path,
-                  colorFilter: ColorFilter.mode(kRedColor, BlendMode.srcIn),
+                8.widthBox,
+                Text(
+                  'Logout',
+                  style: AppStyles.w500f14inter.copyWith(color: kRedColor),
                 ),
-              ),
-              8.widthBox,
-              Text(
-                'Logout',
-                style: AppStyles.w500f14inter.copyWith(color: kRedColor),
-              ),
-            ],
-          ).withPaddingAll(16),
+              ],
+            ).withPaddingAll(16),
+          ),
         ],
       ),
     );

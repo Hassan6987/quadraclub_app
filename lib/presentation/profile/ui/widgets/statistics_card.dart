@@ -64,13 +64,13 @@ class StatisticsCard extends StatelessWidget {
                   icon: Assets.svg.personsIcon.path,
                   value: '${stats.matches}',
                   label: 'Matches',
-                  color: kDarkTextColor,
+                  color: kBlackColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.trophyIcon.path,
                   value: '${stats.victories}',
                   label: 'Victories',
-                  color: kGreyColor,
+                  color: kLightGreenColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.redCross.path,
@@ -82,7 +82,7 @@ class StatisticsCard extends StatelessWidget {
                   icon: Assets.svg.timerIcon.path,
                   value: '${stats.hours} h',
                   label: 'Hours',
-                  color: kDarkTextColor,
+                  color: kBlackColor,
                 ),
               ],
             ),
@@ -117,10 +117,13 @@ class _StatItem extends StatelessWidget {
         ),
         child: Column(
           children: [
-            SvgPicture.asset(icon),
+            SvgPicture.asset(
+              icon,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
             Text(
               value,
-              style: AppStyles.w500f16inter.copyWith(color: color),
+              style: AppStyles.w600f16inter.copyWith(color: color),
             ).withPaddingSymmetric(0, 2),
 
             Text(
@@ -131,7 +134,7 @@ class _StatItem extends StatelessWidget {
               ),
             ),
           ],
-        ).withPaddingSymmetric(12, 8),
+        ).withPaddingAll(8),
       ),
     );
   }

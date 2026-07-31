@@ -170,7 +170,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               decoration: BoxDecoration(
                 color: kWhiteColor,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: kBorderF0),
+                  border: Border.all(color: kBorderF0)
               ),
               child: Row(
                 children: [
@@ -216,8 +216,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             Text(
               'BLOCK',
               style: AppStyles.w500f12inter.copyWith(
-                color: kDarkTextColor.withValues(alpha: 0.7),
-              ),
+                  color: kDarkTextColor.withValues(alpha: 0.7)),
             ).withPaddingSymmetric(16, 0),
             8.heightBox,
             Row(
@@ -251,8 +250,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             Text(
               'Time • ${_selectedDuration.inMinutes ~/ 60}h${_selectedDuration.inMinutes % 60 == 0 ? '' : ' 30m'}',
               style: AppStyles.w500f12inter.copyWith(
-                color: kDarkTextColor.withValues(alpha: 0.7),
-              ),
+                  color: kDarkTextColor.withValues(alpha: 0.7)),
             ).withPaddingSymmetric(16, 0),
             8.heightBox,
             Row(
@@ -275,7 +273,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                           label,
                           style: AppStyles.w500f12inter.copyWith(
                             color: kDarkTextColor,
-                            fontSize: 13,
+                              fontSize: 13
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -290,8 +288,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             Text(
               'BOOKING TYPE',
               style: AppStyles.w500f12inter.copyWith(
-                color: kDarkTextColor.withValues(alpha: 0.7),
-              ),
+                  color: kDarkTextColor.withValues(alpha: 0.7)),
             ).withPaddingSymmetric(16, 0),
             8.heightBox,
             Row(
@@ -304,10 +301,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
                         color: isIndividual ? kPrimaryColor : kGreyColor,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                          topLeft: Radius.circular(16),
-                        ),
+                          borderRadius: BorderRadius.only(bottomLeft: Radius
+                              .circular(16), topLeft: Radius.circular(16))
                       ),
                       child: Center(
                         child: Text(
@@ -328,10 +323,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
                         color: !isIndividual ? kPrimaryColor : kGreyColor,
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        ),
+                          borderRadius: BorderRadius.only(bottomRight: Radius
+                              .circular(16), topRight: Radius.circular(16))
                       ),
                       child: Center(
                         child: Text(
@@ -361,8 +354,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                         ? 'Book the court without creating a match in the app.'
                         : 'Create a game where other players can join.',
                     style: AppStyles.w400f12inter.copyWith(
-                      color: kDarkTextColor.withValues(alpha: 0.7),
-                    ),
+                        color: kDarkTextColor.withValues(alpha: 0.7)),
                   ),
                 ),
               ],

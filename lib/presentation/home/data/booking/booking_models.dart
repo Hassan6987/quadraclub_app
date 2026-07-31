@@ -11,7 +11,6 @@ enum PaymentSplitOption { payAllReceiveLater, payAllNoSplit, payOnlyMyPart }
 
 extension MatchTypeExtension on MatchType {
   String get label => this == MatchType.open ? 'Open' : 'Private';
-
   String get description => this == MatchType.open
       ? 'Any player can join'
       : 'Only invited player can join';
@@ -59,31 +58,20 @@ class InvitablePlayerModel {
 
 const List<InvitablePlayerModel> dummyPlayers = [
   InvitablePlayerModel(id: 'p1', name: 'Alex Rivers', avatarUrl: 'htt://i.p'),
+  InvitablePlayerModel(id: 'p2',
+      name: 'Pedro Costa',
+      avatarUrl: 'https://i.pravatar.cc/150?img=13'),
   InvitablePlayerModel(
-    id: 'p2',
-    name: 'Pedro Costa',
-    avatarUrl: 'https://i.pravatar.cc/150?img=13',
-  ),
-  InvitablePlayerModel(
-    id: 'p3',
-    name: 'John',
-    avatarUrl: 'https://i.pravatar.cc/150?img=14',
-  ),
-  InvitablePlayerModel(
-    id: 'p4',
-    name: 'Maria Silva',
-    avatarUrl: 'https://i.pravatar.cc/150?img=15',
-  ),
-  InvitablePlayerModel(
-    id: 'p5',
-    name: 'Diego Fernandez',
-    avatarUrl: 'https://i.pravatar.cc/150?img=16',
-  ),
-  InvitablePlayerModel(
-    id: 'p6',
-    name: 'Laura Bennett',
-    avatarUrl: 'https://i.pravatar.cc/150?img=17',
-  ),
+      id: 'p3', name: 'John', avatarUrl: 'https://i.pravatar.cc/150?img=14'),
+  InvitablePlayerModel(id: 'p4',
+      name: 'Maria Silva',
+      avatarUrl: 'https://i.pravatar.cc/150?img=15'),
+  InvitablePlayerModel(id: 'p5',
+      name: 'Diego Fernandez',
+      avatarUrl: 'https://i.pravatar.cc/150?img=16'),
+  InvitablePlayerModel(id: 'p6',
+      name: 'Laura Bennett',
+      avatarUrl: 'https://i.pravatar.cc/150?img=17'),
 ];
 
 /// TODO: replace with a real `price` field on CourtModel.
@@ -93,12 +81,8 @@ extension CourtPriceExtension on CourtModel {
 
 /// TODO: replace with a real `amenities` field on CourtModel.
 extension CourtAmenitiesExtension on CourtModel {
-  List<String> get demoAmenities => const [
-    'Shower',
-    'Parking',
-    'Indoor Court',
-    'Outdoor Court',
-  ];
+  List<String> get demoAmenities =>
+      const ['Shower', 'Parking', 'Indoor Court', 'Outdoor Court'];
 }
 
 String formatPrice(double amount) => '\$${amount.toStringAsFixed(2)}';
