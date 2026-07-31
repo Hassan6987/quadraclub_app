@@ -1,6 +1,5 @@
 // lib/presentation/booking/ui/payment_method_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/authentication/ui/signup/confirmation_screen.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/court_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
@@ -177,10 +176,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                 'MM/YY',
                               ),
                             ),
-                            10.widthBox,xpanded(
-                              child: buildTextField(_cvvController, 'CVV'),
+                            10.widthBox,
+                            Expanded(child: buildTextField(_cvvController, 'CVV'),
                             ),
-                          ]],
+                          ],
                         ),
                       ],
                     ),
