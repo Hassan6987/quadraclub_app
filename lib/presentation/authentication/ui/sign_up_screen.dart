@@ -35,6 +35,21 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           _passwordController.text.isNotEmpty &&
           _confirmPasswordController.text.isNotEmpty;
 
+
+  @override
+  void initState() {
+    super.initState();
+    for (final controller in [
+      _fullNameController,
+      _dobController,
+      _emailController,
+      _passwordController,
+      _confirmPasswordController,
+    ]) {
+      controller.addListener(() => setState(() {}));
+    }
+  }
+
   @override
   void dispose() {
     _fullNameController.dispose();
@@ -113,28 +128,27 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       decoration: BoxDecoration(
                         color: kBorderColor.withValues(alpha: 0.55),
                         borderRadius: BorderRadius.circular(8),
+                        image: _data.profilePhotoPath != null
+                            ? DecorationImage(
+                          image: FileImage(File(_data.profilePhotoPath!)),
+                          fit: BoxFit.cover,
+                        )
+                            : null,
                       ),
-                      child: Icon(
-                        Icons.add_a_photo_outlined,
-                        color: kTextColor,
-                      ),
+                      child: _data.profilePhotoPath == null
+                          ? Icon(Icons.add_a_photo_outlined, color: kTextColor)
+                          : null,
                     ),
                     12.widthBox,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Profile Photo",
-                          style: AppStyles.w500f14inter.copyWith(
-                            color: kBlackColor,
-                          ),
-                        ),
-                        Text(
-                          "JPG or PNG, max 5MB",
-                          style: AppStyles.w400f12inter.copyWith(
-                            color: kTextColor,
-                          ),
-                        ),
+                        Text("Profile Photo",
+                            style: AppStyles.w500f14inter.copyWith(
+                                color: kBlackColor)),
+                        Text("JPG or PNG, max 5MB",
+                            style: AppStyles.w400f12inter.copyWith(
+                                color: kTextColor)),
                       ],
                     ),
                   ],

@@ -172,12 +172,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: buildTextField(_expiryController,
-                                'MM/YY',
-                              ),
+                              child: buildTextField(_expiryController, 'MM/YY'),
                             ),
                             10.widthBox,
-                            Expanded(child: buildTextField(_cvvController, 'CVV'),
+                            Expanded(
+                              child: buildTextField(_cvvController, 'CVV'),
                             ),
                           ],
                         ),
@@ -306,9 +305,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: CustomActionButton(
-                buttonText: "Pay Now",
-                isEnabled: _agreedToTerms,
-                onTap: _onPayNow),
+              buttonText: "Pay Now",
+              isEnabled: _agreedToTerms,
+              onTap: _onPayNow,
+            ),
           ),
         ],
       ),
@@ -316,10 +316,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 }
 
-Widget buildTextField(TextEditingController controller,
-    String hint, {
-      IconData? icon,
-    }) {
+Widget buildTextField(
+  TextEditingController controller,
+  String hint, {
+  IconData? icon,
+}) {
   return Container(
     height: 48,
     padding: const EdgeInsets.symmetric(horizontal: 14),

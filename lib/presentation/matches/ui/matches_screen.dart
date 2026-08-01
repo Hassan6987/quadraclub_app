@@ -1,7 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
 import 'package:quadraclub_app/presentation/home/data/location_result.dart';
-import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/matches/data/dummy_match_data.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
@@ -9,6 +8,7 @@ import 'package:quadraclub_app/presentation/matches/ui/widgets/create_match_dial
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_join_bottom_sheet.dart';
+
 import '/app_exports.dart';
 
 class MatchesScreen extends StatefulWidget {
@@ -98,7 +98,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
     final grouped = _groupedMatches;
 
     return Scaffold(
-      backgroundColor: kCardColor,
+      backgroundColor: kWhiteFo,
+      appBar: CustomAppBar(
+        title: "Open Matches",
+        centerTile: false,
+        backgroundColor: kWhiteColor,
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -109,65 +114,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
             ),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Open Matches.',
-                        style: AppStyles.w600f24inter.copyWith(
-                          color: kDarkTextColor,
-                          fontSize: 22,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          // Notification Bell Button
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                RouteName.notifications,
-                              );
-                            },
-                            child: Container(
-                              width: 35,
-                              height: 35,
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: kWhiteColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: kBorderColor),
-                              ),
-                              child: SvgPicture.asset(
-                                Assets.svg.notification.path,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Chat Button
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, RouteName.myChats);
-                            },
-                            child: Container(
-                              width: 35,
-                              height: 35,
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: kWhiteColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: kBorderColor),
-                              ),
-                              child: SvgPicture.asset(Assets.svg.chatIcon.path),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
                 SizedBox(
                   height: 38,
                   child: ListView(
@@ -287,7 +233,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   ),
           ),
         ],
-      ).withPaddingSymmetric(0, 12),
+      ),
       floatingActionButton: Container(
         margin: EdgeInsets.only(bottom: 5),
         padding: EdgeInsets.all(10),

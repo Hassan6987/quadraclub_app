@@ -1,3 +1,5 @@
+import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 import 'package:quadraclub_app/utils/app_utils.dart';
 import 'package:quadraclub_app/utils/image_picker_util.dart';
 
@@ -18,6 +20,11 @@ class _MyAccountState extends State<MyAccount> {
     text: "samiiiolle@gmail.com",
   );
   File? _image;
+
+  // Keep the resolved coordinates alongside the display text, in case
+  // you need to persist lat/lng along with the address on save.
+  LocationResult? _selectedLocation;
+
   Future<void> _onTapChangePhoto() async {
     final File? img = await ImagePickerUtil.pickFromGallery(context);
     if (img != null) {
@@ -40,11 +47,25 @@ class _MyAccountState extends State<MyAccount> {
       });
     }
   }
+
+  Future<void> _onSelectLocation() async {
+    await ChangeLocationSheet.show(
+      context,
+      onLocationSelected: (LocationResult location) {
+        setState(() {
+          _selectedLocation = location;
+          _locationController.text = location.address;
+        });
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
   }
-@override
+
+  @override
   void dispose() {
     _nameController.dispose();
     _locationController.dispose();
@@ -64,53 +85,62 @@ class _MyAccountState extends State<MyAccount> {
         titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
       ),
       backgroundColor: kCardColor,
-      body: Column(
-        children: [
-          _buildHeader(),
-          32.heightBox,
-          CustomTextField(
-            label: "Name",
-            controller: _nameController,
-            hintText: "Enter your name",
-            prefixIcon: SvgPicture.asset(Assets.svg.accontIcon.path),
-            keyboardType: TextInputType.name,
-          ),
-          12.heightBox,
-          CustomTextField(
-            label: "Location",
-            controller: _locationController,
-            hintText: "Enter your location",
-            prefixIcon: SvgPicture.asset(Assets.svg.mapMarker.path),
-          ),
-          12.heightBox,
-          CustomTextField(
-            controller: _dobController,
-            label: 'Date of Birth',
-            hintText: 'dd/mm/yyyy',
-            readOnly: true,
-            onTap: () => _onSelectDate(),
-            suffixIcon: SvgPicture.asset(Assets.svg.calendarBlank.path),
-          ),
-          12.heightBox,
-          CustomTextField(
-            label: "Email (Can’t Change)",
-            controller: _emailController,
-            readOnly: true,
-            hintText: "Enter your email",
-            textStyle: AppStyles.w400f14inter.copyWith(
-              color: kTextSecondary.withValues(alpha: 0.50),
-            ) ,
-            prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          Spacer(),
-          CustomActionButton(
-            buttonText: "Update",
-            onTap: () {},
-
-          ),
-        ],
-      ).withPaddingAll(24),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildHeader(),
+            32.heightBox,
+            CustomTextField(
+              label: "Name",
+              controller: _nameController,
+              hintText: "Enter your name",
+              prefixIcon: SvgPicture.asset(Assets.svg.accontIcon.path),
+              keyboardType: TextInputType.name,
+            ),
+            12.heightBox,
+            CustomTextField(
+              label: "Location",
+              controller: _locationController,
+              hintText: "Enter your location",
+              readOnly: true,
+              onTap: _onSelectLocation,
+              prefixIcon: SvgPicture.asset(Assets.svg.mapMarker.path),
+            ),
+            12.heightBox,
+            CustomTextField(
+              controller: _dobController,
+              label: 'Date of Birth',
+              hintText: 'dd/mm/yyyy',
+              readOnly: true,
+              onTap: () => _onSelectDate(),
+              suffixIcon: SvgPicture.asset(Assets.svg.calendarBlank.path),
+            ),
+            12.heightBox,
+            CustomTextField(
+              label: "Email (Can’t Change)",
+              controller: _emailController,
+              readOnly: true,
+              hintText: "Enter your email",
+              textStyle: AppStyles.w400f14inter.copyWith(
+                color: kTextSecondary.withValues(alpha: 0.50),
+              ),
+              prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
+              keyboardType: TextInputType.emailAddress,
+            ),
+          ],
+        ).withPaddingAll(24),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(16),
+        color: kWhiteF9,
+        child: CustomActionButton(
+          buttonText: "Update",
+          onTap: () {
+            context.pop();
+            context.showToast("Profile updated successfully");
+          },
+        ),
+      ),
     );
   }
 

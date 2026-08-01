@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
 import 'package:quadraclub_app/presentation/classes/ui/widgets/filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
+
 import '/app_exports.dart';
 
 class ClassesScreen extends StatefulWidget {
@@ -77,7 +78,6 @@ final String _searchQuery = '';
             ),
             child: Column(
               children: [
-                12.heightBox,
                 SizedBox(
                   height: 33,
                   child: ListView(

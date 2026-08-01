@@ -111,66 +111,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final courtsList = _filteredCourts;
 
     return Scaffold(
+      appBar: CustomAppBar(
+        title: "Find courts near you.",
+        centerTile: false,
+        backgroundColor: kWhiteColor,
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Header Row
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 16, right: 16, top: 16, bottom: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Find courts near you.',
-                    style: AppStyles.w600f24inter.copyWith(
-                      color: kDarkTextColor,
-                        fontSize: 22
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      // Notification Bell Button
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, RouteName.notifications);
-                        },
-                        child: Container(
-                          width: 35,
-                          height: 35,
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: kWhiteColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: kBorderColor),
-                          ),
-                          child: SvgPicture.asset(Assets.svg.notification.path),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Chat Button
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, RouteName.myChats);
-                        },
-                        child: Container(
-                          width: 35,
-                          height: 35,
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: kWhiteColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: kBorderColor),
-                          ),
-                          child: SvgPicture.asset(Assets.svg.chatIcon.path),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
 
             // 2. Sport Filter Chip List (Horizontal)
             SizedBox(
