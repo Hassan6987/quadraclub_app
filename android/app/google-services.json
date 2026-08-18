@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "565075883935",
+    "project_id": "quadraclub-532b4",
+    "storage_bucket": "quadraclub-532b4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565075883935:android:55ededa8702119088a6faa",
+        "android_client_info": {
+          "package_name": "com.app.quadraclub_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB46GN5FzJz73-d8izlhgW7zzoy59wsu74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
