@@ -69,4 +69,44 @@ class PlacesService {
       longitude: (location['lng'] as num).toDouble(),
     );
   }
+
+  static Future<String?> reverseGeocode(double lat, double lng) async {
+    final uri = Uri.https(
+      'maps.googleapis.com',
+      '/maps/api/geocode/json',
+      {
+        'latlng': '$lat,$lng',
+        'result_type': 'locality|administrative_area_level_2',
+        'key': _apiKey,
+      },
+    );
+
+    final response = await http.get(uri);
+    if (response.statusCode != 200) return null;
+
+    final data = jsonDecode(response.body);
+    if (data['status'] != 'OK') return null;
+
+    final results = data['results'] as List;
+    if (results.isEmpty) return null;
+
+    // Prefer the "locality" (city) component; fall back to formatted_address.
+    final addressComponents = results.first['address_components'] as List;
+    final cityComponent = addressComponents.firstWhere(
+          (c) => (c['types'] as List).contains('locality'),
+      orElse: () => null,
+    );
+
+    if (cityComponent != null) {
+      final countryComponent = addressComponents.firstWhere(
+            (c) => (c['types'] as List).contains('country'),
+        orElse: () => null,
+      );
+      final city = cityComponent['long_name'];
+      final country = countryComponent?['long_name'];
+      return country != null ? '$city, $country' : city;
+    }
+
+    return results.first['formatted_address'] as String?;
+  }
 }
