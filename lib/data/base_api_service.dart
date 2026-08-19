@@ -43,13 +43,16 @@ class BaseApiProvider {
       InterceptorsWrapper(
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            final refresh = await _refreshToken();
+            final isAuthEndpoint = e.requestOptions.path.contains(
+                '/auth/login');
 
-            if (refresh) {
-              final newResponse = await _dio.fetch(e.requestOptions);
-              handler.resolve(newResponse);
-              return;
+            if (!isAuthEndpoint) {
+              // No refresh-token endpoint exists yet, so any 401 outside
+              // of login means the session is genuinely invalid.
+              await _handleSessionExpired();
             }
+            // For login endpoint 401s, do nothing here — let it fall
+            // through to handleDioError so AuthBloc shows the real message.
           }
           return handler.next(e);
         },
@@ -267,5 +270,20 @@ class BaseApiProvider {
       );
       return false;
     }
+  }
+
+  Future<void> _handleSessionExpired() async {
+    final context = navigatorKey.currentContext!;
+
+    await _storage.clearAll();
+
+    if (!context.mounted) return;
+
+    context.showToast('Session expired, please login again');
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RouteName.signIn,
+          (route) => false,
+    );
   }
 }

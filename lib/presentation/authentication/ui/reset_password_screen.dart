@@ -59,8 +59,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   void _onContinue() {
     if (_isButtonEnabled) {
       if (_formKey.currentState!.validate()) {
-       context.showToast("Password Changed Successfully");
-       Navigator.popUntil(context, (route) => route.isFirst);
+        context.read<AuthBloc>().add(
+          ResetPassword(
+            email: widget.email,
+            otp: widget.otp,
+            password: _passwordController.text.trim(),
+          ),
+        );
       }
     }
   }
@@ -77,66 +82,79 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAuthAppBar(showBackIcon: true,),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              32.heightBox,
-              Text(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStateStatus.verified) {
+          context.showToast("Password Changed Successfully");
+          Navigator.popUntil(context, (route) => route.isFirst);
+        } else if (state.status == AuthStateStatus.failure) {
+          context.showToast(
+            state.error ?? "Something went wrong",
+            isError: true,
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAuthAppBar(showBackIcon: true),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                32.heightBox,
+                Text(
                   "Set New Password",
                   style: AppStyles.w500f24inter.copyWith(
-                      color:kTextPrimaryColor
-                  )
-              ),
-              8.heightBox,
-              Text(
+                    color: kTextPrimaryColor,
+                  ),
+                ),
+                8.heightBox,
+                Text(
                   "Set new password to secure your account.",
                   style: AppStyles.w400f16inter.copyWith(
-                      color:kTextSecondary.withValues(alpha: 0.60)
-                  )
-              ),
-              40.heightBox,
-              CustomTextField(
-                label: "Password",
-                controller: _passwordController,
-                hintText: "Enter new password",
-                prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
-                obscureText: true,
-                keyboardType: TextInputType.visiblePassword,
-                validator: ValidateForm.passwordValidator,
-              ),
-              12.heightBox,
-              CustomTextField(
-                label: "Confirm Password",
-                controller: _confirmPasswordController,
-                hintText: "Confirm new password",
-                prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
-                obscureText: true,
-                keyboardType: TextInputType.visiblePassword,
-                validator: _confirmPasswordValidator,
-              ),
-              40.heightBox,
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state.status == AuthStateStatus.loading) {
-                    return Center(child: CustomLoadingView());
-                  }
-                  return CustomActionButton(
-                    buttonText:"Done",
-                    onTap: _onContinue,
-                    isEnabled: true,
-                    backgroundColor: kPrimaryColor,
-                    buttonTextColor: kTextPrimaryColor,
-                  );
-                },
-              ),
-            ],
-          ),
-        ).withPaddingAll(24),
+                    color: kTextSecondary.withValues(alpha: 0.60),
+                  ),
+                ),
+                40.heightBox,
+                CustomTextField(
+                  label: "Password",
+                  controller: _passwordController,
+                  hintText: "Enter new password",
+                  prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
+                  obscureText: true,
+                  keyboardType: TextInputType.visiblePassword,
+                  validator: ValidateForm.passwordValidator,
+                ),
+                12.heightBox,
+                CustomTextField(
+                  label: "Confirm Password",
+                  controller: _confirmPasswordController,
+                  hintText: "Confirm new password",
+                  prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
+                  obscureText: true,
+                  keyboardType: TextInputType.visiblePassword,
+                  validator: _confirmPasswordValidator,
+                ),
+                40.heightBox,
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state.status == AuthStateStatus.loading) {
+                      return Center(child: CustomLoadingView());
+                    }
+                    return CustomActionButton(
+                      buttonText: "Done",
+                      onTap: _onContinue,
+                      isEnabled: true,
+                      backgroundColor: kPrimaryColor,
+                      buttonTextColor: kTextPrimaryColor,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ).withPaddingAll(24),
+        ),
       ),
     );
   }

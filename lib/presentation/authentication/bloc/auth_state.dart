@@ -6,6 +6,7 @@ enum AuthStateStatus {
   loading,
   updating,
   success,
+  unVerified,
   verified,
   otpSent,
   failure,

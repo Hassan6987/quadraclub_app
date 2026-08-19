@@ -1,3 +1,7 @@
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/authentication/ui/otp_verifictaion.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+
 import '/app_exports.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -41,135 +45,168 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _onContinue() {
-    // if (_isButtonEnabled) {
-    //   if (_formKey.currentState!.validate()) {
-    Navigator.pushReplacementNamed(
-      context,
-      RouteName.customBottomNavbar,
-      arguments: {"index": 2},
-    );
-    // final email = _emailController.text.trim();
-    // final password = _passwordController.text.trim();
-    // context.read<AuthBloc>().add(
-    //   LoginEvent(email: email, password: password),
-    // );
-    //   }
-    // }
+    if (_isButtonEnabled) {
+      if (_formKey.currentState!.validate()) {
+        final email = _emailController.text.trim();
+        final password = _passwordController.text.trim();
+        context.read<AuthBloc>().add(
+          LoginEvent(email: email, password: password),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      50.heightBox,
-                      Text(
-                        "Sign In",
-                        style: AppStyles.w500f24inter.copyWith(
-                          color: kTextPrimaryColor,
-                        ),
-                      ),
-                      8.heightBox,
-                      Text(
-                        "Enter your credentials to manage your bookings.",
-                        style: AppStyles.w400f16inter.copyWith(
-                          color: kTextSecondary.withValues(alpha: 0.60),
-                        ),
-                      ),
-                      40.heightBox,
-                      CustomTextField(
-                        label: "Email",
-                        controller: _emailController,
-                        hintText: "Enter your email",
-                        prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: ValidateForm.validateEmail,
-                        onChanged: (_) => _updateButtonState(),
-                      ),
-                      12.heightBox,
-                      CustomTextField(
-                        label: "Password",
-                        controller: _passwordController,
-                        hintText: "Enter your password",
-                        obscureText: true,
-                        prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: ValidateForm.passwordValidator,
-                        onChanged: (_) => _updateButtonState(),
-                      ),
-                      8.heightBox,
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteName.forgetPassword,
-                            );
-                          },
-                          child: Text(
-                            "Forgot Password?",
-                            style: AppStyles.subtitleMedium.copyWith(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStateStatus.success) {
+          Navigator.pushReplacementNamed(
+            context,
+            RouteName.customBottomNavbar,
+            arguments: {"index": 2},
+          );
+        } else if (state.status == AuthStateStatus.unVerified) {
+          context.showToast(
+              state.error ?? 'Something went wrong', isError: true);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  OtpVerificationScreen(
+                    email: _emailController.text.trim(),
+                  ),
+            ),
+          );
+        } else if (state.status == AuthStateStatus.failure) {
+          context.showToast(
+              state.error ?? 'Something went wrong', isError: true);
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          body: Form(
+            key: _formKey,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          50.heightBox,
+                          Text(
+                            "Sign In",
+                            style: AppStyles.w500f24inter.copyWith(
                               color: kTextPrimaryColor,
                             ),
                           ),
-                        ),
-                      ),
-                      24.heightBox,
-                      CustomActionButton(
-                        buttonText: "Sign In",
-                        onTap: _onContinue,
-                        backgroundColor: kPrimaryColor,
-                        buttonTextColor: kDarkTextColor,
-                      ),
-
-                      const Spacer(),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Don't have an account? ",
-                              style: AppStyles.w400f14inter.copyWith(
-                                color: kTextSecondary.withValues(alpha: 0.70),
-                              ),
+                          8.heightBox,
+                          Text(
+                            "Enter your credentials to manage your bookings.",
+                            style: AppStyles.w400f16inter.copyWith(
+                              color: kTextSecondary.withValues(alpha: 0.60),
                             ),
-                            InkWell(
+                          ),
+                          40.heightBox,
+                          CustomTextField(
+                            label: "Email",
+                            controller: _emailController,
+                            hintText: "Enter your email",
+                            prefixIcon: SvgPicture.asset(
+                              Assets.svg.emailIcon.path,
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            validator: ValidateForm.validateEmail,
+                            onChanged: (_) => _updateButtonState(),
+                          ),
+                          12.heightBox,
+                          CustomTextField(
+                            label: "Password",
+                            controller: _passwordController,
+                            hintText: "Enter your password",
+                            obscureText: true,
+                            prefixIcon: SvgPicture.asset(
+                              Assets.svg.lockIcon.path,
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            validator: ValidateForm.passwordValidator,
+                            onChanged: (_) => _updateButtonState(),
+                          ),
+                          8.heightBox,
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
-                                  RouteName.signUp,
+                                  RouteName.forgetPassword,
                                 );
                               },
                               child: Text(
-                                "Create Account",
-                                style: AppStyles.w500f14inter.copyWith(
+                                "Forgot Password?",
+                                style: AppStyles.subtitleMedium.copyWith(
                                   color: kTextPrimaryColor,
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          24.heightBox,
+                          if(state.status == AuthStateStatus.loading)
+                            Center(child: CustomLoadingView()),
+                          if(state.status != AuthStateStatus.loading)
+                            CustomActionButton(
+                              buttonText: "Sign In",
+                              onTap: _onContinue,
+                              backgroundColor: kPrimaryColor,
+                              buttonTextColor: kDarkTextColor,
+                            ),
+                          const Spacer(),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Don't have an account? ",
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kTextSecondary.withValues(
+                                      alpha: 0.70,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteName.signUp,
+                                    );
+                                  },
+                                  child: Text(
+                                    "Create Account",
+                                    style: AppStyles.w500f14inter.copyWith(
+                                      color: kTextPrimaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          32.heightBox,
+                        ],
                       ),
-                      32.heightBox,
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
-      ).withPaddingAll(24),
+                );
+              },
+            ),
+          ).withPaddingAll(24),
+        );
+      },
     );
   }
 }

@@ -1,14 +1,13 @@
-import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/data/storage_service.dart';
 import 'package:quadraclub_app/presentation/authentication/data/auth_provider.dart';
+import 'package:quadraclub_app/presentation/authentication/data/model/signup_data.dart';
 
 import '../../../di/locator.dart';
 
 part 'auth_event.dart';
-
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -17,18 +16,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc() : super(AuthState()) {
     on<AuthStarted>(_handleAuthStarted);
+    on<SignUpEvent>(_handleSignUp);
     on<LoginEvent>(_handleLogin);
     on<DeleteAccountEvent>(_handleDeleteAccount);
     on<RequestCode>(_handleRequestCode);
     on<VerifyCode>(_handleVerifyCode);
-    on<SetPassword>(_handleSetPassword);
     on<SetupProfile>(_handleCreateProfile);
     on<ForgotPassword>(_handleForgetPassword);
     on<ResetPassword>(_handleResetPassword);
     on<UpdateProfile>(_handleUpdateProfile);
-    on<AddLink>(_handleAddLink);
-    on<UpdateLink>(_handleUpdateLink);
-    on<DeleteLink>(_handleDeleteLink);
   }
 
   Future<void> _handleAuthStarted(
@@ -43,12 +39,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final token = _storageServices.hasToken();
         if (token) {
           final UserModel user = await _authenticationProvider.getUserProfile();
-          if (user.profile?.status == "banned") {
+          if (user.isVerified == false) {
             await StorageService().removeToken();
             emit(
               state.copyWith(
-                status: AuthStateStatus.failure,
-                error: "Your account has been banned.",
+                status: AuthStateStatus.unAuthenticated,
+                error: "Your account is not verified.",
               ),
             );
             return;
@@ -62,6 +58,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       emit(
+        state.copyWith(
+          status: AuthStateStatus.unAuthenticated,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleSignUp(SignUpEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(status: AuthStateStatus.loading));
+    try {
+      await _authenticationProvider.signUp(data: event.data);
+      emit(state.copyWith(status: AuthStateStatus.success));
+    } catch (e) {
+      emit(
         state.copyWith(status: AuthStateStatus.failure, error: e.toString()),
       );
     }
@@ -73,7 +84,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(state.copyWith(status: AuthStateStatus.loading));
     try {
-      await _authenticationProvider.requestCode(email: event.email);
+      await _authenticationProvider.resendOtp(email: event.email);
       emit(state.copyWith(status: AuthStateStatus.success));
     } catch (e) {
       emit(
@@ -100,49 +111,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _handleSetPassword(
-    SetPassword event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(state.copyWith(status: AuthStateStatus.loading));
-    try {
-      await _authenticationProvider.setPassword(
-        email: event.email,
-        password: event.password,
-        role: event.role,
-      );
-      await _authenticationProvider.login(
-        email: event.email,
-        password: event.password,
-      );
-      emit(state.copyWith(status: AuthStateStatus.success));
-    } catch (e) {
-      emit(
-        state.copyWith(status: AuthStateStatus.failure, error: e.toString()),
-      );
-    }
-  }
-
   Future<void> _handleCreateProfile(
     SetupProfile event,
     Emitter<AuthState> emit,
   ) async {
     emit(state.copyWith(status: AuthStateStatus.loading));
     try {
-      await _authenticationProvider.setupProfile(
-        name: event.name,
-        college: event.college,
-      );
-      if (event.linkThree != null && event.linkThree!.isNotEmpty) {
-        await _authenticationProvider.addLink(url: event.linkThree!);
-      }
-      if (event.linkTwo != null && event.linkTwo!.isNotEmpty) {
-        await _authenticationProvider.addLink(url: event.linkTwo!);
-      }
-      if (event.linkOne != null && event.linkOne!.isNotEmpty) {
-        await _authenticationProvider.addLink(url: event.linkOne!);
-      }
-      final user = await _authenticationProvider.getUserProfile();
+      final user = await _authenticationProvider.setupProfile(
+          myData: event.data);
       emit(state.copyWith(status: AuthStateStatus.success, user: user));
     } catch (e) {
       emit(
@@ -175,17 +151,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _handleLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStateStatus.loading));
     try {
-      await _authenticationProvider.login(
+      final UserModel user = await _authenticationProvider.login(
         email: event.email,
         password: event.password,
       );
-      final UserModel user = await _authenticationProvider.getUserProfile();
-      if (user.profile?.status == "banned") {
+      if (user.isVerified == false) {
         await StorageService().removeToken();
         emit(
           state.copyWith(
-            status: AuthStateStatus.failure,
-            error: "Your account has been banned.",
+            status: AuthStateStatus.unVerified,
+            error: "Your account is Not Verified, We have sent an otp on your email please enter otp",
           ),
         );
         return;
@@ -244,39 +219,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         state.copyWith(status: AuthStateStatus.failure, error: e.toString()),
       );
-    }
-  }
-
-  Future<void> _handleAddLink(AddLink event, Emitter<AuthState> emit) async {
-    try {
-      await _authenticationProvider.addLink(url: event.url);
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  Future<void> _handleUpdateLink(
-    UpdateLink event,
-    Emitter<AuthState> emit,
-  ) async {
-    try {
-      await _authenticationProvider.updateLink(
-        url: event.url,
-        id: "${event.id}",
-      );
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  Future<void> _handleDeleteLink(
-    DeleteLink event,
-    Emitter<AuthState> emit,
-  ) async {
-    try {
-      await _authenticationProvider.deleteLink(id: event.id.toString());
-    } catch (e) {
-      log(e.toString());
     }
   }
 }

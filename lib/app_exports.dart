@@ -20,7 +20,6 @@ export 'package:quadraclub_app/presentation/agenda/ui/widgets/court_booking_card
 export 'package:quadraclub_app/presentation/agenda/ui/widgets/court_confirmation_badge.dart';
 export 'package:quadraclub_app/presentation/authentication/data/model/user_model.dart';
 export 'package:quadraclub_app/presentation/authentication/ui/sign_in_screen.dart';
-export 'package:quadraclub_app/presentation/authentication/ui/widgets/custom_check_box.dart';
 export 'package:quadraclub_app/presentation/bottom_navbar/custom_bottom_navbar.dart';
 export 'package:quadraclub_app/presentation/chats/data/models/chat_dummy_data.dart';
 export 'package:quadraclub_app/presentation/chats/data/models/chat_model.dart';

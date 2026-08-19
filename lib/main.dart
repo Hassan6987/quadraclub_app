@@ -74,8 +74,7 @@ class MyApp extends StatelessWidget {
             if (state.status == AuthStateStatus.success) {
               return const CustomBottomNavBar(index: 2,);
             }
-            if (state.status == AuthStateStatus.failure ||
-                state.status == AuthStateStatus.unAuthenticated) {
+            if (state.status == AuthStateStatus.unAuthenticated) {
               return const SignInScreen();
             }
             return const SplashScreen();

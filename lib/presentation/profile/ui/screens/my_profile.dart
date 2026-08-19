@@ -35,21 +35,9 @@ class MyProfile extends StatelessWidget {
                         children: [
                           _buildProfileField(
                             'Full Name',
-                            user.profile?.fullName ?? 'N/A',
+                            user.name ?? 'N/A',
                           ),
                           _buildProfileField('Email', user.email ?? 'N/A'),
-                          _buildProfileField(
-                            'College Name',
-                            user.profile?.collegeName ?? 'N/A',
-                          ),
-                          if (user.profile?.links != null &&
-                              user.profile!.links!.isNotEmpty)
-                            ...user.profile!.links!.asMap().entries.map(
-                              (entry) => _buildProfileLinkField(
-                                'Link ${entry.key + 1}',
-                                entry.value.url ?? 'N/A',
-                              ),
-                            ),
                         ],
                       ),
                     ),
@@ -74,10 +62,10 @@ class MyProfile extends StatelessWidget {
   Widget _buildProfileImage(UserModel user) {
     return CircleAvatar(
       radius: 40,
-      backgroundImage: (user.profile != null && user.profile!.image != null)
-          ? NetworkImage(user.profile!.image!)
+      backgroundImage: (user.imageUrl != null)
+          ? NetworkImage(user.imageUrl!)
           : null,
-      child: user.profile?.image == null
+      child: user.imageUrl == null
           ? Icon(Icons.person, size: 40, color: Colors.grey[600])
           : null,
     );

@@ -1,135 +1,43 @@
 class UserModel {
-  final int? id;
+  final String? id;
+  final String? name;
   final String? email;
+  final String? imageUrl;
   final String? role;
-  final Profile? profile;
+  final bool isVerified;
 
-  UserModel({this.id, this.email, this.role, this.profile});
+  UserModel(
+      {this.id, this.email, this.name, this.imageUrl, this.role, this.isVerified = true});
 
-  UserModel copyWith({int? id, String? email, String? role, Profile? profile}) {
+  UserModel copyWith(
+      {String? id, String? email, String? name, String? imageUrl, String? role, bool? isVerified}) {
     return UserModel(
       id: id ?? this.id,
+      name: name ?? this.name,
       email: email ?? this.email,
+      imageUrl: imageUrl ?? this.imageUrl,
       role: role ?? this.role,
-      profile: profile ?? this.profile,
+      isVerified: isVerified ?? this.isVerified,
     );
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json["id"],
+        id: json["_id"],
+        name: json["fullName"],
       email: json["email"],
+        imageUrl: json['profilePhoto'],
       role: json["role"],
-      profile: json["profile"] == null
-          ? null
-          : Profile.fromJson(json["profile"]),
-    );
-  }
-
-  factory UserModel.fromMap(Map<String, dynamic> json) {
-    return UserModel(
-      id: json["id"],
-      email: json["email"],
-      role: json["role"],
-      profile: json["profile"] == null ? null : Profile.fromJson(json),
+        isVerified: json['isVerified']
     );
   }
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "fullName": name,
     "email": email,
+    "profilePhoto": imageUrl,
     "role": role,
-    "profile": profile?.toJson(),
+    "isVerified": isVerified
   };
-}
-
-class Profile {
-  final int? id;
-  final String? fullName;
-  final String? collegeName;
-  final String? status;
-  final String? image;
-  final List<UserLink>? links;
-
-  Profile({
-    this.id,
-    this.fullName,
-    this.collegeName,
-    this.status,
-    this.image,
-    this.links,
-  });
-
-  Profile copyWith({
-    int? id,
-    String? fullName,
-    String? collegeName,
-    String? status,
-    String? image,
-    List<UserLink>? links,
-  }) {
-    return Profile(
-      id: id ?? this.id,
-      fullName: fullName ?? this.fullName,
-      collegeName: collegeName ?? this.collegeName,
-      status: status ?? this.status,
-      image: image ?? this.image,
-      links: links ?? this.links,
-    );
-  }
-
-  factory Profile.fromJson(Map<String, dynamic> json) {
-    return Profile(
-      id: json["id"],
-      fullName: json["full_name"],
-      collegeName: json["college_name"],
-      status: json["status"],
-      image: json["image"],
-      links: json["links"] == null
-          ? []
-          : List<UserLink>.from(
-              json["links"]!.map((x) => UserLink.fromJson(x)),
-            ),
-    );
-  }
-
-  factory Profile.fromMap(Map<String, dynamic> json) {
-    return Profile(
-      id: json["id"],
-      fullName: json["full_name"],
-      status: json['status'],
-      collegeName: json["college_name"],
-      image: json["image"],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "full_name": fullName,
-    "college_name": collegeName,
-    "image": image,
-  };
-}
-
-class UserLink {
-  final int? id;
-  final dynamic title;
-  final String? url;
-  final DateTime? createdAt;
-
-  UserLink({
-    required this.id,
-    required this.title,
-    required this.url,
-    required this.createdAt,
-  });
-
-  factory UserLink.fromJson(Map<String, dynamic> json) {
-    return UserLink(
-      id: json["id"],
-      title: json["title"],
-      url: json["url"],
-      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-    );
-  }
 }

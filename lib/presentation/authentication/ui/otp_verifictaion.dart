@@ -67,17 +67,18 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (_isButtonEnabled) {
       widget.isReset
           ? Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ResetPasswordScreen(
-                  email: widget.email,
-                  otp: _otpController.text,
-                ),
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              ResetPasswordScreen(
+                email: widget.email,
+                otp: _otpController.text,
               ),
-            )
+        ),
+      )
           : context.read<AuthBloc>().add(
-              VerifyCode(email: widget.email, otp: _otpController.text),
-            );
+        VerifyCode(email: widget.email, otp: _otpController.text),
+      );
     }
   }
 
@@ -94,100 +95,109 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: CustomAuthAppBar(showBackIcon: true),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            32.heightBox,
-
-            Text(
-              "OTP Verification",
-              style: AppStyles.w500f24inter.copyWith(color: kTextPrimaryColor),
-            ),
-            8.heightBox,
-            Text.rich(
-              TextSpan(
-                text: "Enter the 6-digit code sent to you at:\n",
-                style: AppStyles.w400f16inter.copyWith(
-                  color: kTextSecondary.withValues(alpha: 0.60),
-                ),
-                children: [
-                  TextSpan(
-                    text: widget.email,
-                    style: AppStyles.w500f16inter.copyWith(color: kTextSecondary),
-                  ),
-                ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStateStatus.verified) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          context.showToast("Email verified Successfully");
+        } else if (state.status == AuthStateStatus.failure) {
+          context.showToast(state.error ?? "Something Went Wrong");
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAuthAppBar(showBackIcon: true),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              32.heightBox,
+              Text(
+                "OTP Verification",
+                style: AppStyles.w500f24inter.copyWith(
+                    color: kTextPrimaryColor),
               ),
-            ),
-            40.heightBox,
-            Center(
-              child: Pinput(
-                length: 6,
-                controller: _otpController,
-                onChanged: _updateButtonState,
-                defaultPinTheme: defaultPinTheme,
-                focusedPinTheme: defaultPinTheme.copyWith(
-                  decoration: defaultPinTheme.decoration!.copyWith(
-                    border: Border.all(color: kDarkTextColor, width: 2),
+              8.heightBox,
+              Text.rich(
+                TextSpan(
+                  text: "Enter the 6-digit code sent to you at:\n",
+                  style: AppStyles.w400f16inter.copyWith(
+                    color: kTextSecondary.withValues(alpha: 0.60),
                   ),
+                  children: [
+                    TextSpan(
+                      text: widget.email,
+                      style: AppStyles.w500f16inter.copyWith(
+                          color: kTextSecondary),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            24.heightBox,
-            CustomActionButton(
-              buttonText: "Verify",
-              onTap: _onVerify,
-              isEnabled: _isButtonEnabled,
-              backgroundColor: kPrimaryColor,
-              buttonTextColor: kDarkTextColor,
-            ),
-            24.heightBox,
-            Align(
-              alignment: Alignment.center,
-              child: Column(
-                children: [
-                  _secondsRemaining > 0
-                      ? RichText(
-                          text: TextSpan(
-                            text: "I didn't receive a code ",
-                            style: AppStyles.subtitleRegular.copyWith(
-                              color: kTextSecondary.withValues(alpha: 0.70),
-                            ),
-                            children: [
-                              TextSpan(
-                                text: " (0:$_secondsRemaining)",
-                                style: AppStyles.w500f14inter.copyWith(
-                                  color: kTextPrimaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            widget.isReset
-                                ? context.read<AuthBloc>().add(
-                                    ForgotPassword(email: widget.email),
-                                  )
-                                : context.read<AuthBloc>().add(
-                                    RequestCode(email: widget.email),
-                                  );
-                            _startTimer();
-                          },
-                          child: Text(
-                            "Resend Code",
-                            style: AppStyles.subtitleSemiBold.copyWith(
-                              color: kPrimaryColor,
-                            ),
-                          ),
+              40.heightBox,
+              Center(
+                child: Pinput(
+                  length: 6,
+                  controller: _otpController,
+                  onChanged: _updateButtonState,
+                  defaultPinTheme: defaultPinTheme,
+                  focusedPinTheme: defaultPinTheme.copyWith(
+                    decoration: defaultPinTheme.decoration!.copyWith(
+                      border: Border.all(color: kDarkTextColor, width: 2),
+                    ),
+                  ),
+                ),
+              ),
+              24.heightBox,
+              CustomActionButton(
+                buttonText: "Verify",
+                onTap: _onVerify,
+                isEnabled: _isButtonEnabled,
+                backgroundColor: kPrimaryColor,
+                buttonTextColor: kDarkTextColor,
+              ),
+              24.heightBox,
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  children: [
+                    _secondsRemaining > 0
+                        ? RichText(
+                      text: TextSpan(
+                        text: "I didn't receive a code ",
+                        style: AppStyles.subtitleRegular.copyWith(
+                          color: kTextSecondary.withValues(alpha: 0.70),
                         ),
-                ],
+                        children: [
+                          TextSpan(
+                            text: " (0:$_secondsRemaining)",
+                            style: AppStyles.w500f14inter.copyWith(
+                              color: kTextPrimaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                        : GestureDetector(
+                      onTap: () {
+                        widget.isReset
+                            ? context.read<AuthBloc>().add(ForgotPassword(
+                            email: widget.email))
+                            : context.read<AuthBloc>().add(RequestCode(
+                            email: widget.email));
+                        _startTimer();
+                      },
+                      child: Text(
+                        "Resend Code",
+                        style: AppStyles.subtitleSemiBold.copyWith(
+                          color: kPrimaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ).withPaddingAll(24),
+            ],
+          ).withPaddingAll(24),
+        ),
       ),
     );
   }

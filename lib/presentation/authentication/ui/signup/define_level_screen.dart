@@ -1,6 +1,8 @@
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/data/model/signup_data.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/signup/confirmation_screen.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/signup/onboarding_app_bar.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
 
 import '/app_exports.dart';
@@ -56,14 +58,7 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
   void _onComplete() {
     if (!_isButtonEnabled) return;
     widget.data.preferredSide = _preferredSide;
-
-    // context.read<AuthBloc>().add(CompleteRegistration(data: widget.data));
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => ConfirmationScreen(data: widget.data)),
-      (route) => false,
-    );
+    context.read<AuthBloc>().add(SetupProfile(data: widget.data));
   }
 
   Widget _sportCategoryField(String sport) {
@@ -228,40 +223,61 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
   Widget build(BuildContext context) {
     final sports = widget.data.selectedSports;
 
-    return Scaffold(
-      backgroundColor: kWhiteColor,
-      appBar: const OnboardingAppBar(currentStep: 5, totalSteps: 5),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: Dim.PADDING_SIZE_LARGE),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            24.heightBox,
-            Text(
-              "Define your level.",
-              style: AppStyles.subHeadingSemibold.copyWith(color: kBlackColor),
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStateStatus.success) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ConfirmationScreen(data: widget.data)),
+                (route) => false,
+          );
+        } else if (state.status == AuthStateStatus.failure) {
+          context.showToast(state.error ?? "Something Went Wrong");
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: kWhiteColor,
+          appBar: const OnboardingAppBar(currentStep: 5, totalSteps: 5),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: Dim.PADDING_SIZE_LARGE),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                24.heightBox,
+                Text(
+                  "Define your level.",
+                  style: AppStyles.subHeadingSemibold.copyWith(
+                    color: kBlackColor,
+                  ),
+                ),
+                Text(
+                  "Select your category for each sport. You can change it later.",
+                  style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
+                ),
+                24.heightBox,
+                for (int i = 0; i < sports.length; i++) ...[
+                  _sportCategoryField(sports[i]),
+                  if (i == 0) _preferredSideField(),
+                ],
+                if(state.status == AuthStateStatus.loading)
+                  Center(child: CustomLoadingView()),
+                if(state.status != AuthStateStatus.loading)
+                  CustomActionButton(
+                    buttonText: "Complete Registration",
+                    onTap: _onComplete,
+                    isEnabled: _isButtonEnabled,
+                    backgroundColor: const Color(0xFFC5E028),
+                    buttonTextColor: kBlackColor,
+                    width: double.infinity,
+                  ),
+                24.heightBox,
+              ],
             ),
-            Text(
-              "Select your category for each sport. You can change it later.",
-              style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
-            ),
-            24.heightBox,
-            for (int i = 0; i < sports.length; i++) ...[
-              _sportCategoryField(sports[i]),
-              if (i == 0) _preferredSideField(),
-            ],
-            CustomActionButton(
-              buttonText: "Complete Registration",
-              onTap: _onComplete,
-              isEnabled: _isButtonEnabled,
-              backgroundColor: const Color(0xFFC5E028),
-              buttonTextColor: kBlackColor,
-              width: double.infinity,
-            ),
-            24.heightBox,
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

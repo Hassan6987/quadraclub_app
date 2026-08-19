@@ -5,10 +5,11 @@ class CustomLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadingAnimationWidget.flickr(
-      leftDotColor: kPrimaryColor,
-      rightDotColor: kSecondaryColor,
+    return LoadingAnimationWidget.discreteCircle(
       size: 50,
+        color: kPrimaryColor,
+        secondRingColor: kBlackColor,
+        thirdRingColor: kWhiteColor
     );
   }
 }

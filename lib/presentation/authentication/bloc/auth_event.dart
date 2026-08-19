@@ -16,6 +16,12 @@ class LoginEvent extends AuthEvent {
   const LoginEvent({required this.email, required this.password});
 }
 
+class SignUpEvent extends AuthEvent {
+  final SignupData data;
+
+  const SignUpEvent({required this.data});
+}
+
 class RequestCode extends AuthEvent {
   final String email;
 
@@ -29,32 +35,10 @@ class VerifyCode extends AuthEvent {
   const VerifyCode({required this.email, required this.otp});
 }
 
-class SetPassword extends AuthEvent {
-  final String email;
-  final String password;
-  final String role;
-
-  const SetPassword({
-    required this.email,
-    required this.password,
-    required this.role,
-  });
-}
-
 class SetupProfile extends AuthEvent {
-  final String name;
-  final String college;
-  final String? linkOne;
-  final String? linkTwo;
-  final String? linkThree;
+  final SignupData data;
 
-  const SetupProfile({
-    required this.name,
-    required this.college,
-    this.linkOne,
-    this.linkTwo,
-    this.linkThree,
-  });
+  const SetupProfile({required this.data});
 }
 
 class UpdateProfile extends AuthEvent {
@@ -66,14 +50,13 @@ class UpdateProfile extends AuthEvent {
 }
 
 class DeleteAccountEvent extends AuthEvent {
-  final int id;
+  final String id;
 
   const DeleteAccountEvent({required this.id});
 }
 
 class ForgotPassword extends AuthEvent {
   final String email;
-
   const ForgotPassword({required this.email});
 }
 
@@ -87,23 +70,4 @@ class ResetPassword extends AuthEvent {
     required this.otp,
     required this.password,
   });
-}
-
-class AddLink extends AuthEvent {
-  final String url;
-
-  const AddLink({required this.url});
-}
-
-class UpdateLink extends AuthEvent {
-  final int id;
-  final String url;
-
-  const UpdateLink({required this.id, required this.url});
-}
-
-class DeleteLink extends AuthEvent {
-  final int id;
-
-  const DeleteLink({required this.id});
 }

@@ -48,10 +48,10 @@ class ValidateForm {
       return 'Please enter name';
     }
     if (value.length < 5) {
-      return 'Username must be at least 5 characters';
+      return 'Full name must be at least 5 characters';
     }
-    if (value.length > 20) {
-      return 'Username must be less than 20 characters';
+    if (value.length > 40) {
+      return 'Full name must be less than 40 characters';
     }
     return null;
   }
