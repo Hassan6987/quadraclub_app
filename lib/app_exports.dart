@@ -46,7 +46,7 @@ export 'package:quadraclub_app/presentation/classes/ui/widgets/toggle_chip.dart'
 export 'package:quadraclub_app/presentation/common/widgets/common_avatar_stack_row.dart';
 export 'package:quadraclub_app/presentation/common/widgets/common_date_selection_row.dart';
 export 'package:quadraclub_app/presentation/common/widgets/sports_badge.dart';
-export 'package:quadraclub_app/presentation/home/data/home_dummy_data.dart';
+export 'package:quadraclub_app/presentation/home/data/models/home_dummy_data.dart';
 export 'package:quadraclub_app/presentation/home/ui/home_screen.dart';
 export 'package:quadraclub_app/presentation/profile/data/player_model.dart';
 export 'package:quadraclub_app/presentation/profile/ui/profile_screen.dart';

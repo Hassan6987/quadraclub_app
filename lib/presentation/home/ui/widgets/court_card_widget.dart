@@ -1,10 +1,10 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
 
 class CourtCardWidget extends StatelessWidget {
-  final CourtModel court;
+  final Court court;
   final VoidCallback? onTap;
-  final Function(SportType, String)? onTimeSlotTap;
+  final Function(Sport, String)? onTimeSlotTap;
 
   const CourtCardWidget({
     super.key,
@@ -15,6 +15,8 @@ class CourtCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sports = court.sports ?? [];
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -37,7 +39,7 @@ class CourtCardWidget extends StatelessWidget {
             child: Stack(
               children: [
                 AppCachedImage(
-                  imageUrl: court.imageUrl,
+                  imageUrl: court.courtPhoto ?? '',
                   height: 100,
                   width: double.infinity,
                 ),
@@ -63,7 +65,7 @@ class CourtCardWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        court.name,
+                        court.courtName ?? '',
                         style: AppStyles.w600f18inter.copyWith(
                           color: kWhiteColor,
                           fontSize: 20,
@@ -78,10 +80,13 @@ class CourtCardWidget extends StatelessWidget {
                             size: 14,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            '${court.location} • ${court.distanceMiles} miles',
-                            style: AppStyles.w400f12inter.copyWith(
-                              color: kWhiteColor.withValues(alpha: 0.8),
+                          Expanded(
+                            child: Text(
+                              court.location ?? '',
+                              overflow: TextOverflow.ellipsis,
+                              style: AppStyles.w400f12inter.copyWith(
+                                color: kWhiteColor.withValues(alpha: 0.8),
+                              ),
                             ),
                           ),
                         ],
@@ -97,8 +102,8 @@ class CourtCardWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              children: court.sports.map((sport) {
-                final slots = court.timeSlots[sport] ?? [];
+              children: sports.map((sport) {
+                final slots = sport.hourlySlots;
                 if (slots.isEmpty) return const SizedBox.shrink();
 
                 return Padding(
@@ -106,9 +111,8 @@ class CourtCardWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Sport Label
                       Text(
-                        sport.label,
+                        sport.sportName ?? '',
                         style: AppStyles.w400f12inter.copyWith(
                           color: kTextPrimaryColor,
                         ),
@@ -123,11 +127,7 @@ class CourtCardWidget extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final time = slots[index];
                             return GestureDetector(
-                              onTap: () {
-                                if (onTimeSlotTap != null) {
-                                  onTimeSlotTap!(sport, time);
-                                }
-                              },
+                              onTap: () => onTimeSlotTap?.call(sport, time),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
@@ -136,9 +136,7 @@ class CourtCardWidget extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: kWhiteColor,
                                   border: Border.all(
-                                    color: kBorderColor,
-                                    width: 1,
-                                  ),
+                                      color: kBorderColor, width: 1),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Center(
@@ -160,7 +158,6 @@ class CourtCardWidget extends StatelessWidget {
               }).toList(),
             ),
           ),
-          // View Details link
           Divider(color: kBorderColor),
           Padding(
             padding: const EdgeInsets.only(right: 12, bottom: 12, top: 8),
@@ -179,15 +176,11 @@ class CourtCardWidget extends StatelessWidget {
                     Text(
                       'View Details',
                       style: AppStyles.w500f12inter.copyWith(
-                        color: kDarkTextColor,
-                      ),
+                          color: kDarkTextColor),
                     ),
                     const SizedBox(width: 2),
                     const Icon(
-                      Icons.chevron_right,
-                      size: 14,
-                      color: kTextColor,
-                    ),
+                        Icons.chevron_right, size: 14, color: kTextColor),
                   ],
                 ),
               ),

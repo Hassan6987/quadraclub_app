@@ -1,4 +1,4 @@
-import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 import 'package:quadraclub_app/utils/app_utils.dart';
 import 'package:quadraclub_app/utils/image_picker_util.dart';

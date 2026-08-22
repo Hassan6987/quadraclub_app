@@ -42,9 +42,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
 
               children: [
-                if (_status != AgendaStatus.pending &&
-                    (_filter == 'All' || _filter == 'Courts'))
-                  CourtBookingCard(imgUrl: dummyCourts.first.imageUrl, showActions: showActions).paddingOnly(bottom: 12),
+                // if (_status != AgendaStatus.pending && (_filter == 'All' || _filter == 'Courts'))
+                //   CourtBookingCard(imgUrl: dummyCourts.first.imageUrl, showActions: showActions).paddingOnly(bottom: 12),
                 if (_filter == 'All' || _filter == 'Games')
                   AgendaMatchCard(
                     match: agendaMatches.first,

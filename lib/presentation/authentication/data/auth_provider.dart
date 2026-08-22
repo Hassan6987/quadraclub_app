@@ -5,7 +5,7 @@ import 'package:quadraclub_app/presentation/authentication/data/auth_services.da
 import 'package:quadraclub_app/presentation/authentication/data/model/signup_data.dart';
 
 class AuthProvider {
-  final AuthServices authServices = AuthServices();
+  final AuthServices authServices = locator.get<AuthServices>();
   final StorageService storageService = locator.get<StorageService>();
 
   Future<UserModel> getUserProfile() async {

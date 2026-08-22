@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/data/places_service.dart';
-import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 
 class ChangeLocationSheet extends StatefulWidget {
   final Function(LocationResult) onLocationSelected;

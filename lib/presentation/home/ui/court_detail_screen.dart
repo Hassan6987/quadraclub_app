@@ -1,7 +1,5 @@
-// lib/presentation/booking/ui/court_detail_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
-import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_sheet.dart';
 
 class _TimeSlot {
@@ -11,7 +9,7 @@ class _TimeSlot {
 }
 
 class CourtDetailScreen extends StatefulWidget {
-  final CourtModel court;
+  final Court court;
 
   const CourtDetailScreen({super.key, required this.court});
 
@@ -20,23 +18,25 @@ class CourtDetailScreen extends StatefulWidget {
 }
 
 class _CourtDetailScreenState extends State<CourtDetailScreen> {
-  late SportType _selectedSport;
+  late Sport _selectedSport;
   late DateTime _selectedDate;
   late List<DateTime> _dates;
+
+  List<Sport> get _sports => widget.court.sports ?? [];
 
   @override
   void initState() {
     super.initState();
-    _selectedSport = widget.court.sports.first;
+    _selectedSport = _sports.isNotEmpty ? _sports.first : Sport();
     _selectedDate = DateTime.now();
     _dates = List.generate(7, (i) => DateTime.now().add(Duration(days: i)));
   }
 
-  // 3 identical demo blocks, each derived from the court's hourly slots,
-  // expanded to half-hour granularity, with the 10:xx slot marked
+  // 3 identical demo blocks, each derived from the selected sport's hourly
+  // slots, expanded to half-hour granularity, with the 10:xx slot marked
   // unavailable to mirror the mock.
   List<_TimeSlot> _buildSlotsForBlock() {
-    final hourlySlots = widget.court.timeSlots[_selectedSport] ?? [];
+    final hourlySlots = _selectedSport.hourlySlots;
     final List<_TimeSlot> slots = [];
     for (final hourSlot in hourlySlots) {
       final hour = int.tryParse(hourSlot.split(':')[0]) ?? 0;
@@ -51,7 +51,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
     BookingSummarySheet.show(
       context,
       court: widget.court,
-      sport: _selectedSport,
       date: _selectedDate,
       blockIndex: blockIndex,
       startTime: time,
@@ -61,13 +60,13 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final court = widget.court;
+    final sports = _sports;
     final slots = _buildSlotsForBlock();
 
     return Scaffold(
       backgroundColor: kWhiteColor,
       body: CustomScrollView(
         slivers: [
-          // Collapsible image header
           SliverAppBar(
             pinned: true,
             expandedHeight: 120,
@@ -99,7 +98,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -107,54 +105,26 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    court.name,
+                    court.courtName ?? '',
                     style: AppStyles.w600f16inter.copyWith(
-                      color: kDarkTextColor,
-                    ),
+                        color: kDarkTextColor),
                   ),
                   4.heightBox,
                   Text(
-                    '${court.location} • ${court.distanceMiles} miles',
+                    court.location ?? '',
                     style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                   ),
 
-                  // Amenities
-                  SizedBox(
-                    height: 32,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: court.demoAmenities.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: kGreyColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              court.demoAmenities[index],
-                              style: AppStyles.w400f12inter.copyWith(
-                                color: kDarkTextColor,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  // Amenities — not present in the current API response.
+                  // Hidden until the backend adds an equivalent field.
+
                   10.heightBox,
                   Divider(color: kBorderColor, thickness: 5),
                   10.heightBox,
                   Text(
                     'Available Time Slots',
                     style: AppStyles.w500f14inter.copyWith(
-                      color: kDarkTextColor,
-                    ),
+                        color: kDarkTextColor),
                   ),
                   12.heightBox,
 
@@ -163,28 +133,25 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                     height: 38,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: court.sports.length,
+                      itemCount: sports.length,
                       separatorBuilder: (_, _) => const SizedBox(width: 8),
                       itemBuilder: (context, index) {
-                        final sport = court.sports[index];
-                        final isSelected = _selectedSport == sport;
+                        final sport = sports[index];
+                        final isSelected = _selectedSport.sameSportAs(sport);
                         return GestureDetector(
                           onTap: () => setState(() => _selectedSport = sport),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
+                                horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: isSelected ? kPrimaryColor : kGreyColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Center(
                               child: Text(
-                                sport.label,
+                                sport.sportName ?? '',
                                 style: AppStyles.w400f14inter.copyWith(
-                                  color: kDarkTextColor,
-                                ),
+                                    color: kDarkTextColor),
                               ),
                             ),
                           ),
@@ -194,7 +161,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   ),
                   12.heightBox,
 
-                  // Date selector (reusing existing shared widget)
                   CommonDateSelectionRow(
                     dates: _dates,
                     selectedDate: _selectedDate,
@@ -205,7 +171,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   Divider(color: kBorderColor, thickness: 5),
                   10.heightBox,
 
-                  // 3 demo blocks
                   ...List.generate(3, (blockIndex) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 20),
@@ -215,8 +180,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                           Text(
                             'Block ${blockIndex + 1}',
                             style: AppStyles.w600f14inter.copyWith(
-                              color: kDarkTextColor,
-                            ),
+                                color: kDarkTextColor),
                           ),
                           10.heightBox,
                           Wrap(
@@ -226,15 +190,13 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                               return GestureDetector(
                                 onTap: slot.available
                                     ? () =>
-                                          _onTimeSlotTap(blockIndex, slot.time)
+                                    _onTimeSlotTap(blockIndex, slot.time)
                                     : null,
                                 child: Opacity(
                                   opacity: slot.available ? 1.0 : 0.5,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
+                                        horizontal: 12, vertical: 8),
                                     decoration: BoxDecoration(
                                       color: kWhiteColor,
                                       borderRadius: BorderRadius.circular(100),
@@ -250,10 +212,8 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                                         ),
                                         4.widthBox,
                                         if (slot.available) ...[
-                                          const CircleAvatar(
-                                            radius: 3,
-                                            backgroundColor: kGreen06,
-                                          ),
+                                          const CircleAvatar(radius: 3,
+                                              backgroundColor: kGreen06),
                                         ],
                                       ],
                                     ),

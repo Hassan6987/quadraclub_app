@@ -1,10 +1,10 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/mock_keyboard.dart';
 
 class SearchCourtsSheet extends StatefulWidget {
-  final List<CourtModel> courts;
-  final Function(CourtModel) onCourtSelected;
+  final List<Court> courts;
+  final Function(Court) onCourtSelected;
 
   const SearchCourtsSheet({
     super.key,
@@ -12,10 +12,9 @@ class SearchCourtsSheet extends StatefulWidget {
     required this.onCourtSelected,
   });
 
-  static Future<void> show(
-    BuildContext context, {
-    required List<CourtModel> courts,
-    required Function(CourtModel) onCourtSelected,
+  static Future<void> show(BuildContext context, {
+    required List<Court> courts,
+    required Function(Court) onCourtSelected,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -37,7 +36,7 @@ class SearchCourtsSheet extends StatefulWidget {
 
 class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
   final TextEditingController _controller = TextEditingController();
-  List<CourtModel> _searchResults = [];
+  List<Court> _searchResults = [];
 
   @override
   void initState() {
@@ -55,27 +54,24 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
   void _onSearchChanged() {
     final query = _controller.text.trim().toLowerCase();
     if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-      });
+      setState(() => _searchResults = []);
     } else {
       setState(() {
-        _searchResults = widget.courts
-            .where((court) =>
-                court.name.toLowerCase().contains(query) ||
-                court.location.toLowerCase().contains(query))
-            .toList();
+        _searchResults = widget.courts.where((court) {
+          final name = (court.courtName ?? '').toLowerCase();
+          final location = (court.location ?? '').toLowerCase();
+          return name.contains(query) || location.contains(query);
+        }).toList();
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height * 0.9,
       child: Column(
         children: [
-          // Header
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
@@ -84,23 +80,17 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                 Text(
                   'Search Courts',
                   style: AppStyles.w600f18inter.copyWith(
-                    color: kDarkTextColor,
-                    fontSize: 20,
-                  ),
+                      color: kDarkTextColor, fontSize: 20),
                 ),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: const Icon(
-                    Icons.close,
-                    color: kDarkTextColor,
-                    size: 24,
-                  ),
+                      Icons.close, color: kDarkTextColor, size: 24),
                 ),
               ],
             ),
           ),
           const Divider(height: 1, color: kBorderColor),
-          // Search Field
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -117,7 +107,7 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      readOnly: true, // we use mock keyboard
+                      readOnly: true,
                       decoration: const InputDecoration(
                         hintText: 'Search courts',
                         border: InputBorder.none,
@@ -131,59 +121,54 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
               ),
             ),
           ),
-          // Search Results / Skeleton Loader
           Expanded(
             child: _controller.text.isEmpty
                 ? _buildSkeletonLoader()
                 : _searchResults.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No courts found',
-                          style: AppStyles.w400f14inter.copyWith(color: kTextColor),
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: _searchResults.length,
-                        separatorBuilder: (_, __) => const Divider(color: kBorderColor),
-                        itemBuilder: (context, index) {
-                          final court = _searchResults[index];
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: AppCachedImage(
-                                imageUrl: court.imageUrl,
-                                width: 50,
-                                height: 50,
-                              ),
-                            ),
-                            title: Text(
-                              court.name,
-                              style: AppStyles.w600f14inter.copyWith(
-                                color: kDarkTextColor,
-                              ),
-                            ),
-                            subtitle: Text(
-                              '${court.location} • ${court.distanceMiles} miles',
-                              style: AppStyles.w400f12inter.copyWith(
-                                color: kTextColor,
-                              ),
-                            ),
-                            onTap: () {
-                              widget.onCourtSelected(court);
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ),
+                ? Center(
+              child: Text(
+                'No courts found',
+                style: AppStyles.w400f14inter.copyWith(color: kTextColor),
+              ),
+            )
+                : ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _searchResults.length,
+              separatorBuilder: (_, __) => const Divider(color: kBorderColor),
+              itemBuilder: (context, index) {
+                final court = _searchResults[index];
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: AppCachedImage(
+                      imageUrl: court.imageUrl,
+                      width: 50,
+                      height: 50,
+                    ),
+                  ),
+                  title: Text(
+                    court.courtName ?? '',
+                    style: AppStyles.w600f14inter.copyWith(
+                        color: kDarkTextColor),
+                  ),
+                  subtitle: Text(
+                    [court.location, court.courtOwner]
+                        .where((s) => s != null && s.isNotEmpty)
+                        .join(' • '),
+                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
+                  ),
+                  onTap: () {
+                    widget.onCourtSelected(court);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
           ),
-          // Mock Keyboard
           MockKeyboard(
             controller: _controller,
-            onSend: () {
-              Navigator.pop(context);
-            },
+            onSend: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -196,34 +181,25 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Large grey box
           Container(
             height: 180,
             width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(16),
-            ),
+            decoration: BoxDecoration(color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(16)),
           ),
           const SizedBox(height: 12),
-          // Small text line 1
           Container(
             height: 16,
             width: 140,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(4),
-            ),
+            decoration: BoxDecoration(color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(4)),
           ),
           const SizedBox(height: 8),
-          // Small text line 2
           Container(
             height: 16,
             width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(4),
-            ),
+            decoration: BoxDecoration(color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(4)),
           ),
         ],
       ),

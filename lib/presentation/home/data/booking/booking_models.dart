@@ -1,5 +1,4 @@
 // lib/presentation/booking/data/booking_models.dart
-import 'package:quadraclub_app/presentation/home/data/court_model.dart';
 
 enum MatchType { open, private }
 
@@ -73,17 +72,6 @@ const List<InvitablePlayerModel> dummyPlayers = [
       name: 'Laura Bennett',
       avatarUrl: 'https://i.pravatar.cc/150?img=17'),
 ];
-
-/// TODO: replace with a real `price` field on CourtModel.
-extension CourtPriceExtension on CourtModel {
-  double get demoPricePerBooking => 120.0;
-}
-
-/// TODO: replace with a real `amenities` field on CourtModel.
-extension CourtAmenitiesExtension on CourtModel {
-  List<String> get demoAmenities =>
-      const ['Shower', 'Parking', 'Indoor Court', 'Outdoor Court'];
-}
 
 String formatPrice(double amount) => '\$${amount.toStringAsFixed(2)}';
 

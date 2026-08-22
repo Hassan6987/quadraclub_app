@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 
 class PlacePrediction {
   final String description;

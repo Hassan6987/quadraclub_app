@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/onboarding/onboarding_screens.dart';
 import 'package:quadraclub_app/utils/components/safe_area_wrapper.dart';
 
@@ -38,7 +39,9 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthBloc()..add(AuthStarted())),
-        // BlocProvider(create: (context) => HomeBloc()),
+        BlocProvider(create: (context) =>
+        CourtsBloc()
+          ..add(LoadCourts())),
         // BlocProvider(create: (context) => TeamRosterBloc()),
         // BlocProvider(create: (context) => TeamsBloc()),
       ],

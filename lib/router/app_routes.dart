@@ -1,16 +1,13 @@
-import 'package:quadraclub_app/presentation/authentication/ui/signup/about_you_screen.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/forget_password.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dart';
 import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
-import 'package:quadraclub_app/presentation/home/ui/widgets/notification_screen.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/booking_summary_screen.dart';
 import 'package:quadraclub_app/presentation/notifications/ui/notification_screen.dart';
 import 'package:quadraclub_app/presentation/profile/ui/my_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/delete_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/edit_profile.dart';
-import 'package:quadraclub_app/presentation/profile/ui/screens/my_profile.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/privacy_policy.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/terms_screen.dart';
 import 'package:quadraclub_app/presentation/profile_creation/ui/confirmation.dart';
@@ -60,8 +57,6 @@ class AppGenerateRoute {
         return _navigateScreen(const TermsScreen());
       case RouteName.privacyPolicyScreen:
         return _navigateScreen(const PrivacyPolicy());
-      case RouteName.myProfileScreen:
-        return _navigateScreen(MyProfile());
       case RouteName.editProfileScreen:
         return _navigateScreen(EditProfile());
       case RouteName.deleteAccountScreen:

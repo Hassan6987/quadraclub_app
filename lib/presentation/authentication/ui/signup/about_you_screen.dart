@@ -3,7 +3,7 @@ import 'package:quadraclub_app/data/places_service.dart';
 import 'package:quadraclub_app/presentation/authentication/data/model/signup_data.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/signup/game_preference_screen.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/signup/onboarding_app_bar.dart';
-import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 import 'package:quadraclub_app/utils/const/dimensions_resource.dart';
 

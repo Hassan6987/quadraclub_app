@@ -1,6 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
-import 'package:quadraclub_app/presentation/home/data/location_result.dart';
+import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
+import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/matches/data/dummy_match_data.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
@@ -73,7 +74,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   Widget build(BuildContext context) {
     if (_isMapView) {
       return CourtMapView(
-        courts: dummyCourts,
+        courts: context.read<CourtsState>().courts,
         currentLocation: _currentLocation,
         initialCenter: _currentLatLng,
         onLocationChanged: (LocationResult location) {
@@ -90,8 +91,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
             _filterDistance = dist;
           });
         },
-        selectedSport: _selectedSport,
-        onSportSelected: (sport) => setState(() => _selectedSport = sport),
+        selectedSport: _selectedSport?.label ?? '',
+        onSportSelected: (sport) => setState(() {}),
       );
     }
 

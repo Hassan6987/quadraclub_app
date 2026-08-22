@@ -1,11 +1,11 @@
 // lib/presentation/booking/ui/payment_method_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
-import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
-  final CourtModel court;
+  final Court court;
   final String dateLabel;
   final String timeLabel;
   final String blockLabel;
@@ -118,13 +118,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.court.name,
+                                widget.court.courtName ?? '',
                                 style: AppStyles.w600f16inter.copyWith(
                                   color: kDarkTextColor,
                                 ),
                               ),
                               Text(
-                                '${widget.court.location} • ${widget.court.distanceMiles} miles',
+                                '${widget.court.location} • 2.5 miles',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),

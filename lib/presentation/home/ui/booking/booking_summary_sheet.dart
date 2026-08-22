@@ -1,13 +1,12 @@
 // lib/presentation/booking/ui/widgets/booking_summary_sheet.dart
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
-import 'package:quadraclub_app/presentation/home/data/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/match_config_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
 
 class BookingSummarySheet extends StatefulWidget {
-  final CourtModel court;
-  final SportType sport;
+  final Court court;
   final DateTime date;
   final int blockIndex;
   final String startTime;
@@ -15,7 +14,6 @@ class BookingSummarySheet extends StatefulWidget {
   const BookingSummarySheet({
     super.key,
     required this.court,
-    required this.sport,
     required this.date,
     required this.blockIndex,
     required this.startTime,
@@ -23,8 +21,7 @@ class BookingSummarySheet extends StatefulWidget {
 
   static Future<void> show(
     BuildContext context, {
-    required CourtModel court,
-    required SportType sport,
+        required Court court,
     required DateTime date,
     required int blockIndex,
     required String startTime,
@@ -38,7 +35,6 @@ class BookingSummarySheet extends StatefulWidget {
       ),
       builder: (context) => BookingSummarySheet(
         court: court,
-        sport: sport,
         date: date,
         blockIndex: blockIndex,
         startTime: startTime,
@@ -101,7 +97,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             dateLabel: _dateLabel,
             timeLabel: '${widget.startTime}-$_endTime',
             blockLabel: 'Block ${_selectedBlock + 1}',
-            amount: widget.court.demoPricePerBooking,
+            amount: widget.court.sports?.first.hourlyRate?.toDouble() ?? 10.0,
           ),
         ),
       );
@@ -188,13 +184,13 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.court.name,
+                          widget.court.courtName ?? '',
                           style: AppStyles.w600f16inter.copyWith(
                             color: kDarkTextColor,
                           ),
                         ),
                         Text(
-                          '${widget.court.location} • ${widget.court.distanceMiles} miles',
+                          '${widget.court.location} • 2.5 miles',
                           style: AppStyles.w400f14inter.copyWith(
                             color: kGreyTextColor,
                           ),
@@ -372,8 +368,10 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 child: Center(
                   child: Text(
                     isIndividual
-                        ? 'Book - ${formatPrice(widget.court.demoPricePerBooking)}'
-                        : 'Configure Match - ${formatPrice(widget.court.demoPricePerBooking)}',
+                        ? 'Book - ${formatPrice(widget.court.sports?.first
+                        .hourlyRate?.toDouble() ?? 10.0)}'
+                        : 'Configure Match - ${formatPrice(widget.court.sports
+                        ?.first.hourlyRate?.toDouble() ?? 10.0)}',
                     style: AppStyles.w500f16inter.copyWith(
                       color: kDarkTextColor,
                     ),
