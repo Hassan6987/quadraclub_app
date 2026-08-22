@@ -53,8 +53,6 @@ export 'package:quadraclub_app/presentation/profile/ui/profile_screen.dart';
 export 'package:quadraclub_app/presentation/profile/ui/widgets/common_card.dart';
 export 'package:quadraclub_app/presentation/profile/ui/widgets/profile_header.dart';
 export 'package:quadraclub_app/presentation/profile/ui/widgets/statistics_card.dart';
-export 'package:quadraclub_app/presentation/profile_creation/ui/widgets/profile_creation_app_bar.dart';
-export 'package:quadraclub_app/presentation/profile_creation/ui/widgets/selection_button.dart';
 export 'package:quadraclub_app/presentation/splash.dart';
 export 'package:quadraclub_app/router/app_routes.dart';
 export 'package:quadraclub_app/theme.dart';
