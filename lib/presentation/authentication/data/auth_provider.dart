@@ -18,9 +18,10 @@ class AuthProvider {
     }
   }
 
-
-  Future<UserModel> login(
-      {required String email, required String password}) async {
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await authServices.signIn(
         email: email,
@@ -105,16 +106,18 @@ class AuthProvider {
   }
 
   Future<void> updateProfile({
-    required String name,
-    String? college,
+    String? name,
+    String? location,
     File? image,
+    DateTime? dob,
   }) async {
     try {
-      // await authServices.updateProfile(
-      //   name: name,
-      //   college: college,
-      //   profile: image,
-      // );
+      await authServices.updateProfile(
+        name: name,
+        location: location,
+        image: image,
+        dob: dob,
+      );
     } catch (e) {
       rethrow;
     }

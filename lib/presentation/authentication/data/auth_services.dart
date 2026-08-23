@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:quadraclub_app/data/base_api_service.dart';
@@ -21,11 +22,9 @@ class AuthServices extends BaseApiProvider {
   Future<Response> resendOTP({required String email}) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/auth/resend-otp',
-          data: {
-            "email": email
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/auth/resend-otp',
+        data: {"email": email},
       );
       return response;
     } on DioException catch (e) {
@@ -35,8 +34,10 @@ class AuthServices extends BaseApiProvider {
     }
   }
 
-  Future<Response> signIn(
-      {required String email, required String password}) async {
+  Future<Response> signIn({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await request(
         method: HttpMethod.post,
@@ -71,11 +72,7 @@ class AuthServices extends BaseApiProvider {
       final response = await request(
         method: HttpMethod.post,
         endpoint: '/api/auth/reset-password',
-        data: {
-          "email": email,
-          "otp": otp,
-          "newPassword": password,
-        },
+        data: {"email": email, "otp": otp, "newPassword": password},
       );
       return response;
     } catch (e) {
@@ -103,8 +100,10 @@ class AuthServices extends BaseApiProvider {
         "password": data.password,
         "dateOfBirth": data.dateOfBirth,
         "role": "Player",
-        "profilePhoto": await MultipartFile.fromFile(data.profilePhotoPath!,
-            filename: data.profilePhotoPath!.split('/').last),
+        "profilePhoto": await MultipartFile.fromFile(
+          data.profilePhotoPath!,
+          filename: data.profilePhotoPath!.split('/').last,
+        ),
       });
       final response = await request(
         method: HttpMethod.post,
@@ -133,26 +132,7 @@ class AuthServices extends BaseApiProvider {
     }
   }
 
-  Future<Response> setPassword({
-    required String email,
-    required String password,
-    required String role,
-  }) async {
-    try {
-      final response = await request(
-        method: HttpMethod.post,
-        endpoint: '/api/auth/complete-signup/',
-        data: {"email": email, "password": password, "role": role},
-      );
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<Response> createProfile({
-    required SignupData data
-  }) async {
+  Future<Response> createProfile({required SignupData data}) async {
     try {
       final sportsInfo = data.selectedSports.map((sport) {
         return {
@@ -169,12 +149,40 @@ class AuthServices extends BaseApiProvider {
           "location": data.location,
           "gender": data.gender,
           "dominantHand": data.dominantHand,
-          "sportsInfo": sportsInfo
+          "sportsInfo": sportsInfo,
         },
       );
       return response;
     } catch (e) {
       throw Exception("Failed to create profile: $e");
+    }
+  }
+
+  Future<Response> updateProfile({
+    String? name,
+    String? location,
+    File? image,
+    DateTime? dob,
+  }) async {
+    try {
+      FormData formData = FormData.fromMap({
+        "fullName": ?name,
+        "dateOfBirth": ?dob,
+        "location": ?location,
+        if (image != null)
+          "profilePhoto": await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+          ),
+      });
+      final response = await request(
+        method: HttpMethod.post,
+        endpoint: '/api/auth/update-profile',
+        data: formData,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
     }
   }
 }

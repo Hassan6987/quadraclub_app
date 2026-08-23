@@ -135,10 +135,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _authenticationProvider.updateProfile(
         name: event.name,
-        college: event.college,
+          location: event.location,
         image: event.profileImage,
+          dob: event.dob
       );
-      await Future.delayed(Duration(seconds: 2));
       final UserModel user = await _authenticationProvider.getUserProfile();
       emit(state.copyWith(status: AuthStateStatus.success, user: user));
     } catch (e) {

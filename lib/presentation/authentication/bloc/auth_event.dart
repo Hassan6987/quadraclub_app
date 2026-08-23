@@ -43,10 +43,13 @@ class SetupProfile extends AuthEvent {
 
 class UpdateProfile extends AuthEvent {
   final String name;
-  final String? college;
+  final String? location;
   final File? profileImage;
+  final DateTime? dob;
 
-  const UpdateProfile({required this.name, this.college, this.profileImage});
+
+  const UpdateProfile(
+      {required this.name, this.location, this.profileImage, this.dob});
 }
 
 class DeleteAccountEvent extends AuthEvent {
