@@ -3,11 +3,9 @@ import '../../../../app_exports.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserProfile profile;
-  final String? imageUrl;
-  final String? name;
+  final UserModel? user;
 
-  const ProfileHeader(
-      {super.key, required this.profile, this.imageUrl, this.name});
+  const ProfileHeader({super.key, required this.profile, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +13,7 @@ class ProfileHeader extends StatelessWidget {
       spacing: getProportionateScreenWidth(12),
       children: [
         AppCachedImage(
-          imageUrl: imageUrl ?? profile.avatarUrl,
+          imageUrl: user?.profilePhoto ?? profile.avatarUrl,
           borderRadius: BorderRadius.circular(200),
           width: 80,
           height: 80,
@@ -25,12 +23,21 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name ?? profile.name,
+                user?.fullName ?? profile.name,
                 style: AppStyles.w600f18inter.copyWith(color: kDarkTextColor),
               ),
               4.heightBox,
               // Sport tags
-              Wrap(
+              if (user?.sportsInfo != null)
+                Wrap(
+                  spacing: 2,
+                  runSpacing: 4,
+                  children: user!.sportsInfo
+                      .map((s) => _SportChip(tag: s))
+                      .toList(),
+                ),
+              if (user?.sportsInfo == null)
+                Wrap(
                 spacing: 2,
                 runSpacing: 4,
                 children: profile.sports
@@ -46,7 +53,7 @@ class ProfileHeader extends StatelessWidget {
 }
 
 class _SportChip extends StatelessWidget {
-  final SportTag tag;
+  final SportsInfo tag;
 
   const _SportChip({required this.tag});
 

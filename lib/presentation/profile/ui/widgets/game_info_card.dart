@@ -1,9 +1,11 @@
 import '/app_exports.dart';
 
 class GameInfoCard extends StatelessWidget {
-  final GameInfo info;
+  final String dominantHand;
+  final String preferredSide;
 
-  const GameInfoCard({super.key, required this.info});
+  const GameInfoCard(
+      {super.key, required this.dominantHand, required this.preferredSide});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +18,9 @@ class GameInfoCard extends StatelessWidget {
             style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           16.heightBox,
-          buildInfoRow(label: 'Dominant Hand', value: info.dominantHand),
+          buildInfoRow(label: 'Dominant Hand', value: dominantHand),
           8.heightBox,
-          buildInfoRow(label: 'Preferred side', value: info.preferredSide),
+          buildInfoRow(label: 'Preferred side', value: preferredSide),
         ],
       ),
     );

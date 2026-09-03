@@ -28,8 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 ProfileHeader(
                   profile: profile,
-                  name: state.user?.name,
-                  imageUrl: state.user?.imageUrl,
+                  user: state.user,
                 ),
                 24.heightBox,
                 StatisticsCard(
@@ -38,7 +37,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onFilterChanged: (f) => setState(() => _filter = f),
                 ),
                 8.heightBox,
-                GameInfoCard(info: profile.gameInfo),
+                GameInfoCard(
+                  dominantHand: state.user?.dominantHand ?? "Unknown",
+                  preferredSide: state.user?.dominantHand ?? 'Unknown',),
                 8.heightBox,
                 FeedbackCard(tags: profile.feedback),
                 8.heightBox,

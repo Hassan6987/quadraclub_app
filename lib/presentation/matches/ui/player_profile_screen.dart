@@ -46,8 +46,6 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           children: [
             ProfileHeader(
               profile: profile,
-              name: widget.player.name,
-              imageUrl: widget.player.avatarAsset ?? "",
             ),
             24.heightBox,
             StatisticsCard(
@@ -56,7 +54,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               onFilterChanged: (f) => setState(() => _filter = f),
             ),
             8.heightBox,
-            GameInfoCard(info: profile.gameInfo),
+            // GameInfoCard(info: profile.gameInfo),
             8.heightBox,
             FeedbackCard(tags: profile.feedback),
             8.heightBox,

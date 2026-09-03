@@ -176,8 +176,8 @@ class AuthServices extends BaseApiProvider {
           ),
       });
       final response = await request(
-        method: HttpMethod.post,
-        endpoint: '/api/auth/update-profile',
+        method: HttpMethod.put,
+        endpoint: '/api/auth/profile',
         data: formData,
       );
       return response;

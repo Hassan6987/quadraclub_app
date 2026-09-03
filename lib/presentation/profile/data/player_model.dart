@@ -5,9 +5,8 @@ enum StatFilter { weekly, monthly, overall }
 class UserProfile {
   final String name;
   final String? avatarUrl;
-  final List<SportTag> sports;
+  final List<SportsInfo> sports;
   final PlayerStats stats;
-  final GameInfo gameInfo;
   final List<FeedbackTag> feedback;
 
   const UserProfile({
@@ -15,16 +14,8 @@ class UserProfile {
     this.avatarUrl,
     required this.sports,
     required this.stats,
-    required this.gameInfo,
     required this.feedback,
   });
-}
-
-class SportTag {
-  final String sport;
-  final String category;
-
-  const SportTag({required this.sport, required this.category});
 }
 
 class PlayerStats {
@@ -39,13 +30,6 @@ class PlayerStats {
     required this.defeats,
     required this.hours,
   });
-}
-
-class GameInfo {
-  final String dominantHand;
-  final String preferredSide;
-
-  const GameInfo({required this.dominantHand, required this.preferredSide});
 }
 
 class FeedbackTag {
@@ -63,17 +47,13 @@ class FeedbackTag {
 final dummyProfile = UserProfile(
   name: 'Alex Johnson',
   avatarUrl: null,
-  sports: const [
-    SportTag(sport: 'Pedal', category: 'Cat 3'),
-    SportTag(sport: 'Tennis', category: 'Cat 2'),
-    SportTag(sport: 'Beach Tennis', category: 'Cat 1'),
-    SportTag(sport: 'Pickleball', category: 'Cat 3'),
+  sports: [
+    SportsInfo(sport: 'Pedal', category: 'Cat 3'),
+    SportsInfo(sport: 'Tennis', category: 'Cat 2'),
+    SportsInfo(sport: 'Beach Tennis', category: 'Cat 1'),
+    SportsInfo(sport: 'Pickleball', category: 'Cat 3'),
   ],
   stats: const PlayerStats(matches: 3, victories: 2, defeats: 1, hours: 4.5),
-  gameInfo: const GameInfo(
-    dominantHand: 'Right',
-    preferredSide: 'Right (Forehand)',
-  ),
   feedback: [
     FeedbackTag(
       icon: Assets.svg.shieldIcon.path,

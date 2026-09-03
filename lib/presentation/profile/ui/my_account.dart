@@ -20,7 +20,13 @@ class _MyAccountState extends State<MyAccount> {
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  File? _image;
+  // Picked photo and "does the form differ from what was loaded" are the
+  // only two things that drive a rebuild outside of text fields (which
+  // already rebuild themselves off their own controller), so each gets
+  // its own ValueNotifier instead of a setState-driven field.
+  final ValueNotifier<File?> _image = ValueNotifier<File?>(null);
+  final ValueNotifier<bool> _hasChanges = ValueNotifier<bool>(false);
+
   String? _initialImageUrl;
 
   // Keep the resolved coordinates alongside the display text, in case
@@ -34,8 +40,6 @@ class _MyAccountState extends State<MyAccount> {
   String _initialLocation = '';
   String _initialDob = '';
 
-  bool _hasChanges = false;
-
   @override
   void initState() {
     super.initState();
@@ -44,18 +48,16 @@ class _MyAccountState extends State<MyAccount> {
     _nameController.addListener(_onFieldChanged);
     _locationController.addListener(_onFieldChanged);
     _dobController.addListener(_onFieldChanged);
+    _image.addListener(_onFieldChanged);
   }
 
   void _loadFromAuthState() {
     final user = context.read<AuthBloc>().state.user;
 
-    _initialName = user?.name ?? '';
-    _initialImageUrl = user?.imageUrl;
-    // NOTE: UserModel currently doesn't expose location/dob fields.
-    // Once the backend/UserModel is updated to include them, populate
-    // _initialLocation / _initialDob from `user` the same way as name.
-    _initialLocation = _locationController.text;
-    _initialDob = _dobController.text;
+    _initialName = user?.fullName ?? '';
+    _initialImageUrl = user?.profilePhoto;
+    _initialLocation = user?.location ?? '';
+    _initialDob = AppUtils.getFormattedDateWithSlashNullable(user?.dateOfBirth);
 
     _nameController.text = _initialName;
     _emailController.text = user?.email ?? '';
@@ -68,20 +70,17 @@ class _MyAccountState extends State<MyAccount> {
         _nameController.text != _initialName ||
         _locationController.text != _initialLocation ||
         _dobController.text != _initialDob ||
-        _image != null;
+        _image.value != null;
 
-    if (changed != _hasChanges) {
-      setState(() => _hasChanges = changed);
-    }
+    // ValueNotifier already no-ops (skips notifying listeners) when the
+    // new value equals the old one, so no manual guard is needed here.
+    _hasChanges.value = changed;
   }
 
   Future<void> _onTapChangePhoto() async {
     final File? img = await ImagePickerUtil.pickFromGallery(context);
     if (img != null) {
-      setState(() {
-        _image = File(img.path);
-      });
-      _onFieldChanged();
+      _image.value = File(img.path);
     }
   }
 
@@ -93,10 +92,10 @@ class _MyAccountState extends State<MyAccount> {
       initialDate: DateTime.now(),
     );
     if (date != null) {
-      setState(() {
-        _dobController.text = AppUtils.getFormattedDateWithSlash(date);
-      });
-      _onFieldChanged();
+      // Setting controller.text notifies its own listeners, which
+      // repaints the TextField and triggers _onFieldChanged above —
+      // no setState needed.
+      _dobController.text = AppUtils.getFormattedDateWithSlash(date);
     }
   }
 
@@ -104,11 +103,8 @@ class _MyAccountState extends State<MyAccount> {
     await ChangeLocationSheet.show(
       context,
       onLocationSelected: (LocationResult location) {
-        setState(() {
-          _selectedLocation = location;
-          _locationController.text = location.address;
-        });
-        _onFieldChanged();
+        _selectedLocation = location;
+        _locationController.text = location.address;
       },
     );
   }
@@ -128,9 +124,8 @@ class _MyAccountState extends State<MyAccount> {
   }
 
   void _onTapUpdate() {
-    if (!_hasChanges) return;
+    if (!_hasChanges.value) return;
 
-    final nameChanged = _nameController.text != _initialName;
     final locationChanged = _locationController.text != _initialLocation;
     final dobChanged = _dobController.text != _initialDob;
 
@@ -140,7 +135,7 @@ class _MyAccountState extends State<MyAccount> {
         // value regardless (it's unchanged if the user didn't edit it).
         name: _nameController.text,
         location: locationChanged ? _locationController.text : null,
-        profileImage: _image, // only non-null when a new photo was picked
+        profileImage: _image.value, // only non-null when a new photo was picked
         dob: dobChanged ? _parseDob(_dobController.text) : null,
       ),
     );
@@ -151,10 +146,13 @@ class _MyAccountState extends State<MyAccount> {
     _nameController.removeListener(_onFieldChanged);
     _locationController.removeListener(_onFieldChanged);
     _dobController.removeListener(_onFieldChanged);
+    _image.removeListener(_onFieldChanged);
     _nameController.dispose();
     _locationController.dispose();
     _dobController.dispose();
     _emailController.dispose();
+    _image.dispose();
+    _hasChanges.dispose();
     super.dispose();
   }
 
@@ -239,10 +237,15 @@ class _MyAccountState extends State<MyAccount> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [CustomLoadingView()],
                   )
-                : CustomActionButton(
-                    buttonText: "Update",
-                    isEnabled: _hasChanges,
-                    onTap: (_hasChanges && !isUpdating) ? _onTapUpdate : null,
+                : ValueListenableBuilder<bool>(
+                    valueListenable: _hasChanges,
+                    builder: (context, hasChanges, _) {
+                      return CustomActionButton(
+                        buttonText: "Update",
+                        isEnabled: hasChanges,
+                        onTap: hasChanges ? _onTapUpdate : null,
+                      );
+                    },
                   ),
           ),
         );
@@ -251,25 +254,25 @@ class _MyAccountState extends State<MyAccount> {
   }
 
   Row _buildHeader() {
-    ImageProvider? networkImage;
-    if (_initialImageUrl != null && _initialImageUrl!.isNotEmpty) {
-      networkImage = NetworkImage(_initialImageUrl!);
-    }
-
     return Row(
       children: [
         Stack(
           alignment: Alignment.bottomRight,
           clipBehavior: Clip.none,
           children: [
-            AppCachedImage(
-              borderRadius: BorderRadius.circular(20),
-              localFile: _image,
-              // Falls back to the user's current photo until a new one is picked.
-              imageUrl: _image == null ? _initialImageUrl : null,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+            ValueListenableBuilder<File?>(
+              valueListenable: _image,
+              builder: (context, image, _) {
+                return AppCachedImage(
+                  borderRadius: BorderRadius.circular(20),
+                  localFile: image,
+                  // Falls back to the user's current photo until a new one is picked.
+                  imageUrl: image == null ? _initialImageUrl : null,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
             Positioned(
               right: -10,

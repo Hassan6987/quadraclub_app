@@ -1,43 +1,111 @@
 class UserModel {
+  UserModel({
+    required this.id,
+    required this.fullName,
+    required this.email,
+    required this.profilePhoto,
+    required this.role,
+    required this.isVerified,
+    required this.dateOfBirth,
+    required this.location,
+    required this.gender,
+    required this.dominantHand,
+    required this.sportsInfo,
+    required this.registrationStep,
+    required this.portfolioBalance,
+  });
+
   final String? id;
-  final String? name;
+  final String? fullName;
   final String? email;
-  final String? imageUrl;
+  final String? profilePhoto;
   final String? role;
-  final bool isVerified;
+  final bool? isVerified;
+  final DateTime? dateOfBirth;
+  final String? location;
+  final String? gender;
+  final String? dominantHand;
+  final List<SportsInfo> sportsInfo;
+  final int? registrationStep;
+  final int? portfolioBalance;
 
-  UserModel(
-      {this.id, this.email, this.name, this.imageUrl, this.role, this.isVerified = true});
-
-  UserModel copyWith(
-      {String? id, String? email, String? name, String? imageUrl, String? role, bool? isVerified}) {
+  UserModel copyWith({
+    String? id,
+    String? fullName,
+    String? email,
+    String? profilePhoto,
+    String? role,
+    bool? isVerified,
+    DateTime? dateOfBirth,
+    String? location,
+    String? gender,
+    String? dominantHand,
+    List<SportsInfo>? sportsInfo,
+    int? registrationStep,
+    int? portfolioBalance,
+  }) {
     return UserModel(
       id: id ?? this.id,
-      name: name ?? this.name,
+      fullName: fullName ?? this.fullName,
       email: email ?? this.email,
-      imageUrl: imageUrl ?? this.imageUrl,
+      profilePhoto: profilePhoto ?? this.profilePhoto,
       role: role ?? this.role,
       isVerified: isVerified ?? this.isVerified,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      location: location ?? this.location,
+      gender: gender ?? this.gender,
+      dominantHand: dominantHand ?? this.dominantHand,
+      sportsInfo: sportsInfo ?? this.sportsInfo,
+      registrationStep: registrationStep ?? this.registrationStep,
+      portfolioBalance: portfolioBalance ?? this.portfolioBalance,
     );
   }
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  factory UserModel.fromJson(Map<String, dynamic> json){
     return UserModel(
-        id: json["_id"],
-        name: json["fullName"],
+      id: json["_id"],
+      fullName: json["fullName"],
       email: json["email"],
-        imageUrl: json['profilePhoto'],
+      profilePhoto: json["profilePhoto"],
       role: json["role"],
-        isVerified: json['isVerified']
+      isVerified: json["isVerified"],
+      dateOfBirth: DateTime.tryParse(json["dateOfBirth"] ?? ""),
+      location: json["location"],
+      gender: json["gender"],
+      dominantHand: json["dominantHand"],
+      sportsInfo: json["sportsInfo"] == null ? [] : List<SportsInfo>.from(
+          json["sportsInfo"]!.map((x) => SportsInfo.fromJson(x))),
+      registrationStep: json["registrationStep"],
+      portfolioBalance: json["portfolioBalance"],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullName": name,
-    "email": email,
-    "profilePhoto": imageUrl,
-    "role": role,
-    "isVerified": isVerified
-  };
+}
+
+class SportsInfo {
+  SportsInfo({
+    required this.sport,
+    required this.category,
+  });
+
+  final String? sport;
+  final String? category;
+
+  SportsInfo copyWith({
+    String? sport,
+    String? category,
+  }) {
+    return SportsInfo(
+      sport: sport ?? this.sport,
+      category: category ?? this.category,
+    );
+  }
+
+  factory SportsInfo.fromJson(Map<String, dynamic> json){
+    return SportsInfo(
+      sport: json["sport"],
+      category: json["category"],
+    );
+  }
+
 }
