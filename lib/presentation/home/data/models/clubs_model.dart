@@ -1,3 +1,5 @@
+import 'package:parsing_util/parsing_util.dart';
+
 class Club {
   Club({
     required this.id,
@@ -14,7 +16,7 @@ class Club {
   final String? id;
   final String? name;
   final String? description;
-  final dynamic photo;
+  final String? photo;
   final String? city;
   final String? state;
   final Coordinates? coordinates;
@@ -25,7 +27,7 @@ class Club {
     String? id,
     String? name,
     String? description,
-    dynamic? photo,
+    String? photo,
     String? city,
     String? state,
     Coordinates? coordinates,
@@ -81,8 +83,8 @@ class Coordinates {
 
   factory Coordinates.fromJson(Map<String, dynamic> json) {
     return Coordinates(
-      latitude: json["latitude"],
-      longitude: json["longitude"],
+      latitude: ParsingUtil.toSafeDouble(json["latitude"]),
+      longitude: ParsingUtil.toSafeDouble(json["longitude"]),
     );
   }
 }
@@ -195,15 +197,23 @@ class Sport {
 }
 
 class WeeklySlot {
-  WeeklySlot({required this.tennis, required this.padel});
-
   final List<Padel> tennis;
   final List<Padel> padel;
+  final List<Padel> pickleball;
+  final List<Padel> beachTennis;
 
-  WeeklySlot copyWith({List<Padel>? tennis, List<Padel>? padel}) {
+  WeeklySlot(
+      {required this.tennis, required this.padel, required this.pickleball, required this.beachTennis});
+
+
+  WeeklySlot copyWith(
+      {List<Padel>? tennis, List<Padel>? padel, List<Padel>? pickleball, List<
+          Padel>? beachTennis}) {
     return WeeklySlot(
       tennis: tennis ?? this.tennis,
       padel: padel ?? this.padel,
+        pickleball: pickleball ?? this.pickleball,
+        beachTennis: beachTennis ?? this.beachTennis
     );
   }
 
@@ -215,6 +225,13 @@ class WeeklySlot {
       padel: json["Padel"] == null
           ? []
           : List<Padel>.from(json["Padel"]!.map((x) => Padel.fromJson(x))),
+      pickleball: json["Pickleball"] == null
+          ? []
+          : List<Padel>.from(json["Pickleball"]!.map((x) => Padel.fromJson(x))),
+      beachTennis: json["beach_tennis"] == null
+          ? []
+          : List<Padel>.from(
+          json["beach_tennis"]!.map((x) => Padel.fromJson(x))),
     );
   }
 }

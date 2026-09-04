@@ -1,13 +1,22 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/search_courts_sheet.dart';
+
+/// The 4 sport types the filter row always shows, regardless of what
+/// happens to be present in the currently loaded clubs.
+const List<String> kAllSportSlugs = [
+  'padel',
+  'tennis',
+  'beach_tennis',
+  'pickleball'
+];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,55 +29,104 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isMapView = false;
   String _currentLocation = 'London, UK';
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
-  String? _selectedSportName;
-  DateTime _selectedDate = DateTime(2025, 4, 1);
+
+  final Set<String> _selectedSports = {};
+
+  // Anchor is fixed once (today, at load time) so the 7-day strip doesn't
+  // shift underneath the user; _selectedDate moves as they tap a day.
+  late final DateTime _anchorDate;
+  late DateTime _selectedDate;
+
   String _searchQuery = '';
 
   String? _filterTimeOfDay;
   String? _filterCity;
 
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _anchorDate = DateTime(now.year, now.month, now.day);
+    _selectedDate = _anchorDate;
+  }
+
   List<DateTime> get _dates =>
-      List.generate(7, (i) => DateTime(2025, 4, 1).add(Duration(days: i)));
+      List.generate(7, (i) => _anchorDate.add(Duration(days: i)));
 
-  List<Court> _filteredCourts(List<Court> courts) {
-    return courts.where((court) {
-      final sports = court.sports ?? [];
+  String _dateKey(DateTime date) {
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
 
-      if (_selectedSportName != null &&
-          !sports.any((s) => s.sportName == _selectedSportName)) {
+  /// Checks whether any court in [club] has an Available slot for
+  /// _selectedDate that falls into the selected time-of-day bucket, for
+  /// any of the currently-selected sports (or any sport if none selected).
+  /// Only Tennis/Padel are individually addressable today because
+  /// WeeklySlot.fromJson only decodes those two keys.
+  bool _hasMatchingSlot(Club club) {
+    final key = _dateKey(_selectedDate);
+    final sportsToCheck = _selectedSports.isEmpty
+        ? kAllSportSlugs.toSet()
+        : _selectedSports;
+
+    for (final court in club.courts) {
+      final daySlots = court.weeklySlots[key];
+      if (daySlots == null) continue;
+
+      final List<Padel> slots = [
+        if (sportsToCheck.contains('tennis')) ...daySlots.tennis,
+        if (sportsToCheck.contains('padel')) ...daySlots.padel,
+        if (sportsToCheck.contains('pickleball'))...daySlots.pickleball,
+        if (sportsToCheck.contains('beach_tennis'))...daySlots.beachTennis,
+      ];
+
+      for (final slot in slots) {
+        if (slot.status != 'Available') continue;
+        final hour = int.tryParse((slot.startTime ?? '')
+            .split(':')
+            .first);
+        if (hour == null) continue;
+
+        if (_filterTimeOfDay == 'Morning' && hour >= 6 && hour < 12) {
+          return true;
+        }
+        if (_filterTimeOfDay == 'Afternoon' && hour >= 12 && hour < 18) {
+          return true;
+        }
+        if (_filterTimeOfDay == 'Night' && (hour >= 18 || hour < 6)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  List<Club> _filteredClubs(List<Club> clubs) {
+    final query = _searchQuery.trim().toLowerCase();
+
+    return clubs.where((club) {
+      if (_selectedSports.isNotEmpty &&
+          !club.sports.any(
+                (s) => _selectedSports.contains(s.toLowerCase()),
+          )) {
         return false;
       }
 
-      if (_searchQuery.isNotEmpty &&
-          !(court.courtName ?? '').toLowerCase().contains(
-              _searchQuery.toLowerCase()) &&
-          !(court.location ?? '').toLowerCase().contains(
-              _searchQuery.toLowerCase())) {
+      if (query.isNotEmpty &&
+          !(club.name ?? '').toLowerCase().contains(query) &&
+          !(club.city ?? '').toLowerCase().contains(query)) {
         return false;
       }
 
       if (_filterCity != null &&
-          (court.city ?? '').toLowerCase() != _filterCity!.toLowerCase()) {
+          (club.city ?? '').toLowerCase() != _filterCity!.toLowerCase()) {
         return false;
       }
 
-      if (_filterTimeOfDay != null) {
-        bool hasMatchingSlot = false;
-        final targetSport = sports.firstWhere(
-              (s) => s.sportName == _selectedSportName,
-          orElse: () => sports.isNotEmpty ? sports.first : Sport(),
-        );
-        for (var slot in targetSport.hourlySlots) {
-          final hour = int.tryParse(slot.split(':')[0]) ?? 0;
-          if (_filterTimeOfDay == 'Morning' && hour >= 6 && hour < 12) {
-            hasMatchingSlot = true;
-          } else if (_filterTimeOfDay == 'Afternoon' && hour >= 12 && hour < 18) {
-            hasMatchingSlot = true;
-          } else if (_filterTimeOfDay == 'Night' && (hour >= 18 || hour < 6)) {
-            hasMatchingSlot = true;
-          }
-        }
-        if (!hasMatchingSlot) return false;
+      if (_filterTimeOfDay != null && !_hasMatchingSlot(club)) {
+        return false;
       }
 
       return true;
@@ -79,17 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<CourtsBloc, CourtsState>(
       builder: (context, state) {
-        final courtsList = _filteredCourts(state.courts);
-        final sportNames = state.courts
-            .expand((c) => c.sports ?? [])
-            .map((s) => s.sportName)
-            .whereType<String>()
-            .toSet()
-            .toList();
+        final clubsList = _filteredClubs(state.courts);
 
         if (_isMapView) {
           return CourtMapView(
-            courts: courtsList,
+            courts: clubsList,
             currentLocation: _currentLocation,
             initialCenter: _currentLatLng,
             onLocationChanged: (LocationResult location) {
@@ -105,9 +157,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 _filterCity = city;
               });
             },
-            selectedSport: _selectedSportName,
+            selectedSport: _selectedSports.isEmpty ? null : _selectedSports
+                .first,
             onSportSelected: (sport) =>
-                setState(() => _selectedSportName = sport),
+                setState(() {
+                  if (sport == null) {
+                    _selectedSports.clear();
+                  } else if (_selectedSports.contains(sport)) {
+                    _selectedSports.remove(sport);
+                  } else {
+                    _selectedSports.add(sport);
+                  }
+                }),
           );
         }
 
@@ -127,15 +188,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: sportNames.length,
+                  itemCount: kAllSportSlugs.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
-                    final sport = sportNames[index];
-                    final isSelected = _selectedSportName == sport;
+                    final sport = kAllSportSlugs[index];
+                    final isSelected = _selectedSports.contains(sport);
+                    final label = '${sport[0].toUpperCase()}${sport
+                        .substring(1)
+                        .replaceAll('_', ' ')}';
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedSportName = isSelected ? null : sport;
+                          if (isSelected) {
+                            _selectedSports.remove(sport);
+                          } else {
+                            _selectedSports.add(sport);
+                          }
                         });
                       },
                       child: Container(
@@ -144,14 +212,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           color: isSelected ? kPrimaryColor : kGreyColor,
                           borderRadius: BorderRadius.circular(12),
-                          border: isSelected ? null : Border.all(
-                              color: kBorderColor),
+                          border: isSelected
+                              ? null
+                              : Border.all(color: kBorderColor),
                         ),
                         child: Center(
                           child: Text(
-                            sport,
-                            style: AppStyles.w400f14inter.copyWith(
-                                color: kDarkTextColor),
+                            label,
+                            style: AppStyles.w400f14inter
+                                .copyWith(color: kDarkTextColor),
                           ),
                         ),
                       ),
@@ -170,9 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           SearchCourtsSheet.show(
                             context,
                             courts: state.courts,
-                            onCourtSelected: (court) {
+                            onCourtSelected: (club) {
                               setState(() {
-                                _searchQuery = court.courtName ?? '';
+                                _searchQuery = club.name ?? '';
                               });
                             },
                           );
@@ -187,15 +256,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
                             children: [
-                              const Icon(Icons.search, color: kDarkTextColor,
-                                  size: 20),
+                              const Icon(Icons.search,
+                                  color: kDarkTextColor, size: 20),
                               const SizedBox(width: 8),
                               Text(
                                 _searchQuery.isNotEmpty
                                     ? _searchQuery
                                     : 'Search by name...',
-                                style: AppStyles.w400f14inter.copyWith(
-                                    color: kDarkTextColor),
+                                style: AppStyles.w400f14inter
+                                    .copyWith(color: kDarkTextColor),
                               ),
                             ],
                           ),
@@ -214,7 +283,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               _filterTimeOfDay = timeOfDay;
                               _filterCity = city;
                             });
-                          }, initialDistance: 2.5,
+                          },
+                          initialDistance: 2.5,
                         );
                       },
                       child: Container(
@@ -246,8 +316,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: Border.all(color: kBorderColor),
                         ),
                         child: const Center(
-                          child: Icon(
-                              Icons.map_outlined, color: kDarkTextColor),
+                          child: Icon(Icons.map_outlined,
+                              color: kDarkTextColor),
                         ),
                       ),
                     ),
@@ -262,25 +332,25 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               12.heightBox,
               Expanded(
-                child: courtsList.isEmpty
+                child: clubsList.isEmpty
                     ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.location_off_outlined, size: 64,
-                          color: Colors.grey[400]),
+                      Icon(Icons.location_off_outlined,
+                          size: 64, color: Colors.grey[400]),
                       const SizedBox(height: 16),
                       Text(
                         'No courts match your search/filters.',
-                        style: AppStyles.w500f14inter.copyWith(
-                            color: kTextColor),
+                        style: AppStyles.w500f14inter
+                            .copyWith(color: kTextColor),
                       ),
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () {
                           setState(() {
                             _searchQuery = '';
-                            _selectedSportName = null;
+                            _selectedSports.clear();
                             _filterTimeOfDay = null;
                             _filterCity = null;
                           });
@@ -291,17 +361,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )
                     : ListView.builder(
-                  itemCount: courtsList.length,
+                  itemCount: clubsList.length,
                   padding: const EdgeInsets.only(bottom: 24),
                   itemBuilder: (context, index) {
                     return CourtCardWidget(
-                      court: courtsList[index],
+                      club: clubsList[index],
+                      selectedDate: _selectedDate,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                CourtDetailScreen(court: courtsList[index]),
+                                CourtDetailScreen(club: clubsList[index]),
                           ),
                         );
                       },

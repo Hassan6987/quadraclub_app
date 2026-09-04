@@ -6,7 +6,7 @@ class CourtsServices extends BaseApiProvider {
     try {
       final response = await request(
         method: HttpMethod.get,
-        endpoint: '/api/court',
+        endpoint: '/api/clubs/slots',
       );
       return response;
     } on DioException catch (e) {

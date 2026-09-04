@@ -15,6 +15,9 @@ class $AssetsPngGen {
   const $AssetsPngGen();
 
   final AssetGenImage appIcon = const AssetGenImage('assets/png/app_icon.png');
+  final AssetGenImage clubLogo = const AssetGenImage(
+    'assets/png/clubLogo.jpeg',
+  );
   final AssetGenImage onboardingOne = const AssetGenImage(
     'assets/png/onboarding_one.jpg',
   );

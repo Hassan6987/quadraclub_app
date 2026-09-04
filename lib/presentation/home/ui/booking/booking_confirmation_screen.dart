@@ -1,16 +1,16 @@
 // lib/presentation/booking/ui/confirmation_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
-  final Court court;
+  final Club club;
   final String dateLabel;
   final String timeLabel;
   final String blockLabel;
 
   const BookingConfirmationScreen({
     super.key,
-    required this.court,
+    required this.club,
     required this.dateLabel,
     required this.timeLabel,
     required this.blockLabel,
@@ -84,7 +84,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: AppCachedImage(
-                        imageUrl: court.imageUrl,
+                        imageUrl: club.photo,
                         width: double.infinity,
                         height: 150,
                       ),
@@ -97,12 +97,12 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ).withPaddingSymmetric(10, 0),
                     4.heightBox,
                     Text(
-                      court.courtName ?? '',
+                      club.name ?? '',
                       style: AppStyles.w600f16inter.copyWith(
                           color: kDarkTextColor),
                     ).withPaddingSymmetric(10, 0),
                     Text(
-                      '${court.location} • 2.5 miles',
+                      '${club.city} • 2.5 miles',
                       style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor),
                     ).withPaddingSymmetric(10, 0),

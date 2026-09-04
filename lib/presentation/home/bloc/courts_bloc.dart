@@ -1,8 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quadraclub_app/presentation/home/data/courts_repository.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 
+import '../../../app_exports.dart';
 import '../../../di/locator.dart';
 
 part 'courts_event.dart';

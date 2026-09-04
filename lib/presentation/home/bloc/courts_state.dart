@@ -5,7 +5,7 @@ enum CourtStateStatus { initial, loading, success, failure }
 class CourtsState extends Equatable {
   final CourtStateStatus status;
   final String? error;
-  final List<Court> courts;
+  final List<Club> courts;
 
   const CourtsState({
     this.status = CourtStateStatus.initial,
@@ -19,7 +19,7 @@ class CourtsState extends Equatable {
   CourtsState copyWith({
     CourtStateStatus? status,
     String? error,
-    List<Court>? courts,
+    List<Club>? courts,
   }) {
     return CourtsState(
       status: status ?? this.status,

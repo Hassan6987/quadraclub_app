@@ -1,22 +1,23 @@
 // lib/presentation/booking/ui/payment_method_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
 
+import '../../data/booking/booking_models.dart';
+
 class PaymentMethodScreen extends StatefulWidget {
+  final Club club;
   final Court court;
   final String dateLabel;
   final String timeLabel;
-  final String blockLabel;
   final double amount;
 
   const PaymentMethodScreen({
     super.key,
+    required this.club,
     required this.court,
     required this.dateLabel,
     required this.timeLabel,
-    required this.blockLabel,
     required this.amount,
   });
 
@@ -34,6 +35,17 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   static const double _serviceFee = 2.0;
   double get _total => widget.amount + _serviceFee;
 
+  String get _photoUrl =>
+      widget.club.photo is String ? widget.club.photo as String : '';
+
+  String get _locationLabel {
+    final city = widget.club.city ?? '';
+    final state = widget.club.state ?? '';
+    if (city.isEmpty) return state;
+    if (state.isEmpty) return city;
+    return '$city, $state';
+  }
+
   @override
   void dispose() {
     _cardholderController.dispose();
@@ -49,10 +61,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => BookingConfirmationScreen(
-          court: widget.court,
+          club: widget.club,
+
           dateLabel: widget.dateLabel,
-          timeLabel: widget.timeLabel,
-          blockLabel: widget.blockLabel,
+          timeLabel: widget.timeLabel, blockLabel: widget.court.courtName ?? '',
         ),
       ),
     );
@@ -107,7 +119,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: AppCachedImage(
-                            imageUrl: widget.court.imageUrl,
+                            imageUrl: _photoUrl,
                             width: 95,
                             height: 95,
                           ),
@@ -118,19 +130,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.court.courtName ?? '',
+                                widget.club.name ?? '',
                                 style: AppStyles.w600f16inter.copyWith(
                                   color: kDarkTextColor,
                                 ),
                               ),
                               Text(
-                                '${widget.court.location} • 2.5 miles',
+                                '${widget.court.courtName ??
+                                    ''} • $_locationLabel',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
                               ),
                               Text(
-                                '${widget.dateLabel} | ${widget.timeLabel} | ${widget.blockLabel}',
+                                '${widget.dateLabel} | ${widget.timeLabel}',
                                 style: AppStyles.w500f12inter.copyWith(
                                   color: kLightGreenColor,
                                 ),
@@ -187,11 +200,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.lock_outline,
-                        size: 14,
-                        color: kGreyTextColor,
-                      ),
+                      const Icon(Icons.lock_outline,
+                          size: 14, color: kGreyTextColor),
                       const SizedBox(width: 6),
                       Text(
                         'Secure Encrypted Payment',
@@ -221,7 +231,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Court Fee (2 hrs)',
+                              'Court Fee',
                               style: AppStyles.w400f14inter.copyWith(
                                 color: kGreyTextColor,
                               ),
@@ -316,11 +326,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 }
 
-Widget buildTextField(
-  TextEditingController controller,
-  String hint, {
-  IconData? icon,
-}) {
+Widget buildTextField(TextEditingController controller,
+    String hint, {
+      IconData? icon,
+    }) {
   return Container(
     height: 48,
     padding: const EdgeInsets.symmetric(horizontal: 14),

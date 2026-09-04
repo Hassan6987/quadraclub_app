@@ -1,22 +1,24 @@
 // lib/presentation/booking/ui/match_config_screen.dart
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/invite_player_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
 
 class MatchConfigScreen extends StatefulWidget {
+  final Club club;
   final Court court;
   final String dateLabel;
   final String timeLabel;
-  final String blockLabel;
+  final double amount;
 
   const MatchConfigScreen({
     super.key,
+    required this.club,
     required this.court,
     required this.dateLabel,
     required this.timeLabel,
-    required this.blockLabel,
+    required this.amount,
   });
 
   @override
@@ -36,11 +38,21 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     if (_matchType == MatchType.private) {
       return PaymentSplitOption.values;
     }
-    // Open matches: "pay all, no splitting" doesn't apply since anyone can join.
     return const [
       PaymentSplitOption.payAllReceiveLater,
       PaymentSplitOption.payOnlyMyPart,
     ];
+  }
+
+  String get _photoUrl =>
+      widget.club.photo is String ? widget.club.photo as String : '';
+
+  String get _locationLabel {
+    final city = widget.club.city ?? '';
+    final state = widget.club.state ?? '';
+    if (city.isEmpty) return state;
+    if (state.isEmpty) return city;
+    return '$city, $state';
   }
 
   Future<void> _openInvitePlayers() async {
@@ -58,11 +70,11 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => PaymentMethodScreen(
+          club: widget.club,
           court: widget.court,
           dateLabel: widget.dateLabel,
           timeLabel: widget.timeLabel,
-          blockLabel: widget.blockLabel,
-          amount: widget.court.sports?.first.hourlyRate?.toDouble() ?? 10.0,
+          amount: widget.amount,
         ),
       ),
     );
@@ -121,7 +133,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: AppCachedImage(
-                            imageUrl: widget.court.imageUrl,
+                            imageUrl: _photoUrl,
                             width: 95,
                             height: 95,
                           ),
@@ -132,19 +144,20 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.court.courtName ?? '',
+                                widget.club.name ?? '',
                                 style: AppStyles.w600f16inter.copyWith(
                                   color: kDarkTextColor,
                                 ),
                               ),
                               Text(
-                                '${widget.court.location} • 2.5 miles',
+                                '${widget.court.courtName ??
+                                    ''} • $_locationLabel',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
                               ),
                               Text(
-                                '${widget.dateLabel} | ${widget.timeLabel} | ${widget.blockLabel}',
+                                '${widget.dateLabel} | ${widget.timeLabel}',
                                 style: AppStyles.w500f12inter.copyWith(
                                   color: kLightGreenColor,
                                 ),
@@ -174,17 +187,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               color: isSelected ? kPrimaryColor : kWhiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(
-                                  type == MatchType.open ? 40 : 0,
-                                ),
+                                    type == MatchType.open ? 40 : 0),
                                 bottomLeft: Radius.circular(
-                                  type == MatchType.open ? 40 : 0,
-                                ),
+                                    type == MatchType.open ? 40 : 0),
                                 topRight: Radius.circular(
-                                  type == MatchType.open ? 0 : 40,
-                                ),
+                                    type == MatchType.open ? 0 : 40),
                                 bottomRight: Radius.circular(
-                                  type == MatchType.open ? 0 : 40,
-                                ),
+                                    type == MatchType.open ? 0 : 40),
                               ),
                               border: isSelected
                                   ? null
@@ -246,17 +255,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               color: isSelected ? kPrimaryColor : kWhiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(
-                                  format == BookingFormat.single ? 20 : 0,
-                                ),
+                                    format == BookingFormat.single ? 20 : 0),
                                 bottomLeft: Radius.circular(
-                                  format == BookingFormat.single ? 20 : 0,
-                                ),
+                                    format == BookingFormat.single ? 20 : 0),
                                 topRight: Radius.circular(
-                                  format == BookingFormat.single ? 0 : 20,
-                                ),
+                                    format == BookingFormat.single ? 0 : 20),
                                 bottomRight: Radius.circular(
-                                  format == BookingFormat.single ? 0 : 20,
-                                ),
+                                    format == BookingFormat.single ? 0 : 20),
                               ),
                               border: isSelected
                                   ? null
@@ -316,11 +321,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.search,
-                                  color: kTextColor,
-                                  size: 18,
-                                ),
+                                const Icon(Icons.search,
+                                    color: kTextColor, size: 18),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Search players...',
@@ -352,9 +354,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 10,
-                                      backgroundImage: NetworkImage(
-                                        player.avatarUrl,
-                                      ),
+                                      backgroundImage:
+                                      NetworkImage(player.avatarUrl),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
@@ -366,8 +367,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     const SizedBox(width: 6),
                                     GestureDetector(
                                       onTap: () => setState(
-                                        () => _invitedPlayers.remove(player),
-                                      ),
+                                              () =>
+                                              _invitedPlayers.remove(player)),
                                       child: const Icon(
                                         Icons.close,
                                         size: 14,
@@ -456,8 +457,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: CustomActionButton(
-              buttonText:
-                  'Book - ${formatPrice(widget.court.sports?.first.hourlyRate?.toDouble() ?? 10.0)}',
+              buttonText: 'Book - ${formatPrice(widget.amount)}',
               onTap: _onBookTap,
             ),
           ),

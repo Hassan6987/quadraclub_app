@@ -1,12 +1,12 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 
 class CourtMapView extends StatefulWidget {
-  final List<Court> courts;
+  final List<Club> courts;
   final String currentLocation;
   final LatLng initialCenter;
   final Function(LocationResult) onLocationChanged;
@@ -37,8 +37,7 @@ class _CourtMapViewState extends State<CourtMapView> {
   int _activePageIndex = 0;
 
   // Only courts we can actually place a pin for.
-  List<Court> get _mappableCourts =>
-      widget.courts.where((c) => c.hasCoordinates).toList();
+  List<Club> get _mappableCourts => widget.courts.toList();
 
   // All sport names across the passed-in courts, for the filter row.
   List<String> get _allSportNames =>
@@ -73,7 +72,8 @@ class _CourtMapViewState extends State<CourtMapView> {
       final isActive = index == _activePageIndex;
       return Marker(
         markerId: MarkerId(court.id ?? 'court_$index'),
-        position: LatLng(court.latitude!, court.longitude!),
+        position: LatLng(
+            court.coordinates!.latitude!, court.coordinates!.longitude!),
         icon: BitmapDescriptor.defaultMarkerWithHue(
           isActive ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed,
         ),
@@ -87,9 +87,9 @@ class _CourtMapViewState extends State<CourtMapView> {
     final courts = _mappableCourts;
     if (index >= courts.length) return;
     final court = courts[index];
-    if (!court.hasCoordinates) return;
     _mapController?.animateCamera(
-      CameraUpdate.newLatLng(LatLng(court.latitude!, court.longitude!)),
+      CameraUpdate.newLatLng(
+          LatLng(court.coordinates!.latitude!, court.coordinates!.longitude!)),
     );
   }
 
@@ -359,7 +359,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: AppCachedImage(
-                                      imageUrl: court.imageUrl,
+                                      imageUrl: court.photo ?? '',
                                       width: 90,
                                       height: 90,
                                     ),
@@ -373,7 +373,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                                           .center,
                                       children: [
                                         Text(
-                                          court.courtName ?? '',
+                                          court.name ?? '',
                                           style: AppStyles.w600f14inter
                                               .copyWith(
                                             color: kDarkTextColor,
@@ -384,7 +384,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          court.location ?? '',
+                                          court.city ?? '',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: AppStyles.w400f12inter
@@ -409,7 +409,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                                                       .circular(100),
                                                 ),
                                                 child: Text(
-                                                  sport.sportName ?? '',
+                                                  sport ?? '',
                                                   style: AppStyles.w500f8inter
                                                       .copyWith(
                                                     color: kDarkTextColor,

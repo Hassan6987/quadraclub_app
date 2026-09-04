@@ -1,10 +1,10 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/models/court_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/mock_keyboard.dart';
 
 class SearchCourtsSheet extends StatefulWidget {
-  final List<Court> courts;
-  final Function(Court) onCourtSelected;
+  final List<Club> courts;
+  final Function(Club) onCourtSelected;
 
   const SearchCourtsSheet({
     super.key,
@@ -13,8 +13,8 @@ class SearchCourtsSheet extends StatefulWidget {
   });
 
   static Future<void> show(BuildContext context, {
-    required List<Court> courts,
-    required Function(Court) onCourtSelected,
+    required List<Club> courts,
+    required Function(Club) onCourtSelected,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -36,7 +36,7 @@ class SearchCourtsSheet extends StatefulWidget {
 
 class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
   final TextEditingController _controller = TextEditingController();
-  List<Court> _searchResults = [];
+  List<Club> _searchResults = [];
 
   @override
   void initState() {
@@ -58,8 +58,8 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
     } else {
       setState(() {
         _searchResults = widget.courts.where((court) {
-          final name = (court.courtName ?? '').toLowerCase();
-          final location = (court.location ?? '').toLowerCase();
+          final name = (court.name ?? '').toLowerCase();
+          final location = (court.city ?? '').toLowerCase();
           return name.contains(query) || location.contains(query);
         }).toList();
       });
@@ -142,18 +142,18 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: AppCachedImage(
-                      imageUrl: court.imageUrl,
+                      imageUrl: court.photo,
                       width: 50,
                       height: 50,
                     ),
                   ),
                   title: Text(
-                    court.courtName ?? '',
+                    court.name ?? '',
                     style: AppStyles.w600f14inter.copyWith(
                         color: kDarkTextColor),
                   ),
                   subtitle: Text(
-                    [court.location, court.courtOwner]
+                    [court.city, court.city]
                         .where((s) => s != null && s.isNotEmpty)
                         .join(' • '),
                     style: AppStyles.w400f12inter.copyWith(color: kTextColor),
