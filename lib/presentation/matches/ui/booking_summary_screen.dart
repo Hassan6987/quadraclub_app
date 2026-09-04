@@ -1,5 +1,4 @@
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
-import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/request_sent_dialog.dart';
@@ -229,32 +228,32 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       ),
       child: Column(
         children: [
-          buildTextField(
-            _cardHolderController,
-            'Cardholder name',
-            icon: Icons.person_outline,
-          ),
-          10.heightBox,
-          buildTextField(
-            _cardNumberController,
-            'Card number',
-            icon: Icons.credit_card,
-          ),
-          10.heightBox,
-          Row(
-            children: [
-              Expanded(
-                child: buildTextField(
-                  _expiryController,
-                  'MM/YY',
-                ),
-              ),
-              10.widthBox,
-              Expanded(
-                child: buildTextField(_cvvController, 'CVV'),
-              ),
-            ],
-          ),
+          // buildTextField(
+          //   _cardHolderController,
+          //   'Cardholder name',
+          //   icon: Icons.person_outline,
+          // ),
+          // 10.heightBox,
+          // buildTextField(
+          //   _cardNumberController,
+          //   'Card number',
+          //   icon: Icons.credit_card,
+          // ),
+          // 10.heightBox,
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: buildTextField(
+          //         _expiryController,
+          //         'MM/YY',
+          //       ),
+          //     ),
+          //     10.widthBox,
+          //     Expanded(
+          //       child: buildTextField(_cvvController, 'CVV'),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

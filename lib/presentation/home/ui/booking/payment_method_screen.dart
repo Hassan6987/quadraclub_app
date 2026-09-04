@@ -1,7 +1,9 @@
-// lib/presentation/booking/ui/payment_method_screen.dart
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:credit_card_validator/credit_card_validator.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../data/booking/booking_models.dart';
 
@@ -26,45 +28,192 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _validator = CreditCardValidator();
+
   final _cardholderController = TextEditingController();
   final _cardNumberController = TextEditingController();
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
+
   bool _agreedToTerms = false;
+  bool _fieldsValid = false;
 
-  static const double _serviceFee = 2.0;
-  double get _total => widget.amount + _serviceFee;
+  static const double _serviceFee = 2;
 
-  String get _photoUrl =>
-      widget.club.photo is String ? widget.club.photo as String : '';
+  double get _total => widget.amount + (widget.amount * _serviceFee) / 100;
 
-  String get _locationLabel {
-    final city = widget.club.city ?? '';
-    final state = widget.club.state ?? '';
-    if (city.isEmpty) return state;
-    if (state.isEmpty) return city;
-    return '$city, $state';
+  @override
+  void initState() {
+    super.initState();
+
+    _cardholderController.addListener(_revalidate);
+    _cardNumberController.addListener(_revalidate);
+    _expiryController.addListener(_revalidate);
+    _cvvController.addListener(_revalidate);
   }
+
+  /// Calculates the overall form validity silently.
+  ///
+  /// IMPORTANT:
+  /// Do not call _formKey.currentState?.validate() here.
+  /// Calling FormState.validate() would force all TextFormFields
+  /// to show their validation errors even when the user hasn't
+  /// interacted with them yet.
+  void _revalidate() {
+    final cardholderValid =
+        _validateCardholder(_cardholderController.text) == null;
+
+    final cardNumberValid =
+        _validateCardNumber(_cardNumberController.text) == null;
+
+    final expiryValid = _validateExpiry(_expiryController.text) == null;
+
+    final cvvValid = _validateCVV(_cvvController.text) == null;
+
+    final isValid =
+        cardholderValid && cardNumberValid && expiryValid && cvvValid;
+
+    if (isValid != _fieldsValid && mounted) {
+      setState(() {
+        _fieldsValid = isValid;
+      });
+    }
+  }
+
+  String? _validateCardholder(String? value) {
+    final v = value?.trim() ?? '';
+
+    if (v.isEmpty) {
+      return 'Enter the cardholder name';
+    }
+
+    if (!RegExp(r'^[a-zA-Z\s]{2,}$').hasMatch(v)) {
+      return 'Enter a valid name';
+    }
+
+    return null;
+  }
+
+  String? _validateCardNumber(String? value) {
+    final digits = (value ?? '').replaceAll(RegExp(r'\s'), '');
+
+    if (digits.isEmpty) {
+      return 'Enter your card number';
+    }
+
+    final result = _validator.validateCCNum(digits);
+
+    if (!result.isValid) {
+      return 'Enter a valid Visa/Mastercard/Amex number';
+    }
+
+    return null;
+  }
+
+  String? _validateExpiry(String? value) {
+    final v = value?.trim() ?? '';
+
+    if (v.isEmpty) {
+      return 'Enter expiry date';
+    }
+
+    // Expected format is MM/YY.
+    if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(v)) {
+      return 'Enter expiry as MM/YY';
+    }
+
+    final parts = v.split('/');
+
+    final month = int.tryParse(parts[0]);
+    final year = int.tryParse(parts[1]);
+
+    if (month == null || year == null) {
+      return 'Enter a valid expiry date';
+    }
+
+    if (month < 1 || month > 12) {
+      return 'Enter a valid expiry month';
+    }
+
+    final now = DateTime.now();
+
+    // Convert YY to 20YY.
+    final expiryYear = 2000 + year;
+
+    // A card is valid through the final day of its expiry month.
+    final expiryDate = DateTime(expiryYear, month + 1, 0, 23, 59, 59);
+
+    if (expiryDate.isBefore(now)) {
+      return 'Card has expired';
+    }
+
+    return null;
+  }
+
+  String? _validateCVV(String? value) {
+    final v = value?.trim() ?? '';
+
+    if (v.isEmpty) {
+      return 'Enter CVV';
+    }
+
+    final cardNumber = _cardNumberController.text.replaceAll(RegExp(r'\s'), '');
+
+    // If the card number is not valid yet, don't try to determine
+    // the card type. We still validate CVV length below.
+    if (cardNumber.isNotEmpty) {
+      final cardResult = _validator.validateCCNum(cardNumber);
+
+      if (cardResult.isValid) {
+        final result = _validator.validateCVV(v, cardResult.ccType);
+
+        if (!result.isValid) {
+          return 'Enter a valid CVV';
+        }
+
+        return null;
+      }
+    }
+
+    // Fallback while card number is incomplete.
+    if (v.length < 3 || v.length > 4) {
+      return 'Enter a valid CVV';
+    }
+
+    return null;
+  }
+
+  bool get _canPay => _fieldsValid && _agreedToTerms;
 
   @override
   void dispose() {
+    _cardholderController.removeListener(_revalidate);
+    _cardNumberController.removeListener(_revalidate);
+    _expiryController.removeListener(_revalidate);
+    _cvvController.removeListener(_revalidate);
+
     _cardholderController.dispose();
     _cardNumberController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
+
     super.dispose();
   }
 
   void _onPayNow() {
-    if (!_agreedToTerms) return;
+    if (!_canPay) {
+      return;
+    }
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (_) => BookingConfirmationScreen(
           club: widget.club,
-
           dateLabel: widget.dateLabel,
-          timeLabel: widget.timeLabel, blockLabel: widget.court.courtName ?? '',
+          timeLabel: widget.timeLabel,
+          blockLabel: widget.court.courtName ?? '',
         ),
       ),
     );
@@ -74,60 +223,104 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kCardColor,
+
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         elevation: 0,
+
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
+
           child: Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
+
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: kBorderColor),
             ),
+
             child: Icon(Icons.arrow_back, size: 24, color: kDarkTextColor),
           ),
         ),
+
         title: Text(
           'Booking Summary',
           style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         ),
+
         centerTitle: true,
       ),
+
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // =========================================================
+                  // COURT DETAILS
+                  // =========================================================
                   Text(
                     'COURT DETAILS',
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
+
                   8.heightBox,
+
                   Container(
                     padding: const EdgeInsets.all(10),
+
                     decoration: BoxDecoration(
                       color: kWhiteColor,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: kBorderF0),
                     ),
+
                     child: Row(
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: AppCachedImage(
-                            imageUrl: _photoUrl,
-                            width: 95,
-                            height: 95,
+
+                          child: CachedNetworkImage(
+                            imageUrl: widget.club.photo ?? '',
+                            height: 96,
+                            width: 96,
+                            fit: BoxFit.cover,
+
+                            placeholder: (context, url) => Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+
+                              child: Container(
+                                height: 96,
+                                width: 96,
+
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+
+                            errorWidget: (context, url, error) {
+                              return Image.asset(
+                                Assets.png.clubLogo.path,
+                                height: 96,
+                                width: 96,
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
                         ),
+
                         12.widthBox,
+
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+
                             children: [
                               Text(
                                 widget.club.name ?? '',
@@ -135,13 +328,14 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                   color: kDarkTextColor,
                                 ),
                               ),
+
                               Text(
-                                '${widget.court.courtName ??
-                                    ''} • $_locationLabel',
+                                '${widget.court.courtName ?? ''} • ${widget.club.city}',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
                               ),
+
                               Text(
                                 '${widget.dateLabel} | ${widget.timeLabel}',
                                 style: AppStyles.w500f12inter.copyWith(
@@ -154,55 +348,167 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       ],
                     ),
                   ),
+
                   20.heightBox,
 
+                  // =========================================================
+                  // PAYMENT METHOD
+                  // =========================================================
                   Text(
                     'PAYMENT METHOD',
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
+
                   8.heightBox,
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: kWhiteColor,
-                      border: Border.all(color: kBorderF0),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Column(
-                      children: [
-                        buildTextField(
-                          _cardholderController,
-                          'Cardholder name',
-                          icon: Icons.person_outline,
-                        ),
-                        10.heightBox,
-                        buildTextField(
-                          _cardNumberController,
-                          'Card number',
-                          icon: Icons.credit_card,
-                        ),
-                        10.heightBox,
-                        Row(
-                          children: [
-                            Expanded(
-                              child: buildTextField(_expiryController, 'MM/YY'),
-                            ),
-                            10.widthBox,
-                            Expanded(
-                              child: buildTextField(_cvvController, 'CVV'),
-                            ),
-                          ],
-                        ),
-                      ],
+
+                  Form(
+                    key: _formKey,
+
+                    // IMPORTANT:
+                    // We intentionally don't set autovalidateMode here.
+                    //
+                    // Each CustomTextField handles its own validation
+                    // using AutovalidateMode.onUserInteraction.
+                    //
+                    // This prevents an interaction with one field from
+                    // validating all fields.
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+
+                      decoration: BoxDecoration(
+                        color: kWhiteColor,
+                        border: Border.all(color: kBorderF0),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+
+                      child: Column(
+                        children: [
+                          // =================================================
+                          // CARDHOLDER
+                          // =================================================
+                          CustomTextField(
+                            controller: _cardholderController,
+
+                            hintText: 'Cardholder name',
+
+                            validator: _validateCardholder,
+
+                            keyboardType: TextInputType.name,
+
+                            prefixIcon: const Icon(Icons.person_outline),
+
+                            borderRadius: 14,
+
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[a-zA-Z\s]'),
+                              ),
+                            ],
+                          ),
+
+                          12.heightBox,
+
+                          // =================================================
+                          // CARD NUMBER
+                          // =================================================
+                          CustomTextField(
+                            controller: _cardNumberController,
+
+                            hintText: 'Card number',
+
+                            validator: _validateCardNumber,
+
+                            keyboardType: TextInputType.number,
+
+                            prefixIcon: const Icon(Icons.credit_card_outlined),
+
+                            inputFormatters: [_CardNumberInputFormatter()],
+
+                            maxLength: 19,
+
+                            borderRadius: 14,
+                          ),
+
+                          12.heightBox,
+
+                          // =================================================
+                          // EXPIRY + CVV
+                          // =================================================
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  controller: _expiryController,
+
+                                  hintText: 'MM/YY',
+
+                                  validator: _validateExpiry,
+
+                                  keyboardType: TextInputType.number,
+
+                                  prefixIcon: const Icon(
+                                    Icons.calendar_month_outlined,
+                                  ),
+
+                                  inputFormatters: [ExpiryDateInputFormatter()],
+
+                                  maxLength: 5,
+
+                                  borderRadius: 14,
+                                ),
+                              ),
+
+                              12.widthBox,
+
+                              Expanded(
+                                child: CustomTextField(
+                                  controller: _cvvController,
+
+                                  hintText: 'CVV',
+
+                                  validator: _validateCVV,
+
+                                  keyboardType: TextInputType.number,
+
+                                  prefixIcon: const Icon(Icons.lock_outline),
+
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+
+                                  maxLength: 4,
+
+                                  obscureText: true,
+
+                                  borderRadius: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+
                   14.heightBox,
+
+                  // =========================================================
+                  // SECURITY LABEL
+                  // =========================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+
                     children: [
-                      const Icon(Icons.lock_outline,
-                          size: 14, color: kGreyTextColor),
+                      const Icon(
+                        Icons.lock_outline,
+                        size: 14,
+                        color: kGreyTextColor,
+                      ),
+
                       const SizedBox(width: 6),
+
                       Text(
                         'Secure Encrypted Payment',
                         style: AppStyles.w400f12inter.copyWith(
@@ -211,24 +517,33 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       ),
                     ],
                   ),
+
                   20.heightBox,
 
+                  // =========================================================
+                  // PRICE DETAILS
+                  // =========================================================
                   Text(
                     'PRICE DETAILS',
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
+
                   8.heightBox,
+
                   Container(
                     padding: const EdgeInsets.all(16),
+
                     decoration: BoxDecoration(
                       color: kWhiteColor,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: kBorderF0),
                     ),
+
                     child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                           children: [
                             Text(
                               'Court Fee',
@@ -236,6 +551,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                 color: kGreyTextColor,
                               ),
                             ),
+
                             Text(
                               formatPrice(widget.amount),
                               style: AppStyles.w500f14inter.copyWith(
@@ -244,9 +560,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                             ),
                           ],
                         ),
+
                         8.heightBox,
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                           children: [
                             Text(
                               'Service Fee',
@@ -254,17 +573,21 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                 color: kGreyTextColor,
                               ),
                             ),
+
                             Text(
-                              formatPrice(_serviceFee),
+                              '${_serviceFee.toInt()} %',
                               style: AppStyles.w500f14inter.copyWith(
                                 color: kDarkTextColor,
                               ),
                             ),
                           ],
                         ),
+
                         const Divider(height: 24, color: kBorderColor),
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                           children: [
                             Text(
                               'Total',
@@ -272,6 +595,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                 color: kGreyTextColor,
                               ),
                             ),
+
                             Text(
                               formatPrice(_total),
                               style: AppStyles.w600f16inter.copyWith(
@@ -283,20 +607,35 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       ],
                     ),
                   ),
+
                   14.heightBox,
 
+                  // =========================================================
+                  // TERMS
+                  // =========================================================
                   GestureDetector(
-                    onTap: () =>
-                        setState(() => _agreedToTerms = !_agreedToTerms),
+                    onTap: () {
+                      setState(() {
+                        _agreedToTerms = !_agreedToTerms;
+                      });
+                    },
+
                     child: Row(
                       children: [
                         Checkbox(
                           value: _agreedToTerms,
+
                           activeColor: kPrimaryColor,
-                          side: BorderSide(color: kTextColor, width: 2),
-                          onChanged: (val) =>
-                              setState(() => _agreedToTerms = val ?? false),
+
+                          side: const BorderSide(color: kTextColor, width: 2),
+
+                          onChanged: (value) {
+                            setState(() {
+                              _agreedToTerms = value ?? false;
+                            });
+                          },
                         ),
+
                         Expanded(
                           child: Text(
                             'I agree to the terms of use.',
@@ -312,11 +651,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ),
           ),
+
+          // ===============================================================
+          // PAY NOW
+          // ===============================================================
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
+
             child: CustomActionButton(
-              buttonText: "Pay Now",
-              isEnabled: _agreedToTerms,
+              buttonText: 'Pay Now',
+              isEnabled: _canPay,
               onTap: _onPayNow,
             ),
           ),
@@ -326,37 +670,94 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 }
 
-Widget buildTextField(TextEditingController controller,
-    String hint, {
-      IconData? icon,
-    }) {
-  return Container(
-    height: 48,
-    padding: const EdgeInsets.symmetric(horizontal: 14),
-    decoration: BoxDecoration(
-      color: kWhiteColor,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: kBorderColor),
-    ),
-    child: Row(
-      children: [
-        if (icon != null) ...[
-          Icon(icon, color: kTextColor, size: 18),
-          const SizedBox(width: 8),
-        ],
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: AppStyles.w400f14inter.copyWith(color: kTextColor),
-              border: InputBorder.none,
-              isDense: true,
-            ),
-            style: AppStyles.w400f14inter,
-          ),
-        ),
-      ],
-    ),
-  );
+// ===========================================================================
+// EXPIRY DATE FORMATTER
+// ===========================================================================
+//
+// User types:
+//
+// 0      -> 0
+// 02     -> 02
+// 022    -> 02/2
+// 0228   -> 02/28
+//
+// The user never needs to type "/" manually.
+// ===========================================================================
+
+class ExpiryDateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    if (digits.isEmpty) {
+      return const TextEditingValue();
+    }
+
+    final limitedDigits = digits.length > 4 ? digits.substring(0, 4) : digits;
+
+    String formatted;
+
+    if (limitedDigits.length <= 2) {
+      formatted = limitedDigits;
+    } else {
+      formatted =
+          '${limitedDigits.substring(0, 2)}/${limitedDigits.substring(2)}';
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+// ===========================================================================
+// CARD NUMBER FORMATTER
+// ===========================================================================
+//
+// User types:
+//
+// 4242
+// 4242 4
+// 4242 4242
+// 4242 4242 4242
+// 4242 4242 4242 4242
+//
+// The validator removes the spaces before validating.
+// ===========================================================================
+
+class _CardNumberInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    if (digits.isEmpty) {
+      return const TextEditingValue();
+    }
+
+    final limitedDigits = digits.length > 16 ? digits.substring(0, 16) : digits;
+
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < limitedDigits.length; i++) {
+      if (i > 0 && i % 4 == 0) {
+        buffer.write(' ');
+      }
+
+      buffer.write(limitedDigits[i]);
+    }
+
+    final formatted = buffer.toString();
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
 }

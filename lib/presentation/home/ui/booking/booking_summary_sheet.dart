@@ -163,14 +163,6 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     });
   }
 
-  void _onStartTimeSelected(Padel slot) {
-    setState(() {
-      _selectedStartTime = slot.startTime ?? _selectedStartTime;
-      _selectedEndTime = slot.endTime;
-      _selectedDurationSlots = 1;
-    });
-  }
-
   void _onDurationSelected(int slots) {
     if (_maxContiguousFrom(_selectedStartTime) < slots) return;
     setState(() {
@@ -196,9 +188,6 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     if (state.isEmpty) return city;
     return '$city, $state';
   }
-
-  String get _photoUrl =>
-      widget.club.photo is String ? widget.club.photo as String : '';
 
   void _onPrimaryTap() {
     if (_selectedEndTime == null) return;

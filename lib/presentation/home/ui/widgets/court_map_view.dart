@@ -2,6 +2,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
+import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 
@@ -12,8 +13,8 @@ class CourtMapView extends StatefulWidget {
   final Function(LocationResult) onLocationChanged;
   final VoidCallback onBackToList;
   final Function(String? timeOfDay, String? city, double distance) onApplyFilters;
-  final String? selectedSport;
-  final Function(String?) onSportSelected;
+  final Set<String> selectedSports; // <-- was: final String? selectedSport;
+  final Function(String) onSportSelected; // <-- was: final Function(String?) onSportSelected;
 
   const CourtMapView({
     super.key,
@@ -23,9 +24,10 @@ class CourtMapView extends StatefulWidget {
     required this.onLocationChanged,
     required this.onBackToList,
     required this.onApplyFilters,
-    required this.selectedSport,
+    required this.selectedSports,
     required this.onSportSelected,
   });
+
 
   @override
   State<CourtMapView> createState() => _CourtMapViewState();
@@ -40,10 +42,10 @@ class _CourtMapViewState extends State<CourtMapView> {
   List<Club> get _mappableCourts => widget.courts.toList();
 
   // All sport names across the passed-in courts, for the filter row.
+// All sport names across the passed-in courts, for the filter row.
   List<String> get _allSportNames =>
       widget.courts
           .expand((c) => c.sports ?? [])
-          .map((s) => s.sportName)
           .whereType<String>()
           .toSet()
           .toList();
@@ -207,14 +209,17 @@ class _CourtMapViewState extends State<CourtMapView> {
                     height: 38,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _allSportNames.length,
+                      itemCount: kAllSportSlugs.length,
                       separatorBuilder: (_, __) => const SizedBox(width: 8),
                       itemBuilder: (context, index) {
-                        final sport = _allSportNames[index];
-                        final isSelected = widget.selectedSport == sport;
+                        final sport = kAllSportSlugs[index];
+                        final isSelected = widget.selectedSports.contains(
+                            sport);
+                        final label = '${sport[0].toUpperCase()}${sport
+                            .substring(1)
+                            .replaceAll('_', ' ')}';
                         return GestureDetector(
-                          onTap: () =>
-                              widget.onSportSelected(isSelected ? null : sport),
+                          onTap: () => widget.onSportSelected(sport),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 8),
@@ -226,7 +231,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                             ),
                             child: Center(
                               child: Text(
-                                sport,
+                                label,
                                 style: AppStyles.w400f14inter.copyWith(
                                     color: kDarkTextColor),
                               ),
@@ -339,7 +344,15 @@ class _CourtMapViewState extends State<CourtMapView> {
                           final court = courts[index];
                           final sports = court.sports ?? [];
                           return GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      CourtDetailScreen(club: court),
+                                ),
+                              );
+                            },
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 8),
                               padding: const EdgeInsets.all(10),

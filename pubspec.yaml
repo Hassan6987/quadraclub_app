@@ -75,6 +75,7 @@ dependencies:
   google_maps_flutter: ^2.18.0
   geolocator: ^14.0.2
   http: ^1.5.0
+  credit_card_validator: ^2.1.0
 
 
 

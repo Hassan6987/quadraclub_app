@@ -32,6 +32,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   String? _filterCity;
   double _filterDistance = 25.0;
 
+  final Set<String> _selectedSports = {};
   List<DateTime> get _dates =>
       List.generate(7, (i) => DateTime(2025, 4, 1).add(Duration(days: i)));
 
@@ -91,8 +92,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
             _filterDistance = dist;
           });
         },
-        selectedSport: _selectedSport?.label ?? '',
-        onSportSelected: (sport) => setState(() {}),
+        onSportSelected: (sport) => setState(() {
+          // <-- simple toggle, no null case
+          if (_selectedSports.contains(sport)) {
+            _selectedSports.remove(sport);
+          } else {
+            _selectedSports.add(sport);
+          }
+        }),
+        selectedSports: _selectedSports,
       );
     }
 

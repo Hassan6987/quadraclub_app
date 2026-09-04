@@ -157,13 +157,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 _filterCity = city;
               });
             },
-            selectedSport: _selectedSports.isEmpty ? null : _selectedSports
-                .first,
+            selectedSports: _selectedSports,
+            // <-- pass the whole set
             onSportSelected: (sport) =>
-                setState(() {
-                  if (sport == null) {
-                    _selectedSports.clear();
-                  } else if (_selectedSports.contains(sport)) {
+                setState(() { // <-- simple toggle, no null case
+                  if (_selectedSports.contains(sport)) {
                     _selectedSports.remove(sport);
                   } else {
                     _selectedSports.add(sport);
