@@ -1,6 +1,6 @@
 part of 'courts_bloc.dart';
 
-enum CourtStateStatus { initial, loading, success, failure }
+enum CourtStateStatus { initial, loading, success, failure, booking, booked }
 
 class CourtsState extends Equatable {
   final CourtStateStatus status;

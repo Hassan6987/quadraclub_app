@@ -1,6 +1,8 @@
 // lib/presentation/booking/ui/confirmation_screen.dart
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
   final Club club;
@@ -83,10 +85,35 @@ class BookingConfirmationScreen extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: AppCachedImage(
-                        imageUrl: club.photo,
-                        width: double.infinity,
+                      child: CachedNetworkImage(
+                        imageUrl: club.photo ?? '',
                         height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+
+                        placeholder: (context, url) =>
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+
+                              child: Container(
+                                height: 150,
+                                width: double.infinity,
+
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+
+                        errorWidget: (context, url, error) {
+                          return Image.asset(
+                            Assets.png.clubLogo.path,
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        },
                       ),
                     ),
                     10.heightBox,

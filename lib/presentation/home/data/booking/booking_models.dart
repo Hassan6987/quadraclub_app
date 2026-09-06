@@ -30,7 +30,6 @@ extension PaymentSplitOptionExtension on PaymentSplitOption {
         return 'Pay only my part now';
     }
   }
-
   String get description {
     switch (this) {
       case PaymentSplitOption.payAllReceiveLater:
@@ -39,6 +38,17 @@ extension PaymentSplitOptionExtension on PaymentSplitOption {
         return 'Invite players can join without paying anything.';
       case PaymentSplitOption.payOnlyMyPart:
         return 'Court is not booked yet. It will only be booked when everyone joins. Risk loosing booking';
+    }
+  }
+
+  String get type {
+    switch (this) {
+      case PaymentSplitOption.payAllReceiveLater:
+        return 'pay_all_receive_later';
+      case PaymentSplitOption.payAllNoSplit:
+        return 'pay_all_no_split';
+      case PaymentSplitOption.payOnlyMyPart:
+        return 'pay_my_part';
     }
   }
 }

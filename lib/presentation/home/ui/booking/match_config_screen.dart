@@ -1,14 +1,19 @@
 // lib/presentation/booking/ui/match_config_screen.dart
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/invite_player_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MatchConfigScreen extends StatefulWidget {
   final Club club;
   final Court court;
   final String dateLabel;
+  final DateTime bookingDate;
+  final String startTime;
+  final String endTime;
   final String timeLabel;
   final double amount;
 
@@ -19,6 +24,9 @@ class MatchConfigScreen extends StatefulWidget {
     required this.dateLabel,
     required this.timeLabel,
     required this.amount,
+    required this.bookingDate,
+    required this.startTime,
+    required this.endTime,
   });
 
   @override
@@ -72,9 +80,16 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
         builder: (_) => PaymentMethodScreen(
           club: widget.club,
           court: widget.court,
+          bookingDate: widget.bookingDate,
+          startTime: widget.startTime,
+          endTime: widget.endTime,
           dateLabel: widget.dateLabel,
           timeLabel: widget.timeLabel,
           amount: widget.amount,
+          isMatch: true,
+          matchType: _matchType.label,
+          matchFormat: _format.label,
+          paymentType: _paymentOption.type,
         ),
       ),
     );
@@ -132,10 +147,29 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: AppCachedImage(
-                            imageUrl: _photoUrl,
-                            width: 95,
-                            height: 95,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.club.photo ?? '',
+                            height: 96,
+                            width: 96,
+                            placeholder: (context, url) =>
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  child: Container(
+                                    height: 96,
+                                    width: 96,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white),
+                                  ),
+                                ),
+                            errorWidget: (context, url, error) {
+                              return Image.asset(
+                                Assets.png.clubLogo.path,
+                                height: 96,
+                                width: 96,
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
                         ),
                         12.widthBox,
@@ -187,13 +221,17 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               color: isSelected ? kPrimaryColor : kWhiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(
-                                    type == MatchType.open ? 40 : 0),
+                                  type == MatchType.open ? 40 : 0,
+                                ),
                                 bottomLeft: Radius.circular(
-                                    type == MatchType.open ? 40 : 0),
+                                  type == MatchType.open ? 40 : 0,
+                                ),
                                 topRight: Radius.circular(
-                                    type == MatchType.open ? 0 : 40),
+                                  type == MatchType.open ? 0 : 40,
+                                ),
                                 bottomRight: Radius.circular(
-                                    type == MatchType.open ? 0 : 40),
+                                  type == MatchType.open ? 0 : 40,
+                                ),
                               ),
                               border: isSelected
                                   ? null
@@ -255,13 +293,17 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               color: isSelected ? kPrimaryColor : kWhiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(
-                                    format == BookingFormat.single ? 20 : 0),
+                                  format == BookingFormat.single ? 20 : 0,
+                                ),
                                 bottomLeft: Radius.circular(
-                                    format == BookingFormat.single ? 20 : 0),
+                                  format == BookingFormat.single ? 20 : 0,
+                                ),
                                 topRight: Radius.circular(
-                                    format == BookingFormat.single ? 0 : 20),
+                                  format == BookingFormat.single ? 0 : 20,
+                                ),
                                 bottomRight: Radius.circular(
-                                    format == BookingFormat.single ? 0 : 20),
+                                  format == BookingFormat.single ? 0 : 20,
+                                ),
                               ),
                               border: isSelected
                                   ? null
@@ -321,8 +363,11 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.search,
-                                    color: kTextColor, size: 18),
+                                const Icon(
+                                  Icons.search,
+                                  color: kTextColor,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Search players...',
@@ -354,8 +399,9 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 10,
-                                      backgroundImage:
-                                      NetworkImage(player.avatarUrl),
+                                      backgroundImage: NetworkImage(
+                                        player.avatarUrl,
+                                      ),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
@@ -367,8 +413,9 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     const SizedBox(width: 6),
                                     GestureDetector(
                                       onTap: () => setState(
-                                              () =>
-                                              _invitedPlayers.remove(player)),
+                                            () =>
+                                            _invitedPlayers.remove(player),
+                                      ),
                                       child: const Icon(
                                         Icons.close,
                                         size: 14,

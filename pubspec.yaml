@@ -76,8 +76,8 @@ dependencies:
   geolocator: ^14.0.2
   http: ^1.5.0
   credit_card_validator: ^2.1.0
-
-
+  flutter_stripe: ^14.0.0
+  another_flushbar: ^2.2.4
 
 
 dev_dependencies:
