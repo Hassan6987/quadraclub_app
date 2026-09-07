@@ -1,4 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/chat_item.dart';
 
 class MyChatsScreen extends StatefulWidget {
@@ -10,26 +12,28 @@ class MyChatsScreen extends StatefulWidget {
 
 class _MyChatsScreenState extends State<MyChatsScreen> {
   String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'Games', 'Classes', 'Courts'];
 
-  List<ChatPreview> get _filteredChats {
-    final chats = ChatDummyData.chatPreviews;
-    if (_selectedFilter == 'All') return chats;
-    if (_selectedFilter == 'Games') {
-      return chats.where((c) => c.type == ChatType.game).toList();
-    }
-    if (_selectedFilter == 'Classes') {
-      return chats.where((c) => c.type == ChatType.classroom).toList();
-    }
-    return chats;
+  @override
+  void initState() {
+    context.read<ChatsBloc>().add(LoadChats());
+    super.initState();
   }
+
+  final List<String> _filters = [
+    'All',
+    'Games',
+    'Classes',
+    'Courts',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
         title: "My Chats",
-        titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
+        titleStyle: AppStyles.w600f16inter.copyWith(
+          color: kDarkTextColor,
+        ),
         showBackIcon: true,
         showActions: false,
       ),
@@ -38,7 +42,9 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         children: [
           _buildFilterChips(),
           const SizedBox(height: 8),
-          Expanded(child: _buildChatList()),
+          Expanded(
+            child: _buildChatList(),
+          ),
         ],
       ),
     );
@@ -53,8 +59,13 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   Widget _buildChip(String label) {
     final isSelected = _selectedFilter == label;
+
     return GestureDetector(
-      onTap: () => setState(() => _selectedFilter = label),
+      onTap: () {
+        setState(() {
+          _selectedFilter = label;
+        });
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: EdgeInsets.symmetric(
@@ -67,28 +78,77 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         ),
         child: Text(
           label,
-          style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
+          style: AppStyles.w400f14inter.copyWith(
+            color: kDarkTextColor,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildChatList() {
-    final chats = _filteredChats;
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: chats.length,
+    return BlocBuilder<ChatsBloc, ChatsState>(
+      builder: (context, state) {
+        if (state is ChatsLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-      itemBuilder: (context, index) => ChatListItem(
-        chat: chats[index],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                GroupChatScreen(detail: ChatDummyData.groupChatDetail),
-          ),
-        ),
-      ),
+        if (state is ChatsError) {
+          return Center(
+            child: Text(state.message),
+          );
+        }
+
+        if (state is ChatsLoaded) {
+          final chats = state.chats;
+
+          if (chats.isEmpty) {
+            return const Center(
+              child: Text('No chats found'),
+            );
+          }
+
+          return ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: chats.length,
+            itemBuilder: (context, index) {
+              final chat = chats[index];
+
+              return ChatListItem(
+                chat: chat,
+
+                // Replace this with the actual logged-in
+                // user's ID from your AuthBloc/AuthCubit.
+                currentUserId: _currentUserId(context),
+
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          ChatScreen(
+                            chat: chat,
+                          ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
     );
+  }
+
+  String _currentUserId(BuildContext context) {
+    return context
+        .read<AuthBloc>()
+        .state
+        .user
+        ?.id ?? '';
   }
 }

@@ -5,14 +5,21 @@ import '/app_exports.dart';
 
 class MessageTile extends StatelessWidget {
   final ChatMessage message;
+  final String currentUserId;
 
-  const MessageTile({super.key, required this.message});
+  const MessageTile({
+    super.key,
+    required this.message,
+    required this.currentUserId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final timeStr = DateFormat('h:mm a').format(message.sentAt);
+    final isMe = message.sender.id == currentUserId;
 
-    if (message.isMe) {
+    final timeStr = DateFormat('h:mm a').format(message.createdAt);
+
+    if (isMe) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Column(
@@ -35,7 +42,7 @@ class MessageTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      message.text,
+                      message.content,
                       style: AppStyles.w400f14inter.copyWith(
                         color: kDarkTextColor,
                       ),
@@ -63,7 +70,7 @@ class MessageTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            message.senderName.toUpperCase(),
+            message.sender.fullName.toUpperCase(),
             style: AppStyles.w500f10inter.copyWith(color: kTextColor),
           ).paddingOnly(left: 32),
           4.heightBox,
@@ -82,7 +89,7 @@ class MessageTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    message.text,
+                    message.content,
                     style: AppStyles.w400f14inter.copyWith(
                       color: kDarkTextColor,
                     ),

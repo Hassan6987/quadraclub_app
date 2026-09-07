@@ -1,15 +1,33 @@
+import 'package:intl/intl.dart';
+
 import '/app_exports.dart';
 
 class ChatListItem extends StatelessWidget {
-  final ChatPreview chat;
+  final Chat chat;
   final VoidCallback onTap;
 
-  const ChatListItem({super.key, required this.chat, required this.onTap});
+  /// Pass the logged-in user's ID here.
+  final String currentUserId;
+
+  const ChatListItem({
+    super.key,
+    required this.chat,
+    required this.onTap,
+    required this.currentUserId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final hasUnread = chat.unreadCount > 0;
-    final shortDate = 'Sun, Apr 20. 9:00';
+    final latestMessage = chat.latestMessage;
+
+    // A message is unread for the current user when
+    // the current user's ID is NOT inside seenBy.
+    final bool hasUnread = latestMessage != null &&
+        !latestMessage.seenBy.contains(currentUserId);
+
+    final String timeAgo = latestMessage == null
+        ? ''
+        : _formatTimeAgo(latestMessage.createdAt);
 
     return GestureDetector(
       onTap: onTap,
@@ -18,7 +36,6 @@ class ChatListItem extends StatelessWidget {
           color: hasUnread
               ? kPrimaryColor.withValues(alpha: 0.20)
               : kWhiteColor,
-
           border: Border.all(color: kCardColor),
         ),
         padding: EdgeInsets.symmetric(
@@ -28,9 +45,12 @@ class ChatListItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (chat.extraParticipantsCount > 0)
+            // Avatars
+            if (chat.users.isNotEmpty)
               StackedAvatars(
-                imgUrls: chat.participants.map((e) => e.avatarUrl).toList(),
+                imgUrls: chat.users
+                    .map((user) => user.profilePhoto)
+                    .toList(),
               )
             else
               AppCachedImage(
@@ -42,77 +62,66 @@ class ChatListItem extends StatelessWidget {
 
             12.widthBox,
 
+            // Chat information
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        chat.venueName,
-                        style: AppStyles.w500f14inter.copyWith(
-                          color: kTextPrimaryColor,
-                        ),
-                      ),
-                      4.widthBox,
-                      ChatTypeTag(type: chat.type),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      SvgPicture.asset(
-                        Assets.svg.calendarBlank.path,
-                        height: 14,
-                        width: 14,
-                        colorFilter: ColorFilter.mode(
-                          kTextColor,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      4.widthBox,
-                      Text(
-                        shortDate,
-                        style: AppStyles.w400f12inter.copyWith(
-                          color: kTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  2.heightBox,
                   Text(
-                    chat.lastMessage,
+                    chat.chatName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
+                    style: AppStyles.w500f14inter.copyWith(
+                      color: kTextPrimaryColor,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    latestMessage?.content ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyles.w400f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                 ],
               ),
             ),
+
             8.widthBox,
+
+            // Unread + time
             SizedBox(
-              width: 40,
+              width: 45,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (hasUnread)
                     Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: kDarkTextColor,
                         shape: BoxShape.circle,
                       ),
-                      child: Text(
-                        chat.unreadCount.toString(),
-                        style: AppStyles.w500f12inter.copyWith(
+                      child: const Text(
+                        '1',
+                        style: TextStyle(
                           color: kWhiteColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ).withPaddingSymmetric(8, 4),
                     ),
-                  16.heightBox,
+
+                  if (hasUnread) 12.heightBox,
 
                   Text(
-                    chat.timeAgo,
-                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
+                    timeAgo,
+                    style: AppStyles.w400f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                 ],
               ),
@@ -121,5 +130,28 @@ class ChatListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTimeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inSeconds < 60) {
+      return 'now';
+    }
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m';
+    }
+
+    if (difference.inHours < 24) {
+      return '${difference.inHours}h';
+    }
+
+    if (difference.inDays < 7) {
+      return '${difference.inDays}d';
+    }
+
+    return DateFormat('MMM d').format(dateTime);
   }
 }

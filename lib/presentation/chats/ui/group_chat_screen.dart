@@ -1,26 +1,39 @@
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/chats/message_bloc/chat_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/message_tile.dart';
 
 
-class GroupChatScreen extends StatefulWidget {
-  final GroupChatDetail detail;
+class ChatScreen extends StatefulWidget {
+  final Chat chat;
 
-  const GroupChatScreen({super.key, required this.detail});
+  const ChatScreen({
+    super.key,
+    required this.chat,
+  });
 
   @override
-  State<GroupChatScreen> createState() => _GroupChatScreenState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _GroupChatScreenState extends State<GroupChatScreen> {
+class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  late List<ChatMessage> _messages;
 
   @override
   void initState() {
     super.initState();
-    _messages = List.from(widget.detail.messages);
+
+    final bloc = context.read<ChatBloc>();
+
+    bloc.add(
+      LoadMessages(widget.chat.id),
+    );
+
+    bloc.add(
+      JoinChat(widget.chat.id),
+    );
   }
 
   @override
@@ -32,41 +45,95 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   void _sendMessage() {
     final text = _controller.text.trim();
+
     if (text.isEmpty) return;
 
-    setState(() {
-      _messages.add(
-        ChatMessage(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          senderId: 'me',
-          senderName: 'You',
-          text: text,
-          sentAt: DateTime.now(),
-          isMe: true,
-        ),
-      );
-      _controller.clear();
-    });
+    context.read<ChatBloc>().add(
+      SendMessage(
+        chatId: widget.chat.id,
+        content: text,
+      ),
+    );
 
+    _controller.clear();
+  }
+
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      if (!_scrollController.hasClients) return;
+
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 
-  // Group messages by day
-  Map<String, List<ChatMessage>> get _groupedMessages {
-    final Map<String, List<ChatMessage>> groups = {};
-    for (final msg in _messages) {
-      final key = _dayLabel(msg.sentAt);
-      groups.putIfAbsent(key, () => []).add(msg);
-    }
-    return groups;
+  String _currentUserId(BuildContext context) {
+    return context
+        .read<AuthBloc>()
+        .state
+        .user
+        ?.id ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: widget.chat.chatName,
+        subtitle: widget.chat.isGroupChat
+            ? '${widget.chat.users.length} players'
+            : null,
+        titleStyle: AppStyles.w600f16inter.copyWith(
+          color: kDarkTextColor,
+        ),
+        showBackIcon: true,
+        showActions: false,
+      ),
+      body: BlocConsumer<ChatBloc, ChatState>(
+        listener: (context, state) {
+          if (state is ChatLoaded) {
+            _scrollToBottom();
+          }
+        },
+        builder: (context, state) {
+          if (state is ChatLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is ChatError) {
+            return Center(
+              child: Text(state.message),
+            );
+          }
+
+          if (state is ChatLoaded) {
+            return Column(
+              children: [
+                if (widget.chat.isGroupChat)
+                  _buildParticipantBanner(),
+
+                Expanded(
+                  child: _buildMessageList(
+                    state.messages,
+                  ),
+                ),
+
+                _buildInputBar(
+                  isSending: state.isSending,
+                ),
+              ],
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
+    );
   }
 
   String _dayLabel(DateTime dt) {
@@ -78,28 +145,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     return DateFormat('MMM d, yyyy').format(dt).toUpperCase();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: "Group Chat",
-        subtitle: "Mixed Doubles Match",
-        titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
-        showBackIcon: true,
-        showActions: false,
-      ),
-      body: Column(
-        children: [
-          _buildParticipantBanner(),
-          Expanded(child: _buildMessageList()),
-          _buildInputBar(),
-        ],
-      ),
-    );
-  }
-
   Widget _buildParticipantBanner() {
-    final imgUrls = widget.detail.participants.map((e) => e.avatarUrl).toList();
+    final imgUrls = widget.chat.users.map((e) => e.profilePhoto).toList();
     return Container(
       color: kPrimaryColor.withValues(alpha: 0.20),
       child: Row(
@@ -107,7 +154,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           StackedAvatars(avatarSize: 30, imgUrls: imgUrls),
           8.widthBox,
           Text(
-            '${widget.detail.participants.length} players in chat',
+            '${widget.chat.users.length} players in chat',
             style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
           ),
         ],
@@ -115,36 +162,47 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
-  Widget _buildMessageList() {
-    final groups = _groupedMessages;
+  Widget _buildMessageList(List<ChatMessage> messages) {
+    final groups = <String, List<ChatMessage>>{};
+
+    for (final message in messages) {
+      final key = _dayLabel(message.createdAt);
+      groups.putIfAbsent(
+        key,
+            () => [],
+      ).add(message);
+    }
     final keys = groups.keys.toList();
 
     return ListView.builder(
       controller: _scrollController,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       itemCount: keys.length,
       itemBuilder: (context, index) {
         final dayKey = keys[index];
+
         final dayMessages = groups[dayKey]!;
+
         return Column(
           children: [
-            DateContainer(label: dayKey),
-            ...dayMessages.map((msg) => MessageTile(message: msg)),
-            if (index == keys.length - 1) ...[
-              const SizedBox(height: 8),
-              GroupJoinedMessage(
-                text:
-                    '${widget.detail.participants.last.name} joined the match group',
-                highlightName: widget.detail.participants.last.name,
-              ),
-            ],
+            DateContainer(
+              label: dayKey,
+            ),
+
+            ...dayMessages.map(
+                  (message) {
+                return MessageTile(
+                  message: message, currentUserId: _currentUserId(context),
+                );
+              },
+            ),
           ],
         );
       },
     );
   }
 
-  Widget _buildInputBar() {
+  Widget _buildInputBar({required bool isSending}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: const BoxDecoration(
@@ -198,43 +256,6 @@ class DateContainer extends StatelessWidget {
       child: Text(
         label,
         style: AppStyles.w500f10inter.copyWith(color: kTextColor),
-      ).withPaddingSymmetric(8, 4),
-    );
-  }
-}
-
-// ─── Message bubble ───────────────────────────────────────────────────────────
-
-class GroupJoinedMessage extends StatelessWidget {
-  final String text;
-  final String highlightName;
-
-  const GroupJoinedMessage({required this.text, required this.highlightName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: kWhiteColor.withValues(alpha: 0.40),
-        border: Border.all(color: kBorderColor),
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: highlightName,
-              style: AppStyles.w500f12inter.copyWith(
-                color: kBlueColor,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            TextSpan(
-              text: text.replaceFirst(highlightName, ''),
-              style: AppStyles.w400f12inter.copyWith(color: kDarkTextColor),
-            ),
-          ],
-        ),
       ).withPaddingSymmetric(8, 4),
     );
   }

@@ -1,18 +1,28 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/data/app_config.dart';
 import 'package:quadraclub_app/data/storage_service.dart';
 import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/authentication/data/auth_services.dart';
 import 'package:quadraclub_app/presentation/authentication/data/model/signup_data.dart';
+import 'package:quadraclub_app/presentation/chats/data/chat_socket_service.dart';
 
 class AuthProvider {
   final AuthServices authServices = locator.get<AuthServices>();
   final StorageService storageService = locator.get<StorageService>();
+  final socketService = locator.get<ChatSocketService>();
 
   Future<UserModel> getUserProfile() async {
     try {
       final response = await authServices.getUserProfile();
       final responseData = response.data;
-      return UserModel.fromJson(responseData['user']);
+      final user = UserModel.fromJson(responseData['user']);
+      socketService.connect(
+        serverUrl: AppConfig.baseUrl,
+        userId: user.id ?? '',
+        token: storageService.getAuthToken(),
+      );
+
+      return user;
     } catch (e) {
       rethrow;
     }
@@ -30,7 +40,14 @@ class AuthProvider {
       final data = response.data;
       final token = data['token'];
       await storageService.saveToken(token);
-      return UserModel.fromJson(data['user']);
+      final user = UserModel.fromJson(data['user']);
+      socketService.connect(
+        serverUrl: AppConfig.baseUrl,
+        userId: user.id ?? '',
+        token: token,
+      );
+
+      return user;
     } catch (e) {
       rethrow;
     }
