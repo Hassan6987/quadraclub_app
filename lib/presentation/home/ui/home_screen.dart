@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
@@ -8,6 +9,7 @@ import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.da
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/search_courts_sheet.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 /// The 4 sport types the filter row always shows, regardless of what
 /// happens to be present in the currently loaded clubs.
@@ -177,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: kWhiteColor,
           ),
           body: state.status == CourtStateStatus.loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: CustomLoadingView())
               : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -366,6 +368,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       club: clubsList[index],
                       selectedDate: _selectedDate,
                       onTap: () {
+                        // Gate: show login dialog for unauthenticated users
+                        final authState = context
+                            .read<AuthBloc>()
+                            .state;
+                        if (authState.user == null) {
+                          LoginToBookDialog.show(
+                            context,
+                            title: 'Sign in to book this court',
+                            subtitle:
+                            'Please log in or create an account to reserve your spot.',
+                          );
+                          return;
+                        }
                         Navigator.push(
                           context,
                           MaterialPageRoute(

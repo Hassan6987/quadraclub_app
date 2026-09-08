@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
@@ -373,6 +374,18 @@ class _CourtMapViewState extends State<CourtMapView> {
                           final sports = court.sports;
                           return GestureDetector(
                             onTap: () {
+                              final authState = context
+                                  .read<AuthBloc>()
+                                  .state;
+                              if (authState.user == null) {
+                                LoginToBookDialog.show(
+                                  context,
+                                  title: 'Sign in to book this court',
+                                  subtitle:
+                                  'Please log in or create an account to reserve your spot.',
+                                );
+                                return;
+                              }
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

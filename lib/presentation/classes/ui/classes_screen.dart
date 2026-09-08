@@ -1,3 +1,4 @@
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
@@ -311,6 +312,20 @@ class _ClassesScreenState extends State<ClassesScreen> {
   }
 
   void _openDetails(Class classModel) {
+    // Gate: show login dialog for unauthenticated users
+    final authState = context
+        .read<AuthBloc>()
+        .state;
+    if (authState.user == null) {
+      LoginToBookDialog.show(
+        context,
+        title: 'Sign in to book this class',
+        subtitle:
+        'Please log in or create an account to reserve your spot.',
+      );
+      return;
+    }
+
     context.read<ClassesBloc>().add(FetchPortfolioBalance());
     Navigator.of(context).push(
       MaterialPageRoute(

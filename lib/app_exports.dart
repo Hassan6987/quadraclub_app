@@ -43,6 +43,8 @@ export 'package:quadraclub_app/presentation/classes/ui/widgets/time_chip.dart';
 export 'package:quadraclub_app/presentation/classes/ui/widgets/toggle_chip.dart';
 export 'package:quadraclub_app/presentation/common/widgets/common_avatar_stack_row.dart';
 export 'package:quadraclub_app/presentation/common/widgets/common_date_selection_row.dart';
+export 'package:quadraclub_app/presentation/common/widgets/guest_login_prompt.dart';
+export 'package:quadraclub_app/presentation/common/widgets/login_to_book_dialog.dart';
 export 'package:quadraclub_app/presentation/common/widgets/sports_badge.dart';
 export 'package:quadraclub_app/presentation/home/data/models/home_dummy_data.dart';
 export 'package:quadraclub_app/presentation/home/ui/home_screen.dart';

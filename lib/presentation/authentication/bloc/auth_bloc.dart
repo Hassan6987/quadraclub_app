@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ForgotPassword>(_handleForgetPassword);
     on<ResetPassword>(_handleResetPassword);
     on<UpdateProfile>(_handleUpdateProfile);
+    on<LogoutEvent>(_handleLogout);
   }
 
   Future<void> _handleAuthStarted(
@@ -220,5 +221,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         state.copyWith(status: AuthStateStatus.failure, error: e.toString()),
       );
     }
+  }
+
+  Future<void> _handleLogout(LogoutEvent event,
+      Emitter<AuthState> emit,) async {
+    await _storageServices.removeToken();
+    emit(AuthState(status: AuthStateStatus.unAuthenticated));
   }
 }

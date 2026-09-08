@@ -1,7 +1,5 @@
-import 'package:quadraclub_app/data/storage_service.dart';
-
 import '../../../../app_exports.dart';
-import '../../../../di/locator.dart';
+import '../../../authentication/bloc/auth_bloc.dart';
 
 class AccountSection extends StatelessWidget {
   const AccountSection({super.key});
@@ -63,12 +61,7 @@ class AccountSection extends StatelessWidget {
           Divider(color: kDividerColor),
           GestureDetector(
             onTap: () {
-              locator.get<StorageService>().removeToken();
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                RouteName.signIn,
-                (_) => false,
-              );
+              context.read<AuthBloc>().add(const LogoutEvent());
             },
             child: Row(
               children: [

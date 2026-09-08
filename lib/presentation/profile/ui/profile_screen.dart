@@ -17,12 +17,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kCardColor,
-      appBar: CustomAppBar(title: "Profile", centerTile: false),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          return SingleChildScrollView(
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        // Show guest prompt when user is not logged in
+        if (state.user == null) {
+          return const GuestLoginPrompt(
+            title: 'Profile',
+            subtitle: 'Sign in to view and manage your profile',
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: kCardColor,
+          appBar: CustomAppBar(title: "Profile", centerTile: false),
+          body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -39,16 +47,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 8.heightBox,
                 GameInfoCard(
                   dominantHand: state.user?.dominantHand ?? "Unknown",
-                  preferredSide: state.user?.dominantHand ?? 'Unknown',),
+                  preferredSide: state.user?.dominantHand ?? 'Unknown',
+                ),
                 8.heightBox,
                 FeedbackCard(tags: profile.feedback),
                 8.heightBox,
                 AccountSection(),
               ],
             ).withPaddingSymmetric(20, 16),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -78,10 +78,11 @@ class MyApp extends StatelessWidget {
               return const OnboardingScreen();
             }
             if (state.status == AuthStateStatus.success) {
-              return const CustomBottomNavBar(index: 2,);
+              return const CustomBottomNavBar(index: 2);
             }
+            // Unauthenticated users land on home as a guest (can browse freely)
             if (state.status == AuthStateStatus.unAuthenticated) {
-              return const SignInScreen();
+              return const CustomBottomNavBar(index: 2);
             }
             return const SplashScreen();
           },

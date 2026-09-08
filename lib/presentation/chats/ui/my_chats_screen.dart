@@ -15,6 +15,12 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   @override
   void initState() {
+    final authState = context
+        .read<AuthBloc>()
+        .state;
+    if (authState.user == null) {
+      return;
+    }
     context.read<ChatsBloc>().add(LoadChats());
     super.initState();
   }
@@ -28,25 +34,35 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: "My Chats",
-        titleStyle: AppStyles.w600f16inter.copyWith(
-          color: kDarkTextColor,
-        ),
-        showBackIcon: true,
-        showActions: false,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildFilterChips(),
-          const SizedBox(height: 8),
-          Expanded(
-            child: _buildChatList(),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state.user == null) {
+          return const GuestLoginPrompt(
+            title: 'My Chats',
+            subtitle: 'Sign in to view your chats & Conversations',
+          );
+        }
+        return Scaffold(
+          appBar: CustomAppBar(
+            title: "My Chats",
+            titleStyle: AppStyles.w600f16inter.copyWith(
+              color: kDarkTextColor,
+            ),
+            showBackIcon: true,
+            showActions: false,
           ),
-        ],
-      ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFilterChips(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: _buildChatList(),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

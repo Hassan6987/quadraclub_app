@@ -74,3 +74,7 @@ class ResetPassword extends AuthEvent {
     required this.password,
   });
 }
+
+class LogoutEvent extends AuthEvent {
+  const LogoutEvent();
+}
