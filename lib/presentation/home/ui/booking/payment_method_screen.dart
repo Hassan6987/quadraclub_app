@@ -497,7 +497,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                   Icons.credit_card_outlined,
                                 ),
 
-                                inputFormatters: [_CardNumberInputFormatter()],
+                                inputFormatters: [CardNumberInputFormatter()],
 
                                 maxLength: 19,
 
@@ -818,7 +818,7 @@ class ExpiryDateInputFormatter extends TextInputFormatter {
 // The validator removes the spaces before validating.
 // ===========================================================================
 
-class _CardNumberInputFormatter extends TextInputFormatter {
+class CardNumberInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,

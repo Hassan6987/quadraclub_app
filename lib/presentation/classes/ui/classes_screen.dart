@@ -311,6 +311,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
   }
 
   void _openDetails(Class classModel) {
+    context.read<ClassesBloc>().add(FetchPortfolioBalance());
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ClassDetailsScreen(classModel: classModel),
