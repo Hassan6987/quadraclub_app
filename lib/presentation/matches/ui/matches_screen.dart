@@ -90,7 +90,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
           setState(() {
             _filterTimeOfDay = timeOfDay;
             _filterCity = city;
-            _filterDistance = dist;
+            _filterDistance = dist!;
           });
         },
         onSportSelected: (sport) => setState(() {

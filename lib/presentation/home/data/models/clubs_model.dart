@@ -52,7 +52,7 @@ class Club {
       id: json["id"],
       name: json["name"],
       description: json["description"],
-      photo: json["photo"],
+      photo: json["photo"] ?? json["profileImg"],
       city: json["city"],
       state: json["state"],
       coordinates: json["coordinates"] == null
@@ -140,14 +140,16 @@ class Court {
       coordinates: json["coordinates"] == null
           ? null
           : Coordinates.fromJson(json["coordinates"]),
-      courtPhoto: json["courtPhoto"],
+      courtPhoto: json["courtPhoto"] ?? json["photo"] ?? json["profileImg"],
       amenities: json["amenities"] == null
           ? []
           : List<dynamic>.from(json["amenities"]!.map((x) => x)),
       sports: json["sports"] == null
           ? []
           : List<Sport>.from(json["sports"]!.map((x) => Sport.fromJson(x))),
-      weeklySlots: Map.from(
+      weeklySlots: json["weeklySlots"] == null
+          ? {}
+          : Map.from(
         json["weeklySlots"],
       ).map((k, v) => MapEntry<String, WeeklySlot>(k, WeeklySlot.fromJson(v))),
     );
@@ -218,20 +220,24 @@ class WeeklySlot {
   }
 
   factory WeeklySlot.fromJson(Map<String, dynamic> json) {
+    List<Padel> parseSlotList(List<String> keys) {
+      for (final key in keys) {
+        if (json[key] != null && json[key] is List) {
+          return List<Padel>.from(
+            (json[key] as List).map((x) =>
+                Padel.fromJson(x as Map<String, dynamic>)),
+          );
+        }
+      }
+      return [];
+    }
+
     return WeeklySlot(
-      tennis: json["Tennis"] == null
-          ? []
-          : List<Padel>.from(json["Tennis"]!.map((x) => Padel.fromJson(x))),
-      padel: json["Padel"] == null
-          ? []
-          : List<Padel>.from(json["Padel"]!.map((x) => Padel.fromJson(x))),
-      pickleball: json["Pickleball"] == null
-          ? []
-          : List<Padel>.from(json["Pickleball"]!.map((x) => Padel.fromJson(x))),
-      beachTennis: json["beach_tennis"] == null
-          ? []
-          : List<Padel>.from(
-          json["beach_tennis"]!.map((x) => Padel.fromJson(x))),
+      tennis: parseSlotList(["Tennis", "tennis"]),
+      padel: parseSlotList(["Padel", "padel"]),
+      pickleball: parseSlotList(["Pickleball", "pickleball"]),
+      beachTennis: parseSlotList(
+          ["beach_tennis", "Beach Tennis", "Beach_Tennis", "beachTennis"]),
     );
   }
 }

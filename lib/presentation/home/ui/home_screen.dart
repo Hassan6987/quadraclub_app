@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isMapView = false;
   String _currentLocation = 'London, UK';
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
+  bool _hasUserLocation = false;
 
   final Set<String> _selectedSports = {};
 
@@ -43,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String? _filterTimeOfDay;
   String? _filterCity;
+  double? _filterDistance;
 
   @override
   void initState() {
@@ -50,6 +53,32 @@ class _HomeScreenState extends State<HomeScreen> {
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
     _selectedDate = _anchorDate;
+    _initUserLocation();
+  }
+
+  Future<void> _initUserLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final pos = await Geolocator.getLastKnownPosition() ??
+            await Geolocator.getCurrentPosition(
+              timeLimit: const Duration(seconds: 5),
+            );
+        if (mounted) {
+          setState(() {
+            _currentLatLng = LatLng(pos.latitude, pos.longitude);
+            _hasUserLocation = true;
+          });
+        }
+      }
+    } catch (_) {}
   }
 
   List<DateTime> get _dates =>
@@ -62,11 +91,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return '$y-$m-$d';
   }
 
+  double _clubDistance(Club club) {
+    if (club.coordinates?.latitude == null ||
+        club.coordinates?.longitude == null) {
+      return double.infinity;
+    }
+    return Geolocator.distanceBetween(
+      _currentLatLng.latitude,
+      _currentLatLng.longitude,
+      club.coordinates!.latitude!,
+      club.coordinates!.longitude!,
+    ) /
+        1000.0;
+  }
+
   /// Checks whether any court in [club] has an Available slot for
   /// _selectedDate that falls into the selected time-of-day bucket, for
   /// any of the currently-selected sports (or any sport if none selected).
-  /// Only Tennis/Padel are individually addressable today because
-  /// WeeklySlot.fromJson only decodes those two keys.
   bool _hasMatchingSlot(Club club) {
     final key = _dateKey(_selectedDate);
     final sportsToCheck = _selectedSports.isEmpty
@@ -80,12 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
       final List<Padel> slots = [
         if (sportsToCheck.contains('tennis')) ...daySlots.tennis,
         if (sportsToCheck.contains('padel')) ...daySlots.padel,
-        if (sportsToCheck.contains('pickleball'))...daySlots.pickleball,
-        if (sportsToCheck.contains('beach_tennis'))...daySlots.beachTennis,
+        if (sportsToCheck.contains('pickleball')) ...daySlots.pickleball,
+        if (sportsToCheck.contains('beach_tennis')) ...daySlots.beachTennis,
       ];
 
       for (final slot in slots) {
-        if (slot.status != 'Available') continue;
+        if ((slot.status ?? '').toLowerCase() != 'available') continue;
         final hour = int.tryParse((slot.startTime ?? '')
             .split(':')
             .first);
@@ -108,7 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Club> _filteredClubs(List<Club> clubs) {
     final query = _searchQuery.trim().toLowerCase();
 
-    return clubs.where((club) {
+    final filtered = clubs.where((club) {
+      // Sport filter
       if (_selectedSports.isNotEmpty &&
           !club.sports.any(
                 (s) => _selectedSports.contains(s.toLowerCase()),
@@ -116,30 +158,106 @@ class _HomeScreenState extends State<HomeScreen> {
         return false;
       }
 
+      // Search text query
       if (query.isNotEmpty &&
           !(club.name ?? '').toLowerCase().contains(query) &&
           !(club.city ?? '').toLowerCase().contains(query)) {
         return false;
       }
 
-      if (_filterCity != null &&
-          (club.city ?? '').toLowerCase() != _filterCity!.toLowerCase()) {
-        return false;
+      // City filter
+      if (_filterCity != null && _filterCity!.trim().isNotEmpty) {
+        final fc = _filterCity!.trim().toLowerCase();
+        final cc = (club.city ?? '').toLowerCase();
+        final cs = (club.state ?? '').toLowerCase();
+        final fullCity = '$cc, $cs';
+        if (!cc.contains(fc) && !fc.contains(cc) && !fullCity.contains(fc)) {
+          return false;
+        }
       }
 
+      // Time of Day filter
       if (_filterTimeOfDay != null && !_hasMatchingSlot(club)) {
         return false;
       }
 
+      // Distance filter
+      if (_filterDistance != null) {
+        final dist = _clubDistance(club);
+        if (dist.isInfinite || dist > _filterDistance!) {
+          return false;
+        }
+      }
+
       return true;
     }).toList();
+
+    // Sort by proximity if coordinates are available
+    filtered.sort((a, b) {
+      final distA = _clubDistance(a);
+      final distB = _clubDistance(b);
+      return distA.compareTo(distB);
+    });
+
+    return filtered;
+  }
+
+  Widget _buildFilterBadge({
+    required String label,
+    required IconData icon,
+    required VoidCallback onClear,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: kPrimaryColor.withValues(alpha: 0.25),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: kPrimaryColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: kDarkTextColor),
+          4.widthBox,
+          Text(
+            label,
+            style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
+          ),
+          4.widthBox,
+          GestureDetector(
+            onTap: onClear,
+            child: const Icon(Icons.close, size: 14, color: kDarkTextColor),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CourtsBloc, CourtsState>(
       builder: (context, state) {
+        // If GPS is not active and location is still the London placeholder,
+        // anchor default center to the first club's city/coordinates if available.
+        if (!_hasUserLocation &&
+            _currentLocation == 'London, UK' &&
+            state.courts.isNotEmpty) {
+          final firstClub = state.courts.first;
+          if (firstClub.coordinates?.latitude != null &&
+              firstClub.coordinates?.longitude != null) {
+            _currentLatLng = LatLng(
+              firstClub.coordinates!.latitude!,
+              firstClub.coordinates!.longitude!,
+            );
+            _currentLocation =
+            '${firstClub.city ?? ''}, ${firstClub.state ?? ''}';
+          }
+        }
+
         final clubsList = _filteredClubs(state.courts);
+        final hasActiveFilters = _filterTimeOfDay != null ||
+            _filterCity != null ||
+            _filterDistance != null;
 
         if (_isMapView) {
           return CourtMapView(
@@ -150,19 +268,23 @@ class _HomeScreenState extends State<HomeScreen> {
               setState(() {
                 _currentLocation = location.address;
                 _currentLatLng = LatLng(location.latitude, location.longitude);
+                _hasUserLocation = true;
               });
             },
             onBackToList: () => setState(() => _isMapView = false),
+            filterTimeOfDay: _filterTimeOfDay,
+            filterCity: _filterCity,
+            filterDistance: _filterDistance,
             onApplyFilters: (timeOfDay, city, dist) {
               setState(() {
                 _filterTimeOfDay = timeOfDay;
                 _filterCity = city;
+                _filterDistance = dist;
               });
             },
             selectedSports: _selectedSports,
-            // <-- pass the whole set
             onSportSelected: (sport) =>
-                setState(() { // <-- simple toggle, no null case
+                setState(() {
                   if (_selectedSports.contains(sport)) {
                     _selectedSports.remove(sport);
                   } else {
@@ -193,7 +315,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final sport = kAllSportSlugs[index];
                     final isSelected = _selectedSports.contains(sport);
-                    final label = '${sport[0].toUpperCase()}${sport
+                    final label =
+                        '${sport[0].toUpperCase()}${sport
                         .substring(1)
                         .replaceAll('_', ' ')}';
                     return GestureDetector(
@@ -253,7 +376,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(100),
                             border: Border.all(color: kBorderColor),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
                             children: [
                               const Icon(Icons.search,
@@ -278,20 +402,32 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           initialTimeOfDay: _filterTimeOfDay,
                           initialCity: _filterCity,
+                          initialDistance: _filterDistance,
+                          availableCities: state.courts
+                              .map((c) => c.city)
+                              .whereType<String>()
+                              .where((s) =>
+                          s
+                              .trim()
+                              .isNotEmpty)
+                              .toSet()
+                              .toList(),
                           onApply: (timeOfDay, city, dist) {
                             setState(() {
                               _filterTimeOfDay = timeOfDay;
                               _filterCity = city;
+                              _filterDistance = dist;
                             });
                           },
-                          initialDistance: 2.5,
                         );
                       },
                       child: Container(
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: kWhiteColor,
+                          color: hasActiveFilters
+                              ? kPrimaryColor
+                              : kWhiteColor,
                           shape: BoxShape.circle,
                           border: Border.all(color: kBorderColor),
                         ),
@@ -324,11 +460,65 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+              if (hasActiveFilters) ...[
+                8.heightBox,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      if (_filterTimeOfDay != null) ...[
+                        _buildFilterBadge(
+                          label: _filterTimeOfDay!,
+                          icon: Icons.access_time,
+                          onClear: () =>
+                              setState(() => _filterTimeOfDay = null),
+                        ),
+                        8.widthBox,
+                      ],
+                      if (_filterCity != null) ...[
+                        _buildFilterBadge(
+                          label: _filterCity!,
+                          icon: Icons.location_city,
+                          onClear: () =>
+                              setState(() => _filterCity = null),
+                        ),
+                        8.widthBox,
+                      ],
+                      if (_filterDistance != null) ...[
+                        _buildFilterBadge(
+                          label: '< ${_filterDistance!.round()} km',
+                          icon: Icons.near_me_outlined,
+                          onClear: () =>
+                              setState(() => _filterDistance = null),
+                        ),
+                        8.widthBox,
+                      ],
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() {
+                              _filterTimeOfDay = null;
+                              _filterCity = null;
+                              _filterDistance = null;
+                            }),
+                        child: Text(
+                          'Clear all',
+                          style: AppStyles.w500f12inter.copyWith(
+                            color: kDarkTextColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               12.heightBox,
               CommonDateSelectionRow(
                 dates: _dates,
                 selectedDate: _selectedDate,
-                onDateSelected: (date) => setState(() => _selectedDate = date),
+                onDateSelected: (date) =>
+                    setState(() => _selectedDate = date),
               ),
               12.heightBox,
               Expanded(
@@ -353,6 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             _selectedSports.clear();
                             _filterTimeOfDay = null;
                             _filterCity = null;
+                            _filterDistance = null;
                           });
                         },
                         child: const Text('Reset Filters'),
@@ -364,14 +555,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: clubsList.length,
                   padding: const EdgeInsets.only(bottom: 24),
                   itemBuilder: (context, index) {
+                    final dist = _clubDistance(clubsList[index]);
                     return CourtCardWidget(
                       club: clubsList[index],
                       selectedDate: _selectedDate,
+                      distanceKm: dist.isInfinite ? null : dist,
                       onTap: () {
                         // Gate: show login dialog for unauthenticated users
-                        final authState = context
-                            .read<AuthBloc>()
-                            .state;
+                        final authState =
+                            context
+                                .read<AuthBloc>()
+                                .state;
                         if (authState.user == null) {
                           LoginToBookDialog.show(
                             context,
@@ -385,7 +579,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                CourtDetailScreen(club: clubsList[index]),
+                                CourtDetailScreen(
+                                    club: clubsList[index]),
                           ),
                         );
                       },

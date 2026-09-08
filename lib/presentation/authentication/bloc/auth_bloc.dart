@@ -223,9 +223,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _handleLogout(LogoutEvent event,
-      Emitter<AuthState> emit,) async {
+  Future<void> _handleLogout(LogoutEvent event, Emitter<AuthState> emit) async {
     await _storageServices.removeToken();
-    emit(AuthState(status: AuthStateStatus.unAuthenticated));
+    emit(AuthState(status: AuthStateStatus.unAuthenticated,));
   }
 }

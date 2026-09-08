@@ -15,8 +15,11 @@ class CourtMapView extends StatefulWidget {
   final LatLng initialCenter;
   final Function(LocationResult) onLocationChanged;
   final VoidCallback onBackToList;
-  final Function(String? timeOfDay, String? city, double distance)
+  final Function(String? timeOfDay, String? city, double? distance)
   onApplyFilters;
+  final String? filterTimeOfDay;
+  final String? filterCity;
+  final double? filterDistance;
   final Set<String> selectedSports; // <-- was: final String? selectedSport;
   final Function(String)
   onSportSelected; // <-- was: final Function(String?) onSportSelected;
@@ -29,6 +32,9 @@ class CourtMapView extends StatefulWidget {
     required this.onLocationChanged,
     required this.onBackToList,
     required this.onApplyFilters,
+    this.filterTimeOfDay,
+    this.filterCity,
+    this.filterDistance,
     required this.selectedSports,
     required this.onSportSelected,
   });
@@ -185,7 +191,18 @@ class _CourtMapViewState extends State<CourtMapView> {
                         onTap: () {
                           CourtFilterBottomSheet.show(
                             context,
-                            initialDistance: 25.0,
+                            initialTimeOfDay: widget.filterTimeOfDay,
+                            initialCity: widget.filterCity,
+                            initialDistance: widget.filterDistance,
+                            availableCities: widget.courts
+                                .map((c) => c.city)
+                                .whereType<String>()
+                                .where((s) =>
+                            s
+                                .trim()
+                                .isNotEmpty)
+                                .toSet()
+                                .toList(),
                             onApply: widget.onApplyFilters,
                           );
                         },
@@ -193,7 +210,11 @@ class _CourtMapViewState extends State<CourtMapView> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: kWhiteColor,
+                            color: (widget.filterTimeOfDay != null ||
+                                widget.filterCity != null ||
+                                widget.filterDistance != null)
+                                ? kPrimaryColor
+                                : kWhiteColor,
                             shape: BoxShape.circle,
                             border: Border.all(color: kBorderColor, width: 1),
                           ),

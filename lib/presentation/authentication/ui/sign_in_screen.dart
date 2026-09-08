@@ -61,11 +61,9 @@ class _SignInScreenState extends State<SignInScreen> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.success) {
-          Navigator.pushReplacementNamed(
-            context,
-            RouteName.customBottomNavbar,
-            arguments: {"index": 2},
-          );
+          Navigator.pushNamedAndRemoveUntil(
+              context, RouteName.customBottomNavbar, (_) => false,
+              arguments: {"index": 2});
         } else if (state.status == AuthStateStatus.unVerified) {
           context.showToast(
               state.error ?? 'Something went wrong', isError: true);

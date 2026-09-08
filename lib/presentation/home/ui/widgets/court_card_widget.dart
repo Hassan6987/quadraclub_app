@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 class CourtCardWidget extends StatefulWidget {
   final Club club;
   final DateTime selectedDate;
+  final double? distanceKm;
   final VoidCallback? onTap;
   final Function(Court, Sport, String)? onTimeSlotTap;
 
@@ -13,6 +14,7 @@ class CourtCardWidget extends StatefulWidget {
     super.key,
     required this.club,
     required this.selectedDate,
+    this.distanceKm,
     this.onTap,
     this.onTimeSlotTap,
   });
@@ -122,10 +124,24 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     final city = widget.club.city ?? '';
     final state = widget.club.state ?? '';
 
-    if (city.isEmpty) return state;
-    if (state.isEmpty) return city;
+    String loc = '';
+    if (city.isNotEmpty && state.isNotEmpty) {
+      loc = '$city, $state';
+    } else if (city.isNotEmpty) {
+      loc = city;
+    } else {
+      loc = state;
+    }
 
-    return '$city, $state';
+    if (widget.distanceKm != null &&
+        !widget.distanceKm!.isInfinite &&
+        !widget.distanceKm!.isNaN) {
+      final d = widget.distanceKm!;
+      final dStr = d < 10 ? '${d.toStringAsFixed(1)} km' : '${d.round()} km';
+      return loc.isNotEmpty ? '$loc • $dStr' : dStr;
+    }
+
+    return loc;
   }
 
   // ---------------------------------------------------------------------------

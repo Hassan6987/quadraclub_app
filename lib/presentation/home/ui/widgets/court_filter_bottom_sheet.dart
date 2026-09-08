@@ -6,22 +6,27 @@ import 'package:quadraclub_app/data/places_service.dart';
 class CourtFilterBottomSheet extends StatefulWidget {
   final String? initialTimeOfDay;
   final String? initialCity;
-  final double initialDistance;
-  final Function(String? timeOfDay, String? city, double distance) onApply;
+  final double? initialDistance;
+  final List<String> availableCities;
+  final Function(String? timeOfDay, String? city, double? distance) onApply;
 
   const CourtFilterBottomSheet({
     super.key,
     this.initialTimeOfDay,
     this.initialCity,
-    required this.initialDistance,
+    this.initialDistance,
+    this.availableCities = const [],
     required this.onApply,
   });
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     String? initialTimeOfDay,
     String? initialCity,
-    required double initialDistance,
-    required Function(String? timeOfDay, String? city, double distance) onApply,
+    double? initialDistance,
+    List<String> availableCities = const [],
+    required Function(String? timeOfDay, String? city, double? distance)
+    onApply,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -38,6 +43,7 @@ class CourtFilterBottomSheet extends StatefulWidget {
           initialTimeOfDay: initialTimeOfDay,
           initialCity: initialCity,
           initialDistance: initialDistance,
+          availableCities: availableCities,
           onApply: onApply,
         ),
       ),
@@ -52,6 +58,7 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
   String? _selectedTimeOfDay;
   String? _selectedCity;
   double _distance = 25.0;
+  bool _enableDistance = false;
   final TextEditingController _cityController = TextEditingController();
 
   // City autocomplete state
@@ -65,18 +72,25 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
     {'label': 'Night', 'time': '6 PM - 12 AM'},
   ];
 
-  final List<Map<String, dynamic>> _quickCities = [
-    {'name': 'New York', 'dist': '0 km'},
-    {'name': 'Los Angeles', 'dist': '10 km'},
-    {'name': 'Chicago', 'dist': '15 km'},
-  ];
+  List<String> get _quickCities {
+    if (widget.availableCities.isNotEmpty) {
+      return widget.availableCities;
+    }
+    return const ['Balneário Camboriú', 'Florianópolis', 'Itajaí'];
+  }
 
   @override
   void initState() {
     super.initState();
     _selectedTimeOfDay = widget.initialTimeOfDay;
     _selectedCity = widget.initialCity;
-    _distance = widget.initialDistance;
+    if (widget.initialDistance != null) {
+      _distance = widget.initialDistance!;
+      _enableDistance = true;
+    } else {
+      _distance = 25.0;
+      _enableDistance = false;
+    }
     if (_selectedCity != null) {
       _cityController.text = _selectedCity!;
     }
@@ -123,10 +137,7 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
   void _selectCityPrediction(PlacePrediction prediction) {
     // Autocomplete descriptions look like "New York, NY, USA" — take the
     // first segment as the city name used for filtering.
-    final cityName = prediction.description
-        .split(',')
-        .first
-        .trim();
+    final cityName = prediction.description.split(',').first.trim();
     setState(() {
       _selectedCity = cityName;
       _cityController.text = cityName;
@@ -136,7 +147,11 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final maxSheetHeight = MediaQuery.of(context).size.height * 0.9;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxSheetHeight),
+      child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -189,8 +204,9 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                       decoration: BoxDecoration(
                         color: isSelected ? kPrimaryColor : kGreyColor,
                         borderRadius: BorderRadius.circular(8),
-                        border: isSelected ? null : Border.all(
-                            color: kBorderColor),
+                        border: isSelected
+                            ? null
+                            : Border.all(color: kBorderColor),
                       ),
                       child: Column(
                         children: [
@@ -233,7 +249,10 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                 children: [
                   16.widthBox,
                   const Icon(
-                      Icons.share_location_sharp, color: kTextColor, size: 20),
+                    Icons.share_location_sharp,
+                    color: kTextColor,
+                    size: 20,
+                  ),
                   8.widthBox,
                   Expanded(
                     child: TextField(
@@ -255,21 +274,20 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     )
-                  else
-                    if (_cityController.text.isNotEmpty)
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _cityController.clear();
-                            _selectedCity = null;
-                            _cityPredictions = [];
-                          });
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.only(right: 12),
-                          child: Icon(Icons.close, color: kTextColor, size: 18),
-                        ),
+                  else if (_cityController.text.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _cityController.clear();
+                          _selectedCity = null;
+                          _cityPredictions = [];
+                        });
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 12),
+                        child: Icon(Icons.close, color: kTextColor, size: 18),
                       ),
+                    ),
                 ],
               ),
             ).withPaddingSymmetric(16, 0),
@@ -289,18 +307,21 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                   padding: EdgeInsets.zero,
                   itemCount: _cityPredictions.length,
                   separatorBuilder: (_, __) =>
-                  const Divider(height: 1, color: kBorderColor),
+                      const Divider(height: 1, color: kBorderColor),
                   itemBuilder: (context, index) {
                     final prediction = _cityPredictions[index];
                     return ListTile(
                       dense: true,
                       leading: const Icon(
-                          Icons.location_on_outlined, color: kTextColor,
-                          size: 18),
+                        Icons.location_on_outlined,
+                        color: kTextColor,
+                        size: 18,
+                      ),
                       title: Text(
                         prediction.description,
                         style: AppStyles.w400f14inter.copyWith(
-                            color: kDarkTextColor),
+                          color: kDarkTextColor,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -312,68 +333,100 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
 
             12.heightBox,
             // Quick city selection chips
-            Row(
-              children: _quickCities.map((city) {
-                final isSelected = _selectedCity?.toLowerCase() ==
-                    city['name'].toString().toLowerCase();
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          _selectedCity = null;
-                          _cityController.clear();
-                        } else {
-                          _selectedCity = city['name'];
-                          _cityController.text = city['name'];
-                          _cityPredictions = [];
-                        }
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSelected ? kPrimaryColor : kGreyColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: isSelected ? null : Border.all(
-                            color: kBorderColor),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            city['name'],
-                            style: AppStyles.w500f12inter.copyWith(
-                              color: kDarkTextColor,
-                            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: _quickCities.map((cityName) {
+                  final isSelected =
+                      _selectedCity?.toLowerCase() == cityName.toLowerCase();
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (isSelected) {
+                            _selectedCity = null;
+                            _cityController.clear();
+                          } else {
+                            _selectedCity = cityName;
+                            _cityController.text = cityName;
+                            _cityPredictions = [];
+                          }
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected ? kPrimaryColor : kGreyColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: isSelected
+                              ? null
+                              : Border.all(color: kBorderColor),
+                        ),
+                        child: Text(
+                          cityName,
+                          style: AppStyles.w500f12inter.copyWith(
+                            color: kDarkTextColor,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            city['dist'],
-                            style: AppStyles.w400f12inter.copyWith(
-                              color: kTextColor,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ).withPaddingSymmetric(16, 0),
+                  );
+                }).toList(),
+              ),
+            ),
             24.heightBox,
 
             // Distance Section
-            Text(
-              'Distance',
-              style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Distance',
+                  style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _enableDistance = !_enableDistance;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _enableDistance ? kPrimaryColor : kGreyColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: _enableDistance
+                          ? null
+                          : Border.all(color: kBorderColor),
+                    ),
+                    child: Text(
+                      _enableDistance
+                          ? 'Within ${_distance.round()} km'
+                          : 'Any distance',
+                      style: AppStyles.w500f12inter.copyWith(
+                        color: kDarkTextColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ).withPaddingSymmetric(16, 0),
             6.heightBox,
             Column(
               children: [
                 SliderTheme(
                   data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: kPrimaryColor,
+                    activeTrackColor: _enableDistance
+                        ? kPrimaryColor
+                        : kBorderColor,
                     thumbColor: kWhiteColor,
                     inactiveTrackColor: kCardColor,
                     thumbShape: const RoundSliderThumbShape(
@@ -389,6 +442,7 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                     onChanged: (val) {
                       setState(() {
                         _distance = val;
+                        _enableDistance = true;
                       });
                     },
                   ),
@@ -400,18 +454,25 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                     Text(
                       '1 km',
                       style: AppStyles.w500f12inter.copyWith(
-                          color: kGreyTextColor),
+                        color: kGreyTextColor,
+                      ),
                     ),
                     Text(
-                      "25 km",
-                      // '${_distance.toStringAsFixed(0)} km'
+                      '${_distance.round()} km',
                       style: AppStyles.w500f12inter.copyWith(
-                          color: kGreyTextColor),
+                        color: _enableDistance
+                            ? kDarkTextColor
+                            : kGreyTextColor,
+                        fontWeight: _enableDistance
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
                     ),
                     Text(
                       '50 km',
                       style: AppStyles.w500f12inter.copyWith(
-                          color: kGreyTextColor),
+                        color: kGreyTextColor,
+                      ),
                     ),
                   ],
                 ).withPaddingSymmetric(16, 0),
@@ -428,6 +489,7 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                       setState(() {
                         _selectedTimeOfDay = null;
                         _selectedCity = null;
+                        _enableDistance = false;
                         _distance = 25.0;
                         _cityController.clear();
                         _cityPredictions = [];
@@ -444,7 +506,8 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                         child: Text(
                           'Clear Filters',
                           style: AppStyles.w500f16inter.copyWith(
-                              color: kDarkTextColor),
+                            color: kDarkTextColor,
+                          ),
                         ),
                       ),
                     ),
@@ -455,7 +518,10 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                   child: GestureDetector(
                     onTap: () {
                       widget.onApply(
-                          _selectedTimeOfDay, _selectedCity, _distance);
+                        _selectedTimeOfDay,
+                        _selectedCity,
+                        _enableDistance ? _distance : null,
+                      );
                       Navigator.pop(context);
                     },
                     child: Container(
@@ -468,7 +534,8 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                         child: Text(
                           'Show Results',
                           style: AppStyles.w500f16inter.copyWith(
-                              color: kDarkTextColor),
+                            color: kDarkTextColor,
+                          ),
                         ),
                       ),
                     ),
@@ -478,6 +545,8 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
             ).withPaddingSymmetric(16, 0),
             12.heightBox,
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
