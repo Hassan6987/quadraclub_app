@@ -21,6 +21,7 @@ class PaymentMethodScreen extends StatefulWidget {
   final String endTime;
   final double amount;
   final bool isMatch;
+  final List<String> invitedPlayers;
   final String? matchType;
   final String? matchFormat;
   final String? paymentType;
@@ -36,6 +37,7 @@ class PaymentMethodScreen extends StatefulWidget {
     required this.startTime,
     required this.endTime,
     this.isMatch = false,
+    this.invitedPlayers = const [],
     this.matchType,
     this.matchFormat,
     this.paymentType,
@@ -234,6 +236,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         matchType: widget.matchType ?? '',
         format: widget.matchFormat ?? '',
         paymentType: widget.paymentType ?? '',
+        invitedPlayers: widget.invitedPlayers,
         cardHolderName: _cardholderController.text.trim(),
         cardNo: _cardNumberController.text.trim(),
         cvc: _cvvController.text.trim(),

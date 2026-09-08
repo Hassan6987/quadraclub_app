@@ -13,6 +13,7 @@ class MatchBookingModel {
   final String cardExpiryDate;
   final int totalPrice;
   final int serviceFee;
+  final List<String> invitedPlayers;
 
   MatchBookingModel({
     required this.clubId,
@@ -29,5 +30,6 @@ class MatchBookingModel {
     required this.cardExpiryDate,
     required this.totalPrice,
     required this.serviceFee,
+    required this.invitedPlayers
   });
 }

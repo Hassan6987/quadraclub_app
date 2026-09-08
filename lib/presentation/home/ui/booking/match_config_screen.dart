@@ -1,8 +1,10 @@
 // lib/presentation/booking/ui/match_config_screen.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/invite_player_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
 import 'package:shimmer/shimmer.dart';
@@ -37,10 +39,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
   MatchType _matchType = MatchType.private;
   BookingFormat _format = BookingFormat.single;
   PaymentSplitOption _paymentOption = PaymentSplitOption.payAllReceiveLater;
-  List<InvitablePlayerModel> _invitedPlayers = [
-    dummyPlayers[1], // Pedro Costa, preselected to mirror the mock
-    dummyPlayers[2], // John
-  ];
+  List<InvitePlayerModel> _invitedPlayers = [];
 
   List<PaymentSplitOption> get _availablePaymentOptions {
     if (_matchType == MatchType.private) {
@@ -52,9 +51,6 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     ];
   }
 
-  String get _photoUrl =>
-      widget.club.photo is String ? widget.club.photo as String : '';
-
   String get _locationLabel {
     final city = widget.club.city ?? '';
     final state = widget.club.state ?? '';
@@ -63,10 +59,11 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     return '$city, $state';
   }
 
-  Future<void> _openInvitePlayers() async {
+  Future<void> _openInvitePlayers(List<InvitePlayerModel> allPlayers) async {
     final result = await InvitePlayersSheet.show(
       context,
       initiallyInvited: _invitedPlayers,
+        allPlayers: allPlayers
     );
     if (result != null) {
       setState(() => _invitedPlayers = result);
@@ -77,20 +74,22 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => PaymentMethodScreen(
-          club: widget.club,
-          court: widget.court,
-          bookingDate: widget.bookingDate,
-          startTime: widget.startTime,
-          endTime: widget.endTime,
-          dateLabel: widget.dateLabel,
-          timeLabel: widget.timeLabel,
-          amount: widget.amount,
-          isMatch: true,
-          matchType: _matchType.label,
-          matchFormat: _format.label,
-          paymentType: _paymentOption.type,
-        ),
+        builder: (_) =>
+            PaymentMethodScreen(
+              club: widget.club,
+              court: widget.court,
+              bookingDate: widget.bookingDate,
+              startTime: widget.startTime,
+              endTime: widget.endTime,
+              dateLabel: widget.dateLabel,
+              timeLabel: widget.timeLabel,
+              amount: widget.amount,
+              isMatch: true,
+              invitedPlayers: _invitedPlayers.map((p) => p.id).toList(),
+              matchType: _matchType.label,
+              matchFormat: _format.label,
+              paymentType: _paymentOption.type,
+            ),
       ),
     );
   }
@@ -352,32 +351,37 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: _openInvitePlayers,
-                          child: Container(
-                            height: 44,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: kBorderColor),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.search,
-                                  color: kTextColor,
-                                  size: 18,
+                        BlocBuilder<CourtsBloc, CourtsState>(
+                          builder: (context, state) {
+                            return GestureDetector(
+                              onTap: () => _openInvitePlayers(state.players),
+                              child: Container(
+                                height: 44,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(color: kBorderColor),
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Search players...',
-                                  style: AppStyles.w400f14inter.copyWith(
-                                    color: kTextColor,
-                                  ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.search,
+                                      color: kTextColor,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Search players...',
+                                      style: AppStyles.w400f14inter.copyWith(
+                                        color: kTextColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         ),
                         if (_invitedPlayers.isNotEmpty) ...[
                           10.heightBox,
@@ -400,7 +404,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     CircleAvatar(
                                       radius: 10,
                                       backgroundImage: NetworkImage(
-                                        player.avatarUrl,
+                                        player.profilePhoto,
                                       ),
                                     ),
                                     const SizedBox(width: 6),
@@ -412,10 +416,11 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     GestureDetector(
-                                      onTap: () => setState(
-                                            () =>
-                                            _invitedPlayers.remove(player),
-                                      ),
+                                      onTap: () =>
+                                          setState(
+                                                () =>
+                                                _invitedPlayers.remove(player),
+                                          ),
                                       child: const Icon(
                                         Icons.close,
                                         size: 14,

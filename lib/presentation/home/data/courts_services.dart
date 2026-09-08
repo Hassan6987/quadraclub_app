@@ -60,6 +60,7 @@ class CourtsServices extends BaseApiProvider {
                 model.bookingDate),
             "startTime": model.startTime,
             "endTime": model.endTime,
+            "invitedPlayers": model.invitedPlayers,
             "bookingType": "Match",
             "matchType": model.matchType,
             "format": model.format,

@@ -1,17 +1,20 @@
 // lib/presentation/booking/ui/widgets/invite_players_sheet.dart
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
+import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 
 class InvitePlayersSheet extends StatefulWidget {
-  final List<InvitablePlayerModel> initiallyInvited;
+  final List<InvitePlayerModel> initiallyInvited;
+  final List<InvitePlayerModel> allPlayers;
 
-  const InvitePlayersSheet({super.key, required this.initiallyInvited});
+  const InvitePlayersSheet(
+      {super.key, required this.initiallyInvited, required this.allPlayers});
 
-  static Future<List<InvitablePlayerModel>?> show(
+  static Future<List<InvitePlayerModel>?> show(
     BuildContext context, {
-    required List<InvitablePlayerModel> initiallyInvited,
+        required List<InvitePlayerModel> initiallyInvited,
+        required List<InvitePlayerModel> allPlayers,
   }) {
-    return showModalBottomSheet<List<InvitablePlayerModel>>(
+    return showModalBottomSheet<List<InvitePlayerModel>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: kWhiteColor,
@@ -19,7 +22,8 @@ class InvitePlayersSheet extends StatefulWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) =>
-          InvitePlayersSheet(initiallyInvited: initiallyInvited),
+          InvitePlayersSheet(
+            initiallyInvited: initiallyInvited, allPlayers: allPlayers,),
     );
   }
 
@@ -29,14 +33,15 @@ class InvitePlayersSheet extends StatefulWidget {
 
 class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
   final TextEditingController _searchController = TextEditingController();
-  late List<InvitablePlayerModel> _invited;
-  List<InvitablePlayerModel> _filtered = dummyPlayers;
+  late List<InvitePlayerModel> _invited;
+  late List<InvitePlayerModel> _filtered;
 
   @override
   void initState() {
     super.initState();
     _invited = List.of(widget.initiallyInvited);
     _searchController.addListener(_onSearchChanged);
+    _filtered = widget.allPlayers;
   }
 
   @override
@@ -50,14 +55,14 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
       _filtered = query.isEmpty
-          ? dummyPlayers
-          : dummyPlayers
+          ? widget.allPlayers
+          : widget.allPlayers
                 .where((p) => p.name.toLowerCase().contains(query))
                 .toList();
     });
   }
 
-  void _toggleInvite(InvitablePlayerModel player) {
+  void _toggleInvite(InvitePlayerModel player) {
     setState(() {
       final alreadyInvited = _invited.any((p) => p.id == player.id);
       if (alreadyInvited) {
@@ -133,7 +138,7 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
                   contentPadding: EdgeInsets.zero,
                   leading: ClipOval(
                     child: Image.network(
-                      player.avatarUrl,
+                      player.profilePhoto,
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
