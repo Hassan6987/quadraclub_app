@@ -20,3 +20,5 @@ class BookMatch extends CourtsEvent {
 
   const BookMatch({required this.bookingData});
 }
+
+class FetchAllUsers extends CourtsEvent {}

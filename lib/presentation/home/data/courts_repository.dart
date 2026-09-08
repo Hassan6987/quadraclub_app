@@ -5,6 +5,7 @@ import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/home/data/courts_services.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/individual_booking_model.dart';
+import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/match_booking_model.dart';
 
 class CourtsRepository {
@@ -91,6 +92,20 @@ class CourtsRepository {
       log('Payment Method ID: $paymentMethodId');
 
       await courtServices.bookMatch(model, paymentMethodId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<InvitePlayerModel>> getAllPlayers() async {
+    try {
+      final response = await courtServices.getAllPlayers();
+      final data = response.data as Map<String, dynamic>;
+      final List<dynamic> playersJson = data['players'] as List<dynamic>? ?? [];
+      return playersJson
+          .map((json) =>
+          InvitePlayerModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       rethrow;
     }

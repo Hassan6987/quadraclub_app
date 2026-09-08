@@ -77,4 +77,18 @@ class CourtsServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+  Future<Response> getAllPlayers() async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/users/players',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
