@@ -47,7 +47,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onJoinChat(JoinChat event, Emitter<ChatState> emit) {
-    socketService.joinChat(event.chatId);
+    ssocketService.joinChat(event.chatId);
   }
 
   Future<void> _onSendMessage(
@@ -72,6 +72,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
 
       if (sentMessage != null) {
+        // Broadcast new message over socket so other participants get real-time delivery
+        if (sentMessage.rawJson.isNotEmpty) {
+          socketService.emitNewMessage(sentMessage.rawJson);
+        }
+
         final alreadyExists = currentState.messages.any(
           (message) => message.id == sentMessage.id,
         );
@@ -98,28 +103,33 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     IncomingSocketMessage event,
     Emitter<ChatState> emit,
   ) {
-    if (state is! ChatLoaded) return;
+    try {
+      if (state is! ChatLoaded) return;
 
-    final currentState = state as ChatLoaded;
+      final currentState = state as ChatLoaded;
 
-    final message = ChatMessage.fromJson(event.message);
+      final message = ChatMessage.fromJson(event.message);
 
-    if (message.chatId != currentState.chatId) {
-      return;
+      if (message.chatId != currentState.chatId) {
+        return;
+      }
+
+      // Prevent duplicates.
+      final alreadyExists = currentState.messages.any(
+            (item) => item.id == message.id,
+      );
+
+      if (alreadyExists) return;
+
+      emit(
+          currentState.copyWith(messages: [...currentState.messages, message]));
+
+      // Automatically mark incoming messages as seen
+      // because this chat is currently open.
+      add(MarkChatSeen(currentState.chatId));
+    } catch (_) {
+      // Ignored
     }
-
-    // Prevent duplicates.
-    final alreadyExists = currentState.messages.any(
-      (item) => item.id == message.id,
-    );
-
-    if (alreadyExists) return;
-
-    emit(currentState.copyWith(messages: [...currentState.messages, message]));
-
-    // Automatically mark incoming messages as seen
-    // because this chat is currently open.
-    add(MarkChatSeen(currentState.chatId));
   }
 
   Future<void> _onMarkChatSeen(

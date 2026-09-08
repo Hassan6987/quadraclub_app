@@ -39,30 +39,36 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   void _onNewSocketMessage(NewSocketMessage event, Emitter<ChatsState> emit) {
     if (state is! ChatsLoaded) return;
 
-    final currentState = state as ChatsLoaded;
+    try {
+      final currentState = state as ChatsLoaded;
 
-    final incoming = ChatMessage.fromJson(event.message);
+      final incoming = ChatMessage.fromJson(event.message);
 
-    final chatId = incoming.chatId;
+      final chatId = incoming.chatId;
 
-    if (chatId.isEmpty) return;
+      if (chatId.isEmpty) return;
 
-    final chats = currentState.chats.map((chat) {
-      if (chat.id != chatId) return chat;
+      final chats = currentState.chats.map((chat) {
+        if (chat.id != chatId) return chat;
 
-      return Chat(
-        id: chat.id,
-        chatName: chat.chatName,
-        isGroupChat: chat.isGroupChat,
-        users: chat.users,
-        chatType: chat.chatType,
-        createdAt: chat.createdAt,
-        updatedAt: incoming.createdAt,
-        latestMessage: incoming,
-      );
-    }).toList();
+        return Chat(
+          id: chat.id,
+          chatName: chat.chatName,
+          isGroupChat: chat.isGroupChat,
+          users: chat.users,
+          chatType: chat.chatType,
+          createdAt: chat.createdAt,
+          updatedAt: incoming.createdAt,
+          latestMessage: incoming,
+        );
+      }).toList();
 
-    emit(currentState.copyWith(chats: chats));
+      chats.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+      emit(currentState.copyWith(chats: chats));
+    } catch (_) {
+      // Ignored
+    }
   }
 
   @override

@@ -87,6 +87,7 @@ class ChatMessage {
   final List<String> seenBy;
   final bool isSystemMessage;
   final DateTime createdAt;
+  final Map<String, dynamic> rawJson;
 
   const ChatMessage({
     required this.id,
@@ -97,24 +98,37 @@ class ChatMessage {
     required this.seenBy,
     required this.isSystemMessage,
     required this.createdAt,
+    this.rawJson = const {},
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
-    final chat = json['chat'];
+    final chat = json['chat'] ?? json['chatId'];
 
     String chatId = '';
 
     if (chat is String) {
       chatId = chat;
-    } else if (chat is Map<String, dynamic>) {
-      chatId = chat['_id']?.toString() ?? '';
+    } else if (chat is Map) {
+      chatId = chat['_id']?.toString() ?? chat['id']?.toString() ?? '';
+    }
+
+    ChatUser sender;
+    if (json['sender'] is Map) {
+      sender = ChatUser.fromJson(
+        (json['sender'] as Map).cast<String, dynamic>(),
+      );
+    } else if (json['sender'] != null) {
+      sender = ChatUser(
+        id: json['sender'].toString(),
+        fullName: '',
+      );
+    } else {
+      sender = const ChatUser(id: '', fullName: '');
     }
 
     return ChatMessage(
-      id: json['_id']?.toString() ?? '',
-      sender: ChatUser.fromJson(
-        (json['sender'] as Map?)?.cast<String, dynamic>() ?? {},
-      ),
+      id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
+      sender: sender,
       content: json['content']?.toString() ?? '',
       chatId: chatId,
       attachments: json['attachments'] as List? ?? [],
@@ -127,6 +141,7 @@ class ChatMessage {
         json['createdAt']?.toString() ?? '',
       )?.toLocal() ??
           DateTime.now(),
+      rawJson: json,
     );
   }
 }
