@@ -1,7 +1,9 @@
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+
 import '/app_exports.dart';
 
 class PaymentForLessonScreen extends StatefulWidget {
-  final ClassModel classModel;
+  final Class classModel;
 
   const PaymentForLessonScreen({super.key, required this.classModel});
 
@@ -22,7 +24,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
   static const _convenienceFee = 2.0;
   static const _portfolioBalance = 259.0;
 
-  double get _total => widget.classModel.price + _convenienceFee;
+  double get _total => (widget.classModel.price ?? 0) + _convenienceFee;
 
   @override
   void dispose() {
@@ -99,7 +101,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                 ).withPaddingSymmetric(0, 16),
 
                 PriceCard(
-                  classPrice: widget.classModel.price,
+                  classPrice: widget.classModel.price?.toDouble() ?? 0.0,
                   convenienceFee: _convenienceFee,
                   total: _total,
                 ),

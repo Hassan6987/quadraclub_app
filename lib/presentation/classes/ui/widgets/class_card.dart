@@ -1,10 +1,9 @@
-
-import 'package:quadraclub_app/presentation/classes/ui/widgets/common_badge.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 import '/app_exports.dart';
 
 class ClassCard extends StatelessWidget {
-  final ClassModel classModel;
+  final Class classModel;
   final VoidCallback onTap;
 
   const ClassCard({super.key, required this.classModel, required this.onTap});
@@ -12,9 +11,9 @@ class ClassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: classModel.status == ClassStatus.full ? null : onTap,
+      onTap: (classModel.isFull ?? true) ? null : onTap,
       child: Opacity(
-        opacity: classModel.status == ClassStatus.full ? 0.3 : 1,
+        opacity: (classModel.isFull ?? true) ? 0.3 : 1,
         child: Container(
           margin: EdgeInsets.symmetric(
             horizontal: getProportionateScreenWidth(20),
@@ -30,34 +29,36 @@ class ClassCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  SportBadge(sport: classModel.sport),
+                  SportBadge(sport: SportTypeExtension.fromString(
+                      classModel.sportName ?? '')),
                   4.widthBox,
-                  CommonBadge(label: 'Category ${classModel.categoryRange}'),
+                  CommonBadge(label: 'Category ${classModel.level}'),
                   4.widthBox,
                   CommonBadge(
-                    label: classModel.format == ClassFormat.group
+                    label: classModel.format?.trim().toLowerCase() ==
+                        ClassFormat.group.name.toLowerCase()
                         ? 'Group'
                         : 'Individual',
                   ),
 
                   const Spacer(),
                   Text(
-                    '\$${classModel.price.toStringAsFixed(0)}',
+                    '\$${classModel.price?.toStringAsFixed(0)}',
                     style: AppStyles.w600f14inter.copyWith(color: kBlueF1),
                   ),
                 ],
               ),
               8.heightBox,
               Text(
-                classModel.title,
+                classModel.className ?? 'Unknown',
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
               4.heightBox,
 
               // Time + location
               Text(
-                '${classModel.timeStart}-${classModel.timeEnd}  •  ${classModel
-                    .location}  •  ${classModel.distanceKm} km',
+                '${classModel.startTime}-${classModel.endTime}  •  ${classModel
+                    .locationName}  •  ${classModel.distanceKm} km',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               8.heightBox,
@@ -69,7 +70,7 @@ class ClassCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     height: 36,
                     width: 36,
-                    imageUrl: kTennisPlayer,
+                    imageUrl: classModel.coachPhoto ?? '',
                   ),
                   10.widthBox,
                   Text(
@@ -79,7 +80,7 @@ class ClassCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    classModel.coach.name,
+                    classModel.coachName ?? '',
                     style: AppStyles.w500f14inter.copyWith(
                       color: kDarkTextColor,
                     ),

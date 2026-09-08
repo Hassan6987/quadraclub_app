@@ -1,22 +1,51 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/utils/components/common_divider.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_filters.dart';
 
 enum TimeOfDay { morning, afternoon, night }
 
 enum LevelFilter { all, select }
 
-enum FormatFilter { group, individual }
+enum FormatFilter {
+  all,
+  group,
+  individual,
+}
 
 class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
+  final Set<TimeOfDay> selectedTimes;
+  final LevelFilter level;
+  final FormatFilter format;
+  final double distance;
+  final String city;
 
-  static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
+  const FilterBottomSheet({
+    super.key,
+    this.selectedTimes = const {},
+    this.level = LevelFilter.all,
+    this.format = FormatFilter.group,
+    this.distance = 25,
+    this.city = '',
+  });
+
+  static Future<ClassFilterResult?> show(BuildContext context, {
+    Set<TimeOfDay> selectedTimes = const {},
+    LevelFilter level = LevelFilter.all,
+    FormatFilter format = FormatFilter.group,
+    double distance = 25,
+    String city = '',
+  }) {
+    return showModalBottomSheet<ClassFilterResult>(
       context: context,
       isScrollControlled: true,
-      constraints: BoxConstraints(maxHeight: 680),
-
-      builder: (_) => const FilterBottomSheet(),
+      constraints: const BoxConstraints(maxHeight: 680),
+      builder: (_) =>
+          FilterBottomSheet(
+            selectedTimes: selectedTimes,
+            level: level,
+            format: format,
+            distance: distance,
+            city: city,
+          ),
     );
   }
 
@@ -25,11 +54,29 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  final Set<TimeOfDay> _selectedTimes = {};
-  LevelFilter _level = LevelFilter.all;
-  FormatFilter _format = FormatFilter.group;
-  double _distance = 25;
-  final TextEditingController _searchController = TextEditingController();
+  late Set<TimeOfDay> _selectedTimes;
+  late LevelFilter _level;
+  late FormatFilter _format;
+  late double _distance;
+
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTimes = {...widget.selectedTimes};
+    _level = widget.level;
+    _format = widget.format;
+    _distance = widget.distance;
+
+    _searchController = TextEditingController(text: widget.city);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,17 +166,33 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
+                        label: 'All',
+                        isSelected: _format == FormatFilter.all,
+                        onTap: () {
+                          setState(() {
+                            _format = FormatFilter.all;
+                          });
+                        },
+                      ),
+
+                      ToggleChip(
                         label: 'Group',
                         isSelected: _format == FormatFilter.group,
-                        onTap: () =>
-                            setState(() => _format = FormatFilter.group),
+                        onTap: () {
+                          setState(() {
+                            _format = FormatFilter.group;
+                          });
+                        },
                       ),
 
                       ToggleChip(
                         label: 'Individual',
                         isSelected: _format == FormatFilter.individual,
-                        onTap: () =>
-                            setState(() => _format = FormatFilter.individual),
+                        onTap: () {
+                          setState(() {
+                            _format = FormatFilter.individual;
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -197,7 +260,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 child: CustomActionButton(
                   buttonText: "Show Results",
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(
+                      context,
+                      ClassFilterResult(
+                        selectedTimes: {..._selectedTimes},
+                        level: _level,
+                        format: _format,
+                        distance: _distance,
+                        city: _searchController.text.trim(),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -222,8 +294,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     setState(() {
       _selectedTimes.clear();
       _level = LevelFilter.all;
-      _format = FormatFilter.group;
+      _format = FormatFilter.all;
       _distance = 25;
+      _searchController.clear();
     });
   }
 }

@@ -1,16 +1,17 @@
-import 'package:quadraclub_app/presentation/classes/ui/widgets/common_badge.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 import '/app_exports.dart';
 
 class InfoCard extends StatelessWidget {
-  final ClassModel classModel;
+  final Class classModel;
 
   const InfoCard({super.key, required this.classModel});
 
   @override
   Widget build(BuildContext context) {
     final dateStr =
-        '${dayNames[classModel.date.weekday - 1]}, ${monthNames[classModel.date.month - 1]} ${classModel.date.day}';
+        '${dayNames[classModel.date!.weekday - 1]}, ${monthNames[classModel
+        .date!.month - 1]} ${classModel.date?.day}';
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -25,11 +26,11 @@ class InfoCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                classModel.title,
+                classModel.className,
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
               Text(
-                '\$${classModel.price.toStringAsFixed(0)}',
+                '\$${classModel.price?.toStringAsFixed(0)}',
                 style: AppStyles.w600f16inter.copyWith(color: kBlueColor),
               ),
             ],
@@ -37,9 +38,10 @@ class InfoCard extends StatelessWidget {
 
           Row(
             children: [
-              SportBadge(sport: classModel.sport),
+              SportBadge(sport: SportTypeExtension.fromString(
+                  classModel.sportName ?? '')),
               4.widthBox,
-              CommonBadge(label: 'Category ${classModel.categoryRange}'),
+              CommonBadge(label: 'Category ${classModel.level}'),
             ],
           ).withPaddingSymmetric(0, 8),
 
@@ -49,14 +51,19 @@ class InfoCard extends StatelessWidget {
               _InfoRow(icon: Assets.svg.calendarBlank.path, text: dateStr),
               _InfoRow(
                 icon: Assets.svg.timerIcon.path,
-                text: '${classModel.timeStart}-${classModel.timeEnd}',
+                text: '${classModel.startTime}-${classModel.endTime}',
               ),
             ],
           ),
           10.heightBox,
           _InfoRow(
             icon: Assets.svg.locationIcon.path,
-            text: '${classModel.location} · ${classModel.distanceKm} km',
+            text: '${classModel.locationName} · ${classModel.distanceKm} km',
+          ),
+          8.heightBox,
+          _InfoRow(
+            icon: Assets.svg.locationIcon.path,
+            text: '${classModel.court?.courtName}',
           ),
           8.heightBox,
           Row(
@@ -65,7 +72,7 @@ class InfoCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(100),
                 height: 36,
                 width: 36,
-                imageUrl: kTennisPlayer,
+                imageUrl: classModel.coachPhoto,
               ),
               10.widthBox,
               Text(
@@ -73,7 +80,7 @@ class InfoCard extends StatelessWidget {
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
-                classModel.coach.name,
+                classModel.coachName ?? '',
                 style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
               Spacer(),

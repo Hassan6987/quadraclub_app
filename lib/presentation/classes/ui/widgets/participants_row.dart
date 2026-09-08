@@ -1,9 +1,9 @@
-import 'package:quadraclub_app/presentation/common/widgets/common_avatar_stack_row.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 import '/app_exports.dart';
 
 class ParticipantsRow extends StatelessWidget {
-  final ClassModel classModel;
+  final Class classModel;
 
   const ParticipantsRow({super.key, required this.classModel});
 
@@ -13,19 +13,23 @@ class ParticipantsRow extends StatelessWidget {
       children: [
         CommonAvatarStackRow(
           imageUrls: classModel.participants
-              .map((_) => kTennisPlayer) // swap for real per-participant url when available
+              .map((c) =>
+          c.profilePhoto ??
+              '') // swap for real per-participant url when available
               .toList(),
           maxVisible: 3,
           avatarSize: 32,
-          totalCount: classModel.filledSlots,
+          totalCount: classModel.currentParticipants,
         ),
         14.widthBox,
         Text(
-          '${classModel.filledSlots}/${classModel.totalSlots}',
+          '${classModel.currentParticipants}/${classModel.maxStudents}',
           style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
         ),
         const Spacer(),
-        _StatusBadge(status: classModel.status, slotsLeft: classModel.slotsLeft),
+        _StatusBadge(status: ClassStatusExtension.fromString(
+            classModel.statusLabel ?? ''),
+            slotsLeft: classModel.slotsLeft ?? 0),
       ],
     );
   }

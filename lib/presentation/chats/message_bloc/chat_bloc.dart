@@ -47,7 +47,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onJoinChat(JoinChat event, Emitter<ChatState> emit) {
-    ssocketService.joinChat(event.chatId);
+    socketService.joinChat(event.chatId);
   }
 
   Future<void> _onSendMessage(

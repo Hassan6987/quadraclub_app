@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/presentation/authentication/ui/forget_password.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dart';
 import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/booking_summary_screen.dart';
@@ -30,7 +31,7 @@ class AppGenerateRoute {
         case RouteName.myChats:
         return _navigateScreen(const MyChatsScreen());
         case RouteName.classDetails:
-          final ClassModel classModel = setting.arguments as ClassModel;
+        final Class classModel = setting.arguments as Class;
         return _navigateScreen( ClassDetailsScreen(classModel: classModel));
       case RouteName.termsConditionScreen:
         return _navigateScreen(const TermsScreen());

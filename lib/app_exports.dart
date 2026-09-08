@@ -27,7 +27,6 @@ export 'package:quadraclub_app/presentation/chats/ui/group_chat_screen.dart';
 export 'package:quadraclub_app/presentation/chats/ui/widgets/chat_type_tag.dart';
 export 'package:quadraclub_app/presentation/chats/ui/widgets/chat_widgets.dart';
 export 'package:quadraclub_app/presentation/chats/ui/widgets/stacked_avatars.dart';
-export 'package:quadraclub_app/presentation/classes/data/class_model.dart';
 export 'package:quadraclub_app/presentation/classes/data/dummy_data.dart';
 export 'package:quadraclub_app/presentation/classes/data/dummy_images.dart';
 export 'package:quadraclub_app/presentation/classes/ui/payment_screen.dart';

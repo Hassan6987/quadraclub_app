@@ -8,3 +8,9 @@ class ClassesEvent extends Equatable {
 }
 
 class FetchAllClasses extends ClassesEvent {}
+
+class FetchClassDetails extends ClassesEvent {
+  final String id;
+
+  const FetchClassDetails({required this.id});
+}

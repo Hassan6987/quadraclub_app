@@ -1,5 +1,5 @@
 import 'package:quadraclub_app/presentation/agenda/data/agenda_model.dart';
-import 'package:quadraclub_app/presentation/classes/data/class_model.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 const courtImageUrl =
     'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=1200&q=85';

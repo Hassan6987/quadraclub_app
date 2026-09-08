@@ -1,3 +1,5 @@
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+
 import '../../../app_exports.dart';
 
 class SportBadge extends StatelessWidget {

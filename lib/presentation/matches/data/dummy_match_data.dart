@@ -1,4 +1,4 @@
-import 'package:quadraclub_app/presentation/classes/data/class_model.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 
 final List<PlayerModel> dummyPlayers = [

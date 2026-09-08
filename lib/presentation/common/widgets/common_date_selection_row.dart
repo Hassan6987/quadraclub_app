@@ -3,7 +3,7 @@ import 'package:quadraclub_app/app_exports.dart';
 
 class CommonDateSelectionRow extends StatelessWidget {
   final List<DateTime> dates;
-  final DateTime selectedDate;
+  final DateTime? selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
   const CommonDateSelectionRow({
@@ -71,6 +71,10 @@ class CommonDateSelectionRow extends StatelessWidget {
     );
   }
 
-  bool _isSameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
+  bool _isSameDay(DateTime a, DateTime? b) {
+    if (b == null) {
+      return false;
+    }
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
 }
