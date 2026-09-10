@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/message_bloc/chat_bloc.dart';
@@ -45,6 +46,7 @@ void main() async {
         BlocProvider(create: (context) => CourtsBloc()..add(LoadCourts())),
         BlocProvider(create: (_) => ChatsBloc()..add(const LoadChats())),
         BlocProvider(create: (context) => ChatBloc()),
+        BlocProvider(create: (context) => AgendaBloc()),
         BlocProvider(
           create: (context) => ClassesBloc()..add(FetchAllClasses()),
         )],

@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:quadraclub_app/data/storage_service.dart';
+import 'package:quadraclub_app/presentation/agenda/data/agenda_repo.dart';
+import 'package:quadraclub_app/presentation/agenda/data/agenda_services.dart';
 import 'package:quadraclub_app/presentation/authentication/data/auth_provider.dart';
 import 'package:quadraclub_app/presentation/authentication/data/auth_services.dart';
 import 'package:quadraclub_app/presentation/chats/data/chat_repository.dart';
@@ -26,6 +28,8 @@ void initServices() {
   locator.registerSingleton<CourtsRepository>(CourtsRepository());
   locator.registerSingleton<ClassesServices>(ClassesServices());
   locator.registerSingleton<ClassesRepo>(ClassesRepo());
+  locator.registerSingleton<AgendaServices>(AgendaServices());
+  locator.registerSingleton<AgendaRepo>(AgendaRepo());
   locator.registerLazySingleton<ChatServices>(() => ChatServices());
   locator.registerLazySingleton<ChatRepository>(() => ChatRepository());
 

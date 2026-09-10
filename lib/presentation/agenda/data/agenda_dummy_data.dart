@@ -1,4 +1,4 @@
-import 'package:quadraclub_app/presentation/agenda/data/agenda_model.dart';
+import 'package:quadraclub_app/presentation/agenda/data/model/agenda_model.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 const courtImageUrl =

@@ -11,7 +11,7 @@ export 'package:loading_animation_widget/loading_animation_widget.dart';
 export 'package:quadraclub_app/blocs_observer.dart';
 export 'package:quadraclub_app/generated/assets.dart';
 export 'package:quadraclub_app/presentation/agenda/data/agenda_dummy_data.dart';
-export 'package:quadraclub_app/presentation/agenda/data/agenda_model.dart';
+export 'package:quadraclub_app/presentation/agenda/data/model/agenda_model.dart';
 export 'package:quadraclub_app/presentation/agenda/ui/match_details_screen.dart';
 export 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_class_card.dart';
 export 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_filter_chips.dart';

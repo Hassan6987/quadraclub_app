@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 
 class AgendaScreen extends StatefulWidget {
@@ -11,6 +12,12 @@ class AgendaScreen extends StatefulWidget {
 class _AgendaScreenState extends State<AgendaScreen> {
   AgendaStatus _status = AgendaStatus.confirmed;
   String _filter = 'All';
+
+  @override
+  void initState() {
+    context.read<AgendaBloc>().add(GetAllAgenda());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
