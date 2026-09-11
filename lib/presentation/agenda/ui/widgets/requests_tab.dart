@@ -1,42 +1,43 @@
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+
 import '../../../../app_exports.dart';
 
 class RequestsTab extends StatelessWidget {
-  final List<MatchRequest> _requests = [
-    MatchRequest(
-      name: 'Alex Rivers',
-      imageUrl: playerOneImageUrl,
-      message: 'Please Accept my request. I\'ll be there on time.',
-    ),
-    MatchRequest(
-      name: 'John Doe',
-      imageUrl: playerTwoImageUrl,
-      message: null,
-    ),
-  ];
-
-   RequestsTab({super.key});
+  const RequestsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 16),
-      itemCount: _requests.length,
-      separatorBuilder: (_, _) => 12.heightBox,
-      itemBuilder: (context, index) {
-        final request = _requests[index];
-        return _requestItem(request);
+    return BlocBuilder<AgendaBloc, AgendaState>(
+      builder: (context, state) {
+        if (state.status == AgendaStateStatus.fetching) {
+          return Center(child: CustomLoadingView());
+        }
+        final match = state.matchDetails;
+        if (state.status != AgendaStateStatus.fetching && match == null) {
+          return const Center(child: Text('Nothing here yet'));
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          itemCount: match!.requests.length,
+          separatorBuilder: (_, _) => 12.heightBox,
+          itemBuilder: (context, index) {
+            final request = match.requests[index];
+            return _requestItem(request);
+          },
+        );
       },
     );
   }
 
-  Widget _requestItem(MatchRequest request) {
+  Widget _requestItem(Player request) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             AppCachedImage(
-              imageUrl: request.imageUrl,
+              imageUrl: request.profilePhoto,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
@@ -55,7 +56,7 @@ class RequestsTab extends StatelessWidget {
             _actionButton(Icons.check, kGreenColor, () {}),
           ],
         ),
-        if (request.message != null) ...[
+        if (request.message != null && request.message!.isNotEmpty) ...[
           6.heightBox,
           Container(
             padding: EdgeInsets.all(12),
@@ -81,9 +82,8 @@ class RequestsTab extends StatelessWidget {
       child: Container(
         width: 32,
         height: 32,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: kBorderColor)
+        decoration: BoxDecoration(hape: BoxShape.circle,
+          border: Border.all(color: kBorderColor),
         ),
         child: Icon(icon, color: color, size: 20),
       ),

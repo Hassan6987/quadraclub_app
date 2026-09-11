@@ -7,9 +7,7 @@ import 'package:quadraclub_app/presentation/agenda/ui/widgets/requests_tab.dart'
 
 
 class MatchDetailsScreen extends StatefulWidget {
-  final AgendaMatch match;
-
-  const MatchDetailsScreen({super.key, required this.match});
+  const MatchDetailsScreen({super.key});
 
   @override
   State<MatchDetailsScreen> createState() => _MatchDetailsScreenState();
@@ -90,7 +88,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   Widget _buildTabContent() {
     switch (_selectedTab) {
       case MatchDetailsTab.details:
-        return DetailsTab(match: widget.match);
+        return DetailsTab();
       case MatchDetailsTab.requests:
         return RequestsTab();
       case MatchDetailsTab.invited:

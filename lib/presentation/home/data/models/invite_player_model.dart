@@ -19,8 +19,8 @@ class InvitePlayerModel {
 
   factory InvitePlayerModel.fromJson(Map<String, dynamic> json) {
     return InvitePlayerModel(
-      id: json["id"] ?? '',
-      name: json["name"] ?? '',
+      id: json["id"] ?? json["userId"] ?? json['_id'] ?? json['playerId'] ?? '',
+      name: json["name"] ?? json["fullName"] ?? '',
       profilePhoto: json["profilePhoto"] ?? '',
     );
   }

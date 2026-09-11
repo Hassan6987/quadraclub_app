@@ -1,51 +1,81 @@
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
+import 'package:quadraclub_app/presentation/home/ui/booking/invite_player_sheet.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+
 import '../../../../app_exports.dart';
-import 'package:quadraclub_app/presentation/agenda/ui/widgets/invite_players_bottom_sheet.dart';
 
-class InvitedTab extends StatelessWidget {
-  final List<InvitedPlayer> _invitedPlayers = [
-    InvitedPlayer(name: 'Alex Rivers', imageUrl: playerOneImageUrl),
-    InvitedPlayer(name: 'John Doe', imageUrl: playerTwoImageUrl),
-    InvitedPlayer(name: 'Robert Smith', imageUrl: playerOneImageUrl),
-  ];
-
-  InvitedTab({super.key});
+class InvitedTab extends StatefulWidget {
+  const InvitedTab({super.key});
 
   @override
+  State<InvitedTab> createState() => _InvitedTabState();
+}
+
+class _InvitedTabState extends State<InvitedTab> {
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            itemCount: _invitedPlayers.length,
-            separatorBuilder: (_, _) => 12.heightBox,
-            itemBuilder: (context, index) {
-              final player = _invitedPlayers[index];
-              return _invitedPlayerItem(player);
-            },
-          ),
-        ),
-        CommonDivider(),
-        CustomActionButton(
-          buttonText: 'Invite Players',
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => const InvitePlayersBottomSheet(),
-            );
-          },
-        ).withPaddingSymmetric(24, 16),
-      ],
+    return BlocBuilder<AgendaBloc, AgendaState>(
+      builder: (context, state) {
+        if (state.status == AgendaStateStatus.fetching ||
+            state.status == AgendaStateStatus.updating) {
+          return Center(child: CustomLoadingView());
+        }
+        final match = state.matchDetails;
+        if (state.status != AgendaStateStatus.fetching && match == null) {
+          return const Center(child: Text('Nothing here yet'));
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
+                itemCount: match!.invited.length,
+                separatorBuilder: (_, _) => 12.heightBox,
+                itemBuilder: (context, index) {
+                  return _invitedPlayerItem(
+                      match.invited[index], match.id ?? '');
+                },
+              ),
+            ),
+            CommonDivider(),
+            CustomActionButton(
+              buttonText: 'Invite Players',
+              onTap: () async {
+                final result = await InvitePlayersSheet.show(
+                  context,
+                  initiallyInvited: [],
+                  allPlayers: state.players
+                      .where(
+                        (player) =>
+                    !state.matchDetails!.invited.any(
+                          (invited) => invited.id == player.id,
+                    ),
+                  )
+                      .toList(),
+                );
+                if (result != null) {
+                  context.read<AgendaBloc>().add(
+                    InvitePlayers(playerIds: result.map((e) => e.id).toList(),
+                        matchId: match.id ?? ''),
+                  );
+                }
+              },
+            ).withPaddingSymmetric(24, 16),
+          ],
+        );
+      },
     );
   }
 
-  Widget _invitedPlayerItem(InvitedPlayer player) {
+  Widget _invitedPlayerItem(InvitePlayerModel player, String matchId) {
     return Row(
       children: [
         AppCachedImage(
-          imageUrl: player.imageUrl,
+          imageUrl: player.profilePhoto,
           height: 48,
           width: 48,
           fit: BoxFit.cover,
@@ -59,7 +89,10 @@ class InvitedTab extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            context.read<AgendaBloc>().add(
+                CancelPlayerInvite(playerId: player.id, matchId: matchId));
+          },
           child: Container(
             width: 32,
             height: 32,

@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -9,34 +10,47 @@ class AgendaScreen extends StatefulWidget {
   State<AgendaScreen> createState() => _AgendaScreenState();
 }
 
-class _AgendaScreenState extends State<AgendaScreen> {
-  AgendaStatus _status = AgendaStatus.confirmed;
+class _AgendaScreenState extends State<AgendaScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
   String _filter = 'All';
 
   @override
   void initState() {
-    context.read<AgendaBloc>().add(GetAllAgenda());
     super.initState();
+    _tabController =
+        TabController(length: AgendaStatus.values.length, vsync: this);
+    _tabController.addListener(() {
+      // rebuild so the action-label / anything tab-dependent updates
+      if (!_tabController.indexIsChanging) setState(() {});
+    });
   }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  AgendaStatus get _currentStatus => AgendaStatus.values[_tabController.index];
+
+  String? get _actionLabel =>
+      switch (_currentStatus) {
+        AgendaStatus.confirmed => 'Chat',
+        AgendaStatus.pending => 'Cancel request',
+        AgendaStatus.past => null,
+      };
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        // Show guest prompt when user is not logged in
-        if (state.user == null) {
+      builder: (context, authState) {
+        if (authState.user == null) {
           return const GuestLoginPrompt(
             title: 'My Reservations',
-            subtitle:
-            'Sign in to view your reservations, games and lessons',
+            subtitle: 'Sign in to view your reservations, games and lessons',
           );
         }
-
-        final actionLabel = _status == AgendaStatus.confirmed
-            ? 'Chat'
-            : _status == AgendaStatus.pending
-            ? 'Cancel request'
-            : null;
 
         return Scaffold(
           backgroundColor: kCardColor,
@@ -47,7 +61,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
           ),
           body: Column(
             children: [
-              _statusTabs(),
+              _statusTabBar(),
               Container(
                 color: kWhiteColor,
                 child: AgendaFilterChips(
@@ -56,34 +70,38 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 ),
               ),
               Expanded(
-                child: ListView(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  children: [
-                    // if (_status != AgendaStatus.pending && (_filter == 'All' || _filter == 'Courts'))
-                    //   CourtBookingCard(imgUrl: dummyCourts.first.imageUrl, showActions: showActions).paddingOnly(bottom: 12),
-                    if (_filter == 'All' || _filter == 'Games')
-                      AgendaMatchCard(
-                        match: agendaMatches.first,
-                        actionLabel: actionLabel,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MatchDetailsScreen(
-                                    match: agendaMatches.first,
-                                  ),
+                child: BlocBuilder<AgendaBloc, AgendaState>(
+                  builder: (context, state) {
+                    if (state.status == AgendaStateStatus.loading ||
+                        state.status == AgendaStateStatus.initial) {
+                      return const Center(child: CustomLoadingView());
+                    }
+                    if (state.status == AgendaStateStatus.failure) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(state.error ?? 'Something went wrong'),
+                            TextButton(
+                              onPressed: () =>
+                                  context.read<AgendaBloc>().add(
+                                      GetAllAgenda()),
+                              child: const Text('Retry'),
                             ),
-                          );
-                        },
-                      ).paddingOnly(bottom: 12),
-                    if (_filter == 'All' || _filter == 'Classes')
-                      AgendaClassCard(
-                        item: agendaClasses.first,
-                        actionLabel: actionLabel,
-                      ),
-                  ],
+                          ],
+                        ),
+                      );
+                    }
+
+                    return TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _agendaList(state.confirmedAgenda),
+                        _agendaList(state.pendingAgenda),
+                        _agendaList(state.pastAgenda),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -93,36 +111,63 @@ class _AgendaScreenState extends State<AgendaScreen> {
     );
   }
 
-  Widget _statusTabs() => Container(
+  Widget _agendaList(List<AgendaItem> items) {
+    final filtered = items.where((item) {
+      switch (_filter) {
+        case 'Courts':
+          return item.agendaType == AgendaType.court;
+        case 'Games':
+          return item.agendaType == AgendaType.game;
+        case 'Classes':
+          return item.agendaType == AgendaType.class_;
+        default:
+          return true;
+      }
+    }).toList();
+
+    if (filtered.isEmpty) {
+      return const Center(child: Text('Nothing here yet'));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      itemCount: filtered.length,
+      itemBuilder: (context, index) {
+        final item = filtered[index];
+        if (item.agendaType == AgendaType.class_) {
+          return AgendaClassCard(item: item, actionLabel: _actionLabel)
+              .paddingOnly(bottom: 12);
+        }
+        return AgendaMatchCard(
+            item: item,
+            actionLabel: _actionLabel,
+            onTap: () {
+              context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => MatchDetailsScreen()),
+              );
+            }
+        ).paddingOnly(bottom: 12);
+      },
+    );
+  }
+
+  Widget _statusTabBar() =>
+      Container(
     color: kWhiteColor,
-    child: Row(
-      children: AgendaStatus.values.map((status) {
-        final selected = _status == status;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => setState(() => _status = status),
-            child: Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: selected ? kBlueColor : kDividerColor,
-                    width: selected ? 2 : 1,
-                  ),
-                ),
-              ),
-              child: Text(
-                _statusLabel(status),
-                style: AppStyles.w500f14inter.copyWith(
-                  color: selected ? kDarkTextColor : kGreyTextColor,
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
+        child: TabBar(
+          controller: _tabController,
+          labelColor: kDarkTextColor,
+          unselectedLabelColor: kGreyTextColor,
+          labelStyle: AppStyles.w500f14inter,
+          unselectedLabelStyle: AppStyles.w500f14inter,
+          indicatorColor: kBlueColor,
+          indicatorWeight: 2,
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: kDividerColor,
+          tabs: AgendaStatus.values.map((status) =>
+              Tab(text: _statusLabel(status))).toList(),
     ),
   );
 

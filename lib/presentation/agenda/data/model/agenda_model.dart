@@ -1,69 +1,8 @@
-import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+
 
 enum AgendaStatus { confirmed, pending, past }
 
 enum MatchDetailsTab { details, requests, invited }
-
-class AgendaMatch {
-  final SportType sport;
-  final String venue;
-  final String location;
-  final String time;
-  final AgendaStatus status;
-
-  const AgendaMatch({
-    required this.sport,
-    required this.venue,
-    required this.location,
-    required this.time,
-    required this.status,
-  });
-}
-
-class AgendaClass {
-  final SportType sport;
-  final String title;
-  final String location;
-  final String time;
-  final int price;
-  final AgendaStatus status;
-
-  const AgendaClass({
-    required this.sport,
-    required this.title,
-    required this.location,
-    required this.time,
-    required this.price,
-    required this.status,
-  });
-}
-
-class MatchRequest {
-  final String name;
-  final String imageUrl;
-  final String? message;
-
-  MatchRequest({required this.name, required this.imageUrl, this.message});
-}
-
-class InvitedPlayer {
-  final String name;
-  final String imageUrl;
-
-  InvitedPlayer({required this.name, required this.imageUrl});
-}
-
-class PlayerInvite {
-  final String name;
-  final String imageUrl;
-  final bool isInvited;
-
-  PlayerInvite({
-    required this.name,
-    required this.imageUrl,
-    required this.isInvited,
-  });
-}
 
 enum AgendaType { court, game, class_, unknown }
 
@@ -175,6 +114,7 @@ class Player {
   final String status;
   final String level;
   final String profilePhoto;
+  final String? message;
 
   Player({
     this.id,
@@ -183,14 +123,16 @@ class Player {
     required this.status,
     required this.level,
     required this.profilePhoto,
+    this.message
   });
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
-    id: json['id'],
-    name: json['name'] ?? '',
+      id: json['id'] ?? json["userId"],
+      name: json['name'] ?? json["fullName"] ?? '',
     role: json['role'] ?? '',
     status: json['status'] ?? '',
     level: json['level'] ?? '',
     profilePhoto: json['profilePhoto'] ?? '',
+      message: json['message']
   );
 }

@@ -1,7 +1,9 @@
 import '../../../../app_exports.dart';
 
 class CourtConfirmationBadge extends StatelessWidget {
-  const CourtConfirmationBadge({super.key});
+  final String label;
+
+  const CourtConfirmationBadge({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class CourtConfirmationBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        'Court Confirmed',
+        label,
         style: AppStyles.w500f10inter.copyWith(color: kGreen06),
       ),
     );

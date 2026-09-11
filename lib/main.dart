@@ -46,7 +46,9 @@ void main() async {
         BlocProvider(create: (context) => CourtsBloc()..add(LoadCourts())),
         BlocProvider(create: (_) => ChatsBloc()..add(const LoadChats())),
         BlocProvider(create: (context) => ChatBloc()),
-        BlocProvider(create: (context) => AgendaBloc()),
+        BlocProvider(create: (context) =>
+        AgendaBloc()
+          ..add(GetAllAgenda())),
         BlocProvider(
           create: (context) => ClassesBloc()..add(FetchAllClasses()),
         )],

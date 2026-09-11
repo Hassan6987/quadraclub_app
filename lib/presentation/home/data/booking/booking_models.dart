@@ -65,24 +65,6 @@ class InvitablePlayerModel {
   });
 }
 
-const List<InvitablePlayerModel> dummyPlayers = [
-  InvitablePlayerModel(id: 'p1', name: 'Alex Rivers', avatarUrl: 'htt://i.p'),
-  InvitablePlayerModel(id: 'p2',
-      name: 'Pedro Costa',
-      avatarUrl: 'https://i.pravatar.cc/150?img=13'),
-  InvitablePlayerModel(
-      id: 'p3', name: 'John', avatarUrl: 'https://i.pravatar.cc/150?img=14'),
-  InvitablePlayerModel(id: 'p4',
-      name: 'Maria Silva',
-      avatarUrl: 'https://i.pravatar.cc/150?img=15'),
-  InvitablePlayerModel(id: 'p5',
-      name: 'Diego Fernandez',
-      avatarUrl: 'https://i.pravatar.cc/150?img=16'),
-  InvitablePlayerModel(id: 'p6',
-      name: 'Laura Bennett',
-      avatarUrl: 'https://i.pravatar.cc/150?img=17'),
-];
-
 String formatPrice(double amount) => '\$${amount.toStringAsFixed(2)}';
 
 /// Adds a duration to a "HH:mm" start time string, returning "HH:mm".

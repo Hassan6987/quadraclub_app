@@ -1,36 +1,51 @@
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+
 import '/app_exports.dart';
 
 class DetailsTab extends StatelessWidget {
-  final AgendaMatch match;
-
-  const DetailsTab({super.key, required this.match});
+  const DetailsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _venueCard().withPaddingSymmetric(20, 16),
-        16.heightBox,
-        _tagsRow().withPaddingSymmetric(20, 0),
-        16.heightBox,
-        CommonDivider(),
-        16.heightBox,
-        _playersSection(),
-        16.heightBox,
-        _groupChatSection(),
-        Spacer(),
-        CommonDivider(),
-        CustomActionButton(
-          buttonText: "Leave this match",
-          onTap: () {},
-          backgroundColor: kLightPinkColor,
-        ).withPaddingSymmetric(24, 16),
-      ],
+    return BlocBuilder<AgendaBloc, AgendaState>(
+      builder: (context, state) {
+        if (state.status == AgendaStateStatus.fetching) {
+          return Center(child: CustomLoadingView());
+        }
+        final match = state.matchDetails;
+        if (state.status != AgendaStateStatus.fetching && match == null) {
+          return const Center(child: Text('Nothing here yet'));
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _venueCard(match!).withPaddingSymmetric(20, 16),
+            16.heightBox,
+            _tagsRow(match).withPaddingSymmetric(20, 0),
+            16.heightBox,
+            CommonDivider(),
+            16.heightBox,
+            _playersSection(match),
+            16.heightBox,
+            _groupChatSection(),
+            Spacer(),
+            CommonDivider(),
+            CustomActionButton(
+              buttonText: "Leave this match",
+              onTap: () {},
+              backgroundColor: kLightPinkColor,
+            ).withPaddingSymmetric(24, 16),
+          ],
+        );
+      },
     );
   }
 
-  Widget _venueCard() {
+  Widget _venueCard(AgendaMatchDetails match) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -46,17 +61,17 @@ class DetailsTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              match.venue,
+              match.title ?? "",
               style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             ),
             4.heightBox,
             Text(
-              match.location,
+              match.location ?? '',
               style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
             ),
             4.heightBox,
             Text(
-              'SUN, OCT 22 | 8:00 | BLOCK 1',
+              match.dateFormatted ?? '',
               style: AppStyles.w500f12inter.copyWith(color: kLightGreenColor),
             ),
           ],
@@ -66,20 +81,24 @@ class DetailsTab extends StatelessWidget {
     );
   }
 
-  Widget _tagsRow() {
+  Widget _tagsRow(AgendaMatchDetails match) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        CommonBadge(label: '16:00-17:30'),
-        const CommonBadge(label: 'Category D'),
+        CommonBadge(label: '${match.startTime} ${match.endTime}'),
+        CommonBadge(label: match.categoryTag ?? "D"),
         const CommonBadge(label: 'Ranking'),
-        CourtConfirmationBadge(),
+        CourtConfirmationBadge(label: match.courtStatus ?? "Court Confirmed"),
       ],
     );
   }
 
-  Widget _playersSection() {
+  Widget _playersSection(AgendaMatchDetails match) {
+    final players = match.players;
+    // For Single format, there are 2 player slots.
+    // You can extend this later for other formats.
+    final int maxPlayers = match.format?.toLowerCase() == 'single' ? 2 : 4;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -90,29 +109,47 @@ class DetailsTab extends StatelessWidget {
               'Players',
               style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             ),
-            SportBadge(sport: match.sport),
+            SportBadge(sport: SportTypeExtension.fromString(match.sport ?? '')),
           ],
         ),
         16.heightBox,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _playerItem(playerOneImageUrl, 'Alex', 'Beginner'),
-            _playerItem(playerTwoImageUrl, 'John', 'Beginner'),
-            Container(height: 24, width: 1, color: kGreyTextColor),
-            _playerItem(playerOneImageUrl, 'Robert', 'Beginner'),
-            _playerItem(playerTwoImageUrl, 'Jax', 'Beginner'),
+            if (players.isNotEmpty)
+              _playerItem(players[0])
+            else
+              _availablePlayerItem(),
+            if (players.length > 1)
+              _playerItem(players[1])
+            else
+              _availablePlayerItem(), // Divider only for 4-player formats
+            if (maxPlayers > 2) ...[
+              Container(
+                height: 24,
+                width: 1,
+                color: kGreyTextColor,
+              ), // Player 3
+              if (players.length > 2)
+                _playerItem(players[2])
+              else
+                _availablePlayerItem(), // Player 4
+              if (players.length > 3)
+                _playerItem(players[3])
+              else
+                _availablePlayerItem(),
+            ],
           ],
         ),
       ],
     ).withPaddingSymmetric(20, 0);
   }
 
-  Widget _playerItem(String image, String name, String skill) {
+  Widget _playerItem(Player player) {
     return Column(
       children: [
         AppCachedImage(
-          imageUrl: image,
+          imageUrl: player.profilePhoto,
           height: 48,
           width: 48,
           fit: BoxFit.cover,
@@ -120,11 +157,11 @@ class DetailsTab extends StatelessWidget {
         ),
         6.heightBox,
         Text(
-          name,
+          player.name,
           style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
         ),
         Text(
-          skill,
+          player.level,
           style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
         ),
       ],
@@ -170,5 +207,25 @@ class DetailsTab extends StatelessWidget {
         ],
       ),
     ).withPaddingSymmetric(20, 0);
+  }
+
+  Widget _availablePlayerItem() {
+    return Column(
+      children: [
+        CommonPlusAvatar(size: 34),
+        6.heightBox,
+        Text(
+          'Available',
+          style: AppStyles.w500f14inter.copyWith(
+            color: kDarkTextColor,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        Text(
+          'Open',
+          style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
+        ),
+      ],
+    );
   }
 }
