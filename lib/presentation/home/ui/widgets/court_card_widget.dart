@@ -88,10 +88,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
       //
       // Therefore we clamp the offset so that a shorter row doesn't
       // receive an invalid offset.
-      final targetOffset = sourceOffset.clamp(
-        0.0,
-        maxScrollExtent,
-      );
+      final targetOffset = sourceOffset.clamp(0.0, maxScrollExtent);
 
       if ((controller.offset - targetOffset).abs() > 0.5) {
         controller.jumpTo(targetOffset);
@@ -165,10 +162,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     final courts = widget.club.courts;
 
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: kWhiteColor,
         borderRadius: BorderRadius.circular(16),
@@ -186,11 +180,8 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
           // -------------------------------------------------------------------
           // HEADER IMAGE
           // -------------------------------------------------------------------
-
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Stack(
               children: [
                 CachedNetworkImage(
@@ -205,9 +196,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                       child: Container(
                         height: 100,
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
+                        decoration: const BoxDecoration(color: Colors.white),
                       ),
                     );
                   },
@@ -284,36 +273,24 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
           // -------------------------------------------------------------------
           // COURTS
           // -------------------------------------------------------------------
-
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: courts.isEmpty
                 ? _buildNoCourtsFallback()
                 : Column(
-              children: courts
-                  .map(
-                    (court) => _buildCourtSection(court),
-              )
-                  .toList(),
-            ),
+                    children: courts
+                        .map((court) => _buildCourtSection(court))
+                        .toList(),
+                  ),
           ),
 
-          Divider(
-            color: kBorderColor,
-          ),
+          Divider(color: kBorderColor),
 
           // -------------------------------------------------------------------
           // VIEW DETAILS
           // -------------------------------------------------------------------
-
           Padding(
-            padding: const EdgeInsets.only(
-              right: 12,
-              bottom: 12,
-              top: 8,
-            ),
+            padding: const EdgeInsets.only(right: 12, bottom: 12, top: 8),
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -359,40 +336,25 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
       return const SizedBox.shrink();
     }
 
-    final daySlots = court.weeklySlots[
-    _dateKey(widget.selectedDate)
-    ];
+    final daySlots = court.weeklySlots[_dateKey(widget.selectedDate)];
 
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 12,
-      ),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Court name
           if ((court.courtName ?? '').isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(
-                bottom: 4,
-              ),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 court.courtName!,
-                style: AppStyles.w500f12inter.copyWith(
-                  color: kDarkTextColor,
-                ),
+                style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
               ),
             ),
 
           // Sports
-          ...sports.map(
-                (sport) =>
-                _buildSportSlots(
-                  court,
-                  sport,
-                  daySlots,
-                ),
-          ),
+          ...sports.map((sport) => _buildSportSlots(court, sport, daySlots)),
         ],
       ),
     );
@@ -402,9 +364,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   // SPORT SLOTS
   // ---------------------------------------------------------------------------
 
-  Widget _buildSportSlots(Court court,
-      Sport sport,
-      WeeklySlot? daySlots,) {
+  Widget _buildSportSlots(Court court, Sport sport, WeeklySlot? daySlots) {
     final sportKey = (sport.sportName ?? '').toLowerCase();
 
     List<Padel> slots;
@@ -423,11 +383,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
       slots = const [];
     }
 
-    final availableSlots = slots
-        .where(
-          (s) => s.status == 'Available',
-    )
-        .toList();
+    final availableSlots = slots.where((s) => s.status == 'Available').toList();
 
     // -------------------------------------------------------------------------
     // UNIQUE KEY
@@ -448,23 +404,17 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     final controllerKey =
         '${court.courtName ?? 'court'}_${sport.sportName ?? 'sport'}';
 
-    final scrollController = _getScrollController(
-      controllerKey,
-    );
+    final scrollController = _getScrollController(controllerKey);
 
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 8,
-      ),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sport name
           Text(
             sport.sportName ?? '',
-            style: AppStyles.w400f12inter.copyWith(
-              color: kTextPrimaryColor,
-            ),
+            style: AppStyles.w400f12inter.copyWith(color: kTextPrimaryColor),
           ),
 
           2.heightBox,
@@ -472,19 +422,14 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
           // -------------------------------------------------------------------
           // NO SLOTS
           // -------------------------------------------------------------------
-
           if (availableSlots.isEmpty)
             Text(
               'No available slots for this day',
-              style: AppStyles.w400f12inter.copyWith(
-                color: kTextColor,
-              ),
+              style: AppStyles.w400f12inter.copyWith(color: kTextColor),
             )
-
           // -------------------------------------------------------------------
           // TIME SLOTS
           // -------------------------------------------------------------------
-
           else
             SizedBox(
               height: 32,
@@ -499,9 +444,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                 itemCount: availableSlots.length,
 
                 separatorBuilder: (_, __) {
-                  return const SizedBox(
-                    width: 4,
-                  );
+                  return const SizedBox(width: 4);
                 },
 
                 itemBuilder: (context, index) {
@@ -511,11 +454,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
 
                   return GestureDetector(
                     onTap: () {
-                      widget.onTimeSlotTap?.call(
-                        court,
-                        sport,
-                        time,
-                      );
+                      widget.onTimeSlotTap?.call(court, sport, time);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -524,10 +463,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                       ),
                       decoration: BoxDecoration(
                         color: kWhiteColor,
-                        border: Border.all(
-                          color: kBorderColor,
-                          width: 1,
-                        ),
+                        border: Border.all(color: kBorderColor, width: 1),
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: Center(
@@ -558,9 +494,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 12,
-      ),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Wrap(
         spacing: 6,
         runSpacing: 6,
@@ -570,19 +504,14 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
               : sport;
 
           return Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: kGreyColor,
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
               label,
-              style: AppStyles.w400f12inter.copyWith(
-                color: kDarkTextColor,
-              ),
+              style: AppStyles.w400f12inter.copyWith(color: kDarkTextColor),
             ),
           );
         }).toList(),

@@ -116,13 +116,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       // Prevent duplicates.
       final alreadyExists = currentState.messages.any(
-            (item) => item.id == message.id,
+        (item) => item.id == message.id,
       );
 
       if (alreadyExists) return;
 
       emit(
-          currentState.copyWith(messages: [...currentState.messages, message]));
+        currentState.copyWith(messages: [...currentState.messages, message]),
+      );
 
       // Automatically mark incoming messages as seen
       // because this chat is currently open.

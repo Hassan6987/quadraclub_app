@@ -4,8 +4,11 @@ class GameInfoCard extends StatelessWidget {
   final String dominantHand;
   final String preferredSide;
 
-  const GameInfoCard(
-      {super.key, required this.dominantHand, required this.preferredSide});
+  const GameInfoCard({
+    super.key,
+    required this.dominantHand,
+    required this.preferredSide,
+  });
 
   @override
   Widget build(BuildContext context) {

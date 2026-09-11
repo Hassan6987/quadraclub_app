@@ -19,26 +19,28 @@ class CourtsServices extends BaseApiProvider {
     }
   }
 
-
-  Future<Response> bookIndividual(IndividualBookingModel model,
-      String paymentId) async {
+  Future<Response> bookIndividual(
+    IndividualBookingModel model,
+    String paymentId,
+  ) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/booking',
-          data: {
-            "clubId": model.clubId,
-            "courtId": model.courtId,
-            "bookingDate": AppUtils.getFormattedDateWithDashNullable(
-                model.bookingDate),
-            "startTime": model.startTime,
-            "endTime": model.endTime,
-            "bookingType": "Reserve Individual",
-            "cardholderName": model.cardHolderName,
-            "paymentMethodId": paymentId,
-            "totalPrice": model.totalPrice,
-            "serviceFee": model.serviceFee
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/booking',
+        data: {
+          "clubId": model.clubId,
+          "courtId": model.courtId,
+          "bookingDate": AppUtils.getFormattedDateWithDashNullable(
+            model.bookingDate,
+          ),
+          "startTime": model.startTime,
+          "endTime": model.endTime,
+          "bookingType": "Reserve Individual",
+          "cardholderName": model.cardHolderName,
+          "paymentMethodId": paymentId,
+          "totalPrice": model.totalPrice,
+          "serviceFee": model.serviceFee,
+        },
       );
       return response;
     } on DioException catch (e) {
@@ -51,25 +53,26 @@ class CourtsServices extends BaseApiProvider {
   Future<Response> bookMatch(MatchBookingModel model, String paymentId) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/booking',
-          data: {
-            "clubId": model.clubId,
-            "courtId": model.courtId,
-            "bookingDate": AppUtils.getFormattedDateWithDashNullable(
-                model.bookingDate),
-            "startTime": model.startTime,
-            "endTime": model.endTime,
-            "invitedPlayers": model.invitedPlayers,
-            "bookingType": "Match",
-            "matchType": model.matchType,
-            "format": model.format,
-            "paymentType": model.paymentType,
-            "cardholderName": model.cardHolderName,
-            "paymentMethodId": paymentId,
-            "totalPrice": model.totalPrice,
-            "serviceFee": model.serviceFee
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/booking',
+        data: {
+          "clubId": model.clubId,
+          "courtId": model.courtId,
+          "bookingDate": AppUtils.getFormattedDateWithDashNullable(
+            model.bookingDate,
+          ),
+          "startTime": model.startTime,
+          "endTime": model.endTime,
+          "invitedPlayers": model.invitedPlayers,
+          "bookingType": "Match",
+          "matchType": model.matchType,
+          "format": model.format,
+          "paymentType": model.paymentType,
+          "cardholderName": model.cardHolderName,
+          "paymentMethodId": paymentId,
+          "totalPrice": model.totalPrice,
+          "serviceFee": model.serviceFee,
+        },
       );
       return response;
     } on DioException catch (e) {

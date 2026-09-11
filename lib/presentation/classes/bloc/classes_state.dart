@@ -28,7 +28,7 @@ class ClassesState extends Equatable {
       status: status ?? this.status,
       error: error ?? this.error,
       classes: classes ?? this.classes,
-        balance: balance ?? this.balance
+      balance: balance ?? this.balance,
     );
   }
 }

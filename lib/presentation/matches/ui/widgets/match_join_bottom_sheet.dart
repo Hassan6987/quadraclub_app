@@ -14,7 +14,9 @@ class MatchJoinBottomSheet extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       backgroundColor: Colors.transparent,
       builder: (_) => MatchJoinBottomSheet(match: match),
     );
@@ -60,7 +62,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
               ),
             ],
           ).paddingOnly(top: 5, bottom: 16, left: 20, right: 20),
-          
+
           Flexible(
             child: SingleChildScrollView(
               child: Column(
@@ -69,14 +71,19 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                   // Match Details Card
                   _buildMatchDetailsCard(widget.match),
                   16.heightBox,
-                  
+
                   // Description
                   Text(
                     widget.match.description,
-                    style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+                    style: AppStyles.w400f14inter.copyWith(
+                      color: kGreyTextColor,
+                    ),
                   ).withPaddingSymmetric(10, 8),
-                  buildPlayersRow(context, widget.match, null)
-                      .withPaddingSymmetric(16, 8),
+                  buildPlayersRow(
+                    context,
+                    widget.match,
+                    null,
+                  ).withPaddingSymmetric(16, 8),
                   16.heightBox,
                   CustomTextField(
                     controller: _messageController,
@@ -84,16 +91,17 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                     maxLines: 3,
                     fillColor: kWhiteF9,
                     hintStyle: AppStyles.w400f14inter.copyWith(
-                        color: kTextColor),
+                      color: kTextColor,
+                    ),
                     borderRadius: 12,
                   ).withPaddingSymmetric(16, 8),
                   24.heightBox,
-                  Divider(thickness: 5, color: kBorderF0,),
+                  Divider(thickness: 5, color: kBorderF0),
                 ],
               ),
             ),
           ),
-          
+
           // Send Request Button
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -101,8 +109,12 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
               buttonText: "Send Request",
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => BookingSummaryScreen(match: widget.match)));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BookingSummaryScreen(match: widget.match),
+                  ),
+                );
               },
             ),
           ),
@@ -114,9 +126,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
   Widget _buildMatchDetailsCard(MatchModel match) {
     return Container(
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kCardColor,
-      ),
+      decoration: BoxDecoration(color: kCardColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -150,9 +160,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                       ),
                     ),
                     Text(
-                      "${match.city} • ${match
-                          .distanceKm} miles • ${getFormatDateMonth(
-                          match.date)}",
+                      "${match.city} • ${match.distanceKm} miles • ${getFormatDateMonth(match.date)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

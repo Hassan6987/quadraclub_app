@@ -18,7 +18,7 @@ const List<String> kAllSportSlugs = [
   'padel',
   'tennis',
   'beach_tennis',
-  'pickleball'
+  'pickleball',
 ];
 
 class HomeScreen extends StatefulWidget {
@@ -67,7 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
-        final pos = await Geolocator.getLastKnownPosition() ??
+        final pos =
+            await Geolocator.getLastKnownPosition() ??
             await Geolocator.getCurrentPosition(
               timeLimit: const Duration(seconds: 5),
             );
@@ -97,11 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
       return double.infinity;
     }
     return Geolocator.distanceBetween(
-      _currentLatLng.latitude,
-      _currentLatLng.longitude,
-      club.coordinates!.latitude!,
-      club.coordinates!.longitude!,
-    ) /
+          _currentLatLng.latitude,
+          _currentLatLng.longitude,
+          club.coordinates!.latitude!,
+          club.coordinates!.longitude!,
+        ) /
         1000.0;
   }
 
@@ -127,9 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       for (final slot in slots) {
         if ((slot.status ?? '').toLowerCase() != 'available') continue;
-        final hour = int.tryParse((slot.startTime ?? '')
-            .split(':')
-            .first);
+        final hour = int.tryParse((slot.startTime ?? '').split(':').first);
         if (hour == null) continue;
 
         if (_filterTimeOfDay == 'Morning' && hour >= 6 && hour < 12) {
@@ -152,9 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final filtered = clubs.where((club) {
       // Sport filter
       if (_selectedSports.isNotEmpty &&
-          !club.sports.any(
-                (s) => _selectedSports.contains(s.toLowerCase()),
-          )) {
+          !club.sports.any((s) => _selectedSports.contains(s.toLowerCase()))) {
         return false;
       }
 
@@ -250,12 +247,13 @@ class _HomeScreenState extends State<HomeScreen> {
               firstClub.coordinates!.longitude!,
             );
             _currentLocation =
-            '${firstClub.city ?? ''}, ${firstClub.state ?? ''}';
+                '${firstClub.city ?? ''}, ${firstClub.state ?? ''}';
           }
         }
 
         final clubsList = _filteredClubs(state.courts);
-        final hasActiveFilters = _filterTimeOfDay != null ||
+        final hasActiveFilters =
+            _filterTimeOfDay != null ||
             _filterCity != null ||
             _filterDistance != null;
 
@@ -283,14 +281,13 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             selectedSports: _selectedSports,
-            onSportSelected: (sport) =>
-                setState(() {
-                  if (_selectedSports.contains(sport)) {
-                    _selectedSports.remove(sport);
-                  } else {
-                    _selectedSports.add(sport);
-                  }
-                }),
+            onSportSelected: (sport) => setState(() {
+              if (_selectedSports.contains(sport)) {
+                _selectedSports.remove(sport);
+              } else {
+                _selectedSports.add(sport);
+              }
+            }),
           );
         }
 
@@ -303,293 +300,302 @@ class _HomeScreenState extends State<HomeScreen> {
           body: state.status == CourtStateStatus.loading
               ? const Center(child: CustomLoadingView())
               : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 38,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: kAllSportSlugs.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final sport = kAllSportSlugs[index];
-                    final isSelected = _selectedSports.contains(sport);
-                    final label =
-                        '${sport[0].toUpperCase()}${sport
-                        .substring(1)
-                        .replaceAll('_', ' ')}';
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedSports.remove(sport);
-                          } else {
-                            _selectedSports.add(sport);
-                          }
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isSelected ? kPrimaryColor : kGreyColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: isSelected
-                              ? null
-                              : Border.all(color: kBorderColor),
-                        ),
-                        child: Center(
-                          child: Text(
-                            label,
-                            style: AppStyles.w400f14inter
-                                .copyWith(color: kDarkTextColor),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              12.heightBox,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          SearchCourtsSheet.show(
-                            context,
-                            courts: state.courts,
-                            onCourtSelected: (club) {
+                    SizedBox(
+                      height: 38,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: kAllSportSlugs.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final sport = kAllSportSlugs[index];
+                          final isSelected = _selectedSports.contains(sport);
+                          final label =
+                              '${sport[0].toUpperCase()}${sport.substring(1).replaceAll('_', ' ')}';
+                          return GestureDetector(
+                            onTap: () {
                               setState(() {
-                                _searchQuery = club.name ?? '';
+                                if (isSelected) {
+                                  _selectedSports.remove(sport);
+                                } else {
+                                  _selectedSports.add(sport);
+                                }
                               });
                             },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected ? kPrimaryColor : kGreyColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: isSelected
+                                    ? null
+                                    : Border.all(color: kBorderColor),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  label,
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kDarkTextColor,
+                                  ),
+                                ),
+                              ),
+                            ),
                           );
                         },
-                        child: Container(
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: kWhiteColor,
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: kBorderColor),
-                          ),
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.search,
-                                  color: kDarkTextColor, size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                _searchQuery.isNotEmpty
-                                    ? _searchQuery
-                                    : 'Search by name...',
-                                style: AppStyles.w400f14inter
-                                    .copyWith(color: kDarkTextColor),
+                      ),
+                    ),
+                    12.heightBox,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                SearchCourtsSheet.show(
+                                  context,
+                                  courts: state.courts,
+                                  onCourtSelected: (club) {
+                                    setState(() {
+                                      _searchQuery = club.name ?? '';
+                                    });
+                                  },
+                                );
+                              },
+                              child: Container(
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: kWhiteColor,
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(color: kBorderColor),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.search,
+                                      color: kDarkTextColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      _searchQuery.isNotEmpty
+                                          ? _searchQuery
+                                          : 'Search by name...',
+                                      style: AppStyles.w400f14inter.copyWith(
+                                        color: kDarkTextColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                            ),
+                          ),
+                          8.widthBox,
+                          GestureDetector(
+                            onTap: () {
+                              CourtFilterBottomSheet.show(
+                                context,
+                                initialTimeOfDay: _filterTimeOfDay,
+                                initialCity: _filterCity,
+                                initialDistance: _filterDistance,
+                                availableCities: state.courts
+                                    .map((c) => c.city)
+                                    .whereType<String>()
+                                    .where((s) => s.trim().isNotEmpty)
+                                    .toSet()
+                                    .toList(),
+                                onApply: (timeOfDay, city, dist) {
+                                  setState(() {
+                                    _filterTimeOfDay = timeOfDay;
+                                    _filterCity = city;
+                                    _filterDistance = dist;
+                                  });
+                                },
+                              );
+                            },
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: hasActiveFilters
+                                    ? kPrimaryColor
+                                    : kWhiteColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: kBorderColor),
+                              ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  Assets.svg.filterLines.path,
+                                  colorFilter: const ColorFilter.mode(
+                                    kDarkTextColor,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          8.widthBox,
+                          GestureDetector(
+                            onTap: () => setState(() => _isMapView = true),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: kWhiteColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: kBorderColor),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.map_outlined,
+                                  color: kDarkTextColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (hasActiveFilters) ...[
+                      8.heightBox,
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            if (_filterTimeOfDay != null) ...[
+                              _buildFilterBadge(
+                                label: _filterTimeOfDay!,
+                                icon: Icons.access_time,
+                                onClear: () =>
+                                    setState(() => _filterTimeOfDay = null),
+                              ),
+                              8.widthBox,
                             ],
-                          ),
+                            if (_filterCity != null) ...[
+                              _buildFilterBadge(
+                                label: _filterCity!,
+                                icon: Icons.location_city,
+                                onClear: () =>
+                                    setState(() => _filterCity = null),
+                              ),
+                              8.widthBox,
+                            ],
+                            if (_filterDistance != null) ...[
+                              _buildFilterBadge(
+                                label: '< ${_filterDistance!.round()} km',
+                                icon: Icons.near_me_outlined,
+                                onClear: () =>
+                                    setState(() => _filterDistance = null),
+                              ),
+                              8.widthBox,
+                            ],
+                            GestureDetector(
+                              onTap: () => setState(() {
+                                _filterTimeOfDay = null;
+                                _filterCity = null;
+                                _filterDistance = null;
+                              }),
+                              child: Text(
+                                'Clear all',
+                                style: AppStyles.w500f12inter.copyWith(
+                                  color: kDarkTextColor,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    ],
+                    12.heightBox,
+                    CommonDateSelectionRow(
+                      dates: _dates,
+                      selectedDate: _selectedDate,
+                      onDateSelected: (date) =>
+                          setState(() => _selectedDate = date),
                     ),
-                    8.widthBox,
-                    GestureDetector(
-                      onTap: () {
-                        CourtFilterBottomSheet.show(
-                          context,
-                          initialTimeOfDay: _filterTimeOfDay,
-                          initialCity: _filterCity,
-                          initialDistance: _filterDistance,
-                          availableCities: state.courts
-                              .map((c) => c.city)
-                              .whereType<String>()
-                              .where((s) =>
-                          s
-                              .trim()
-                              .isNotEmpty)
-                              .toSet()
-                              .toList(),
-                          onApply: (timeOfDay, city, dist) {
-                            setState(() {
-                              _filterTimeOfDay = timeOfDay;
-                              _filterCity = city;
-                              _filterDistance = dist;
-                            });
-                          },
-                        );
-                      },
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: hasActiveFilters
-                              ? kPrimaryColor
-                              : kWhiteColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: kBorderColor),
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            Assets.svg.filterLines.path,
-                            colorFilter: const ColorFilter.mode(
-                                kDarkTextColor, BlendMode.srcIn),
-                          ),
-                        ),
-                      ),
-                    ),
-                    8.widthBox,
-                    GestureDetector(
-                      onTap: () => setState(() => _isMapView = true),
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: kWhiteColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: kBorderColor),
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.map_outlined,
-                              color: kDarkTextColor),
-                        ),
-                      ),
+                    12.heightBox,
+                    Expanded(
+                      child: clubsList.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.location_off_outlined,
+                                    size: 64,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No courts match your search/filters.',
+                                    style: AppStyles.w500f14inter.copyWith(
+                                      color: kTextColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchQuery = '';
+                                        _selectedSports.clear();
+                                        _filterTimeOfDay = null;
+                                        _filterCity = null;
+                                        _filterDistance = null;
+                                      });
+                                    },
+                                    child: const Text('Reset Filters'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: clubsList.length,
+                              padding: const EdgeInsets.only(bottom: 24),
+                              itemBuilder: (context, index) {
+                                final dist = _clubDistance(clubsList[index]);
+                                return CourtCardWidget(
+                                  club: clubsList[index],
+                                  selectedDate: _selectedDate,
+                                  distanceKm: dist.isInfinite ? null : dist,
+                                  onTap: () {
+                                    // Gate: show login dialog for unauthenticated users
+                                    final authState = context
+                                        .read<AuthBloc>()
+                                        .state;
+                                    if (authState.user == null) {
+                                      LoginToBookDialog.show(
+                                        context,
+                                        title: 'Sign in to book this court',
+                                        subtitle:
+                                            'Please log in or create an account to reserve your spot.',
+                                      );
+                                      return;
+                                    }
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => CourtDetailScreen(
+                                          club: clubsList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                     ),
                   ],
                 ),
-              ),
-              if (hasActiveFilters) ...[
-                8.heightBox,
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      if (_filterTimeOfDay != null) ...[
-                        _buildFilterBadge(
-                          label: _filterTimeOfDay!,
-                          icon: Icons.access_time,
-                          onClear: () =>
-                              setState(() => _filterTimeOfDay = null),
-                        ),
-                        8.widthBox,
-                      ],
-                      if (_filterCity != null) ...[
-                        _buildFilterBadge(
-                          label: _filterCity!,
-                          icon: Icons.location_city,
-                          onClear: () =>
-                              setState(() => _filterCity = null),
-                        ),
-                        8.widthBox,
-                      ],
-                      if (_filterDistance != null) ...[
-                        _buildFilterBadge(
-                          label: '< ${_filterDistance!.round()} km',
-                          icon: Icons.near_me_outlined,
-                          onClear: () =>
-                              setState(() => _filterDistance = null),
-                        ),
-                        8.widthBox,
-                      ],
-                      GestureDetector(
-                        onTap: () =>
-                            setState(() {
-                              _filterTimeOfDay = null;
-                              _filterCity = null;
-                              _filterDistance = null;
-                            }),
-                        child: Text(
-                          'Clear all',
-                          style: AppStyles.w500f12inter.copyWith(
-                            color: kDarkTextColor,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              12.heightBox,
-              CommonDateSelectionRow(
-                dates: _dates,
-                selectedDate: _selectedDate,
-                onDateSelected: (date) =>
-                    setState(() => _selectedDate = date),
-              ),
-              12.heightBox,
-              Expanded(
-                child: clubsList.isEmpty
-                    ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.location_off_outlined,
-                          size: 64, color: Colors.grey[400]),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No courts match your search/filters.',
-                        style: AppStyles.w500f14inter
-                            .copyWith(color: kTextColor),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _searchQuery = '';
-                            _selectedSports.clear();
-                            _filterTimeOfDay = null;
-                            _filterCity = null;
-                            _filterDistance = null;
-                          });
-                        },
-                        child: const Text('Reset Filters'),
-                      ),
-                    ],
-                  ),
-                )
-                    : ListView.builder(
-                  itemCount: clubsList.length,
-                  padding: const EdgeInsets.only(bottom: 24),
-                  itemBuilder: (context, index) {
-                    final dist = _clubDistance(clubsList[index]);
-                    return CourtCardWidget(
-                      club: clubsList[index],
-                      selectedDate: _selectedDate,
-                      distanceKm: dist.isInfinite ? null : dist,
-                      onTap: () {
-                        // Gate: show login dialog for unauthenticated users
-                        final authState =
-                            context
-                                .read<AuthBloc>()
-                                .state;
-                        if (authState.user == null) {
-                          LoginToBookDialog.show(
-                            context,
-                            title: 'Sign in to book this court',
-                            subtitle:
-                            'Please log in or create an account to reserve your spot.',
-                          );
-                          return;
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                CourtDetailScreen(
-                                    club: clubsList[index]),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
         );
       },
     );

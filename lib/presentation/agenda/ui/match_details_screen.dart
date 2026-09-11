@@ -4,8 +4,6 @@ import 'package:quadraclub_app/presentation/agenda/ui/widgets/details_tab.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/invited_tab.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/requests_tab.dart';
 
-
-
 class MatchDetailsScreen extends StatefulWidget {
   const MatchDetailsScreen({super.key});
 
@@ -19,8 +17,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      appBar:CustomAppBar(
+      appBar: CustomAppBar(
         title: "Match Details",
         showBackIcon: true,
         showActions: false,
@@ -36,14 +33,11 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
       body: Column(
         children: [
           _buildTabs(),
-          Expanded(
-            child: _buildTabContent(),
-          ),
+          Expanded(child: _buildTabContent()),
         ],
       ),
     );
   }
-
 
   Widget _buildTabs() {
     return Container(
@@ -55,7 +49,10 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
             child: GestureDetector(
               onTap: () => setState(() => _selectedTab = tab),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 0,
+                  vertical: 14,
+                ),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   border: Border(
@@ -80,10 +77,10 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   }
 
   String _tabLabel(MatchDetailsTab tab) => switch (tab) {
-        MatchDetailsTab.details => 'Details',
-        MatchDetailsTab.requests => 'Requests',
-        MatchDetailsTab.invited => 'Invited',
-      };
+    MatchDetailsTab.details => 'Details',
+    MatchDetailsTab.requests => 'Requests',
+    MatchDetailsTab.invited => 'Invited',
+  };
 
   Widget _buildTabContent() {
     switch (_selectedTab) {
@@ -96,6 +93,3 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
     }
   }
 }
-
-
-

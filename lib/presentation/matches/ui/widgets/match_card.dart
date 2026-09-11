@@ -59,9 +59,7 @@ class MatchCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${match.city} • ${match
-                            .distanceKm} miles • ${getFormatDateMonth(
-                            match.date)}",
+                        "${match.city} • ${match.distanceKm} miles • ${getFormatDateMonth(match.date)}",
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),
@@ -90,8 +88,11 @@ class MatchCard extends StatelessWidget {
   }
 }
 
-Widget buildPlayersRow(BuildContext cxt, MatchModel match,
-    VoidCallback? onTap) {
+Widget buildPlayersRow(
+  BuildContext cxt,
+  MatchModel match,
+  VoidCallback? onTap,
+) {
   return Padding(
     padding: const EdgeInsets.only(top: 12),
     child: Row(
@@ -101,18 +102,13 @@ Widget buildPlayersRow(BuildContext cxt, MatchModel match,
           buildPlayer(cxt, match.players[i], onTap),
 
           // Vertical divider after the occupied players
-          if (i == match.players
-              .where((e) => !e.isAvailable)
-              .length - 1 &&
+          if (i == match.players.where((e) => !e.isAvailable).length - 1 &&
               match.players.any((e) => e.isAvailable))
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SizedBox(
                 height: 48,
-                child: VerticalDivider(
-                  color: kBorderColor,
-                  thickness: 1,
-                ),
+                child: VerticalDivider(color: kBorderColor, thickness: 1),
               ),
             ),
         ],
@@ -153,16 +149,12 @@ Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
           const SizedBox(height: 6),
           Text(
             player.name.isEmpty ? "Available" : player.name,
-            style: AppStyles.w500f14inter.copyWith(
-              color: kGreyTextColor,
-            ),
+            style: AppStyles.w500f14inter.copyWith(color: kGreyTextColor),
           ),
           if (player.position != null)
             Text(
               player.position!,
-              style: AppStyles.w400f12inter.copyWith(
-                color: kGreyTextColor,
-              ),
+              style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
             ),
         ],
       ),
@@ -172,42 +164,37 @@ Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
   return Expanded(
     child: GestureDetector(
       onTap: () {
-        Navigator.push(cxt, MaterialPageRoute(
-            builder: (_) => PlayerProfileScreen(player: player)));
+        Navigator.push(
+          cxt,
+          MaterialPageRoute(
+            builder: (_) => PlayerProfileScreen(player: player),
+          ),
+        );
       },
       child: Column(
         children: [
           Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-            ),
+            decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: player.avatarAsset != null
-                  ? Image.network(
-                player.avatarAsset!,
-                fit: BoxFit.cover,
-              )
+                  ? Image.network(player.avatarAsset!, fit: BoxFit.cover)
                   : Container(
-                color: kGreyColor,
-                child: const Icon(Icons.person),
-              ),
+                      color: kGreyColor,
+                      child: const Icon(Icons.person),
+                    ),
             ),
           ),
           const SizedBox(height: 6),
           Text(
             player.name,
             overflow: TextOverflow.ellipsis,
-            style: AppStyles.w500f14inter.copyWith(
-              color: kDarkTextColor,
-            ),
+            style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           Text(
             player.skillLevel ?? "Beginner",
-            style: AppStyles.w400f12inter.copyWith(
-              color: kGreyTextColor,
-            ),
+            style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
           ),
         ],
       ),
@@ -222,8 +209,10 @@ Widget buildSeatsBadge(MatchModel match) {
       color: kRedColor,
       borderRadius: BorderRadius.circular(12),
     ),
-    child: Text(match.status == MatchStatus.full ? 'Full' :
-    '${match.slotsLeft} Seat${match.slotsLeft > 1 ? 's' : ''}',
+    child: Text(
+      match.status == MatchStatus.full
+          ? 'Full'
+          : '${match.slotsLeft} Seat${match.slotsLeft > 1 ? 's' : ''}',
       style: AppStyles.w400f12inter.copyWith(color: kWhiteColor),
     ),
   );

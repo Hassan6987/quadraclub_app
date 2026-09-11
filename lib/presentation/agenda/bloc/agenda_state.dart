@@ -6,7 +6,7 @@ enum AgendaStateStatus {
   success,
   failure,
   fetching,
-  updating
+  updating,
 }
 
 class AgendaState extends Equatable {
@@ -25,7 +25,7 @@ class AgendaState extends Equatable {
     this.pendingAgenda = const [],
     this.pastAgenda = const [],
     this.matchDetails,
-    this.players = const []
+    this.players = const [],
   });
 
   @override
@@ -36,7 +36,7 @@ class AgendaState extends Equatable {
     pendingAgenda,
     pastAgenda,
     matchDetails,
-    players
+    players,
   ];
 
   AgendaState copyWith({
@@ -53,9 +53,9 @@ class AgendaState extends Equatable {
       error: error ?? this.error,
       confirmedAgenda: confirmedAgenda ?? this.confirmedAgenda,
       pendingAgenda: pendingAgenda ?? this.pendingAgenda,
-        pastAgenda: pastAgenda ?? this.pastAgenda,
-        matchDetails: matchDetails ?? this.matchDetails,
-        players: players ?? this.players
+      pastAgenda: pastAgenda ?? this.pastAgenda,
+      matchDetails: matchDetails ?? this.matchDetails,
+      players: players ?? this.players,
     );
   }
 }

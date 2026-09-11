@@ -18,7 +18,7 @@ class ChatTypeTag extends StatelessWidget {
         color: isGame
             ? kBlueF1.withValues(alpha: 0.20)
             : kGreenColor.withValues(alpha: 0.20),
-        border: Border.all(color: isGame ? kBlueF1 : kGreenColor,width: 0.8),
+        border: Border.all(color: isGame ? kBlueF1 : kGreenColor, width: 0.8),
       ),
       child: Text(
         isGame ? 'Game' : 'Classroom',

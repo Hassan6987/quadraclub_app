@@ -1,4 +1,3 @@
-
 import 'package:quadraclub_app/app_exports.dart';
 
 class CommonDateSelectionRow extends StatelessWidget {
@@ -12,8 +11,6 @@ class CommonDateSelectionRow extends StatelessWidget {
     required this.selectedDate,
     required this.onDateSelected,
   });
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +60,7 @@ class CommonDateSelectionRow extends StatelessWidget {
                     ),
                   ),
                 ],
-              ).withPaddingSymmetric(16,0),
+              ).withPaddingSymmetric(16, 0),
             ),
           );
         },

@@ -30,6 +30,7 @@ extension PaymentSplitOptionExtension on PaymentSplitOption {
         return 'Pay only my part now';
     }
   }
+
   String get description {
     switch (this) {
       case PaymentSplitOption.payAllReceiveLater:

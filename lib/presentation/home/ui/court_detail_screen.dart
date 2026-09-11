@@ -59,21 +59,11 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
     final now = DateTime.now();
 
-    _anchorDate = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    );
+    _anchorDate = DateTime(now.year, now.month, now.day);
 
     _selectedDate = _anchorDate;
 
-    _dates = List.generate(
-      7,
-          (i) =>
-          _anchorDate.add(
-            Duration(days: i),
-          ),
-    );
+    _dates = List.generate(7, (i) => _anchorDate.add(Duration(days: i)));
 
     context.read<CourtsBloc>().add(FetchAllUsers());
   }
@@ -117,10 +107,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
         final maxOffset = controller.position.maxScrollExtent;
 
-        final targetOffset = sourceOffset.clamp(
-          0.0,
-          maxOffset,
-        );
+        final targetOffset = sourceOffset.clamp(0.0, maxOffset);
 
         if ((controller.offset - targetOffset).abs() > 0.5) {
           controller.jumpTo(targetOffset);
@@ -182,9 +169,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
     return widget.club.courts.where((court) {
       return court.sports.any(
-            (s) =>
-        (s.sportName ?? '').toLowerCase() ==
-            sport.toLowerCase(),
+        (s) => (s.sportName ?? '').toLowerCase() == sport.toLowerCase(),
       );
     }).toList();
   }
@@ -197,13 +182,11 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   /// WeeklySlot only decodes "Tennis"/"Padel" keys today — any other
   /// sport returns no slots rather than guessing at real availability.
   List<Padel> _slotsFor(Court court) {
-    final daySlots =
-    court.weeklySlots[_dateKey(_selectedDate)];
+    final daySlots = court.weeklySlots[_dateKey(_selectedDate)];
 
     if (daySlots == null) return const [];
 
-    final sport =
-    (_selectedSportName ?? '').toLowerCase();
+    final sport = (_selectedSportName ?? '').toLowerCase();
 
     switch (sport) {
       case 'tennis':
@@ -247,8 +230,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
   @override
   void dispose() {
-    for (final controller
-    in _courtScrollControllers.values) {
+    for (final controller in _courtScrollControllers.values) {
       controller.dispose();
     }
 
@@ -282,22 +264,15 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   decoration: BoxDecoration(
                     color: kWhiteColor,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: kBorderColor,
-                    ),
+                    border: Border.all(color: kBorderColor),
                   ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: kDarkTextColor,
-                  ),
+                  child: const Icon(Icons.arrow_back, color: kDarkTextColor),
                 ),
               ),
             ),
             title: Text(
               'Club Details',
-              style: AppStyles.w600f16inter.copyWith(
-                color: kDarkTextColor,
-              ),
+              style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             ),
             centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -305,22 +280,16 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                 imageUrl: _photoUrl,
                 height: 120,
                 width: double.infinity,
-                placeholder: (context, url) =>
-                    Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade100,
-                      child: Container(
-                        height: 120,
-                        width: double.infinity,
-                        decoration:
-                        const BoxDecoration(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                errorWidget: (context,
-                    url,
-                    error,) {
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey.shade300,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(color: Colors.white),
+                  ),
+                ),
+                errorWidget: (context, url, error) {
                   return Image.asset(
                     Assets.png.clubLogo.path,
                     height: 120,
@@ -334,13 +303,9 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.club.name ?? '',
@@ -353,37 +318,27 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
                   Text(
                     _locationLabel,
-                    style: AppStyles.w400f14inter.copyWith(
-                      color: kTextColor,
-                    ),
+                    style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                   ),
 
-                  if ((widget.club.description ?? '')
-                      .isNotEmpty) ...[
+                  if ((widget.club.description ?? '').isNotEmpty) ...[
                     8.heightBox,
 
                     Text(
                       widget.club.description!,
-                      style:
-                      AppStyles.w400f12inter.copyWith(
-                        color: kTextColor,
-                      ),
+                      style: AppStyles.w400f12inter.copyWith(color: kTextColor),
                     ),
                   ],
 
                   10.heightBox,
 
-                  Divider(
-                    color: kBorderColor,
-                    thickness: 5,
-                  ),
+                  Divider(color: kBorderColor, thickness: 5),
 
                   10.heightBox,
 
                   Text(
                     'Available Time Slots',
-                    style:
-                    AppStyles.w500f14inter.copyWith(
+                    style: AppStyles.w500f14inter.copyWith(
                       color: kDarkTextColor,
                     ),
                   ),
@@ -393,227 +348,156 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   if (sportNames.isEmpty)
                     Text(
                       'No sports information available for this club.',
-                      style:
-                      AppStyles.w400f14inter.copyWith(
-                        color: kTextColor,
-                      ),
+                      style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                     )
-                  else
-                    ...[
-                      // ------------------------------------------------
-                      // Sport tabs
-                      // ------------------------------------------------
+                  else ...[
+                    // ------------------------------------------------
+                    // Sport tabs
+                    // ------------------------------------------------
+                    SizedBox(
+                      height: 38,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: sportNames.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final name = sportNames[index];
 
-                      SizedBox(
-                        height: 38,
-                        child: ListView.separated(
-                          scrollDirection:
-                          Axis.horizontal,
-                          itemCount: sportNames.length,
-                          separatorBuilder: (_,
-                              __,) =>
-                          const SizedBox(width: 8),
-                          itemBuilder: (context,
-                              index,) {
-                            final name =
-                            sportNames[index];
+                          final isSelected = _selectedSportName == name;
 
-                            final isSelected =
-                                _selectedSportName ==
-                                    name;
-
-                            return GestureDetector(
-                              onTap: () =>
-                                  setState(
-                                        () =>
-                                    _selectedSportName =
-                                        name,
-                                  ),
-                              child: Container(
-                                padding:
-                                const EdgeInsets
-                                    .symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration:
-                                BoxDecoration(
-                                  color: isSelected
-                                      ? kPrimaryColor
-                                      : kGreyColor,
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                    12,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    name,
-                                    style: AppStyles
-                                        .w400f14inter
-                                        .copyWith(
-                                      color:
-                                      kDarkTextColor,
-                                    ),
+                          return GestureDetector(
+                            onTap: () =>
+                                setState(() => _selectedSportName = name),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected ? kPrimaryColor : kGreyColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  name,
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kDarkTextColor,
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      12.heightBox,
-
-                      // ------------------------------------------------
-                      // Date selection
-                      // ------------------------------------------------
-
-                      CommonDateSelectionRow(
-                        dates: _dates,
-                        selectedDate: _selectedDate,
-                        onDateSelected: (date) =>
-                            setState(
-                                  () => _selectedDate = date,
                             ),
+                          );
+                        },
                       ),
+                    ),
 
-                      10.heightBox,
+                    12.heightBox,
 
-                      Divider(
-                        color: kBorderColor,
-                        thickness: 5,
-                      ),
+                    // ------------------------------------------------
+                    // Date selection
+                    // ------------------------------------------------
+                    CommonDateSelectionRow(
+                      dates: _dates,
+                      selectedDate: _selectedDate,
+                      onDateSelected: (date) =>
+                          setState(() => _selectedDate = date),
+                    ),
 
-                      10.heightBox,
+                    10.heightBox,
 
-                      // ------------------------------------------------
-                      // Courts
-                      // ------------------------------------------------
+                    Divider(color: kBorderColor, thickness: 5),
 
-                      if (matchingCourts.isEmpty)
-                        Text(
-                          'No courts offer this sport yet.',
-                          style: AppStyles
-                              .w400f14inter
-                              .copyWith(
-                            color: kTextColor,
-                          ),
-                        )
-                      else
-                        ...matchingCourts
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                          final courtIndex =
-                              entry.key;
+                    10.heightBox,
 
-                          final court =
-                              entry.value;
+                    // ------------------------------------------------
+                    // Courts
+                    // ------------------------------------------------
+                    if (matchingCourts.isEmpty)
+                      Text(
+                        'No courts offer this sport yet.',
+                        style: AppStyles.w400f14inter.copyWith(
+                          color: kTextColor,
+                        ),
+                      )
+                    else
+                      ...matchingCourts.asMap().entries.map((entry) {
+                        final courtIndex = entry.key;
 
-                          final slots =
-                          _slotsFor(court);
+                        final court = entry.value;
 
-                          // Each court has its own controller,
+                        final slots = _slotsFor(court);
+
+                        // Each court has its own controller,
                           // but all controllers synchronize their
                           // horizontal offset.
-                          final scrollController =
-                          _getCourtScrollController(
-                            _courtScrollKey(
-                              court,
-                              courtIndex,
-                            ),
+                          final scrollController = _getCourtScrollController(
+                            _courtScrollKey(court, courtIndex),
                           );
 
-                          return Padding(
-                            padding:
-                            const EdgeInsets.only(
-                              bottom: 20,
-                            ),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
-                              children: [
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                court.courtName ?? '',
+                                style: AppStyles.w600f14inter.copyWith(
+                                  color: kDarkTextColor,
+                                ),
+                              ),
+
+                              10.heightBox,
+
+                              if (slots.isEmpty)
                                 Text(
-                                  court.courtName ?? '',
-                                  style: AppStyles
-                                      .w600f14inter
-                                      .copyWith(
-                                    color:
-                                    kDarkTextColor,
-                                ),
-                                ),
+                                  'No slots published for this date.',
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kTextColor,
+                                  ),
+                                )
+                              else
+                                SingleChildScrollView(
+                                  // ONLY CHANGE:
+                                  // attach the controller.
+                                  controller: scrollController,
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      for (int i = 0; i < slots.length; i += 2)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 10,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              _buildTimeSlotChip(
+                                                court,
+                                                slots[i],
+                                              ),
 
-                                10.heightBox,
+                                              if (i + 1 < slots.length) ...[
+                                                  const SizedBox(height: 10),
 
-                                if (slots.isEmpty)
-                                  Text(
-                                    'No slots published for this date.',
-                                    style: AppStyles
-                                        .w400f14inter
-                                        .copyWith(
-                                      color:
-                                      kTextColor,
-                                    ),
-                                  )
-                                else
-                                  SingleChildScrollView(
-                                    // ONLY CHANGE:
-                                    // attach the controller.
-                                    controller:
-                                    scrollController,
-                                    scrollDirection:
-                                    Axis.horizontal,
-                                    child: Row(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
-                                      children: [
-                                        for (
-                                        int i = 0;
-                                        i < slots.length;
-                                        i += 2
-                                        )
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets
-                                                .only(
-                                              right: 10,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                              children: [
                                                 _buildTimeSlotChip(
                                                   court,
-                                                  slots[i],
+                                                  slots[i + 1],
                                                 ),
-
-                                                if (i + 1 <
-                                                    slots
-                                                        .length) ...[
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-
-                                                  _buildTimeSlotChip(
-                                                    court,
-                                                    slots[i + 1],
-                                                  ),
-                                                ],
                                               ],
-                                            ),
+                                            ],
                                           ),
-                                      ],
-                                    ),
+                                        ),
+                                    ],
                                   ),
-                              ],
-                            ),
-                          );
-                        }),
-                    ],
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                  ],
                 ],
               ),
             ),
@@ -627,55 +511,32 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   // Time slot chip
   // ------------------------------------------------------------
 
-  Widget _buildTimeSlotChip(Court court,
-      Padel slot,) {
-    final available =
-        slot.status == 'Available';
+  Widget _buildTimeSlotChip(Court court, Padel slot) {
+    final available = slot.status == 'Available';
 
     return GestureDetector(
-      onTap: available
-          ? () =>
-          _onTimeSlotTap(
-            court,
-            slot,
-          )
-          : null,
+      onTap: available ? () => _onTimeSlotTap(court, slot) : null,
       child: Opacity(
         opacity: available ? 1.0 : 0.5,
         child: Container(
-          padding:
-          const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: kWhiteColor,
-            borderRadius:
-            BorderRadius.circular(100),
-            border: Border.all(
-              color: kBorderColor,
-            ),
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: kBorderColor),
           ),
           child: Row(
-            mainAxisSize:
-            MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 slot.startTime ?? '',
-                style: AppStyles
-                    .w500f14inter
-                    .copyWith(
-                  color: kDarkTextColor,
-                ),
+                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
 
               4.widthBox,
 
               if (available)
-                const CircleAvatar(
-                  radius: 3,
-                  backgroundColor: kGreen06,
-                ),
+                const CircleAvatar(radius: 3, backgroundColor: kGreen06),
             ],
           ),
         ),

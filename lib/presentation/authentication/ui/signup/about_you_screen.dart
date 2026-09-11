@@ -26,8 +26,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
   bool _isLocating = false;
 
   bool get _isButtonEnabled =>
-      _locationController.text.isNotEmpty && _gender != null &&
-          _dominantHand != null;
+      _locationController.text.isNotEmpty &&
+      _gender != null &&
+      _dominantHand != null;
 
   Future<void> _onSelectLocation() async {
     await ChangeLocationSheet.show(
@@ -55,7 +56,8 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('Location permission is required to use this.')),
+              content: Text('Location permission is required to use this.'),
+            ),
           );
         }
         return;
@@ -83,15 +85,19 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
         setState(() => _locationController.text = cityName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(
-              'Could not determine your city. Please search manually.')),
+          const SnackBar(
+            content: Text(
+              'Could not determine your city. Please search manually.',
+            ),
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Something went wrong getting your location.')),
+            content: Text('Something went wrong getting your location.'),
+          ),
         );
       }
     } finally {
@@ -109,7 +115,8 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (_) => GamesPreferenceScreen(data: widget.data)),
+        builder: (_) => GamesPreferenceScreen(data: widget.data),
+      ),
     );
   }
 
@@ -134,7 +141,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
         decoration: BoxDecoration(
           color: selected ? kPrimaryColor.withValues(alpha: 0.2) : kWhiteColor,
           border: Border.all(
-              color: selected ? kPrimaryColor : kBorderColor, width: 1.5),
+            color: selected ? kPrimaryColor : kBorderColor,
+            width: 1.5,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -180,16 +189,17 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
                 Text(
                   "Location",
                   style: AppStyles.subtitleMedium.copyWith(
-                      color: kTextPrimaryColor),
+                    color: kTextPrimaryColor,
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: _isLocating ? null : _useMyLocation,
                   icon: _isLocating
                       ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Icon(Icons.location_on_outlined, size: 18),
                   label: const Text("Use my location"),
                 ),
@@ -205,17 +215,16 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             Text(
               "Gender",
               style: AppStyles.subtitleMedium.copyWith(
-                  color: kTextPrimaryColor),
+                color: kTextPrimaryColor,
+              ),
             ),
             8.heightBox,
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: [
-                "Masculine",
-                "Feminine",
-                "Prefer not to say",
-              ].map((gender) {
+              children: ["Masculine", "Feminine", "Prefer not to say"].map((
+                gender,
+              ) {
                 return _choiceChip(
                   label: gender,
                   selected: _gender == gender,
@@ -231,7 +240,8 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             Text(
               "Dominant Hand",
               style: AppStyles.subtitleMedium.copyWith(
-                  color: kTextPrimaryColor),
+                color: kTextPrimaryColor,
+              ),
             ),
             12.heightBox,
             Row(

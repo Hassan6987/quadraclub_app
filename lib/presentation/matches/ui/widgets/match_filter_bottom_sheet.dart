@@ -70,19 +70,25 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       TimeChip(
                         label: 'Morning',
                         subtitle: '6h - 12h',
-                        isSelected: _selectedTimes.contains(MatchTimeOfDay.morning),
+                        isSelected: _selectedTimes.contains(
+                          MatchTimeOfDay.morning,
+                        ),
                         onTap: () => _toggleTime(MatchTimeOfDay.morning),
                       ),
                       TimeChip(
                         label: 'Afternoon',
                         subtitle: '12h - 18h',
-                        isSelected: _selectedTimes.contains(MatchTimeOfDay.afternoon),
+                        isSelected: _selectedTimes.contains(
+                          MatchTimeOfDay.afternoon,
+                        ),
                         onTap: () => _toggleTime(MatchTimeOfDay.afternoon),
                       ),
                       TimeChip(
                         label: 'Night',
                         subtitle: '6 PM - 12 AM',
-                        isSelected: _selectedTimes.contains(MatchTimeOfDay.night),
+                        isSelected: _selectedTimes.contains(
+                          MatchTimeOfDay.night,
+                        ),
                         onTap: () => _toggleTime(MatchTimeOfDay.night),
                       ),
                     ],
@@ -96,12 +102,14 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       ToggleChip(
                         label: 'All levels',
                         isSelected: _level == MatchLevelFilter.all,
-                        onTap: () => setState(() => _level = MatchLevelFilter.all),
+                        onTap: () =>
+                            setState(() => _level = MatchLevelFilter.all),
                       ),
                       ToggleChip(
                         label: 'Select Levels',
                         isSelected: _level == MatchLevelFilter.select,
-                        onTap: () => setState(() => _level = MatchLevelFilter.select),
+                        onTap: () =>
+                            setState(() => _level = MatchLevelFilter.select),
                       ),
                     ],
                   ),
@@ -114,12 +122,14 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       ToggleChip(
                         label: 'Singles',
                         isSelected: _format == MatchFormat.singles,
-                        onTap: () => setState(() => _format = MatchFormat.singles),
+                        onTap: () =>
+                            setState(() => _format = MatchFormat.singles),
                       ),
                       ToggleChip(
                         label: 'Doubles',
                         isSelected: _format == MatchFormat.doubles,
-                        onTap: () => setState(() => _format = MatchFormat.doubles),
+                        onTap: () =>
+                            setState(() => _format = MatchFormat.doubles),
                       ),
                     ],
                   ),

@@ -4,10 +4,7 @@ import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.da
 import '../../../../app_exports.dart';
 
 class ParticipantsCard extends StatelessWidget {
-  const ParticipantsCard({
-    super.key,
-    required this.classModel,
-  });
+  const ParticipantsCard({super.key, required this.classModel});
 
   final Class classModel;
 
@@ -36,15 +33,11 @@ class ParticipantsCard extends StatelessWidget {
             children: [
               Text(
                 'Participants',
-                style: AppStyles.w500f14inter.copyWith(
-                  color: kDarkTextColor,
-                ),
+                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
               Text(
                 '${filledParticipants.length}/$maxStudents',
-                style: AppStyles.w400f14inter.copyWith(
-                  color: kGreyTextColor,
-                ),
+                style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
             ],
           ),
@@ -55,21 +48,17 @@ class ParticipantsCard extends StatelessWidget {
             children: [
               // Participants who have joined
               ...filledParticipants.map(
-                    (participant) =>
-                    AppCachedImage(
-                      height: 40,
-                      width: 40,
-                      borderRadius: BorderRadius.circular(1000),
-                      // Replace this with your actual Participant image field
-                      imageUrl: participant.profilePhoto ?? '',
-                    ),
+                (participant) => AppCachedImage(
+                  height: 40,
+                  width: 40,
+                  borderRadius: BorderRadius.circular(1000),
+                  // Replace this with your actual Participant image field
+                  imageUrl: participant.profilePhoto ?? '',
+                ),
               ),
 
               // Empty participant slots
-              ...List.generate(
-                emptySlots,
-                    (_) => const CommonPlusAvatar(),
-              ),
+              ...List.generate(emptySlots, (_) => const CommonPlusAvatar()),
             ],
           ),
         ],

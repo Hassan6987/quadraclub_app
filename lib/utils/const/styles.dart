@@ -45,10 +45,12 @@ class AppStyles {
   static TextStyle w500f12inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 12,
-  );static TextStyle w600f12inter = _baseStyle.copyWith(
+  );
+  static TextStyle w600f12inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 12,
-  ); static TextStyle w500f10inter = _baseStyle.copyWith(
+  );
+  static TextStyle w500f10inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 10,
   );
@@ -74,7 +76,8 @@ class AppStyles {
   static TextStyle w600f16inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 16,
-  ); static TextStyle w600f14inter = _baseStyle.copyWith(
+  );
+  static TextStyle w600f14inter = _baseStyle.copyWith(
     fontWeight: FontWeight.w600,
     fontSize: 14,
   );

@@ -36,8 +36,10 @@ class CourtsBloc extends Bloc<CourtsEvent, CourtsState> {
     }
   }
 
-  Future<void> _handleLoadPlayers(FetchAllUsers event,
-      Emitter<CourtsState> emit) async {
+  Future<void> _handleLoadPlayers(
+    FetchAllUsers event,
+    Emitter<CourtsState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: CourtStateStatus.fetching));
       final players = await _courtsRepo.getAllPlayers();

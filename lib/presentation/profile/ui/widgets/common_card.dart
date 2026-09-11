@@ -9,17 +9,19 @@ class CommonCard extends StatelessWidget {
     super.key,
     required this.child,
     this.borderRadius = 20,
-    this.padding ,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding:padding?? EdgeInsets.symmetric(
-        horizontal: getProportionateScreenWidth(16),
-        vertical: getProportionateScreenHeight(16),
-      ),
+      padding:
+          padding ??
+          EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(16),
+            vertical: getProportionateScreenHeight(16),
+          ),
       decoration: BoxDecoration(
         color: kWhiteColor,
         borderRadius: BorderRadius.circular(borderRadius),

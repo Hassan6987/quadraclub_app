@@ -66,9 +66,7 @@ class RequestsTab extends StatelessWidget {
             ),
             child: Text(
               request.message!,
-              style: AppStyles.w400f14inter.copyWith(
-                color: kBlack12Color,
-              ),
+              style: AppStyles.w400f14inter.copyWith(color: kBlack12Color),
             ),
           ),
         ],
@@ -82,7 +80,8 @@ class RequestsTab extends StatelessWidget {
       child: Container(
         width: 32,
         height: 32,
-        decoration: BoxDecoration(hape: BoxShape.circle,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
           border: Border.all(color: kBorderColor),
         ),
         child: Icon(icon, color: color, size: 20),

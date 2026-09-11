@@ -37,7 +37,9 @@ class _InvitedTabState extends State<InvitedTab> {
                 separatorBuilder: (_, _) => 12.heightBox,
                 itemBuilder: (context, index) {
                   return _invitedPlayerItem(
-                      match.invited[index], match.id ?? '');
+                    match.invited[index],
+                    match.id ?? '',
+                  );
                 },
               ),
             ),
@@ -50,17 +52,18 @@ class _InvitedTabState extends State<InvitedTab> {
                   initiallyInvited: [],
                   allPlayers: state.players
                       .where(
-                        (player) =>
-                    !state.matchDetails!.invited.any(
+                        (player) => !state.matchDetails!.invited.any(
                           (invited) => invited.id == player.id,
-                    ),
-                  )
+                        ),
+                      )
                       .toList(),
                 );
                 if (result != null) {
                   context.read<AgendaBloc>().add(
-                    InvitePlayers(playerIds: result.map((e) => e.id).toList(),
-                        matchId: match.id ?? ''),
+                    InvitePlayers(
+                      playerIds: result.map((e) => e.id).toList(),
+                      matchId: match.id ?? '',
+                    ),
                   );
                 }
               },
@@ -91,7 +94,8 @@ class _InvitedTabState extends State<InvitedTab> {
         GestureDetector(
           onTap: () {
             context.read<AgendaBloc>().add(
-                CancelPlayerInvite(playerId: player.id, matchId: matchId));
+              CancelPlayerInvite(playerId: player.id, matchId: matchId),
+            );
           },
           child: Container(
             width: 32,

@@ -29,14 +29,18 @@ class ClassCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  SportBadge(sport: SportTypeExtension.fromString(
-                      classModel.sportName ?? '')),
+                  SportBadge(
+                    sport: SportTypeExtension.fromString(
+                      classModel.sportName ?? '',
+                    ),
+                  ),
                   4.widthBox,
                   CommonBadge(label: 'Category ${classModel.level}'),
                   4.widthBox,
                   CommonBadge(
-                    label: classModel.format?.trim().toLowerCase() ==
-                        ClassFormat.group.name.toLowerCase()
+                    label:
+                        classModel.format?.trim().toLowerCase() ==
+                            ClassFormat.group.name.toLowerCase()
                         ? 'Group'
                         : 'Individual',
                   ),
@@ -57,8 +61,7 @@ class ClassCard extends StatelessWidget {
 
               // Time + location
               Text(
-                '${classModel.startTime}-${classModel.endTime}  •  ${classModel
-                    .locationName}  •  ${classModel.distanceKm} km',
+                '${classModel.startTime}-${classModel.endTime}  •  ${classModel.locationName}  •  ${classModel.distanceKm} km',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               8.heightBox,
@@ -95,7 +98,4 @@ class ClassCard extends StatelessWidget {
       ),
     );
   }
-
 }
-
-

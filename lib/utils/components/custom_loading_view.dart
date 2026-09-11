@@ -7,9 +7,9 @@ class CustomLoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return LoadingAnimationWidget.discreteCircle(
       size: 50,
-        color: kPrimaryColor,
-        secondRingColor: kBlackColor,
-        thirdRingColor: kWhiteColor
+      color: kPrimaryColor,
+      secondRingColor: kBlackColor,
+      thirdRingColor: kWhiteColor,
     );
   }
 }

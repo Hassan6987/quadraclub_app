@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/data/storage_service.dart';
@@ -119,7 +118,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(state.copyWith(status: AuthStateStatus.loading));
     try {
       final user = await _authenticationProvider.setupProfile(
-          myData: event.data);
+        myData: event.data,
+      );
       emit(state.copyWith(status: AuthStateStatus.success, user: user));
     } catch (e) {
       emit(
@@ -136,9 +136,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _authenticationProvider.updateProfile(
         name: event.name,
-          location: event.location,
+        location: event.location,
         image: event.profileImage,
-          dob: event.dob
+        dob: event.dob,
       );
       final UserModel user = await _authenticationProvider.getUserProfile();
       emit(state.copyWith(status: AuthStateStatus.success, user: user));
@@ -161,7 +161,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             status: AuthStateStatus.unVerified,
-            error: "Your account is Not Verified, We have sent an otp on your email please enter otp",
+            error:
+                "Your account is Not Verified, We have sent an otp on your email please enter otp",
           ),
         );
         return;
@@ -225,6 +226,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _handleLogout(LogoutEvent event, Emitter<AuthState> emit) async {
     await _storageServices.removeToken();
-    emit(AuthState(status: AuthStateStatus.unAuthenticated,));
+    emit(AuthState(status: AuthStateStatus.unAuthenticated));
   }
 }

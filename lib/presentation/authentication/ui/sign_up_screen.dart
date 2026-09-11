@@ -33,10 +33,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   bool get _isButtonEnabled =>
       _fullNameController.text.isNotEmpty &&
-          _dobController.text.isNotEmpty &&
-          _emailController.text.isNotEmpty &&
-          _passwordController.text.isNotEmpty &&
-          _confirmPasswordController.text.isNotEmpty;
+      _dobController.text.isNotEmpty &&
+      _emailController.text.isNotEmpty &&
+      _passwordController.text.isNotEmpty &&
+      _confirmPasswordController.text.isNotEmpty;
 
   @override
   void initState() {
@@ -105,7 +105,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           );
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-              state.error ?? 'Something went wrong', isError: true);
+            state.error ?? 'Something went wrong',
+            isError: true,
+          );
         }
       },
       builder: (context, state) {
@@ -145,18 +147,18 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             borderRadius: BorderRadius.circular(8),
                             image: _data.profilePhotoPath != null
                                 ? DecorationImage(
-                              image: FileImage(
-                                File(_data.profilePhotoPath!),
-                              ),
-                              fit: BoxFit.cover,
-                            )
+                                    image: FileImage(
+                                      File(_data.profilePhotoPath!),
+                                    ),
+                                    fit: BoxFit.cover,
+                                  )
                                 : null,
                           ),
                           child: _data.profilePhotoPath == null
                               ? Icon(
-                            Icons.add_a_photo_outlined,
-                            color: kTextColor,
-                          )
+                                  Icons.add_a_photo_outlined,
+                                  color: kTextColor,
+                                )
                               : null,
                         ),
                         12.widthBox,
@@ -195,8 +197,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     readOnly: true,
                     onTap: _pickDateOfBirth,
                     suffixIcon: const Icon(Icons.calendar_today_outlined),
-                    validator: (v) =>
-                    (v == null || v.isEmpty)
+                    validator: (v) => (v == null || v.isEmpty)
                         ? "Date of birth is required"
                         : null,
                   ),
@@ -222,16 +223,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _confirmPasswordController,
                     hintText: "Confirm your password",
                     obscureText: _obscureConfirmPassword,
-                    validator: (v) =>
-                        ValidateForm.confirmPasswordValidator(
-                          v,
-                          _passwordController.text,
-                        ),
+                    validator: (v) => ValidateForm.confirmPasswordValidator(
+                      v,
+                      _passwordController.text,
+                    ),
                   ),
                   32.heightBox,
-                  if(state.status == AuthStateStatus.loading)
+                  if (state.status == AuthStateStatus.loading)
                     Center(child: CustomLoadingView()),
-                  if(state.status != AuthStateStatus.loading)
+                  if (state.status != AuthStateStatus.loading)
                     CustomActionButton(
                       buttonText: "Continue",
                       onTap: _onContinue,

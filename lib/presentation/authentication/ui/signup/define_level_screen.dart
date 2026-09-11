@@ -229,8 +229,9 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (_) => ConfirmationScreen(data: widget.data)),
-                (route) => false,
+              builder: (_) => ConfirmationScreen(data: widget.data),
+            ),
+            (route) => false,
           );
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(state.error ?? "Something Went Wrong");
@@ -261,9 +262,9 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
                   _sportCategoryField(sports[i]),
                   if (i == 0) _preferredSideField(),
                 ],
-                if(state.status == AuthStateStatus.loading)
+                if (state.status == AuthStateStatus.loading)
                   Center(child: CustomLoadingView()),
-                if(state.status != AuthStateStatus.loading)
+                if (state.status != AuthStateStatus.loading)
                   CustomActionButton(
                     buttonText: "Complete Registration",
                     onTap: _onComplete,

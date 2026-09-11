@@ -66,10 +66,7 @@ class _CourtMapViewState extends State<CourtMapView> {
 
   Set<Marker> get _markers {
     final courts = _mappableCourts;
-    return courts
-        .asMap()
-        .entries
-        .map((entry) {
+    return courts.asMap().entries.map((entry) {
       final index = entry.key;
       final court = entry.value;
       final isActive = index == _activePageIndex;
@@ -197,10 +194,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                             availableCities: widget.courts
                                 .map((c) => c.city)
                                 .whereType<String>()
-                                .where((s) =>
-                            s
-                                .trim()
-                                .isNotEmpty)
+                                .where((s) => s.trim().isNotEmpty)
                                 .toSet()
                                 .toList(),
                             onApply: widget.onApplyFilters,
@@ -210,9 +204,10 @@ class _CourtMapViewState extends State<CourtMapView> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: (widget.filterTimeOfDay != null ||
-                                widget.filterCity != null ||
-                                widget.filterDistance != null)
+                            color:
+                                (widget.filterTimeOfDay != null ||
+                                    widget.filterCity != null ||
+                                    widget.filterDistance != null)
                                 ? kPrimaryColor
                                 : kWhiteColor,
                             shape: BoxShape.circle,
@@ -246,9 +241,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                           sport,
                         );
                         final label =
-                            '${sport[0].toUpperCase()}${sport
-                            .substring(1)
-                            .replaceAll('_', ' ')}';
+                            '${sport[0].toUpperCase()}${sport.substring(1).replaceAll('_', ' ')}';
                         return GestureDetector(
                           onTap: () => widget.onSportSelected(sport),
                           child: Container(
@@ -297,17 +290,13 @@ class _CourtMapViewState extends State<CourtMapView> {
                 ),
                 Positioned(
                   right: 16,
-                  top: MediaQuery
-                      .of(context)
-                      .size
-                      .height * 0.35,
+                  top: MediaQuery.of(context).size.height * 0.35,
                   child: Column(
                     children: [
                       GestureDetector(
-                        onTap: () =>
-                            _mapController?.animateCamera(
-                              CameraUpdate.zoomIn(),
-                            ),
+                        onTap: () => _mapController?.animateCamera(
+                          CameraUpdate.zoomIn(),
+                        ),
                         child: Container(
                           width: 44,
                           height: 44,
@@ -322,10 +311,9 @@ class _CourtMapViewState extends State<CourtMapView> {
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
-                        onTap: () =>
-                            _mapController?.animateCamera(
-                              CameraUpdate.zoomOut(),
-                            ),
+                        onTap: () => _mapController?.animateCamera(
+                          CameraUpdate.zoomOut(),
+                        ),
                         child: Container(
                           width: 44,
                           height: 44,
@@ -395,15 +383,13 @@ class _CourtMapViewState extends State<CourtMapView> {
                           final sports = court.sports;
                           return GestureDetector(
                             onTap: () {
-                              final authState = context
-                                  .read<AuthBloc>()
-                                  .state;
+                              final authState = context.read<AuthBloc>().state;
                               if (authState.user == null) {
                                 LoginToBookDialog.show(
                                   context,
                                   title: 'Sign in to book this court',
                                   subtitle:
-                                  'Please log in or create an account to reserve your spot.',
+                                      'Please log in or create an account to reserve your spot.',
                                 );
                                 return;
                               }
@@ -440,13 +426,14 @@ class _CourtMapViewState extends State<CourtMapView> {
                                       placeholder: (context, url) =>
                                           Shimmer.fromColors(
                                             baseColor: Colors.grey.shade300,
-                                            highlightColor: Colors.grey
-                                                .shade100,
+                                            highlightColor:
+                                                Colors.grey.shade100,
                                             child: Container(
                                               height: 96,
                                               width: 96,
                                               decoration: const BoxDecoration(
-                                                  color: Colors.white),
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
                                       errorWidget: (context, url, error) {
@@ -463,17 +450,17 @@ class _CourtMapViewState extends State<CourtMapView> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           court.name ?? '',
                                           style: AppStyles.w600f14inter
                                               .copyWith(
-                                            color: kDarkTextColor,
-                                            fontSize: 15,
-                                          ),
+                                                color: kDarkTextColor,
+                                                fontSize: 15,
+                                              ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -495,24 +482,24 @@ class _CourtMapViewState extends State<CourtMapView> {
                                                   right: 4,
                                                 ),
                                                 padding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal: 6,
-                                                  vertical: 3,
-                                                ),
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 3,
+                                                    ),
                                                 decoration: BoxDecoration(
                                                   color: kPrimaryColor,
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                    100,
-                                                  ),
+                                                      BorderRadius.circular(
+                                                        100,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   sport,
                                                   style: AppStyles.w500f8inter
                                                       .copyWith(
-                                                    color: kDarkTextColor,
-                                                    fontSize: 9,
-                                                  ),
+                                                        color: kDarkTextColor,
+                                                        fontSize: 9,
+                                                      ),
                                                 ),
                                               );
                                             }).toList(),

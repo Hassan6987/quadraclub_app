@@ -1,4 +1,3 @@
-
 import 'package:dotted_border/dotted_border.dart';
 
 import '../../../app_exports.dart';
@@ -21,8 +20,8 @@ class CommonPlusAvatar extends StatelessWidget {
           dashPattern: [7.5, 5],
         ),
         child: Container(
-          width:size?? 40,
-          height:size?? 40,
+          width: size ?? 40,
+          height: size ?? 40,
           decoration: BoxDecoration(shape: BoxShape.circle, color: kWhiteF9),
           child: const Icon(Icons.add, size: 20, color: Color(0xFFCCCCCC)),
         ),

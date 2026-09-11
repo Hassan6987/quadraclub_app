@@ -72,16 +72,19 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                           SvgPicture.asset(
                             icons[i],
                             height: getProportionateScreenHeight(25),
-                            colorFilter:
-                            ColorFilter.mode(color, BlendMode.srcIn),
+                            colorFilter: ColorFilter.mode(
+                              color,
+                              BlendMode.srcIn,
+                            ),
                           ),
                           6.heightBox,
                           Text(
                             labels[i],
-                            style: (isSelected
-                                ? AppStyles.w500f12inter
-                                : AppStyles.w400f12inter)
-                                .copyWith(color: color),
+                            style:
+                                (isSelected
+                                        ? AppStyles.w500f12inter
+                                        : AppStyles.w400f12inter)
+                                    .copyWith(color: color),
                           ),
                         ],
                       ),

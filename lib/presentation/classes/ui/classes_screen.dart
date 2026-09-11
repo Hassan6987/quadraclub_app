@@ -37,10 +37,10 @@ class _ClassesScreenState extends State<ClassesScreen> {
       // -------------------------
       final matchesSport =
           _selectedSports.isEmpty ||
-              (c.sportName != null &&
-                  _selectedSports.contains(
-                    SportTypeExtension.fromString(c.sportName!),
-                  ));
+          (c.sportName != null &&
+              _selectedSports.contains(
+                SportTypeExtension.fromString(c.sportName!),
+              ));
 
       // -------------------------
       // Search
@@ -49,9 +49,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
       final matchesSearch =
           query.isEmpty ||
-              c.className.toLowerCase().contains(query) ||
-              c.coachName.toLowerCase().contains(query) ||
-              (c.locationName?.toLowerCase().contains(query) ?? false);
+          c.className.toLowerCase().contains(query) ||
+          c.coachName.toLowerCase().contains(query) ||
+          (c.locationName?.toLowerCase().contains(query) ?? false);
 
       // -------------------------
       // Date
@@ -63,7 +63,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
       // -------------------------
       final matchesTime =
           _selectedTimes.isEmpty ||
-              _selectedTimes.contains(_timeOfDayFromClass(c));
+          _selectedTimes.contains(_timeOfDayFromClass(c));
 
       // -------------------------
       // Level
@@ -80,17 +80,17 @@ class _ClassesScreenState extends State<ClassesScreen> {
       // -------------------------
       final matchesDistance =
           c.distanceKm == null ||
-              _distance >= (double.tryParse(c.distanceKm.toString()) ?? 0);
+          _distance >= (double.tryParse(c.distanceKm.toString()) ?? 0);
 
       // -------------------------
       // City
       // -------------------------
       final matchesCity =
           _city.isEmpty ||
-              (c.locationName?.toLowerCase().contains(_city.toLowerCase()) ??
-                  false) ||
-              (c.court?.location?.toLowerCase().contains(_city.toLowerCase()) ??
-                  false);
+          (c.locationName?.toLowerCase().contains(_city.toLowerCase()) ??
+              false) ||
+          (c.court?.location?.toLowerCase().contains(_city.toLowerCase()) ??
+              false);
 
       return matchesSport &&
           matchesSearch &&
@@ -106,15 +106,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
   Map<String, List<Class>> _groupedClasses(List<Class> allClasses) {
     final now = DateTime.now();
 
-    final today = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    );
+    final today = DateTime(now.year, now.month, now.day);
 
-    final tomorrow = today.add(
-      const Duration(days: 1),
-    );
+    final tomorrow = today.add(const Duration(days: 1));
 
     final result = <String, List<Class>>{};
 
@@ -125,23 +119,16 @@ class _ClassesScreenState extends State<ClassesScreen> {
         continue;
       }
 
-      final dateOnly = DateTime(
-        classDate.year,
-        classDate.month,
-        classDate.day,
-      );
+      final dateOnly = DateTime(classDate.year, classDate.month, classDate.day);
 
       final String label;
 
       if (_isSameDate(dateOnly, today)) {
-        label =
-        'Today, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = 'Today, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
       } else if (_isSameDate(dateOnly, tomorrow)) {
-        label =
-        'Tomorrow, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = 'Tomorrow, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
       } else {
-        label =
-        '${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = '${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
       }
 
       result.putIfAbsent(label, () => []).add(c);
@@ -199,14 +186,13 @@ class _ClassesScreenState extends State<ClassesScreen> {
                             CommonChip(
                               label: sport.label,
                               isSelected: _selectedSports.contains(sport),
-                              onTap: () =>
-                                  setState(() {
-                                    if (_selectedSports.contains(sport)) {
-                                      _selectedSports.remove(sport);
-                                    } else {
-                                      _selectedSports.add(sport);
-                                    }
-                                  }),
+                              onTap: () => setState(() {
+                                if (_selectedSports.contains(sport)) {
+                                  _selectedSports.remove(sport);
+                                } else {
+                                  _selectedSports.add(sport);
+                                }
+                              }),
                             ).paddingOnly(
                               right: sport.index == SportType.values.length - 1
                                   ? 0
@@ -284,25 +270,25 @@ class _ClassesScreenState extends State<ClassesScreen> {
               Expanded(
                 child: grouped.isEmpty
                     ? Center(
-                  child: Text(
-                    'No classes found.',
-                    style: AppStyles.w600f18inter.copyWith(
-                      color: kDarkTextColor,
-                    ),
-                  ),
-                )
-                    : ListView(
-                  children: [
-                    for (final entry in grouped.entries) ...[
-                      _dateGroupHeader(label: entry.key),
-                      for (final classModel in entry.value)
-                        ClassCard(
-                          classModel: classModel,
-                          onTap: () => _openDetails(classModel),
+                        child: Text(
+                          'No classes found.',
+                          style: AppStyles.w600f18inter.copyWith(
+                            color: kDarkTextColor,
+                          ),
                         ),
-                    ],
-                  ],
-                ),
+                      )
+                    : ListView(
+                        children: [
+                          for (final entry in grouped.entries) ...[
+                            _dateGroupHeader(label: entry.key),
+                            for (final classModel in entry.value)
+                              ClassCard(
+                                classModel: classModel,
+                                onTap: () => _openDetails(classModel),
+                              ),
+                          ],
+                        ],
+                      ),
               ),
             ],
           );
@@ -313,15 +299,12 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   void _openDetails(Class classModel) {
     // Gate: show login dialog for unauthenticated users
-    final authState = context
-        .read<AuthBloc>()
-        .state;
+    final authState = context.read<AuthBloc>().state;
     if (authState.user == null) {
       LoginToBookDialog.show(
         context,
         title: 'Sign in to book this class',
-        subtitle:
-        'Please log in or create an account to reserve your spot.',
+        subtitle: 'Please log in or create an account to reserve your spot.',
       );
       return;
     }

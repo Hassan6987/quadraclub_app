@@ -45,9 +45,9 @@ class CustomActionButton extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
-          color:isEnabled
-                    ? backgroundColor
-                    : backgroundColor?.withValues(alpha: 0.5),
+          color: isEnabled
+              ? backgroundColor
+              : backgroundColor?.withValues(alpha: 0.5),
           border: isOutlined ? Border.all(color: borderColor!, width: 1) : null,
         ),
         child: Center(

@@ -30,8 +30,10 @@ class ClassesBloc extends Bloc<ClassesEvent, ClassesState> {
     }
   }
 
-  Future<void> _handleLoadBalance(FetchPortfolioBalance event,
-      Emitter<ClassesState> emit,) async {
+  Future<void> _handleLoadBalance(
+    FetchPortfolioBalance event,
+    Emitter<ClassesState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: ClassStats.fetching));
       final balance = await _classesRepo.getPortfolioBalance();
@@ -41,17 +43,19 @@ class ClassesBloc extends Bloc<ClassesEvent, ClassesState> {
     }
   }
 
-  Future<void> _handleEnrollClass(EnrollInClass event,
-      Emitter<ClassesState> emit,) async {
+  Future<void> _handleEnrollClass(
+    EnrollInClass event,
+    Emitter<ClassesState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: ClassStats.loading));
       await _classesRepo.enrollInClass(
-          id: event.classId,
-          isPortfolio: event.isPortfolio,
-          name: event.cardName,
-          number: event.cardNumber,
-          cvc: event.cvc,
-          expiry: event.expiry
+        id: event.classId,
+        isPortfolio: event.isPortfolio,
+        name: event.cardName,
+        number: event.cardNumber,
+        cvc: event.cvc,
+        expiry: event.expiry,
       );
       final classes = await _classesRepo.getAllClasses();
       emit(state.copyWith(status: ClassStats.success, classes: classes));

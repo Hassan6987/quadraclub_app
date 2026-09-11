@@ -13,9 +13,9 @@ class ParticipantsRow extends StatelessWidget {
       children: [
         CommonAvatarStackRow(
           imageUrls: classModel.participants
-              .map((c) =>
-          c.profilePhoto ??
-              '') // swap for real per-participant url when available
+              .map(
+                (c) => c.profilePhoto ?? '',
+              ) // swap for real per-participant url when available
               .toList(),
           maxVisible: 3,
           avatarSize: 32,
@@ -27,13 +27,15 @@ class ParticipantsRow extends StatelessWidget {
           style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
         ),
         const Spacer(),
-        _StatusBadge(status: ClassStatusExtension.fromString(
-            classModel.statusLabel ?? ''),
-            slotsLeft: classModel.slotsLeft ?? 0),
+        _StatusBadge(
+          status: ClassStatusExtension.fromString(classModel.statusLabel ?? ''),
+          slotsLeft: classModel.slotsLeft ?? 0,
+        ),
       ],
     );
   }
 }
+
 class _StatusBadge extends StatelessWidget {
   final ClassStatus status;
   final int slotsLeft;

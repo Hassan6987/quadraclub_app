@@ -18,19 +18,18 @@ class CommonChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: getProportionateScreenWidth(12),
-            vertical: getProportionateScreenHeight(6)),
+          horizontal: getProportionateScreenWidth(12),
+          vertical: getProportionateScreenHeight(6),
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? kPrimaryColor :kGreyColor,
+          color: isSelected ? kPrimaryColor : kGreyColor,
           borderRadius: BorderRadius.circular(12),
-
         ),
         child: Text(
-           label,
-            style:AppStyles.w400f14inter.copyWith(
-                color: kDarkTextColor
-            )
+          label,
+          style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
         ),
-      ),);
+      ),
+    );
   }
 }

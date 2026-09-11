@@ -5,7 +5,8 @@ class PriceCard extends StatelessWidget {
   final double convenienceFee;
   final double total;
 
-  const PriceCard({super.key,
+  const PriceCard({
+    super.key,
     required this.classPrice,
     required this.convenienceFee,
     required this.total,
@@ -33,7 +34,7 @@ class PriceCard extends StatelessWidget {
             value: '\$${convenienceFee.toStringAsFixed(2)}',
             isTotal: false,
           ),
-         Divider(color: kDividerColor,).withPaddingSymmetric(0, 8),
+          Divider(color: kDividerColor).withPaddingSymmetric(0, 8),
           _PriceRow(
             label: 'Total',
             value: '\$${total.toStringAsFixed(2)}',
@@ -44,6 +45,7 @@ class PriceCard extends StatelessWidget {
     );
   }
 }
+
 class _PriceRow extends StatelessWidget {
   final String label;
   final String value;

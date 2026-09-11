@@ -63,7 +63,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     final result = await InvitePlayersSheet.show(
       context,
       initiallyInvited: _invitedPlayers,
-        allPlayers: allPlayers
+      allPlayers: allPlayers,
     );
     if (result != null) {
       setState(() => _invitedPlayers = result);
@@ -74,22 +74,21 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            PaymentMethodScreen(
-              club: widget.club,
-              court: widget.court,
-              bookingDate: widget.bookingDate,
-              startTime: widget.startTime,
-              endTime: widget.endTime,
-              dateLabel: widget.dateLabel,
-              timeLabel: widget.timeLabel,
-              amount: widget.amount,
-              isMatch: true,
-              invitedPlayers: _invitedPlayers.map((p) => p.id).toList(),
-              matchType: _matchType.label,
-              matchFormat: _format.label,
-              paymentType: _paymentOption.type,
-            ),
+        builder: (_) => PaymentMethodScreen(
+          club: widget.club,
+          court: widget.court,
+          bookingDate: widget.bookingDate,
+          startTime: widget.startTime,
+          endTime: widget.endTime,
+          dateLabel: widget.dateLabel,
+          timeLabel: widget.timeLabel,
+          amount: widget.amount,
+          isMatch: true,
+          invitedPlayers: _invitedPlayers.map((p) => p.id).toList(),
+          matchType: _matchType.label,
+          matchFormat: _format.label,
+          paymentType: _paymentOption.type,
+        ),
       ),
     );
   }
@@ -150,17 +149,17 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             imageUrl: widget.club.photo ?? '',
                             height: 96,
                             width: 96,
-                            placeholder: (context, url) =>
-                                Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 96,
-                                    width: 96,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white),
-                                  ),
+                            placeholder: (context, url) => Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 96,
+                                width: 96,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
                                 ),
+                              ),
+                            ),
                             errorWidget: (context, url, error) {
                               return Image.asset(
                                 Assets.png.clubLogo.path,
@@ -183,8 +182,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                 ),
                               ),
                               Text(
-                                '${widget.court.courtName ??
-                                    ''} • $_locationLabel',
+                                '${widget.court.courtName ?? ''} • $_locationLabel',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
@@ -358,7 +356,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               child: Container(
                                 height: 44,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 16),
+                                  horizontal: 16,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(color: kBorderColor),
@@ -416,11 +415,9 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     GestureDetector(
-                                      onTap: () =>
-                                          setState(
-                                                () =>
-                                                _invitedPlayers.remove(player),
-                                          ),
+                                      onTap: () => setState(
+                                        () => _invitedPlayers.remove(player),
+                                      ),
                                       child: const Icon(
                                         Icons.close,
                                         size: 14,

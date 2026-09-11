@@ -28,9 +28,9 @@ class ChatSocketService {
       return;
     }
 
-    final options = IO.OptionBuilder()
-        .setTransports(['websocket'])
-        .enableAutoConnect();
+    final options = IO.OptionBuilder().setTransports([
+      'websocket',
+    ]).enableAutoConnect();
 
     if (token != null && token.isNotEmpty) {
       options.setAuth({'token': token});

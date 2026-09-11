@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:quadraclub_app/app_exports.dart';
 
 class CustomRadioButton<T> extends StatelessWidget {
@@ -25,7 +24,7 @@ class CustomRadioButton<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final active = activeColor ??kPrimaryColor;
+    final active = activeColor ?? kPrimaryColor;
     final inactive = inactiveColor ?? kDividerColor;
 
     return GestureDetector(
@@ -38,10 +37,7 @@ class CustomRadioButton<T> extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-            color: _isSelected ? active : inactive,
-            width: 1,
-          ),
+          border: Border.all(color: _isSelected ? active : inactive, width: 1),
         ),
         child: AnimatedScale(
           scale: _isSelected ? 1.0 : 0.0,
@@ -50,10 +46,7 @@ class CustomRadioButton<T> extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(3),
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: active,
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: active),
             ),
           ),
         ),

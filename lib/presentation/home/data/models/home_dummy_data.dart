@@ -1,5 +1,3 @@
-
-
 class CityFilterModel {
   final String cityName;
   final double distanceKm;

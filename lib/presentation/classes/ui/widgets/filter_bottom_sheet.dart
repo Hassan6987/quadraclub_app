@@ -5,11 +5,7 @@ enum TimeOfDay { morning, afternoon, night }
 
 enum LevelFilter { all, select }
 
-enum FormatFilter {
-  all,
-  group,
-  individual,
-}
+enum FormatFilter { all, group, individual }
 
 class FilterBottomSheet extends StatefulWidget {
   final Set<TimeOfDay> selectedTimes;
@@ -27,7 +23,8 @@ class FilterBottomSheet extends StatefulWidget {
     this.city = '',
   });
 
-  static Future<ClassFilterResult?> show(BuildContext context, {
+  static Future<ClassFilterResult?> show(
+    BuildContext context, {
     Set<TimeOfDay> selectedTimes = const {},
     LevelFilter level = LevelFilter.all,
     FormatFilter format = FormatFilter.group,
@@ -38,14 +35,13 @@ class FilterBottomSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       constraints: const BoxConstraints(maxHeight: 680),
-      builder: (_) =>
-          FilterBottomSheet(
-            selectedTimes: selectedTimes,
-            level: level,
-            format: format,
-            distance: distance,
-            city: city,
-          ),
+      builder: (_) => FilterBottomSheet(
+        selectedTimes: selectedTimes,
+        level: level,
+        format: format,
+        distance: distance,
+        city: city,
+      ),
     );
   }
 

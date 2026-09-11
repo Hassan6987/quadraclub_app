@@ -22,8 +22,8 @@ class ChatListItem extends StatelessWidget {
 
     // A message is unread for the current user when
     // the current user's ID is NOT inside seenBy.
-    final bool hasUnread = latestMessage != null &&
-        !latestMessage.seenBy.contains(currentUserId);
+    final bool hasUnread =
+        latestMessage != null && !latestMessage.seenBy.contains(currentUserId);
 
     final String timeAgo = latestMessage == null
         ? ''
@@ -48,9 +48,7 @@ class ChatListItem extends StatelessWidget {
             // Avatars
             if (chat.users.isNotEmpty)
               StackedAvatars(
-                imgUrls: chat.users
-                    .map((user) => user.profilePhoto)
-                    .toList(),
+                imgUrls: chat.users.map((user) => user.profilePhoto).toList(),
               )
             else
               AppCachedImage(
@@ -82,9 +80,7 @@ class ChatListItem extends StatelessWidget {
                     latestMessage?.content ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppStyles.w400f12inter.copyWith(
-                      color: kTextColor,
-                    ),
+                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
                   ),
                 ],
               ),
@@ -119,9 +115,7 @@ class ChatListItem extends StatelessWidget {
 
                   Text(
                     timeAgo,
-                    style: AppStyles.w400f12inter.copyWith(
-                      color: kTextColor,
-                    ),
+                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
                   ),
                 ],
               ),

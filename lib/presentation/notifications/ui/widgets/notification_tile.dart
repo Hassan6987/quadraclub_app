@@ -1,4 +1,3 @@
-
 import '../../../../app_exports.dart';
 import '../../data/notification_model.dart';
 

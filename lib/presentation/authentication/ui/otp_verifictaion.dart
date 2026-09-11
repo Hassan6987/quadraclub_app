@@ -67,18 +67,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (_isButtonEnabled) {
       widget.isReset
           ? Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              ResetPasswordScreen(
-                email: widget.email,
-                otp: _otpController.text,
+              context,
+              MaterialPageRoute(
+                builder: (_) => ResetPasswordScreen(
+                  email: widget.email,
+                  otp: _otpController.text,
+                ),
               ),
-        ),
-      )
+            )
           : context.read<AuthBloc>().add(
-        VerifyCode(email: widget.email, otp: _otpController.text),
-      );
+              VerifyCode(email: widget.email, otp: _otpController.text),
+            );
     }
   }
 
@@ -114,7 +113,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               Text(
                 "OTP Verification",
                 style: AppStyles.w500f24inter.copyWith(
-                    color: kTextPrimaryColor),
+                  color: kTextPrimaryColor,
+                ),
               ),
               8.heightBox,
               Text.rich(
@@ -127,7 +127,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     TextSpan(
                       text: widget.email,
                       style: AppStyles.w500f16inter.copyWith(
-                          color: kTextSecondary),
+                        color: kTextSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -161,37 +162,39 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   children: [
                     _secondsRemaining > 0
                         ? RichText(
-                      text: TextSpan(
-                        text: "I didn't receive a code ",
-                        style: AppStyles.subtitleRegular.copyWith(
-                          color: kTextSecondary.withValues(alpha: 0.70),
-                        ),
-                        children: [
-                          TextSpan(
-                            text: " (0:$_secondsRemaining)",
-                            style: AppStyles.w500f14inter.copyWith(
-                              color: kTextPrimaryColor,
+                            text: TextSpan(
+                              text: "I didn't receive a code ",
+                              style: AppStyles.subtitleRegular.copyWith(
+                                color: kTextSecondary.withValues(alpha: 0.70),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: " (0:$_secondsRemaining)",
+                                  style: AppStyles.w500f14inter.copyWith(
+                                    color: kTextPrimaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              widget.isReset
+                                  ? context.read<AuthBloc>().add(
+                                      ForgotPassword(email: widget.email),
+                                    )
+                                  : context.read<AuthBloc>().add(
+                                      RequestCode(email: widget.email),
+                                    );
+                              _startTimer();
+                            },
+                            child: Text(
+                              "Resend Code",
+                              style: AppStyles.subtitleSemiBold.copyWith(
+                                color: kPrimaryColor,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                        : GestureDetector(
-                      onTap: () {
-                        widget.isReset
-                            ? context.read<AuthBloc>().add(ForgotPassword(
-                            email: widget.email))
-                            : context.read<AuthBloc>().add(RequestCode(
-                            email: widget.email));
-                        _startTimer();
-                      },
-                      child: Text(
-                        "Resend Code",
-                        style: AppStyles.subtitleSemiBold.copyWith(
-                          color: kPrimaryColor,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

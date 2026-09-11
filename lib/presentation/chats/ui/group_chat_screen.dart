@@ -4,14 +4,10 @@ import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/message_bloc/chat_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/message_tile.dart';
 
-
 class ChatScreen extends StatefulWidget {
   final Chat chat;
 
-  const ChatScreen({
-    super.key,
-    required this.chat,
-  });
+  const ChatScreen({super.key, required this.chat});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -27,13 +23,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     final bloc = context.read<ChatBloc>();
 
-    bloc.add(
-      LoadMessages(widget.chat.id),
-    );
+    bloc.add(LoadMessages(widget.chat.id));
 
-    bloc.add(
-      JoinChat(widget.chat.id),
-    );
+    bloc.add(JoinChat(widget.chat.id));
   }
 
   @override
@@ -49,10 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty) return;
 
     context.read<ChatBloc>().add(
-      SendMessage(
-        chatId: widget.chat.id,
-        content: text,
-      ),
+      SendMessage(chatId: widget.chat.id, content: text),
     );
 
     _controller.clear();
@@ -71,11 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String _currentUserId(BuildContext context) {
-    return context
-        .read<AuthBloc>()
-        .state
-        .user
-        ?.id ?? '';
+    return context.read<AuthBloc>().state.user?.id ?? '';
   }
 
   @override
@@ -86,9 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
         subtitle: widget.chat.isGroupChat
             ? '${widget.chat.users.length} players'
             : null,
-        titleStyle: AppStyles.w600f16inter.copyWith(
-          color: kDarkTextColor,
-        ),
+        titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         showBackIcon: true,
         showActions: false,
       ),
@@ -100,32 +83,21 @@ class _ChatScreenState extends State<ChatScreen> {
         },
         builder: (context, state) {
           if (state is ChatLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is ChatError) {
-            return Center(
-              child: Text(state.message),
-            );
+            return Center(child: Text(state.message));
           }
 
           if (state is ChatLoaded) {
             return Column(
               children: [
-                if (widget.chat.isGroupChat)
-                  _buildParticipantBanner(),
+                if (widget.chat.isGroupChat) _buildParticipantBanner(),
 
-                Expanded(
-                  child: _buildMessageList(
-                    state.messages,
-                  ),
-                ),
+                Expanded(child: _buildMessageList(state.messages)),
 
-                _buildInputBar(
-                  isSending: state.isSending,
-                ),
+                _buildInputBar(isSending: state.isSending),
               ],
             );
           }
@@ -167,10 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     for (final message in messages) {
       final key = _dayLabel(message.createdAt);
-      groups.putIfAbsent(
-        key,
-            () => [],
-      ).add(message);
+      groups.putIfAbsent(key, () => []).add(message);
     }
     final keys = groups.keys.toList();
 
@@ -185,17 +154,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
         return Column(
           children: [
-            DateContainer(
-              label: dayKey,
-            ),
+            DateContainer(label: dayKey),
 
-            ...dayMessages.map(
-                  (message) {
-                return MessageTile(
-                  message: message, currentUserId: _currentUserId(context),
-                );
-              },
-            ),
+            ...dayMessages.map((message) {
+              return MessageTile(
+                message: message,
+                currentUserId: _currentUserId(context),
+              );
+            }),
           ],
         );
       },

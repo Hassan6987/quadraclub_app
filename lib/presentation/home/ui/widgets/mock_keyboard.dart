@@ -4,11 +4,7 @@ class MockKeyboard extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback? onSend;
 
-  const MockKeyboard({
-    super.key,
-    required this.controller,
-    this.onSend,
-  });
+  const MockKeyboard({super.key, required this.controller, this.onSend});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +13,23 @@ class MockKeyboard extends StatelessWidget {
     final specialKeyBgColor = const Color(0xFFAFB3BD);
     final textColor = const Color(0xFF000000);
 
-    Widget buildKey(String label, {double flex = 1, Color? bg, VoidCallback? onTap}) {
+    Widget buildKey(
+      String label, {
+      double flex = 1,
+      Color? bg,
+      VoidCallback? onTap,
+    }) {
       return Expanded(
         flex: (flex * 10).toInt(),
         child: GestureDetector(
-          onTap: onTap ?? () {
-            controller.text += label;
-            controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: controller.text.length),
-            );
-          },
+          onTap:
+              onTap ??
+              () {
+                controller.text += label;
+                controller.selection = TextSelection.fromPosition(
+                  TextPosition(offset: controller.text.length),
+                );
+              },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
             height: 42,
@@ -57,7 +60,12 @@ class MockKeyboard extends StatelessWidget {
       );
     }
 
-    Widget buildSpecialKey(Widget child, {double flex = 1, Color? bg, required VoidCallback onTap}) {
+    Widget buildSpecialKey(
+      Widget child, {
+      double flex = 1,
+      Color? bg,
+      required VoidCallback onTap,
+    }) {
       return Expanded(
         flex: (flex * 10).toInt(),
         child: GestureDetector(
@@ -96,7 +104,18 @@ class MockKeyboard extends StatelessWidget {
           // Row 1: QWERTYUIOP
           Row(
             children: [
-              for (var key in ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'])
+              for (var key in [
+                'Q',
+                'W',
+                'E',
+                'R',
+                'T',
+                'Y',
+                'U',
+                'I',
+                'O',
+                'P',
+              ])
                 buildKey(key),
             ],
           ),
@@ -121,11 +140,18 @@ class MockKeyboard extends StatelessWidget {
               for (var key in ['Z', 'X', 'C', 'V', 'B', 'N', 'M'])
                 buildKey(key),
               buildSpecialKey(
-                const Icon(Icons.backspace_outlined, color: Colors.black, size: 18),
+                const Icon(
+                  Icons.backspace_outlined,
+                  color: Colors.black,
+                  size: 18,
+                ),
                 flex: 1.2,
                 onTap: () {
                   if (controller.text.isNotEmpty) {
-                    controller.text = controller.text.substring(0, controller.text.length - 1);
+                    controller.text = controller.text.substring(
+                      0,
+                      controller.text.length - 1,
+                    );
                     controller.selection = TextSelection.fromPosition(
                       TextPosition(offset: controller.text.length),
                     );

@@ -7,8 +7,12 @@ class AgendaMatchCard extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onTap;
 
-  const AgendaMatchCard(
-      {super.key, required this.item, this.actionLabel, this.onTap});
+  const AgendaMatchCard({
+    super.key,
+    required this.item,
+    this.actionLabel,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,20 +45,27 @@ class AgendaMatchCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          SportBadge(sport: SportTypeExtension.fromString(
-                              item.sport)),
+                          SportBadge(
+                            sport: SportTypeExtension.fromString(item.sport),
+                          ),
                           const Spacer(),
-                          if (item.seatsTag != null) _seatsBadge(item
-                              .seatsTag!),
+                          if (item.seatsTag != null)
+                            _seatsBadge(item.seatsTag!),
                         ],
                       ),
                       4.heightBox,
-                      Text(item.courtName,
-                          style: AppStyles.w600f16inter.copyWith(
-                              color: kDarkTextColor)),
-                      Text(item.location,
-                          style: AppStyles.w400f14inter.copyWith(
-                              color: kGreyTextColor)),
+                      Text(
+                        item.courtName,
+                        style: AppStyles.w600f16inter.copyWith(
+                          color: kDarkTextColor,
+                        ),
+                      ),
+                      Text(
+                        item.location,
+                        style: AppStyles.w400f14inter.copyWith(
+                          color: kGreyTextColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -67,8 +78,8 @@ class AgendaMatchCard extends StatelessWidget {
               children: [
                 CommonBadge(label: item.dateString),
                 CommonBadge(label: item.category),
-                if (item.courtStatusLabel != null) _courtConfirmedBadge(
-                    item.courtStatusLabel!),
+                if (item.courtStatusLabel != null)
+                  _courtConfirmedBadge(item.courtStatusLabel!),
               ],
             ),
             16.heightBox,
@@ -100,24 +111,25 @@ class AgendaMatchCard extends StatelessWidget {
     );
   }
 
-  Widget _seatsBadge(String label) =>
-      Container(
+  Widget _seatsBadge(String label) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        decoration: BoxDecoration(
-            color: kRedColor, borderRadius: BorderRadius.circular(16)),
-        child: Text(
-            label, style: AppStyles.w400f12inter.copyWith(color: kWhiteColor)),
+    decoration: BoxDecoration(
+      color: kRedColor,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Text(
+      label,
+      style: AppStyles.w400f12inter.copyWith(color: kWhiteColor),
+    ),
   );
 
-  Widget _courtConfirmedBadge(String label) =>
-      Container(
+  Widget _courtConfirmedBadge(String label) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
     decoration: BoxDecoration(
       color: kGreen06.withValues(alpha: 0.10),
       border: Border.all(color: kGreen06),
       borderRadius: BorderRadius.circular(16),
     ),
-        child: Text(
-            label, style: AppStyles.w500f10inter.copyWith(color: kGreen06)),
+    child: Text(label, style: AppStyles.w500f10inter.copyWith(color: kGreen06)),
   );
 }

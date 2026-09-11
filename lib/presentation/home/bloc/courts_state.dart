@@ -7,7 +7,7 @@ enum CourtStateStatus {
   failure,
   booking,
   booked,
-  fetching
+  fetching,
 }
 
 class CourtsState extends Equatable {
@@ -36,7 +36,7 @@ class CourtsState extends Equatable {
       status: status ?? this.status,
       error: error ?? this.error,
       courts: courts ?? this.courts,
-        players: players ?? this.players
+      players: players ?? this.players,
     );
   }
 }

@@ -39,15 +39,11 @@ class PaymentForm extends StatelessWidget {
           CustomTextField(
             controller: cardholderController,
             hintText: 'Cardholder name',
-            prefixIcon: SvgPicture.asset(
-              Assets.svg.accontIcon.path,
-            ),
+            prefixIcon: SvgPicture.asset(Assets.svg.accontIcon.path),
             validator: cardholderValidator,
             keyboardType: TextInputType.name,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                RegExp(r'[a-zA-Z\s]'),
-              ),
+              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
             ],
             borderRadius: 14,
           ),
@@ -57,14 +53,10 @@ class PaymentForm extends StatelessWidget {
           CustomTextField(
             controller: cardNumberController,
             hintText: 'Card number',
-            prefixIcon: SvgPicture.asset(
-              Assets.svg.creditCard.path,
-            ),
+            prefixIcon: SvgPicture.asset(Assets.svg.creditCard.path),
             keyboardType: TextInputType.number,
             validator: cardNumberValidator,
-            inputFormatters: [
-              CardNumberInputFormatter(),
-            ],
+            inputFormatters: [CardNumberInputFormatter()],
             maxLength: 19,
             borderRadius: 14,
           ),
@@ -81,9 +73,7 @@ class PaymentForm extends StatelessWidget {
                   hintText: 'MM/YY',
                   keyboardType: TextInputType.number,
                   validator: expiryValidator,
-                  inputFormatters: [
-                    ExpiryDateInputFormatter(),
-                  ],
+                  inputFormatters: [ExpiryDateInputFormatter()],
                   maxLength: 5,
                   borderRadius: 14,
                 ),
@@ -95,9 +85,7 @@ class PaymentForm extends StatelessWidget {
                   hintText: 'CVV',
                   keyboardType: TextInputType.number,
                   validator: cvvValidator,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   maxLength: 4,
                   obscureText: true,
                   borderRadius: 14,
@@ -111,15 +99,11 @@ class PaymentForm extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                Assets.svg.lockIcon.path,
-              ),
+              SvgPicture.asset(Assets.svg.lockIcon.path),
               6.widthBox,
               Text(
                 'Secure Encrypted Payment',
-                style: AppStyles.w400f14inter.copyWith(
-                  color: kTextColor,
-                ),
+                style: AppStyles.w400f14inter.copyWith(color: kTextColor),
               ),
             ],
           ),

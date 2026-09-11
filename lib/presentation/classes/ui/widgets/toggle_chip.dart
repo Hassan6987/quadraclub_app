@@ -1,4 +1,3 @@
-
 import '../../../../app_exports.dart';
 
 class ToggleChip extends StatelessWidget {

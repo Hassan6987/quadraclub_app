@@ -44,7 +44,8 @@ class BaseApiProvider {
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
             final isAuthEndpoint = e.requestOptions.path.contains(
-                '/auth/login');
+              '/auth/login',
+            );
 
             if (!isAuthEndpoint) {
               // No refresh-token endpoint exists yet, so any 401 outside
@@ -283,7 +284,7 @@ class BaseApiProvider {
     Navigator.pushNamedAndRemoveUntil(
       context,
       RouteName.signIn,
-          (route) => false,
+      (route) => false,
     );
   }
 }

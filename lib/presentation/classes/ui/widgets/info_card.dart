@@ -10,8 +10,7 @@ class InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateStr =
-        '${dayNames[classModel.date!.weekday - 1]}, ${monthNames[classModel
-        .date!.month - 1]} ${classModel.date?.day}';
+        '${dayNames[classModel.date!.weekday - 1]}, ${monthNames[classModel.date!.month - 1]} ${classModel.date?.day}';
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -38,8 +37,11 @@ class InfoCard extends StatelessWidget {
 
           Row(
             children: [
-              SportBadge(sport: SportTypeExtension.fromString(
-                  classModel.sportName ?? '')),
+              SportBadge(
+                sport: SportTypeExtension.fromString(
+                  classModel.sportName ?? '',
+                ),
+              ),
               4.widthBox,
               CommonBadge(label: 'Category ${classModel.level}'),
             ],
@@ -84,7 +86,11 @@ class InfoCard extends StatelessWidget {
                 style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
               Spacer(),
-              _InfoRow(icon: Assets.svg.starYellow.path,iconColor: kOrangeColor, text: "Cat 6"),
+              _InfoRow(
+                icon: Assets.svg.starYellow.path,
+                iconColor: kOrangeColor,
+                text: "Cat 6",
+              ),
             ],
           ),
         ],
@@ -98,11 +104,7 @@ class _InfoRow extends StatelessWidget {
   final String text;
   final Color? iconColor;
 
-  const _InfoRow({
-    required this.icon,
-    required this.text,
-    this.iconColor,
-  });
+  const _InfoRow({required this.icon, required this.text, this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +114,10 @@ class _InfoRow extends StatelessWidget {
           icon,
           height: 16,
           width: 16,
-          colorFilter: ColorFilter.mode(iconColor??kGreyTextColor, BlendMode.srcIn),
+          colorFilter: ColorFilter.mode(
+            iconColor ?? kGreyTextColor,
+            BlendMode.srcIn,
+          ),
         ),
         6.widthBox,
         Text(

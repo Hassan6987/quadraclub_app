@@ -1,5 +1,3 @@
-
-
 const courtImageUrl =
     'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=1200&q=85';
 const playerOneImageUrl =

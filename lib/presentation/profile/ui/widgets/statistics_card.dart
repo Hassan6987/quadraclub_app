@@ -1,4 +1,3 @@
-
 import '/app_exports.dart';
 
 class StatisticsCard extends StatelessWidget {

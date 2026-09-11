@@ -47,9 +47,12 @@ class UpdateProfile extends AuthEvent {
   final File? profileImage;
   final DateTime? dob;
 
-
-  const UpdateProfile(
-      {required this.name, this.location, this.profileImage, this.dob});
+  const UpdateProfile({
+    required this.name,
+    this.location,
+    this.profileImage,
+    this.dob,
+  });
 }
 
 class DeleteAccountEvent extends AuthEvent {

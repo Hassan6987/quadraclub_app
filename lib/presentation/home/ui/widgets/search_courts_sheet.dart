@@ -12,7 +12,8 @@ class SearchCourtsSheet extends StatefulWidget {
     required this.onCourtSelected,
   });
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     required List<Club> courts,
     required Function(Club) onCourtSelected,
   }) {
@@ -23,10 +24,8 @@ class SearchCourtsSheet extends StatefulWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => SearchCourtsSheet(
-        courts: courts,
-        onCourtSelected: onCourtSelected,
-      ),
+      builder: (context) =>
+          SearchCourtsSheet(courts: courts, onCourtSelected: onCourtSelected),
     );
   }
 
@@ -80,12 +79,17 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                 Text(
                   'Search Courts',
                   style: AppStyles.w600f18inter.copyWith(
-                      color: kDarkTextColor, fontSize: 20),
+                    color: kDarkTextColor,
+                    fontSize: 20,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: const Icon(
-                      Icons.close, color: kDarkTextColor, size: 24),
+                    Icons.close,
+                    color: kDarkTextColor,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
@@ -126,45 +130,50 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                 ? _buildSkeletonLoader()
                 : _searchResults.isEmpty
                 ? Center(
-              child: Text(
-                'No courts found',
-                style: AppStyles.w400f14inter.copyWith(color: kTextColor),
-              ),
-            )
-                : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _searchResults.length,
-              separatorBuilder: (_, __) => const Divider(color: kBorderColor),
-              itemBuilder: (context, index) {
-                final court = _searchResults[index];
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: AppCachedImage(
-                      imageUrl: court.photo,
-                      width: 50,
-                      height: 50,
+                    child: Text(
+                      'No courts found',
+                      style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                     ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _searchResults.length,
+                    separatorBuilder: (_, __) =>
+                        const Divider(color: kBorderColor),
+                    itemBuilder: (context, index) {
+                      final court = _searchResults[index];
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: AppCachedImage(
+                            imageUrl: court.photo,
+                            width: 50,
+                            height: 50,
+                          ),
+                        ),
+                        title: Text(
+                          court.name ?? '',
+                          style: AppStyles.w600f14inter.copyWith(
+                            color: kDarkTextColor,
+                          ),
+                        ),
+                        subtitle: Text(
+                          [
+                            court.city,
+                            court.city,
+                          ].where((s) => s != null && s.isNotEmpty).join(' • '),
+                          style: AppStyles.w400f12inter.copyWith(
+                            color: kTextColor,
+                          ),
+                        ),
+                        onTap: () {
+                          widget.onCourtSelected(court);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
                   ),
-                  title: Text(
-                    court.name ?? '',
-                    style: AppStyles.w600f14inter.copyWith(
-                        color: kDarkTextColor),
-                  ),
-                  subtitle: Text(
-                    [court.city, court.city]
-                        .where((s) => s != null && s.isNotEmpty)
-                        .join(' • '),
-                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
-                  ),
-                  onTap: () {
-                    widget.onCourtSelected(court);
-                    Navigator.pop(context);
-                  },
-                );
-              },
-            ),
           ),
           MockKeyboard(
             controller: _controller,
@@ -184,22 +193,28 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
           Container(
             height: 180,
             width: double.infinity,
-            decoration: BoxDecoration(color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
           const SizedBox(height: 12),
           Container(
             height: 16,
             width: 140,
-            decoration: BoxDecoration(color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(4)),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
           const SizedBox(height: 8),
           Container(
             height: 16,
             width: double.infinity,
-            decoration: BoxDecoration(color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(4)),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
         ],
       ),

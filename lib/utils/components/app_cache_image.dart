@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '/app_exports.dart';
 
 class AppCachedImage extends StatelessWidget {
@@ -29,29 +30,29 @@ class AppCachedImage extends StatelessWidget {
     final Widget imageWidget = localFile != null
         ? Image.file(localFile!, height: height, width: width, fit: fit)
         : CachedNetworkImage(
-      imageUrl: imageUrl ?? '',
-      height: height,
-      width: width,
-      fit: fit,
-      placeholder: (context, url) => Shimmer.fromColors(
-        baseColor: fillColor ?? Colors.grey.shade300,
-        highlightColor: fillColor ?? Colors.grey.shade100,
-        child: Container(
-          height: height,
-          width: width,
-          decoration: const BoxDecoration(color: Colors.white),
-        ),
-      ),
-      errorWidget: (context, url, error) => Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: fillColor ?? kGreyColor,
-          borderRadius: borderRadius,
-        ),
-        child: const Icon(Icons.person, size: 20),
-      ),
-    );
+            imageUrl: imageUrl ?? '',
+            height: height,
+            width: width,
+            fit: fit,
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor: fillColor ?? Colors.grey.shade300,
+              highlightColor: fillColor ?? Colors.grey.shade100,
+              child: Container(
+                height: height,
+                width: width,
+                decoration: const BoxDecoration(color: Colors.white),
+              ),
+            ),
+            errorWidget: (context, url, error) => Container(
+              height: height,
+              width: width,
+              decoration: BoxDecoration(
+                color: fillColor ?? kGreyColor,
+                borderRadius: borderRadius,
+              ),
+              child: const Icon(Icons.person, size: 20),
+            ),
+          );
 
     Widget result = imageWidget;
 
@@ -63,10 +64,7 @@ class AppCachedImage extends StatelessWidget {
       result = Container(
         height: height,
         width: width,
-        decoration: BoxDecoration(
-          border: border,
-          borderRadius: borderRadius,
-        ),
+        decoration: BoxDecoration(border: border, borderRadius: borderRadius),
         child: result,
       );
     }

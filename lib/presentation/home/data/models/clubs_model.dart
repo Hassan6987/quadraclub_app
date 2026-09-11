@@ -149,9 +149,9 @@ class Court {
           : List<Sport>.from(json["sports"]!.map((x) => Sport.fromJson(x))),
       weeklySlots: json["weeklySlots"] == null
           ? {}
-          : Map.from(
-        json["weeklySlots"],
-      ).map((k, v) => MapEntry<String, WeeklySlot>(k, WeeklySlot.fromJson(v))),
+          : Map.from(json["weeklySlots"]).map(
+              (k, v) => MapEntry<String, WeeklySlot>(k, WeeklySlot.fromJson(v)),
+            ),
     );
   }
 }
@@ -204,18 +204,24 @@ class WeeklySlot {
   final List<Padel> pickleball;
   final List<Padel> beachTennis;
 
-  WeeklySlot(
-      {required this.tennis, required this.padel, required this.pickleball, required this.beachTennis});
+  WeeklySlot({
+    required this.tennis,
+    required this.padel,
+    required this.pickleball,
+    required this.beachTennis,
+  });
 
-
-  WeeklySlot copyWith(
-      {List<Padel>? tennis, List<Padel>? padel, List<Padel>? pickleball, List<
-          Padel>? beachTennis}) {
+  WeeklySlot copyWith({
+    List<Padel>? tennis,
+    List<Padel>? padel,
+    List<Padel>? pickleball,
+    List<Padel>? beachTennis,
+  }) {
     return WeeklySlot(
       tennis: tennis ?? this.tennis,
       padel: padel ?? this.padel,
-        pickleball: pickleball ?? this.pickleball,
-        beachTennis: beachTennis ?? this.beachTennis
+      pickleball: pickleball ?? this.pickleball,
+      beachTennis: beachTennis ?? this.beachTennis,
     );
   }
 
@@ -224,8 +230,9 @@ class WeeklySlot {
       for (final key in keys) {
         if (json[key] != null && json[key] is List) {
           return List<Padel>.from(
-            (json[key] as List).map((x) =>
-                Padel.fromJson(x as Map<String, dynamic>)),
+            (json[key] as List).map(
+              (x) => Padel.fromJson(x as Map<String, dynamic>),
+            ),
           );
         }
       }
@@ -236,8 +243,12 @@ class WeeklySlot {
       tennis: parseSlotList(["Tennis", "tennis"]),
       padel: parseSlotList(["Padel", "padel"]),
       pickleball: parseSlotList(["Pickleball", "pickleball"]),
-      beachTennis: parseSlotList(
-          ["beach_tennis", "Beach Tennis", "Beach_Tennis", "beachTennis"]),
+      beachTennis: parseSlotList([
+        "beach_tennis",
+        "Beach Tennis",
+        "Beach_Tennis",
+        "beachTennis",
+      ]),
     );
   }
 }

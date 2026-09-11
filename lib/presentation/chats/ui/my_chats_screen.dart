@@ -15,9 +15,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   @override
   void initState() {
-    final authState = context
-        .read<AuthBloc>()
-        .state;
+    final authState = context.read<AuthBloc>().state;
     if (authState.user == null) {
       return;
     }
@@ -25,12 +23,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     super.initState();
   }
 
-  final List<String> _filters = [
-    'All',
-    'Games',
-    'Classes',
-    'Courts',
-  ];
+  final List<String> _filters = ['All', 'Games', 'Classes', 'Courts'];
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +38,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         return Scaffold(
           appBar: CustomAppBar(
             title: "My Chats",
-            titleStyle: AppStyles.w600f16inter.copyWith(
-              color: kDarkTextColor,
-            ),
+            titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             showBackIcon: true,
             showActions: false,
           ),
@@ -56,9 +47,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
             children: [
               _buildFilterChips(),
               const SizedBox(height: 8),
-              Expanded(
-                child: _buildChatList(),
-              ),
+              Expanded(child: _buildChatList()),
             ],
           ),
         );
@@ -94,9 +83,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         ),
         child: Text(
           label,
-          style: AppStyles.w400f14inter.copyWith(
-            color: kDarkTextColor,
-          ),
+          style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
         ),
       ),
     );
@@ -106,24 +93,18 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
         if (state is ChatsLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (state is ChatsError) {
-          return Center(
-            child: Text(state.message),
-          );
+          return Center(child: Text(state.message));
         }
 
         if (state is ChatsLoaded) {
           final chats = state.chats;
 
           if (chats.isEmpty) {
-            return const Center(
-              child: Text('No chats found'),
-            );
+            return const Center(child: Text('No chats found'));
           }
 
           return ListView.builder(
@@ -142,12 +123,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          ChatScreen(
-                            chat: chat,
-                          ),
-                    ),
+                    MaterialPageRoute(builder: (_) => ChatScreen(chat: chat)),
                   );
                 },
               );
@@ -161,10 +137,6 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
   }
 
   String _currentUserId(BuildContext context) {
-    return context
-        .read<AuthBloc>()
-        .state
-        .user
-        ?.id ?? '';
+    return context.read<AuthBloc>().state.user?.id ?? '';
   }
 }

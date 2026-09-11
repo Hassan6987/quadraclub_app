@@ -34,10 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileHeader(
-                  profile: profile,
-                  user: state.user,
-                ),
+                ProfileHeader(profile: profile, user: state.user),
                 24.heightBox,
                 StatisticsCard(
                   stats: profile.stats,

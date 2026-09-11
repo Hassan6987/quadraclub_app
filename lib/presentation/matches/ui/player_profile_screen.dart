@@ -44,9 +44,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileHeader(
-              profile: profile,
-            ),
+            ProfileHeader(profile: profile),
             24.heightBox,
             StatisticsCard(
               stats: profile.stats,

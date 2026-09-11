@@ -54,7 +54,8 @@ class CustomTextField extends StatefulWidget {
     this.focusNode,
     this.alphaColor = 0.8,
     this.hintStyle,
-    this.textStyle, this.borderRadius=12,
+    this.textStyle,
+    this.borderRadius = 12,
   });
 
   @override

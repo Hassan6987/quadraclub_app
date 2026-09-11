@@ -20,7 +20,6 @@ class TimeChip extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-
           decoration: BoxDecoration(
             color: isSelected ? kPrimaryColor : kGreyColor,
             borderRadius: BorderRadius.circular(12),

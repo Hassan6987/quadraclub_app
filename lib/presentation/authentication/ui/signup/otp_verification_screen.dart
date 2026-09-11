@@ -85,7 +85,8 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (_) => AboutYouScreen(data: widget.data)),
+              builder: (_) => AboutYouScreen(data: widget.data),
+            ),
           );
           context.showToast("Email verified Successfully");
         } else if (state.status == AuthStateStatus.failure) {
@@ -146,35 +147,35 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                     children: [
                       _secondsRemaining > 0
                           ? RichText(
-                        text: TextSpan(
-                          text: "I didn't receive a code ",
-                          style: AppStyles.subtitleRegular.copyWith(
-                            color: kTextSecondary.withValues(alpha: 0.70),
-                          ),
-                          children: [
-                            TextSpan(
-                              text: " (0:$_secondsRemaining)",
-                              style: AppStyles.w500f14inter.copyWith(
-                                color: kTextPrimaryColor,
+                              text: TextSpan(
+                                text: "I didn't receive a code ",
+                                style: AppStyles.subtitleRegular.copyWith(
+                                  color: kTextSecondary.withValues(alpha: 0.70),
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: " (0:$_secondsRemaining)",
+                                    style: AppStyles.w500f14inter.copyWith(
+                                      color: kTextPrimaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                context.read<AuthBloc>().add(
+                                  RequestCode(email: widget.data.email),
+                                );
+                                _startTimer();
+                              },
+                              child: Text(
+                                "Resend Code",
+                                style: AppStyles.subtitleSemiBold.copyWith(
+                                  color: kPrimaryColor,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      )
-                          : GestureDetector(
-                        onTap: () {
-                          context.read<AuthBloc>().add(
-                            RequestCode(email: widget.data.email),
-                          );
-                          _startTimer();
-                        },
-                        child: Text(
-                          "Resend Code",
-                          style: AppStyles.subtitleSemiBold.copyWith(
-                            color: kPrimaryColor,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -193,9 +194,9 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                   ),
                 ),
                 16.heightBox,
-                if(state.status == AuthStateStatus.loading)
+                if (state.status == AuthStateStatus.loading)
                   Center(child: CustomLoadingView()),
-                if(state.status != AuthStateStatus.loading)
+                if (state.status != AuthStateStatus.loading)
                   CustomActionButton(
                     buttonText: "Verify & Continue",
                     onTap: _onVerify,

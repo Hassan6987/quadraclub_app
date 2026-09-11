@@ -14,8 +14,8 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
   AgendaBloc() : super(AgendaState()) {
     on<GetAllAgenda>(_handleLoadAgenda);
     on<GetMatchDetails>(_handleFetchMatchDetails);
-    on<InvitePlayers>(handleInvitePlayers);
-    on<CancelPlayerInvite>(handleCancelPlayerInvite);
+    on<InvitePlayers>(_handleInvitePlayers);
+    on<CancelPlayerInvite>(_handleCancelPlayerInvite);
   }
 
   Future<void> _handleLoadAgenda(
@@ -34,7 +34,7 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
           confirmedAgenda: confirmed,
           pendingAgenda: pending,
           pastAgenda: past,
-            players: players
+          players: players,
         ),
       );
     } catch (e) {
@@ -44,11 +44,14 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
-  Future<void> _handleFetchMatchDetails(GetMatchDetails event,
-      Emitter<AgendaState> emit,) async {
+  Future<void> _handleFetchMatchDetails(
+    GetMatchDetails event,
+    Emitter<AgendaState> emit,
+  ) async {
     try {
-      emit(state.copyWith(
-          status: AgendaStateStatus.fetching, matchDetails: null));
+      emit(
+        state.copyWith(status: AgendaStateStatus.fetching, matchDetails: null),
+      );
       final details = await _repo.getMatchDetails(event.id);
       emit(
         state.copyWith(
@@ -63,20 +66,34 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
-  Future<void> handleInvitePlayers(InvitePlayers event,
-      Emitter<AgendaState> emit) async {
+  Future<void> _handleInvitePlayers(
+    InvitePlayers event,
+    Emitter<AgendaState> emit,
+  ) async {
     emit(state.copyWith(status: AgendaStateStatus.updating));
     final invites = await _repo.invitePlayers(event.playerIds, event.matchId);
-    emit(state.copyWith(status: AgendaStateStatus.success,
-        matchDetails: state.matchDetails!.copyWith(invited: invites)));
+    emit(
+      state.copyWith(
+        status: AgendaStateStatus.success,
+        matchDetails: state.matchDetails!.copyWith(invited: invites),
+      ),
+    );
   }
 
-  Future<void> handleCancelPlayerInvite(CancelPlayerInvite event,
-      Emitter<AgendaState> emit) async {
+  Future<void> _handleCancelPlayerInvite(
+    CancelPlayerInvite event,
+    Emitter<AgendaState> emit,
+  ) async {
     emit(state.copyWith(status: AgendaStateStatus.updating));
     final invites = await _repo.cancelPlayerInvite(
-        event.playerId, event.matchId);
-    emit(state.copyWith(status: AgendaStateStatus.success,
-        matchDetails: state.matchDetails!.copyWith(invited: invites)));
+      event.playerId,
+      event.matchId,
+    );
+    emit(
+      state.copyWith(
+        status: AgendaStateStatus.success,
+        matchDetails: state.matchDetails!.copyWith(invited: invites),
+      ),
+    );
   }
 }

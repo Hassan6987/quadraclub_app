@@ -30,21 +30,23 @@ class ClassesServices extends BaseApiProvider {
     }
   }
 
-  Future<Response> enrollClass(
-      {required String id, required bool isPortfolio, String? paymentId}) async {
+  Future<Response> enrollClass({
+    required String id,
+    required bool isPortfolio,
+    String? paymentId,
+  }) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/payment/class-checkout',
-          data: {
-            "classId": id,
-            "currency": "usd",
-            "usePortfolio": isPortfolio,
-            "paymentMethod": "stripe",
-            if(!isPortfolio)
-              "paymentMethodId": paymentId,
-            "confirmImmediately": true
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/payment/class-checkout',
+        data: {
+          "classId": id,
+          "currency": "usd",
+          "usePortfolio": isPortfolio,
+          "paymentMethod": "stripe",
+          if (!isPortfolio) "paymentMethodId": paymentId,
+          "confirmImmediately": true,
+        },
       );
       return response;
     } on DioException catch (e) {

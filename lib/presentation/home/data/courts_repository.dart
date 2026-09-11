@@ -103,8 +103,9 @@ class CourtsRepository {
       final data = response.data as Map<String, dynamic>;
       final List<dynamic> playersJson = data['players'] as List<dynamic>? ?? [];
       return playersJson
-          .map((json) =>
-          InvitePlayerModel.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => InvitePlayerModel.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       rethrow;

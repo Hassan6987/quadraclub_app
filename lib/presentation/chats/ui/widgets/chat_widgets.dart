@@ -1,5 +1,4 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/chats/data/models/chat_model.dart';
 
 // ─── Stacked avatar group ────────────────────────────────────────────────────
 
@@ -72,7 +71,6 @@ class _ExtraCountAvatar extends StatelessWidget {
 }
 
 // ─── Single participant avatar ───────────────────────────────────────────────
-
 
 // ─── Unread badge ─────────────────────────────────────────────────────────────
 

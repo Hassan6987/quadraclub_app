@@ -1,6 +1,5 @@
 import 'package:quadraclub_app/app_exports.dart';
 
-
 class ClassBookedDialog extends StatelessWidget {
   const ClassBookedDialog({super.key});
 
@@ -41,7 +40,6 @@ class ClassBookedDialog extends StatelessWidget {
             },
           ).withPaddingSymmetric(24, 0),
           16.heightBox,
-          
         ],
       ),
     );

@@ -60,11 +60,11 @@ class CommonAvatarStackRow extends StatelessWidget {
             Positioned(
               left: displayImages.length * overlap,
               child: Container(
-               height: avatarSize,
+                height: avatarSize,
                 width: avatarSize,
                 decoration: BoxDecoration(
                   color: kGreyColor,
-                  borderRadius: BorderRadius.circular(200)
+                  borderRadius: BorderRadius.circular(200),
                 ),
 
                 child: Center(

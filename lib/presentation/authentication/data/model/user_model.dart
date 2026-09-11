@@ -61,7 +61,7 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromJson(Map<String, dynamic> json){
+  factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json["_id"],
       fullName: json["fullName"],
@@ -73,39 +73,31 @@ class UserModel {
       location: json["location"],
       gender: json["gender"],
       dominantHand: json["dominantHand"],
-      sportsInfo: json["sportsInfo"] == null ? [] : List<SportsInfo>.from(
-          json["sportsInfo"]!.map((x) => SportsInfo.fromJson(x))),
+      sportsInfo: json["sportsInfo"] == null
+          ? []
+          : List<SportsInfo>.from(
+              json["sportsInfo"]!.map((x) => SportsInfo.fromJson(x)),
+            ),
       registrationStep: json["registrationStep"],
       portfolioBalance: json["portfolioBalance"],
     );
   }
-
 }
 
 class SportsInfo {
-  SportsInfo({
-    required this.sport,
-    required this.category,
-  });
+  SportsInfo({required this.sport, required this.category});
 
   final String? sport;
   final String? category;
 
-  SportsInfo copyWith({
-    String? sport,
-    String? category,
-  }) {
+  SportsInfo copyWith({String? sport, String? category}) {
     return SportsInfo(
       sport: sport ?? this.sport,
       category: category ?? this.category,
     );
   }
 
-  factory SportsInfo.fromJson(Map<String, dynamic> json){
-    return SportsInfo(
-      sport: json["sport"],
-      category: json["category"],
-    );
+  factory SportsInfo.fromJson(Map<String, dynamic> json) {
+    return SportsInfo(sport: json["sport"], category: json["category"]);
   }
-
 }

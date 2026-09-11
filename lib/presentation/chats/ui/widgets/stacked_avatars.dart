@@ -22,7 +22,9 @@ class StackedAvatars extends StatelessWidget {
         ? imgUrls.take(2).toList()
         : imgUrls.take(maxVisible).toList();
 
-    final int extraCount = showExtraCount ? imgUrls.length - displayList.length : 0;
+    final int extraCount = showExtraCount
+        ? imgUrls.length - displayList.length
+        : 0;
 
     final int totalSlots = displayList.length + (extraCount > 0 ? 1 : 0);
     final double totalWidth =
@@ -53,9 +55,7 @@ class StackedAvatars extends StatelessWidget {
                 backgroundColor: kGreyColor,
                 child: Text(
                   '+$extraCount',
-                  style: AppStyles.w500f12inter.copyWith(
-                    color: kDarkTextColor,
-                  ),
+                  style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
                 ),
               ),
             ),

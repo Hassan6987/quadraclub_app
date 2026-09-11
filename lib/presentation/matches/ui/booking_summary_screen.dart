@@ -68,7 +68,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             8.heightBox,
             _buildCourtDetailsCard(widget.match),
             16.heightBox,
-            
+
             // Payment Method Section
             _buildSectionHeader('PAYMENT METHOD'),
             8.heightBox,
@@ -77,30 +77,23 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.lock_outline,
-                  size: 16,
-                  color: kGreyTextColor,
-                ),
+                const Icon(Icons.lock_outline, size: 16, color: kGreyTextColor),
                 const SizedBox(width: 6),
                 Text(
                   'Secure Encrypted Payment',
-                  style: AppStyles.w400f14inter.copyWith(
-                    color: kGreyTextColor,
-                  ),
+                  style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
                 ),
               ],
             ),
             16.heightBox,
-            
+
             // Price Details Section
             _buildSectionHeader('PRICE DETAILS'),
             8.heightBox,
             _buildPriceDetails(matchFee, serviceFee, total),
             16.heightBox,
             GestureDetector(
-              onTap: () =>
-                  setState(() => _agreeToTerms = !_agreeToTerms),
+              onTap: () => setState(() => _agreeToTerms = !_agreeToTerms),
               child: Row(
                 children: [
                   Checkbox(
@@ -113,16 +106,14 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                   Expanded(
                     child: Text(
                       'I agree to the terms of use.',
-                      style: AppStyles.w400f14inter.copyWith(
-                        color: kTextColor,
-                      ),
+                      style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                     ),
                   ),
                 ],
               ),
             ).withPaddingSymmetric(20, 0),
             32.heightBox,
-            
+
             // Pay Now Button
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -145,7 +136,8 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       child: Text(
         title,
         style: AppStyles.w500f12inter.copyWith(
-            color: kGreyTextColor.withValues(alpha: 0.7)),
+          color: kGreyTextColor.withValues(alpha: 0.7),
+        ),
       ),
     );
   }
@@ -186,9 +178,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       ),
                     ),
                     Text(
-                      "${match.city} • ${match
-                          .distanceKm} miles • ${getFormatDateMonth(
-                          match.date)}",
+                      "${match.city} • ${match.distanceKm} miles • ${getFormatDateMonth(match.date)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),
@@ -275,15 +265,11 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             children: [
               Text(
                 'Match Fee (2 hrs)',
-                style: AppStyles.w400f14inter.copyWith(
-                  color: kGreyTextColor,
-                ),
+                style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
                 formatPrice(matchFee),
-                style: AppStyles.w500f14inter.copyWith(
-                  color: kDarkTextColor,
-                ),
+                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
             ],
           ),
@@ -293,15 +279,11 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             children: [
               Text(
                 'Service Fee',
-                style: AppStyles.w400f14inter.copyWith(
-                  color: kGreyTextColor,
-                ),
+                style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
                 formatPrice(serviceFee),
-                style: AppStyles.w500f14inter.copyWith(
-                  color: kDarkTextColor,
-                ),
+                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
             ],
           ),
@@ -311,15 +293,11 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             children: [
               Text(
                 'Total',
-                style: AppStyles.w400f14inter.copyWith(
-                  color: kGreyTextColor,
-                ),
+                style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
                 formatPrice(total),
-                style: AppStyles.w600f16inter.copyWith(
-                  color: kBlueColor,
-                ),
+                style: AppStyles.w600f16inter.copyWith(color: kBlueColor),
               ),
             ],
           ),
@@ -327,6 +305,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       ),
     );
   }
+
   void _processPayment() {
     Navigator.pop(context);
     _showRequestSentDialog();

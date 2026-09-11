@@ -8,12 +8,10 @@ import 'package:quadraclub_app/presentation/home/data/models/location_result.dar
 class ChangeLocationSheet extends StatefulWidget {
   final Function(LocationResult) onLocationSelected;
 
-  const ChangeLocationSheet({
-    super.key,
-    required this.onLocationSelected,
-  });
+  const ChangeLocationSheet({super.key, required this.onLocationSelected});
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     required Function(LocationResult) onLocationSelected,
   }) {
     return showModalBottomSheet(
@@ -23,9 +21,8 @@ class ChangeLocationSheet extends StatefulWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => ChangeLocationSheet(
-        onLocationSelected: onLocationSelected,
-      ),
+      builder: (context) =>
+          ChangeLocationSheet(onLocationSelected: onLocationSelected),
     );
   }
 
@@ -152,7 +149,10 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: const Icon(
-                      Icons.close, color: kDarkTextColor, size: 24),
+                    Icons.close,
+                    color: kDarkTextColor,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
@@ -170,7 +170,11 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
               child: Row(
                 children: [
                   const SizedBox(width: 12),
-                  const Icon(Icons.location_on_outlined, color: kTextColor, size: 20),
+                  const Icon(
+                    Icons.location_on_outlined,
+                    color: kTextColor,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
@@ -206,29 +210,34 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
                 ? const SizedBox.shrink()
                 : _predictions.isEmpty && !_isSearching
                 ? Center(
-              child: Text(
-                'No locations found',
-                style: AppStyles.w400f14inter.copyWith(color: kTextColor),
-              ),
-            )
+                    child: Text(
+                      'No locations found',
+                      style: AppStyles.w400f14inter.copyWith(color: kTextColor),
+                    ),
+                  )
                 : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _predictions.length,
-              separatorBuilder: (_, __) => const Divider(color: kBorderColor),
-              itemBuilder: (context, index) {
-                final prediction = _predictions[index];
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.location_on, color: kTextColor),
-                  title: Text(
-                    prediction.description,
-                    style: AppStyles.w500f14inter.copyWith(
-                        color: kDarkTextColor),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _predictions.length,
+                    separatorBuilder: (_, __) =>
+                        const Divider(color: kBorderColor),
+                    itemBuilder: (context, index) {
+                      final prediction = _predictions[index];
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          Icons.location_on,
+                          color: kTextColor,
+                        ),
+                        title: Text(
+                          prediction.description,
+                          style: AppStyles.w500f14inter.copyWith(
+                            color: kDarkTextColor,
+                          ),
+                        ),
+                        onTap: () => _selectPrediction(prediction),
+                      );
+                    },
                   ),
-                  onTap: () => _selectPrediction(prediction),
-                );
-              },
-            ),
           ),
         ],
       ),

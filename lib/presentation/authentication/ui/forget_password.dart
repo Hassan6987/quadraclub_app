@@ -51,15 +51,18 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  OtpVerificationScreen(
-                      email: _emailController.text.trim(), isReset: true),
+              builder: (_) => OtpVerificationScreen(
+                email: _emailController.text.trim(),
+                isReset: true,
+              ),
             ),
           );
           context.showToast("An otp has been sent to your email");
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-              state.error ?? "Something went wrong", isError: true);
+            state.error ?? "Something went wrong",
+            isError: true,
+          );
         }
       },
       builder: (context, state) {
@@ -96,9 +99,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     onChanged: (_) => _updateButtonState(),
                   ),
                   24.heightBox,
-                  if(state.status == AuthStateStatus.loading)
+                  if (state.status == AuthStateStatus.loading)
                     Center(child: CustomLoadingView()),
-                  if(state.status != AuthStateStatus.loading)
+                  if (state.status != AuthStateStatus.loading)
                     CustomActionButton(
                       buttonText: "Send Code",
                       onTap: _onContinue,

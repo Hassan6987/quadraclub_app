@@ -1,5 +1,3 @@
-
-
 enum AgendaStatus { confirmed, pending, past }
 
 enum MatchDetailsTab { details, requests, invited }
@@ -123,16 +121,16 @@ class Player {
     required this.status,
     required this.level,
     required this.profilePhoto,
-    this.message
+    this.message,
   });
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
-      id: json['id'] ?? json["userId"],
-      name: json['name'] ?? json["fullName"] ?? '',
+    id: json['id'] ?? json["userId"],
+    name: json['name'] ?? json["fullName"] ?? '',
     role: json['role'] ?? '',
     status: json['status'] ?? '',
     level: json['level'] ?? '',
     profilePhoto: json['profilePhoto'] ?? '',
-      message: json['message']
+    message: json['message'],
   );
 }

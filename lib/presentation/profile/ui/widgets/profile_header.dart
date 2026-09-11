@@ -1,4 +1,3 @@
-
 import '../../../../app_exports.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -38,12 +37,12 @@ class ProfileHeader extends StatelessWidget {
                 ),
               if (user?.sportsInfo == null)
                 Wrap(
-                spacing: 2,
-                runSpacing: 4,
-                children: profile.sports
-                    .map((s) => _SportChip(tag: s))
-                    .toList(),
-              ),
+                  spacing: 2,
+                  runSpacing: 4,
+                  children: profile.sports
+                      .map((s) => _SportChip(tag: s))
+                      .toList(),
+                ),
             ],
           ),
         ),

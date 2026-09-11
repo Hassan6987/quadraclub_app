@@ -32,8 +32,14 @@ class ClassesRepo {
     }
   }
 
-  Future<void> enrollInClass(
-      {required String id, required bool isPortfolio, String? name, String? number, String? cvc, String? expiry}) async {
+  Future<void> enrollInClass({
+    required String id,
+    required bool isPortfolio,
+    String? name,
+    String? number,
+    String? cvc,
+    String? expiry,
+  }) async {
     try {
       if (isPortfolio) {
         await classesServices.enrollClass(id: id, isPortfolio: isPortfolio);
@@ -65,7 +71,10 @@ class ClassesRepo {
         }
         log('Payment Method ID: $paymentMethodId');
         await classesServices.enrollClass(
-            id: id, isPortfolio: isPortfolio, paymentId: paymentMethodId);
+          id: id,
+          isPortfolio: isPortfolio,
+          paymentId: paymentMethodId,
+        );
       }
     } catch (e) {
       rethrow;

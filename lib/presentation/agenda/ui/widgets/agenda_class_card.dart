@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+
 class AgendaClassCard extends StatelessWidget {
   final AgendaItem item;
   final String? actionLabel;
@@ -27,16 +28,22 @@ class AgendaClassCard extends StatelessWidget {
               CommonBadge(label: item.classType!),
             ],
             const Spacer(),
-            Text('\$${item.price}',
-                style: AppStyles.w600f14inter.copyWith(color: kBlueF1)),
+            Text(
+              '\$${item.price}',
+              style: AppStyles.w600f14inter.copyWith(color: kBlueF1),
+            ),
           ],
         ),
         8.heightBox,
-        Text(item.title,
-            style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor)),
+        Text(
+          item.title,
+          style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
+        ),
         3.heightBox,
-        Text(item.dateString,
-            style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor)),
+        Text(
+          item.dateString,
+          style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+        ),
         Divider(color: kDividerColor).withPaddingSymmetric(0, 8),
         Row(
           children: [
@@ -48,10 +55,14 @@ class AgendaClassCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
             ),
             10.widthBox,
-            Text('Coach ',
-                style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor)),
-            Text(item.coachName ?? '',
-                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor)),
+            Text(
+              'Coach ',
+              style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+            ),
+            Text(
+              item.coachName ?? '',
+              style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+            ),
           ],
         ),
         if (actionLabel != null)

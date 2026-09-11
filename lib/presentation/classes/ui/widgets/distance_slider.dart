@@ -1,8 +1,8 @@
 import '../../../../app_exports.dart';
 
 class DistanceSlider extends StatefulWidget {
-final   double distance;
-final  ValueChanged<double>? onChanged;
+  final double distance;
+  final ValueChanged<double>? onChanged;
 
   const DistanceSlider({super.key, required this.distance, this.onChanged});
 

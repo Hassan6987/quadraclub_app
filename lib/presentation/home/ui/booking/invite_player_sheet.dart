@@ -6,13 +6,16 @@ class InvitePlayersSheet extends StatefulWidget {
   final List<InvitePlayerModel> initiallyInvited;
   final List<InvitePlayerModel> allPlayers;
 
-  const InvitePlayersSheet(
-      {super.key, required this.initiallyInvited, required this.allPlayers});
+  const InvitePlayersSheet({
+    super.key,
+    required this.initiallyInvited,
+    required this.allPlayers,
+  });
 
   static Future<List<InvitePlayerModel>?> show(
     BuildContext context, {
-        required List<InvitePlayerModel> initiallyInvited,
-        required List<InvitePlayerModel> allPlayers,
+    required List<InvitePlayerModel> initiallyInvited,
+    required List<InvitePlayerModel> allPlayers,
   }) {
     return showModalBottomSheet<List<InvitePlayerModel>>(
       context: context,
@@ -21,9 +24,10 @@ class InvitePlayersSheet extends StatefulWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) =>
-          InvitePlayersSheet(
-            initiallyInvited: initiallyInvited, allPlayers: allPlayers,),
+      builder: (context) => InvitePlayersSheet(
+        initiallyInvited: initiallyInvited,
+        allPlayers: allPlayers,
+      ),
     );
   }
 

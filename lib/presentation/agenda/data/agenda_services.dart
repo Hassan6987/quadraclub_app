@@ -75,11 +75,9 @@ class AgendaServices extends BaseApiProvider {
   Future<Response> invitePlayers(List<String> playerIds, String matchId) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/agenda/matches/$matchId/invite',
-          data: {
-            "playerIds": playerIds
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/agenda/matches/$matchId/invite',
+        data: {"playerIds": playerIds},
       );
       return response;
     } on DioException catch (e) {

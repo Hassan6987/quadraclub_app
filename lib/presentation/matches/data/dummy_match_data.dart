@@ -5,25 +5,29 @@ final List<PlayerModel> dummyPlayers = [
   const PlayerModel(
     name: 'Alex',
     skillLevel: 'Beginner',
-    avatarAsset: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSURLhVMWxoKXtHxYzb0Xk4EOaWr8kU0s4Iu1X8POxCgH-XxizY0vwrkt50&s=10',
+    avatarAsset:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSURLhVMWxoKXtHxYzb0Xk4EOaWr8kU0s4Iu1X8POxCgH-XxizY0vwrkt50&s=10',
     isAvailable: false,
   ),
   const PlayerModel(
     name: 'John',
     skillLevel: 'Beginner',
-    avatarAsset: 'https://static.wikia.nocookie.net/villains/images/2/2b/Cmtspb.jpg/revision/latest?cb=20210513195220',
+    avatarAsset:
+        'https://static.wikia.nocookie.net/villains/images/2/2b/Cmtspb.jpg/revision/latest?cb=20210513195220',
     isAvailable: false,
   ),
   const PlayerModel(
     name: 'Marco',
     skillLevel: 'Beginner',
-    avatarAsset: 'https://static.wikia.nocookie.net/base-breaking-character/images/3/32/Jon_Snow.webp/revision/latest?cb=20250712004851',
+    avatarAsset:
+        'https://static.wikia.nocookie.net/base-breaking-character/images/3/32/Jon_Snow.webp/revision/latest?cb=20250712004851',
     isAvailable: false,
   ),
   const PlayerModel(
     name: 'Lucas',
     skillLevel: 'Beginner',
-    avatarAsset: 'https://i.pinimg.com/736x/6f/e2/f2/6fe2f2bb06bf5d447557c858c126889b.jpg',
+    avatarAsset:
+        'https://i.pinimg.com/736x/6f/e2/f2/6fe2f2bb06bf5d447557c858c126889b.jpg',
     isAvailable: false,
   ),
 ];
@@ -48,10 +52,21 @@ final List<MatchModel> dummyMatches = [
     players: [
       dummyPlayers[0],
       dummyPlayers[1],
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Left'),
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Left',
+      ),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Right',
+      ),
     ],
-    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
+    imageAsset:
+        'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Today - Pedal
@@ -74,9 +89,15 @@ final List<MatchModel> dummyMatches = [
       dummyPlayers[2],
       dummyPlayers[3],
       dummyPlayers[0],
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Right',
+      ),
     ],
-    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
+    imageAsset:
+        'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Tomorrow - Pickleball
@@ -97,11 +118,27 @@ final List<MatchModel> dummyMatches = [
     description: 'Pickleball doubles match. All skill levels welcome!',
     players: [
       dummyPlayers[1],
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Left'),
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Left'),
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Left',
+      ),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Left',
+      ),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Right',
+      ),
     ],
-    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
+    imageAsset:
+        'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Apr 9 - Tennis (Full)
@@ -126,7 +163,8 @@ final List<MatchModel> dummyMatches = [
       dummyPlayers[2],
       dummyPlayers[3],
     ],
-    imageAsset: 'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
+    imageAsset:
+        'https://5.imimg.com/data5/SELLER/Default/2023/8/335135611/LU/IT/XQ/19508713/padel-tennis-court-500x500.jpg',
   ),
 
   // Apr 9 - Beach Tennis
@@ -171,8 +209,18 @@ final List<MatchModel> dummyMatches = [
     players: [
       dummyPlayers[0],
       dummyPlayers[3],
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Left'),
-      const PlayerModel(name: 'Available', skillLevel: '', isAvailable: true, position: 'Right'),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Left',
+      ),
+      const PlayerModel(
+        name: 'Available',
+        skillLevel: '',
+        isAvailable: true,
+        position: 'Right',
+      ),
     ],
     imageAsset: 'assets/images/pedal_court_2.png',
   ),

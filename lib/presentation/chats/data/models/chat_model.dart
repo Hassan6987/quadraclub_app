@@ -5,11 +5,7 @@ class ChatParticipant {
   final String name;
   final String? avatarUrl;
 
-  const ChatParticipant({
-    required this.id,
-    required this.name,
-    this.avatarUrl,
-  });
+  const ChatParticipant({required this.id, required this.name, this.avatarUrl});
 }
 
 class ChatPreview {
@@ -51,7 +47,6 @@ class GroupChatDetail {
     required this.messages,
   });
 }
-
 
 /////////////////////////////////////
 
@@ -118,10 +113,7 @@ class ChatMessage {
         (json['sender'] as Map).cast<String, dynamic>(),
       );
     } else if (json['sender'] != null) {
-      sender = ChatUser(
-        id: json['sender'].toString(),
-        fullName: '',
-      );
+      sender = ChatUser(id: json['sender'].toString(), fullName: '');
     } else {
       sender = const ChatUser(id: '', fullName: '');
     }
@@ -132,14 +124,11 @@ class ChatMessage {
       content: json['content']?.toString() ?? '',
       chatId: chatId,
       attachments: json['attachments'] as List? ?? [],
-      seenBy: (json['seenBy'] as List?)
-          ?.map((e) => e.toString())
-          .toList() ??
-          [],
+      seenBy:
+          (json['seenBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
       isSystemMessage: json['isSystemMessage'] == true,
-      createdAt: DateTime.tryParse(
-        json['createdAt']?.toString() ?? '',
-      )?.toLocal() ??
+      createdAt:
+          DateTime.tryParse(json['createdAt']?.toString() ?? '')?.toLocal() ??
           DateTime.now(),
       rawJson: json,
     );
@@ -172,29 +161,23 @@ class Chat {
       id: json['_id']?.toString() ?? '',
       chatName: json['chatName']?.toString() ?? '',
       isGroupChat: json['isGroupChat'] == true,
-      users: (json['users'] as List?)
-          ?.whereType<Map>()
-          .map(
-            (e) =>
-            ChatUser.fromJson(
-              e.cast<String, dynamic>(),
-            ),
-      )
-          .toList() ??
+      users:
+          (json['users'] as List?)
+              ?.whereType<Map>()
+              .map((e) => ChatUser.fromJson(e.cast<String, dynamic>()))
+              .toList() ??
           [],
       chatType: json['chatType']?.toString() ?? 'Normal',
-      createdAt: DateTime.tryParse(
-        json['createdAt']?.toString() ?? '',
-      ) ??
+      createdAt:
+          DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
           DateTime.now(),
-      updatedAt: DateTime.tryParse(
-        json['updatedAt']?.toString() ?? '',
-      ) ??
+      updatedAt:
+          DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
           DateTime.now(),
       latestMessage: json['latestMessage'] is Map
           ? ChatMessage.fromJson(
-        (json['latestMessage'] as Map).cast<String, dynamic>(),
-      )
+              (json['latestMessage'] as Map).cast<String, dynamic>(),
+            )
           : null,
     );
   }
@@ -204,23 +187,16 @@ class ChatsResponse {
   final bool success;
   final List<Chat> chats;
 
-  const ChatsResponse({
-    required this.success,
-    required this.chats,
-  });
+  const ChatsResponse({required this.success, required this.chats});
 
   factory ChatsResponse.fromJson(Map<String, dynamic> json) {
     return ChatsResponse(
       success: json['success'] == true,
-      chats: (json['chats'] as List?)
-          ?.whereType<Map>()
-          .map(
-            (e) =>
-            Chat.fromJson(
-              e.cast<String, dynamic>(),
-            ),
-      )
-          .toList() ??
+      chats:
+          (json['chats'] as List?)
+              ?.whereType<Map>()
+              .map((e) => Chat.fromJson(e.cast<String, dynamic>()))
+              .toList() ??
           [],
     );
   }
@@ -230,23 +206,16 @@ class MessagesResponse {
   final bool success;
   final List<ChatMessage> messages;
 
-  const MessagesResponse({
-    required this.success,
-    required this.messages,
-  });
+  const MessagesResponse({required this.success, required this.messages});
 
   factory MessagesResponse.fromJson(Map<String, dynamic> json) {
     return MessagesResponse(
       success: json['success'] == true,
-      messages: (json['messages'] as List?)
-          ?.whereType<Map>()
-          .map(
-            (e) =>
-            ChatMessage.fromJson(
-              e.cast<String, dynamic>(),
-            ),
-      )
-          .toList() ??
+      messages:
+          (json['messages'] as List?)
+              ?.whereType<Map>()
+              .map((e) => ChatMessage.fromJson(e.cast<String, dynamic>()))
+              .toList() ??
           [],
     );
   }

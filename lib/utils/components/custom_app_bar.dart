@@ -52,7 +52,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actionsPadding: EdgeInsets.symmetric(
         horizontal: getProportionateScreenWidth(16),
       ),
-      shape: RoundedRectangleBorder(side: BorderSide(color:showBorder? kCardColor:Colors.transparent)),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: showBorder ? kCardColor : Colors.transparent),
+      ),
       title: Column(
         children: [
           if (title != null)
@@ -70,8 +72,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             2.heightBox,
             Text(
               subtitle!,
-              style:
-                  AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+              style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
             ),
           ],
         ],
@@ -88,10 +89,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: buildContainer(Assets.svg.chatIcon.path),
               ),
             ]
-          : showThreeDotActions?[InkWell(
-        onTap: onThreeDotTap ?? () => _onTapAction(context, RouteName.notifications),
-        child: threeDotActions(),
-      )]:null,
+          : showThreeDotActions
+          ? [
+              InkWell(
+                onTap:
+                    onThreeDotTap ??
+                    () => _onTapAction(context, RouteName.notifications),
+                child: threeDotActions(),
+              ),
+            ]
+          : null,
     );
   }
 
@@ -110,8 +117,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     Navigator.pushNamed(context, route);
   }
 
-  Widget threeDotActions(){
-   return Container(
+  Widget threeDotActions() {
+    return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -121,6 +128,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Icon(Icons.more_horiz, size: 24, color: kDarkTextColor),
     );
   }
+
   @override
   Size get preferredSize =>
       Size.fromHeight(getProportionateScreenHeight(height ?? 68));

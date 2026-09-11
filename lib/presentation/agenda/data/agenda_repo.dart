@@ -63,40 +63,46 @@ class AgendaRepo {
       final data = response.data as Map<String, dynamic>;
       final List<dynamic> playersJson = data['players'] as List<dynamic>? ?? [];
       return playersJson
-          .map((json) =>
-          InvitePlayerModel.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => InvitePlayerModel.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       rethrow;
     }
   }
 
-
-  Future<List<InvitePlayerModel>> invitePlayers(List<String> playerIds,
-      String matchId) async {
+  Future<List<InvitePlayerModel>> invitePlayers(
+    List<String> playerIds,
+    String matchId,
+  ) async {
     try {
       final response = await _services.invitePlayers(playerIds, matchId);
       final data = response.data as Map<String, dynamic>;
       final List<dynamic> inviteJson = data['invited'] as List<dynamic>? ?? [];
       return inviteJson
-          .map((json) =>
-          InvitePlayerModel.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => InvitePlayerModel.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<List<InvitePlayerModel>> cancelPlayerInvite(String playerId,
-      String matchId) async {
+  Future<List<InvitePlayerModel>> cancelPlayerInvite(
+    String playerId,
+    String matchId,
+  ) async {
     try {
       await _services.cancelPlayerInvite(playerId, matchId);
       final response = await _services.getMatchInvites(matchId);
       final data = response.data as Map<String, dynamic>;
       final List<dynamic> inviteJson = data['invited'] as List<dynamic>? ?? [];
       return inviteJson
-          .map((json) =>
-          InvitePlayerModel.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => InvitePlayerModel.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       rethrow;

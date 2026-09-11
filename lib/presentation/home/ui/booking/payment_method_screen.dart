@@ -261,7 +261,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       );
 
       context.read<CourtsBloc>().add(
-          BookIndividual(bookingData: bookingModels));
+        BookIndividual(bookingData: bookingModels),
+      );
     }
   }
 
@@ -303,18 +304,19 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (_) =>
-                    BookingConfirmationScreen(
-                      club: widget.club,
-                      dateLabel: widget.dateLabel,
-                      timeLabel: widget.timeLabel,
-                      blockLabel: widget.court.courtName ?? '',
-                    ),
+                builder: (_) => BookingConfirmationScreen(
+                  club: widget.club,
+                  dateLabel: widget.dateLabel,
+                  timeLabel: widget.timeLabel,
+                  blockLabel: widget.court.courtName ?? '',
+                ),
               ),
             );
           } else if (state.status == CourtStateStatus.failure) {
             context.showToast(
-                state.error ?? "Something Went wrong", isError: true);
+              state.error ?? "Something Went wrong",
+              isError: true,
+            );
           }
         },
         builder: (context, state) {
@@ -403,8 +405,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                   ),
 
                                   Text(
-                                    '${widget.court.courtName ?? ''} • ${widget
-                                        .club.city}',
+                                    '${widget.court.courtName ?? ''} • ${widget.club.city}',
                                     style: AppStyles.w400f14inter.copyWith(
                                       color: kTextColor,
                                     ),
@@ -742,9 +743,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               // ===============================================================
               // PAY NOW
               // ===============================================================
-              if(state.status == CourtStateStatus.booking)
+              if (state.status == CourtStateStatus.booking)
                 Center(child: CustomLoadingView()),
-              if(state.status != CourtStateStatus.booking)
+              if (state.status != CourtStateStatus.booking)
                 Padding(
                   padding: const EdgeInsets.all(16),
 

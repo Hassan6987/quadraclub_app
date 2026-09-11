@@ -18,8 +18,10 @@ class _AgendaScreenState extends State<AgendaScreen>
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(length: AgendaStatus.values.length, vsync: this);
+    _tabController = TabController(
+      length: AgendaStatus.values.length,
+      vsync: this,
+    );
     _tabController.addListener(() {
       // rebuild so the action-label / anything tab-dependent updates
       if (!_tabController.indexIsChanging) setState(() {});
@@ -34,12 +36,11 @@ class _AgendaScreenState extends State<AgendaScreen>
 
   AgendaStatus get _currentStatus => AgendaStatus.values[_tabController.index];
 
-  String? get _actionLabel =>
-      switch (_currentStatus) {
-        AgendaStatus.confirmed => 'Chat',
-        AgendaStatus.pending => 'Cancel request',
-        AgendaStatus.past => null,
-      };
+  String? get _actionLabel => switch (_currentStatus) {
+    AgendaStatus.confirmed => 'Chat',
+    AgendaStatus.pending => 'Cancel request',
+    AgendaStatus.past => null,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +84,9 @@ class _AgendaScreenState extends State<AgendaScreen>
                           children: [
                             Text(state.error ?? 'Something went wrong'),
                             TextButton(
-                              onPressed: () =>
-                                  context.read<AgendaBloc>().add(
-                                      GetAllAgenda()),
+                              onPressed: () => context.read<AgendaBloc>().add(
+                                GetAllAgenda(),
+                              ),
                               child: const Text('Retry'),
                             ),
                           ],
@@ -135,39 +136,41 @@ class _AgendaScreenState extends State<AgendaScreen>
       itemBuilder: (context, index) {
         final item = filtered[index];
         if (item.agendaType == AgendaType.class_) {
-          return AgendaClassCard(item: item, actionLabel: _actionLabel)
-              .paddingOnly(bottom: 12);
-        }
-        return AgendaMatchCard(
+          return AgendaClassCard(
             item: item,
             actionLabel: _actionLabel,
-            onTap: () {
-              context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => MatchDetailsScreen()),
-              );
-            }
+          ).paddingOnly(bottom: 12);
+        }
+        return AgendaMatchCard(
+          item: item,
+          actionLabel: _actionLabel,
+          onTap: () {
+            context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => MatchDetailsScreen()),
+            );
+          },
         ).paddingOnly(bottom: 12);
       },
     );
   }
 
-  Widget _statusTabBar() =>
-      Container(
+  Widget _statusTabBar() => Container(
     color: kWhiteColor,
-        child: TabBar(
-          controller: _tabController,
-          labelColor: kDarkTextColor,
-          unselectedLabelColor: kGreyTextColor,
-          labelStyle: AppStyles.w500f14inter,
-          unselectedLabelStyle: AppStyles.w500f14inter,
-          indicatorColor: kBlueColor,
-          indicatorWeight: 2,
-          indicatorSize: TabBarIndicatorSize.tab,
-          dividerColor: kDividerColor,
-          tabs: AgendaStatus.values.map((status) =>
-              Tab(text: _statusLabel(status))).toList(),
+    child: TabBar(
+      controller: _tabController,
+      labelColor: kDarkTextColor,
+      unselectedLabelColor: kGreyTextColor,
+      labelStyle: AppStyles.w500f14inter,
+      unselectedLabelStyle: AppStyles.w500f14inter,
+      indicatorColor: kBlueColor,
+      indicatorWeight: 2,
+      indicatorSize: TabBarIndicatorSize.tab,
+      dividerColor: kDividerColor,
+      tabs: AgendaStatus.values
+          .map((status) => Tab(text: _statusLabel(status)))
+          .toList(),
     ),
   );
 

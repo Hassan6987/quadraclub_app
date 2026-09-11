@@ -25,9 +25,10 @@ class BookingSummarySheet extends StatefulWidget {
     this.endTime,
   });
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     required Club club,
-        required Court court,
+    required Court court,
     required String? sportName,
     required DateTime date,
     required String startTime,
@@ -75,8 +76,10 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   List<Court> get _eligibleCourts {
     final sport = (widget.sportName ?? '').toLowerCase();
     return widget.club.courts
-        .where((c) =>
-        c.sports.any((s) => (s.sportName ?? '').toLowerCase() == sport))
+        .where(
+          (c) =>
+              c.sports.any((s) => (s.sportName ?? '').toLowerCase() == sport),
+        )
         .toList();
   }
 
@@ -174,8 +177,18 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   String get _dateLabel {
     const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final d = widget.date;
     return '${weekdays[d.weekday - 1]}, ${months[d.month - 1]} ${d.day}';
@@ -259,7 +272,10 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: const Icon(
-                      Icons.close, color: kDarkTextColor, size: 24),
+                    Icons.close,
+                    color: kDarkTextColor,
+                    size: 24,
+                  ),
                 ),
               ],
             ).withPaddingSymmetric(16, 0),
@@ -288,17 +304,15 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       imageUrl: widget.club.photo ?? '',
                       height: 96,
                       width: 96,
-                      placeholder: (context, url) =>
-                          Shimmer.fromColors(
-                            baseColor: Colors.grey.shade300,
-                            highlightColor: Colors.grey.shade100,
-                            child: Container(
-                              height: 96,
-                              width: 96,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white),
-                            ),
-                          ),
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
+                        child: Container(
+                          height: 96,
+                          width: 96,
+                          decoration: const BoxDecoration(color: Colors.white),
+                        ),
+                      ),
                       errorWidget: (context, url, error) {
                         return Image.asset(
                           Assets.png.clubLogo.path,
@@ -347,7 +361,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             Text(
               'COURT',
               style: AppStyles.w500f12inter.copyWith(
-                  color: kDarkTextColor.withValues(alpha: 0.7)),
+                color: kDarkTextColor.withValues(alpha: 0.7),
+              ),
             ).withPaddingSymmetric(16, 0),
             8.heightBox,
             Row(
@@ -367,7 +382,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                         child: Text(
                           court.courtName ?? '',
                           style: AppStyles.w500f14inter.copyWith(
-                              color: kDarkTextColor),
+                            color: kDarkTextColor,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -382,7 +398,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               Text(
                 'TIME',
                 style: AppStyles.w500f12inter.copyWith(
-                    color: kDarkTextColor.withValues(alpha: 0.7)),
+                  color: kDarkTextColor.withValues(alpha: 0.7),
+                ),
               ).withPaddingSymmetric(16, 0),
               8.heightBox,
               Row(
@@ -427,7 +444,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             Text(
               'BOOKING TYPE',
               style: AppStyles.w500f12inter.copyWith(
-                  color: kDarkTextColor.withValues(alpha: 0.7)),
+                color: kDarkTextColor.withValues(alpha: 0.7),
+              ),
             ).withPaddingSymmetric(16, 0),
             8.heightBox,
             Row(
@@ -441,8 +459,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       decoration: BoxDecoration(
                         color: isIndividual ? kPrimaryColor : kGreyColor,
                         borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(16),
-                            topLeft: Radius.circular(16)),
+                          bottomLeft: Radius.circular(16),
+                          topLeft: Radius.circular(16),
+                        ),
                       ),
                       child: Center(
                         child: Text(
@@ -464,8 +483,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       decoration: BoxDecoration(
                         color: !isIndividual ? kPrimaryColor : kGreyColor,
                         borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(16),
-                            topRight: Radius.circular(16)),
+                          bottomRight: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
                       ),
                       child: Center(
                         child: Text(
@@ -495,7 +515,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                         ? 'Book the court without creating a match in the app.'
                         : 'Create a game where other players can join.',
                     style: AppStyles.w400f12inter.copyWith(
-                        color: kDarkTextColor.withValues(alpha: 0.7)),
+                      color: kDarkTextColor.withValues(alpha: 0.7),
+                    ),
                   ),
                 ),
               ],

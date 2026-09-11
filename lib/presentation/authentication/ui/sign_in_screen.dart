@@ -62,23 +62,28 @@ class _SignInScreenState extends State<SignInScreen> {
       listener: (context, state) {
         if (state.status == AuthStateStatus.success) {
           Navigator.pushNamedAndRemoveUntil(
-              context, RouteName.customBottomNavbar, (_) => false,
-              arguments: {"index": 2});
+            context,
+            RouteName.customBottomNavbar,
+            (_) => false,
+            arguments: {"index": 2},
+          );
         } else if (state.status == AuthStateStatus.unVerified) {
           context.showToast(
-              state.error ?? 'Something went wrong', isError: true);
+            state.error ?? 'Something went wrong',
+            isError: true,
+          );
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) =>
-                  OtpVerificationScreen(
-                    email: _emailController.text.trim(),
-                  ),
+                  OtpVerificationScreen(email: _emailController.text.trim()),
             ),
           );
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-              state.error ?? 'Something went wrong', isError: true);
+            state.error ?? 'Something went wrong',
+            isError: true,
+          );
         }
       },
       builder: (context, state) {
@@ -154,9 +159,9 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                           ),
                           24.heightBox,
-                          if(state.status == AuthStateStatus.loading)
+                          if (state.status == AuthStateStatus.loading)
                             Center(child: CustomLoadingView()),
-                          if(state.status != AuthStateStatus.loading)
+                          if (state.status != AuthStateStatus.loading)
                             CustomActionButton(
                               buttonText: "Sign In",
                               onTap: _onContinue,
