@@ -108,4 +108,12 @@ class AgendaRepo {
       rethrow;
     }
   }
+
+  Future<void> leaveMatch(String matchId) async {
+    try {
+      await _services.leaveMatch(matchId);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

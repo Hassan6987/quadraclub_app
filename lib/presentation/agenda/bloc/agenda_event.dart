@@ -28,3 +28,9 @@ class CancelPlayerInvite extends AgendaEvent {
 
   const CancelPlayerInvite({required this.playerId, required this.matchId});
 }
+
+class LeaveMatchEvent extends AgendaEvent {
+  final String matchId;
+
+  const LeaveMatchEvent({required this.matchId});
+}

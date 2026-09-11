@@ -36,7 +36,11 @@ class DetailsTab extends StatelessWidget {
             CommonDivider(),
             CustomActionButton(
               buttonText: "Leave this match",
-              onTap: () {},
+              onTap: () {
+                context.pop();
+                context.read<AgendaBloc>().add(
+                    LeaveMatchEvent(matchId: match.id ?? ''));
+              },
               backgroundColor: kLightPinkColor,
             ).withPaddingSymmetric(24, 16),
           ],
