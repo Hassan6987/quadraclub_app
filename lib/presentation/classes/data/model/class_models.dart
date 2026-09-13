@@ -32,7 +32,7 @@ extension SportTypeExtension on SportType {
       case 'pickleball':
         return SportType.pickleball;
       default:
-        throw ArgumentError('Invalid SportType: $value');
+        return SportType.tennis;
     }
   }
 }
@@ -54,7 +54,7 @@ extension ClassFormatExtension on ClassFormat {
       case 'individual':
         return ClassFormat.individual;
       default:
-        throw ArgumentError('Invalid ClassFormat: $value');
+        return ClassFormat.group;
     }
   }
 }
@@ -86,7 +86,7 @@ extension ClassStatusExtension on ClassStatus {
       return ClassStatus.slotsLeft;
     }
 
-    throw ArgumentError('Invalid ClassStatus: $value');
+    return ClassStatus.available;
   }
 }
 

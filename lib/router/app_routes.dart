@@ -3,8 +3,6 @@ import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dar
 import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
-import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
-import 'package:quadraclub_app/presentation/matches/ui/booking_summary_screen.dart';
 import 'package:quadraclub_app/presentation/notifications/ui/notification_screen.dart';
 import 'package:quadraclub_app/presentation/profile/ui/my_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/delete_account.dart';
@@ -41,9 +39,9 @@ class AppGenerateRoute {
         return _navigateScreen(const DeleteAccount());
       case RouteName.confirmDeleteAccountScreen:
         return _navigateScreen(const ConfirmDeleteAccount());
-      case RouteName.bookingSummaryScreen:
-        final MatchModel matchModel = setting.arguments as MatchModel;
-        return _navigateScreen(BookingSummaryScreen(match: matchModel));
+      // case RouteName.bookingSummaryScreen:
+      //   final MatchModel matchModel = setting.arguments as MatchModel;
+      //   return _navigateScreen(BookingSummaryScreen(match: matchModel));
       default:
         return _navigateScreen(const SplashScreen());
     }
@@ -96,5 +94,5 @@ class RouteName {
   static const termsConditionScreen = "/termsConditionScreen";
   static const deleteAccountScreen = "/deleteAccountScreen";
   static const confirmDeleteAccountScreen = "/confirmDeleteAccountScreen";
-  static const bookingSummaryScreen = "/bookingSummaryScreen";
+  // static const bookingSummaryScreen = "/bookingSummaryScreen";
 }

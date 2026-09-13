@@ -1,3 +1,4 @@
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/booking_summary_screen.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
@@ -6,11 +7,14 @@ import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import '/app_exports.dart';
 
 class MatchJoinBottomSheet extends StatefulWidget {
-  final MatchModel match;
+  final Booking match;
+  final double distanceKm;
 
-  const MatchJoinBottomSheet({super.key, required this.match});
+  const MatchJoinBottomSheet(
+      {super.key, required this.match, required this.distanceKm});
 
-  static Future<void> show(BuildContext context, MatchModel match) {
+  static Future<void> show(BuildContext context, Booking match,
+      double distanceKm) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -18,7 +22,8 @@ class MatchJoinBottomSheet extends StatefulWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       backgroundColor: Colors.transparent,
-      builder: (_) => MatchJoinBottomSheet(match: match),
+      builder: (_) =>
+          MatchJoinBottomSheet(match: match, distanceKm: distanceKm,),
     );
   }
 
@@ -74,7 +79,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
 
                   // Description
                   Text(
-                    widget.match.description,
+                    "${widget.match.sport.label} match for players. Come play!",
                     style: AppStyles.w400f14inter.copyWith(
                       color: kGreyTextColor,
                     ),
@@ -112,7 +117,9 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => BookingSummaryScreen(match: widget.match),
+                    builder: (_) =>
+                        BookingSummaryScreen(
+                          match: widget.match, distanceKm: widget.distanceKm,),
                   ),
                 );
               },
@@ -123,7 +130,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
     );
   }
 
-  Widget _buildMatchDetailsCard(MatchModel match) {
+  Widget _buildMatchDetailsCard(Booking match) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(color: kCardColor),
@@ -136,7 +143,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: AppCachedImage(
-                  imageUrl: match.imageAsset,
+                  imageUrl: match.club?.photo ?? '',
                   width: 64,
                   height: 64,
                 ),
@@ -154,13 +161,15 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                       ],
                     ),
                     Text(
-                      match.location,
+                      match.club?.name ?? '',
                       style: AppStyles.w500f14inter.copyWith(
                         color: kDarkTextColor,
                       ),
                     ),
                     Text(
-                      "${match.city} • ${match.distanceKm} miles • ${getFormatDateMonth(match.date)}",
+                      "${match.club?.city} • ${widget
+                          .distanceKm} miles • ${getFormatDateMonth(
+                          match.bookingDate)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),
@@ -174,9 +183,9 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CommonBadge(label: '${match.timeStart}-${match.timeEnd}'),
+              CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: match.category),
+              CommonBadge(label: "match.category"),
               4.widthBox,
               CommonBadge(label: "Ranking"),
               4.widthBox,

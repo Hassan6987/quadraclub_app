@@ -1,15 +1,16 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
-import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
-import 'package:quadraclub_app/presentation/matches/data/dummy_match_data.dart';
+import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/create_match_dialog.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_join_bottom_sheet.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
 
@@ -24,45 +25,179 @@ class _MatchesScreenState extends State<MatchesScreen> {
   bool _isMapView = false;
   String _currentLocation = 'London, UK';
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
-  SportType? _selectedSport;
-  DateTime _selectedDate = DateTime(2025, 4, 1);
-  final TextEditingController _searchController = TextEditingController();
-  final String _searchQuery = '';
-
-  String? _filterTimeOfDay;
-  String? _filterCity;
-  double _filterDistance = 25.0;
+  bool _hasUserLocation = false;
 
   final Set<String> _selectedSports = {};
-  List<DateTime> get _dates =>
-      List.generate(7, (i) => DateTime(2025, 4, 1).add(Duration(days: i)));
 
-  List<MatchModel> get _filtered {
-    return dummyMatches.where((m) {
-      final matchesSport = _selectedSport == null || m.sport == _selectedSport;
-      final matchesSearch =
-          _searchQuery.isEmpty ||
-          m.location.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          m.city.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesSport && matchesSearch;
-    }).toList();
+  // Anchor is fixed once (today, at load time) so the 7-day strip doesn't
+  // shift underneath the user; _selectedDate moves as they tap a day.
+  late final DateTime _anchorDate;
+  DateTime? _selectedDate;
+
+  final TextEditingController _searchController = TextEditingController();
+  final String _searchQuery = '';
+  String? _filterTimeOfDay;
+  String? _filterCity;
+  double? _filterDistance;
+
+  @override
+  void initState() {
+    context.read<MatchesBloc>().add(GetAllBookings());
+    final now = DateTime.now();
+    _anchorDate = DateTime(now.year, now.month, now.day);
+    _initUserLocation();
+    super.initState();
   }
 
-  Map<String, List<MatchModel>> get _groupedMatches {
-    const demoToday = 7;
+  Future<void> _initUserLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
 
-    final result = <String, List<MatchModel>>{};
-    for (final m in _filtered) {
-      String label;
-      if (m.date.day == demoToday && m.date.month == 4) {
-        label = 'Today, ${m.date.day} Apr';
-      } else if (m.date.day == demoToday + 1 && m.date.month == 4) {
-        label = 'Tomorrow, ${m.date.day} Apr';
-      } else {
-        label = '${m.date.day} Apr';
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
       }
-      result.putIfAbsent(label, () => []).add(m);
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final pos =
+            await Geolocator.getLastKnownPosition() ??
+                await Geolocator.getCurrentPosition(
+                  timeLimit: const Duration(seconds: 5),
+                );
+        if (mounted) {
+          setState(() {
+            _currentLatLng = LatLng(pos.latitude, pos.longitude);
+            _hasUserLocation = true;
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  List<DateTime> get _dates =>
+      List.generate(7, (i) => _anchorDate.add(Duration(days: i)));
+
+  double _clubDistance(Booking match) {
+    return getDistanceKm(
+      fromLat: _currentLatLng.latitude,
+      fromLng: _currentLatLng.longitude,
+      toLat: match.club?.latitude,
+      toLng: match.club?.longitude,
+    );
+  }
+
+  int? _parseHour(String? time) {
+    if (time == null || time.isEmpty) return null;
+    final parts = time.split(':');
+    if (parts.isEmpty) return null;
+    return int.tryParse(parts[0]);
+  }
+
+  bool _hasMatchingSlot(Booking match) {
+    final startHour = _parseHour(match.startTime);
+    final endHour = _parseHour(match.endTime);
+
+    if (startHour == null || endHour == null) return false;
+
+    if (_filterTimeOfDay == 'Morning' && startHour >= 6 && endHour < 12) {
+      return true;
     }
+    if (_filterTimeOfDay == 'Afternoon' && startHour >= 12 && endHour < 18) {
+      return true;
+    }
+    if (_filterTimeOfDay == 'Night' && (startHour >= 18 || endHour < 6)) {
+      return true;
+    }
+    return false;
+  }
+
+  List<Booking> _filteredMatches(List<Booking> allBookings) {
+    final query = _searchQuery.trim().toLowerCase();
+
+    final filtered = allBookings.where((match) {
+      // Sport filter
+      if (_selectedSports.isNotEmpty &&
+          !_selectedSports.contains(match.sport.name.toLowerCase())) {
+        return false;
+      }
+
+      // Search text query
+      if (query.isNotEmpty &&
+          !(match.club?.name ?? '').toLowerCase().contains(query) &&
+          !(match.club?.name ?? '').toLowerCase().contains(query)) {
+        return false;
+      }
+
+      // City filter
+      if (_filterCity != null && _filterCity!.trim().isNotEmpty) {
+        final fc = _filterCity!.trim().toLowerCase();
+        final cc = (match.club?.city ?? '').toLowerCase();
+        final cs = (match.club?.state ?? '').toLowerCase();
+        final fullCity = '$cc, $cs';
+        if (!cc.contains(fc) && !fc.contains(cc) && !fullCity.contains(fc)) {
+          return false;
+        }
+      }
+
+      // Time of Day filter
+      if (_filterTimeOfDay != null && !_hasMatchingSlot(match)) {
+        return false;
+      }
+
+      // Distance filter
+      if (_filterDistance != null) {
+        final dist = _clubDistance(match);
+        if (dist.isInfinite || dist > _filterDistance!) {
+          return false;
+        }
+      }
+
+      return true;
+    }).toList();
+
+    // Sort by proximity if coordinates are available
+    filtered.sort((a, b) {
+      final distA = _clubDistance(a);
+      final distB = _clubDistance(b);
+      return distA.compareTo(distB);
+    });
+
+    return filtered;
+  }
+
+  bool _isSameDate(DateTime a, DateTime? b) {
+    if (b == null) {
+      return true;
+    }
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  Map<String, List<Booking>> _groupedBookings(List<Booking> allBookings) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final result = <String, List<Booking>>{};
+
+    for (final c in _filteredMatches(allBookings)) {
+      final classDate = c.bookingDate;
+      if (classDate == null) {
+        continue;
+      }
+      final dateOnly = DateTime(classDate.year, classDate.month, classDate.day);
+      final String label;
+
+      if (_isSameDate(dateOnly, today)) {
+        label = 'Today, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+      } else if (_isSameDate(dateOnly, tomorrow)) {
+        label = 'Tomorrow, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+      } else {
+        label = '${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+      }
+
+      result.putIfAbsent(label, () => []).add(c);
+    }
+
     return result;
   }
 
@@ -74,196 +209,244 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isMapView) {
-      return CourtMapView(
-        courts: context.read<CourtsState>().courts,
-        currentLocation: _currentLocation,
-        initialCenter: _currentLatLng,
-        onLocationChanged: (LocationResult location) {
-          setState(() {
-            _currentLocation = location.address;
-            _currentLatLng = LatLng(location.latitude, location.longitude);
-          });
-        },
-        onBackToList: () => setState(() => _isMapView = false),
-        onApplyFilters: (timeOfDay, city, dist) {
-          setState(() {
-            _filterTimeOfDay = timeOfDay;
-            _filterCity = city;
-            _filterDistance = dist!;
-          });
-        },
-        onSportSelected: (sport) => setState(() {
-          // <-- simple toggle, no null case
-          if (_selectedSports.contains(sport)) {
-            _selectedSports.remove(sport);
-          } else {
-            _selectedSports.add(sport);
-          }
-        }),
-        selectedSports: _selectedSports,
-      );
-    }
+    return BlocBuilder<MatchesBloc, MatchesState>(
+      builder: (context, state) {
+        if (_isMapView) {
+          return CourtMapView(
+            courts: context
+                .read<CourtsBloc>()
+                .state
+                .courts,
+            currentLocation: _currentLocation,
+            initialCenter: _currentLatLng,
+            onLocationChanged: (LocationResult location) {
+              setState(() {
+                _currentLocation = location.address;
+                _currentLatLng = LatLng(location.latitude, location.longitude);
+              });
+            },
+            onBackToList: () => setState(() => _isMapView = false),
+            onApplyFilters: (timeOfDay, city, dist) {
+              setState(() {
+                _filterTimeOfDay = timeOfDay;
+                _filterCity = city;
+                _filterDistance = dist!;
+              });
+            },
+            onSportSelected: (sport) =>
+                setState(() {
+                  // <-- simple toggle, no null case
+                  if (_selectedSports.contains(sport)) {
+                    _selectedSports.remove(sport);
+                  } else {
+                    _selectedSports.add(sport);
+                  }
+                }),
+            selectedSports: _selectedSports,
+          );
+        }
+        final grouped = _groupedBookings(state.bookings);
 
-    final grouped = _groupedMatches;
-
-    return Scaffold(
-      backgroundColor: kWhiteFo,
-      appBar: CustomAppBar(
-        title: "Open Matches",
-        centerTile: false,
-        backgroundColor: kWhiteColor,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: kWhiteColor,
-              border: Border(bottom: BorderSide(color: kBorderColor)),
-            ),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 38,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (final sport in SportType.values) ...[
-                        CommonChip(
-                          label: sport.label,
-                          isSelected: _selectedSport == sport,
-                          onTap: () => setState(() {
-                            _selectedSport = _selectedSport == sport
-                                ? null
-                                : sport;
-                          }),
-                        ).paddingOnly(
-                          right: sport.index == SportType.values.length - 1
-                              ? 0
-                              : 6,
-                        ),
-                      ],
-                    ],
-                  ),
-                ).withPaddingSymmetric(16, 0),
-                12.heightBox,
-                Row(
+        return Scaffold(
+          backgroundColor: kWhiteFo,
+          appBar: CustomAppBar(
+            title: "Open Matches",
+            centerTile: false,
+            backgroundColor: kWhiteColor,
+          ),
+          body: state.status == MatchesStateStatus.loading
+              ? const Center(child: CustomLoadingView())
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: kWhiteColor,
+                  border: Border(bottom: BorderSide(color: kBorderColor)),
+                ),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: CustomTextField(
-                        controller: _searchController,
-                        hintText: "Search...",
-                        borderRadius: 100,
-                        hintStyle: AppStyles.w400f14inter,
-                      ),
-                    ),
-                    8.widthBox,
-                    GestureDetector(
-                      onTap: () => MatchFilterBottomSheet.show(context),
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: kWhiteColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: kBorderColor),
+                    SizedBox(
+                      height: 38,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
                         ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            Assets.svg.filterLines.path,
-                            colorFilter: const ColorFilter.mode(
-                              kDarkTextColor,
-                              BlendMode.srcIn,
+                        itemCount: kAllSportSlugs.length,
+                        separatorBuilder: (_, __) =>
+                        const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final sport = kAllSportSlugs[index];
+                          final isSelected = _selectedSports.contains(
+                            sport,
+                          );
+                          final label =
+                              '${sport[0].toUpperCase()}${sport
+                              .substring(1)
+                              .replaceAll('_', ' ')}';
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedSports.remove(sport);
+                                } else {
+                                  _selectedSports.add(sport);
+                                }
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? kPrimaryColor
+                                    : kGreyColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: isSelected
+                                    ? null
+                                    : Border.all(color: kBorderColor),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  label,
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kDarkTextColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ).withPaddingSymmetric(16, 0),
+                    12.heightBox,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _searchController,
+                            hintText: "Search...",
+                            borderRadius: 100,
+                            hintStyle: AppStyles.w400f14inter,
+                          ),
+                        ),
+                        8.widthBox,
+                        GestureDetector(
+                          onTap: () =>
+                              MatchFilterBottomSheet.show(context),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: kWhiteColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: kBorderColor),
+                            ),
+                            child: Center(
+                              child: SvgPicture.asset(
+                                Assets.svg.filterLines.path,
+                                colorFilter: const ColorFilter.mode(
+                                  kDarkTextColor,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    8.widthBox,
-                    GestureDetector(
-                      onTap: () {
+                        8.widthBox,
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isMapView = true;
+                            });
+                          },
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: kWhiteColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: kBorderColor),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.map_outlined,
+                                color: kDarkTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ).withPaddingSymmetric(16, 0),
+                    12.heightBox,
+                    CommonDateSelectionRow(
+                      dates: _dates,
+                      selectedDate: _selectedDate,
+                      onDateSelected: (date) {
                         setState(() {
-                          _isMapView = true;
+                          _selectedDate = date;
                         });
                       },
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: kWhiteColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: kBorderColor),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.map_outlined,
-                            color: kDarkTextColor,
-                          ),
-                        ),
-                      ),
                     ),
+                    16.heightBox,
                   ],
-                ).withPaddingSymmetric(16, 0),
-                12.heightBox,
-                CommonDateSelectionRow(
-                  dates: _dates,
-                  selectedDate: _selectedDate,
-                  onDateSelected: (date) {
-                    setState(() {
-                      _selectedDate = date;
-                    });
-                  },
                 ),
-                16.heightBox,
-              ],
+              ),
+              Expanded(
+                child: grouped.isEmpty
+                    ? Center(
+                  child: Text(
+                    'No matches found.',
+                    style: AppStyles.w600f18inter.copyWith(
+                      color: kDarkTextColor,
+                    ),
+                  ),
+                )
+                    : ListView(
+                  children: [
+                    for (final entry in grouped.entries) ...[
+                      _dateGroupHeader(label: entry.key),
+                      for (final match in entry.value)
+                        MatchCard(
+                          match: match,
+                          distanceKm: _clubDistance(match),
+                          onTap: () =>
+                              _openJoinMatch(match, _clubDistance(match)),
+                        ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: Container(
+            margin: EdgeInsets.only(bottom: 5),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: kBlackColor,
+              shape: BoxShape.circle,
+            ),
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => CreateMatchDialog(),
+                );
+              },
+              child: Icon(Icons.add, color: kWhiteColor, size: 26),
             ),
           ),
-          Expanded(
-            child: grouped.isEmpty
-                ? Center(
-                    child: Text(
-                      'No matches found.',
-                      style: AppStyles.w600f18inter.copyWith(
-                        color: kDarkTextColor,
-                      ),
-                    ),
-                  )
-                : ListView(
-                    children: [
-                      for (final entry in grouped.entries) ...[
-                        _dateGroupHeader(label: entry.key),
-                        for (final match in entry.value)
-                          MatchCard(
-                            match: match,
-                            onTap: () => _openJoinMatch(match),
-                          ),
-                      ],
-                    ],
-                  ),
-          ),
-        ],
-      ),
-      floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 5),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(color: kBlackColor, shape: BoxShape.circle),
-        child: GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => CreateMatchDialog(),
-            );
-          },
-          child: Icon(Icons.add, color: kWhiteColor, size: 26),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  void _openJoinMatch(MatchModel match) {
-    MatchJoinBottomSheet.show(context, match);
+  void _openJoinMatch(Booking match, double distanceKm) {
+    MatchJoinBottomSheet.show(context, match, distanceKm);
   }
 
   Widget _dateGroupHeader({required String label}) {

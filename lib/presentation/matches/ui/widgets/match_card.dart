@@ -6,15 +6,21 @@ import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import '/app_exports.dart';
 
 class MatchCard extends StatelessWidget {
-  final MatchModel match;
+  final Booking match;
   final VoidCallback onTap;
+  final double distanceKm;
 
-  const MatchCard({super.key, required this.match, required this.onTap});
+  const MatchCard({
+    super.key,
+    required this.match,
+    required this.onTap,
+    required this.distanceKm,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: match.status == MatchStatus.full ? 0.7 : 1,
+      opacity: match.isFull == true ? 0.7 : 1,
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: getProportionateScreenWidth(20),
@@ -35,7 +41,7 @@ class MatchCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: AppCachedImage(
-                    imageUrl: match.imageAsset,
+                    imageUrl: match.club?.photo ?? '',
                     width: 64,
                     height: 64,
                   ),
@@ -53,13 +59,15 @@ class MatchCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        match.location,
+                        match.club?.name ?? '',
                         style: AppStyles.w500f14inter.copyWith(
                           color: kDarkTextColor,
                         ),
                       ),
                       Text(
-                        "${match.city} • ${match.distanceKm} miles • ${getFormatDateMonth(match.date)}",
+                        "${match.club?.city} • ${formatDistanceKm(
+                            distanceKm)} • ${getFormatDateMonth(
+                            match.bookingDate)}",
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),
@@ -73,8 +81,8 @@ class MatchCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CommonBadge(label: '${match.timeStart}-${match.timeEnd}'),
-                CommonBadge(label: match.category),
+                CommonBadge(label: '${match.startTime}-${match.endTime}'),
+                CommonBadge(label: match.format.label),
                 CommonBadge(label: "Ranking"),
                 buildCourtStatusBadge(match),
               ],
@@ -88,22 +96,19 @@ class MatchCard extends StatelessWidget {
   }
 }
 
-Widget buildPlayersRow(
-  BuildContext cxt,
-  MatchModel match,
-  VoidCallback? onTap,
-) {
+Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
   return Padding(
     padding: const EdgeInsets.only(top: 12),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (int i = 0; i < match.players.length; i++) ...[
-          buildPlayer(cxt, match.players[i], onTap),
+        for (int i = 0; i < match.playersDetail.length; i++) ...[
+          buildPlayer(cxt, match.playersDetail[i], onTap),
 
           // Vertical divider after the occupied players
-          if (i == match.players.where((e) => !e.isAvailable).length - 1 &&
-              match.players.any((e) => e.isAvailable))
+          if (i == match.playersDetail
+              .where((e) => (e.user == null))
+              .length - 1 && match.playersDetail.any((e) => e.user != null))
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SizedBox(
@@ -117,8 +122,9 @@ Widget buildPlayersRow(
   );
 }
 
-Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
-  if (player.isAvailable) {
+Widget buildPlayer(BuildContext cxt, PlayersDetail player,
+    VoidCallback? onTap) {
+  if (player.user == null) {
     return Expanded(
       child: Column(
         children: [
@@ -148,12 +154,12 @@ Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
           ),
           const SizedBox(height: 6),
           Text(
-            player.name.isEmpty ? "Available" : player.name,
+            "Available",
             style: AppStyles.w500f14inter.copyWith(color: kGreyTextColor),
           ),
-          if (player.position != null)
+          if (player.slotName != null)
             Text(
-              player.position!,
+              player.slotName!,
               style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
             ),
         ],
@@ -178,8 +184,8 @@ Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
             height: 44,
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
-              child: player.avatarAsset != null
-                  ? Image.network(player.avatarAsset!, fit: BoxFit.cover)
+              child: player.user?.profilePhoto != null
+                  ? Image.network(player.user!.profilePhoto!, fit: BoxFit.cover)
                   : Container(
                       color: kGreyColor,
                       child: const Icon(Icons.person),
@@ -188,12 +194,12 @@ Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
           ),
           const SizedBox(height: 6),
           Text(
-            player.name,
+            player.user?.fullName ?? '',
             overflow: TextOverflow.ellipsis,
             style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           Text(
-            player.skillLevel ?? "Beginner",
+            player.slotName ?? "Beginner",
             style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
           ),
         ],
@@ -202,7 +208,7 @@ Widget buildPlayer(BuildContext cxt, PlayerModel player, VoidCallback? onTap) {
   );
 }
 
-Widget buildSeatsBadge(MatchModel match) {
+Widget buildSeatsBadge(Booking match) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
     decoration: BoxDecoration(
@@ -210,16 +216,18 @@ Widget buildSeatsBadge(MatchModel match) {
       borderRadius: BorderRadius.circular(12),
     ),
     child: Text(
-      match.status == MatchStatus.full
+      match.isFull == true
           ? 'Full'
-          : '${match.slotsLeft} Seat${match.slotsLeft > 1 ? 's' : ''}',
+          : '${match.filledSlots} Seat${(match.needsPlayers ?? 0) > 1
+          ? 's'
+          : ''}',
       style: AppStyles.w400f12inter.copyWith(color: kWhiteColor),
     ),
   );
 }
 
-Widget buildCourtStatusBadge(MatchModel match) {
-  final isConfirmed = match.courtStatus == CourtStatus.confirmed;
+Widget buildCourtStatusBadge(Booking match) {
+  final isConfirmed = match.status == CourtStatus.confirmed;
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
     decoration: BoxDecoration(

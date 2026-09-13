@@ -4,7 +4,7 @@ import 'package:quadraclub_app/presentation/profile/ui/widgets/feedback_card.dar
 import 'package:quadraclub_app/presentation/profile/ui/widgets/game_info_card.dart';
 
 class PlayerProfileScreen extends StatefulWidget {
-  final PlayerModel player;
+  final PlayersDetail player;
 
   const PlayerProfileScreen({super.key, required this.player});
 

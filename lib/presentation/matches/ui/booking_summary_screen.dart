@@ -7,9 +7,11 @@ import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import '/app_exports.dart';
 
 class BookingSummaryScreen extends StatefulWidget {
-  final MatchModel match;
+  final Booking match;
+  final double distanceKm;
 
-  const BookingSummaryScreen({super.key, required this.match});
+  const BookingSummaryScreen(
+      {super.key, required this.match, required this.distanceKm});
 
   @override
   State<BookingSummaryScreen> createState() => _BookingSummaryScreenState();
@@ -142,7 +144,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     );
   }
 
-  Widget _buildCourtDetailsCard(MatchModel match) {
+  Widget _buildCourtDetailsCard(Booking match) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -154,7 +156,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: AppCachedImage(
-                  imageUrl: match.imageAsset,
+                  imageUrl: match.club?.photo ?? '',
                   width: 64,
                   height: 64,
                 ),
@@ -172,13 +174,15 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       ],
                     ),
                     Text(
-                      match.location,
+                      match.club?.name ?? '',
                       style: AppStyles.w600f16inter.copyWith(
                         color: kDarkTextColor,
                       ),
                     ),
                     Text(
-                      "${match.city} • ${match.distanceKm} miles • ${getFormatDateMonth(match.date)}",
+                      "${match.club?.city} • ${widget
+                          .distanceKm} miles • ${getFormatDateMonth(
+                          match.bookingDate)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),
@@ -192,9 +196,9 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              CommonBadge(label: '${match.timeStart}-${match.timeEnd}'),
+              CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: match.category),
+              CommonBadge(label: 'match.category'),
               4.widthBox,
               CommonBadge(label: "Ranking"),
               4.widthBox,

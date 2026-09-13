@@ -1,4 +1,5 @@
 // Helper method to get formatted date string
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
 String getFormattedDate(DateTime viewedDate) {
@@ -23,10 +24,29 @@ String getFormattedDate(DateTime viewedDate) {
   }
 }
 
-String getFormatDateMonth(DateTime date) {
+String getFormatDateMonth(DateTime? date) {
+  if (date == null) return '—';
   return DateFormat('d MMM').format(date);
 }
 
 String getFormatDateMonthYear(DateTime date) {
   return DateFormat('d MMM, yyyy').format(date);
+}
+
+double getDistanceKm({
+  required double? fromLat,
+  required double? fromLng,
+  required double? toLat,
+  required double? toLng,
+}) {
+  if (fromLat == null || fromLng == null || toLat == null || toLng == null) {
+    return double.infinity;
+  }
+  return Geolocator.distanceBetween(fromLat, fromLng, toLat, toLng) / 1000.0;
+}
+
+/// Formats a km distance for display, e.g. "2.4 km away" or "—" when unknown.
+String formatDistanceKm(double distanceKm) {
+  if (distanceKm.isInfinite || distanceKm.isNaN) return '—';
+  return '${distanceKm.toStringAsFixed(1)} km';
 }
