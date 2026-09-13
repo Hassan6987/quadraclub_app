@@ -116,4 +116,13 @@ class AgendaRepo {
       rethrow;
     }
   }
+
+  Future<void> respondToMatchRequest(String matchId, String playerId,
+      String action) async {
+    try {
+      await _services.respondToMatchRequest(matchId, playerId, action);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

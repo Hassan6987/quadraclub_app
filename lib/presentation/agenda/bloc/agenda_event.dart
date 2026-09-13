@@ -34,3 +34,12 @@ class LeaveMatchEvent extends AgendaEvent {
 
   const LeaveMatchEvent({required this.matchId});
 }
+
+class RespondToMatchRequest extends AgendaEvent {
+  final String matchId;
+  final String playerId;
+  final String action;
+
+  const RespondToMatchRequest(
+      {required this.matchId, required this.playerId, required this.action});
+}

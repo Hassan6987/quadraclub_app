@@ -1,8 +1,10 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/actions_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/details_tab.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/invited_tab.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/requests_tab.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class MatchDetailsScreen extends StatefulWidget {
   const MatchDetailsScreen({super.key});
@@ -16,34 +18,46 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: "Match Details",
-        showBackIcon: true,
-        showActions: false,
-        showThreeDotActions: true,
-        onThreeDotTap: () {
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.transparent,
-            builder: (context) => const ActionsBottomSheet(),
-          );
-        },
-      ),
-      body: Column(
-        children: [
-          _buildTabs(),
-          Expanded(child: _buildTabContent()),
-        ],
-      ),
+    return BlocBuilder<AgendaBloc, AgendaState>(
+      builder: (context, state) {
+        if (state.status == AgendaStateStatus.fetching) {
+          return Scaffold(body: Center(child: CustomLoadingView()));
+        }
+        final match = state.matchDetails;
+        if (state.status != AgendaStateStatus.fetching && match == null) {
+          return const Center(child: Text('Nothing here yet'));
+        }
+        return Scaffold(
+          appBar: CustomAppBar(
+            title: "Match Details",
+            showBackIcon: true,
+            showActions: false,
+            showThreeDotActions: state.matchDetails!.isOwner ?? false,
+            onThreeDotTap: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const ActionsBottomSheet(),
+              );
+            },
+          ),
+          body: Column(
+            children: [
+              _buildTabs(state.matchDetails!.isOwner ?? false),
+              Expanded(child: _buildTabContent()),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildTabs() {
+  Widget _buildTabs(bool isOwner) {
+    final tabs = isOwner ? MatchDetailsTab.values : [MatchDetailsTab.details];
     return Container(
       color: kWhiteColor,
       child: Row(
-        children: MatchDetailsTab.values.map((tab) {
+        children: tabs.map((tab) {
           final selected = _selectedTab == tab;
           return Expanded(
             child: GestureDetector(

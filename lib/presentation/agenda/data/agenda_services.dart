@@ -128,4 +128,22 @@ class AgendaServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+  Future<Response> respondToMatchRequest(String matchId, String playerId,
+      String action) async {
+    try {
+      final response = await request(
+          method: HttpMethod.post,
+          endpoint: '/api/agenda/matches/$matchId/requests/$playerId/respond',
+          data: {
+            "action": action
+          }
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_court_card.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
@@ -140,6 +141,8 @@ class _AgendaScreenState extends State<AgendaScreen>
             item: item,
             actionLabel: _actionLabel,
           ).paddingOnly(bottom: 12);
+        } else if (item.agendaType == AgendaType.court) {
+          return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
         }
         return AgendaMatchCard(
           item: item,

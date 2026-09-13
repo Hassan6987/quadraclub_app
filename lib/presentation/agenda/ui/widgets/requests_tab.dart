@@ -10,7 +10,8 @@ class RequestsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AgendaBloc, AgendaState>(
       builder: (context, state) {
-        if (state.status == AgendaStateStatus.fetching) {
+        if (state.status == AgendaStateStatus.fetching ||
+            state.status == AgendaStateStatus.updating) {
           return Center(child: CustomLoadingView());
         }
         final match = state.matchDetails;
@@ -23,14 +24,14 @@ class RequestsTab extends StatelessWidget {
           separatorBuilder: (_, _) => 12.heightBox,
           itemBuilder: (context, index) {
             final request = match.requests[index];
-            return _requestItem(request);
+            return _requestItem(request, context, match.id ?? '');
           },
         );
       },
     );
   }
 
-  Widget _requestItem(Player request) {
+  Widget _requestItem(Player request, BuildContext context, String matchId) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -51,9 +52,19 @@ class RequestsTab extends StatelessWidget {
               ),
             ),
             8.widthBox,
-            _actionButton(Icons.close, kRedColor, () {}),
+            _actionButton(Icons.close, kRedColor, () {
+              context.read<AgendaBloc>().add(RespondToMatchRequest(
+                  matchId: matchId,
+                  playerId: request.id ?? '',
+                  action: "reject"));
+            }),
             8.widthBox,
-            _actionButton(Icons.check, kGreenColor, () {}),
+            _actionButton(Icons.check, kGreenColor, () {
+              context.read<AgendaBloc>().add(RespondToMatchRequest(
+                  matchId: matchId,
+                  playerId: request.id ?? '',
+                  action: "accept"));
+            }),
           ],
         ),
         if (request.message != null && request.message!.isNotEmpty) ...[

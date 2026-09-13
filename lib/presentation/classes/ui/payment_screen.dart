@@ -1,4 +1,5 @@
 import 'package:credit_card_validator/credit_card_validator.dart';
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
@@ -314,6 +315,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
             ).then((_) {
               if (!mounted) return;
               Navigator.of(context).popUntil((route) => route.isFirst);
+              context.read<AgendaBloc>().add(GetAllAgenda());
             });
           }
 

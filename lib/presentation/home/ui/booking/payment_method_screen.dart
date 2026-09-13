@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:credit_card_validator/credit_card_validator.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/individual_booking_model.dart';
@@ -312,6 +313,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 ),
               ),
             );
+            context.read<AgendaBloc>().add(GetAllAgenda());
           } else if (state.status == CourtStateStatus.failure) {
             context.showToast(
               state.error ?? "Something Went wrong",

@@ -59,6 +59,14 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
     return '$city, $state';
   }
 
+  double get _displayAmount {
+    if (_paymentOption == PaymentSplitOption.payOnlyMyPart) {
+      final divisor = _format == BookingFormat.single ? 2 : 4;
+      return widget.amount / divisor;
+    }
+    return widget.amount;
+  }
+
   Future<void> _openInvitePlayers(List<InvitePlayerModel> allPlayers) async {
     final result = await InvitePlayersSheet.show(
       context,
@@ -82,7 +90,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           endTime: widget.endTime,
           dateLabel: widget.dateLabel,
           timeLabel: widget.timeLabel,
-          amount: widget.amount,
+          amount: _displayAmount,
+          // <-- changed from widget.amount
           isMatch: true,
           invitedPlayers: _invitedPlayers.map((p) => p.id).toList(),
           matchType: _matchType.label,
@@ -506,7 +515,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: CustomActionButton(
-              buttonText: 'Book - ${formatPrice(widget.amount)}',
+              buttonText: 'Book - ${formatPrice(_displayAmount)}',
+              // <-- changed from widget.amount
               onTap: _onBookTap,
             ),
           ),

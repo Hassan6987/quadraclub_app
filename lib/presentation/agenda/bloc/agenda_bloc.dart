@@ -17,6 +17,7 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     on<InvitePlayers>(_handleInvitePlayers);
     on<CancelPlayerInvite>(_handleCancelPlayerInvite);
     on<LeaveMatchEvent>(_handleLeaveMatch);
+    on<RespondToMatchRequest>(_handleRespondToMatchRequest);
   }
 
   Future<void> _handleLoadAgenda(
@@ -118,6 +119,30 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
       emit(state.copyWith(status: AgendaStateStatus.loading));
       await _repo.leaveMatch(event.matchId);
       add(GetAllAgenda());
+    } catch (e) {
+      emit(
+        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
+
+  Future<void> _handleRespondToMatchRequest(RespondToMatchRequest event,
+      Emitter<AgendaState> emit,) async {
+    try {
+      emit(state.copyWith(status: AgendaStateStatus.updating));
+      await _repo.respondToMatchRequest(
+          event.matchId,
+          event.playerId,
+          event.action
+      );
+      final details = await _repo.getMatchDetails(event.matchId);
+      emit(
+        state.copyWith(
+          status: AgendaStateStatus.success,
+          matchDetails: details,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
