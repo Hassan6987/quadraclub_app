@@ -1,3 +1,6 @@
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
+import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
+
 enum AgendaStatus { confirmed, pending, past }
 
 enum MatchDetailsTab { details, requests, invited }
@@ -15,6 +18,8 @@ class AgendaItem {
   final String dateString;
   final String startTime;
   final String endTime;
+  final MatchFormat format;
+  final MatchType matchType;
   final String category;
   final num price;
   final String status;
@@ -44,6 +49,8 @@ class AgendaItem {
     required this.dateString,
     required this.startTime,
     required this.endTime,
+    required this.format,
+    required this.matchType,
     required this.category,
     required this.price,
     required this.status,
@@ -86,6 +93,8 @@ class AgendaItem {
       dateString: json['dateString'] ?? '',
       startTime: json['startTime'] ?? '',
       endTime: json['endTime'] ?? '',
+      format: MatchFormatExtension.fromString(json['format'] ?? ''),
+      matchType: MatchTypeExtension.fromString(json['matchType'] ?? ''),
       category: json['category'] ?? '',
       price: json['price'] ?? 0,
       status: json['status'] ?? '',

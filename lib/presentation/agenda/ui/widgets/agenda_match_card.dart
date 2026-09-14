@@ -83,7 +83,7 @@ class AgendaMatchCard extends StatelessWidget {
               ],
             ),
             16.heightBox,
-            PlayersRow(players: item.players ?? const []),
+            PlayersRow(players: item.players ?? const [], format: item.format),
             if (actionLabel != null)
               CustomActionButton(
                 backgroundColor: actionLabel == "Cancel request"

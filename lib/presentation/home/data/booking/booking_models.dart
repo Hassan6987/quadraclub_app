@@ -13,6 +13,17 @@ extension MatchTypeExtension on MatchType {
   String get description => this == MatchType.open
       ? 'Any player can join'
       : 'Only invited player can join';
+
+  static MatchType fromString(String value) {
+    switch (value.trim().toLowerCase()) {
+      case 'private':
+        return MatchType.private;
+      case 'open':
+        return MatchType.open;
+      default:
+        return MatchType.open;
+    }
+  }
 }
 
 extension BookingFormatExtension on BookingFormat {

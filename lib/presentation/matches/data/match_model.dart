@@ -19,9 +19,9 @@ extension MatchFormatExtension on MatchFormat {
 
   static MatchFormat fromString(String value) {
     switch (value.trim().toLowerCase()) {
-      case 'Single':
+      case 'single':
         return MatchFormat.singles;
-      case 'Double':
+      case 'double':
         return MatchFormat.doubles;
       default:
         return MatchFormat.singles;
@@ -34,9 +34,9 @@ extension CourtStatusExtension on CourtStatus{
 
   static CourtStatus fromString(String value) {
     switch (value.trim().toLowerCase()) {
-      case 'Pending':
+      case 'pending':
         return CourtStatus.pending;
-      case 'Confirmed':
+      case 'confirmed':
         return CourtStatus.confirmed;
       default:
         return CourtStatus.confirmed;

@@ -100,9 +100,8 @@ class DetailsTab extends StatelessWidget {
 
   Widget _playersSection(AgendaMatchDetails match) {
     final players = match.players;
-    // For Single format, there are 2 player slots.
-    // You can extend this later for other formats.
     final int maxPlayers = match.format?.toLowerCase() == 'single' ? 2 : 4;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,28 +119,16 @@ class DetailsTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            if (players.isNotEmpty)
-              _playerItem(players[0])
-            else
-              _availablePlayerItem(),
-            if (players.length > 1)
-              _playerItem(players[1])
-            else
-              _availablePlayerItem(), // Divider only for 4-player formats
-            if (maxPlayers > 2) ...[
-              Container(
-                height: 24,
-                width: 1,
-                color: kGreyTextColor,
-              ), // Player 3
-              if (players.length > 2)
-                _playerItem(players[2])
-              else
-                _availablePlayerItem(), // Player 4
-              if (players.length > 3)
-                _playerItem(players[3])
+            for (int i = 0; i < maxPlayers; i++) ...[
+              if (players.length > i)
+                _playerItem(players[i])
               else
                 _availablePlayerItem(),
+
+              // Divider sits in the middle: after slot 1 of 2 (singles),
+              // or after slot 2 of 4 (doubles).
+              if (i == (maxPlayers ~/ 2) - 1)
+                Container(height: 24, width: 1, color: kGreyTextColor),
             ],
           ],
         ),
