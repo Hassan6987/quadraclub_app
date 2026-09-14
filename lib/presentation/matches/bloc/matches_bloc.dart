@@ -12,6 +12,8 @@ class MatchesBloc extends Bloc<MatchesEvent, MatchesState> {
 
   MatchesBloc() : super(MatchesState()) {
     on<GetAllBookings>(_handleGetAllBookings);
+    on<FetchPortfolio>(_handleLoadBalance);
+    on<JoinMatchBooking>(_handleJoinMatch);
   }
 
   Future<void> _handleGetAllBookings(
@@ -28,6 +30,41 @@ class MatchesBloc extends Bloc<MatchesEvent, MatchesState> {
       emit(
         state.copyWith(status: MatchesStateStatus.failure, error: e.toString()),
       );
+    }
+  }
+
+  Future<void> _handleLoadBalance(FetchPortfolio event,
+      Emitter<MatchesState> emit,) async {
+    try {
+      emit(state.copyWith(status: MatchesStateStatus.fetching));
+      final balance = await _repo.getPortfolioBalance();
+      emit(
+          state.copyWith(status: MatchesStateStatus.success, balance: balance));
+    } catch (e) {
+      emit(state.copyWith(
+          status: MatchesStateStatus.failure, error: e.toString()));
+    }
+  }
+
+  Future<void> _handleJoinMatch(JoinMatchBooking event,
+      Emitter<MatchesState> emit,) async {
+    try {
+      emit(state.copyWith(status: MatchesStateStatus.booking));
+      await _repo.joinMatchBooking(
+          id: event.bookingId,
+          isPortfolio: event.isPortfolio,
+          name: event.cardName,
+          number: event.cardNumber,
+          cvc: event.cvc,
+          expiry: event.expiry,
+          message: event.message
+      );
+      final bookings = await _repo.getAllBookings();
+      emit(state.copyWith(
+          status: MatchesStateStatus.booked, bookings: bookings));
+    } catch (e) {
+      emit(state.copyWith(
+          status: MatchesStateStatus.failure, error: e.toString()));
     }
   }
 }

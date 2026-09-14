@@ -8,3 +8,25 @@ class MatchesEvent extends Equatable {
 }
 
 class GetAllBookings extends MatchesEvent {}
+
+class FetchPortfolio extends MatchesEvent {}
+
+class JoinMatchBooking extends MatchesEvent {
+  final String bookingId;
+  final bool isPortfolio;
+  final String? cardName;
+  final String? cardNumber;
+  final String? cvc;
+  final String? expiry;
+  final String? message;
+
+  const JoinMatchBooking({
+    required this.bookingId,
+    required this.isPortfolio,
+    required this.cardName,
+    required this.cardNumber,
+    required this.cvc,
+    required this.expiry,
+    this.message,
+  });
+}

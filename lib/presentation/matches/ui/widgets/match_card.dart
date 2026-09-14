@@ -82,7 +82,7 @@ class MatchCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CommonBadge(label: '${match.startTime}-${match.endTime}'),
-                CommonBadge(label: match.format.label),
+                CommonBadge(label: match.category),
                 CommonBadge(label: "Ranking"),
                 buildCourtStatusBadge(match),
               ],
@@ -97,6 +97,8 @@ class MatchCard extends StatelessWidget {
 }
 
 Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
+  final totalSlots = match.format == MatchFormat.singles ? 2 : 4;
+
   return Padding(
     padding: const EdgeInsets.only(top: 12),
     child: Row(
@@ -105,10 +107,10 @@ Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
         for (int i = 0; i < match.playersDetail.length; i++) ...[
           buildPlayer(cxt, match.playersDetail[i], onTap),
 
-          // Vertical divider after the occupied players
-          if (i == match.playersDetail
-              .where((e) => (e.user == null))
-              .length - 1 && match.playersDetail.any((e) => e.user != null))
+          // Divider always sits at the midpoint of the format
+          // (after slot 1 of 2 for singles, after slot 2 of 4 for doubles),
+          // regardless of how many slots are filled vs. open.
+          if (i == (totalSlots ~/ 2) - 1)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SizedBox(
@@ -218,7 +220,7 @@ Widget buildSeatsBadge(Booking match) {
     child: Text(
       match.isFull == true
           ? 'Full'
-          : '${match.filledSlots} Seat${(match.needsPlayers ?? 0) > 1
+          : '${match.needsPlayers} Seat${(match.needsPlayers ?? 0) > 1
           ? 's'
           : ''}',
       style: AppStyles.w400f12inter.copyWith(color: kWhiteColor),

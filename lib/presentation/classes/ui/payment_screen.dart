@@ -2,7 +2,7 @@ import 'package:credit_card_validator/credit_card_validator.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
-import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
+import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 import '/app_exports.dart';
@@ -50,7 +50,6 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
   // ============================================================
 
   void _revalidate() {
-    // Portfolio doesn't need card validation.
     if (_usePortfolio) {
       if (_fieldsValid) {
         setState(() {
@@ -61,14 +60,20 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
     }
 
     final cardholderValid =
-        _validateCardholder(_cardholderController.text) == null;
+        CardValidators.validateCardholder(_cardholderController.text) == null;
 
     final cardNumberValid =
-        _validateCardNumber(_cardNumberController.text) == null;
+        CardValidators.validateCardNumber(_cardNumberController.text) == null;
 
-    final expiryValid = _validateExpiry(_expiryController.text) == null;
+    final expiryValid =
+        CardValidators.validateExpiry(_expiryController.text) == null;
 
-    final cvvValid = _validateCVV(_cvvController.text) == null;
+    final cvvValid =
+        CardValidators.validateCVV(
+          _cvvController.text,
+          cardNumber: _cardNumberController.text,
+        ) ==
+        null;
 
     final isValid =
         cardholderValid && cardNumberValid && expiryValid && cvvValid;
@@ -78,103 +83,6 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
         _fieldsValid = isValid;
       });
     }
-  }
-
-  String? _validateCardholder(String? value) {
-    final v = value?.trim() ?? '';
-
-    if (v.isEmpty) {
-      return 'Enter the cardholder name';
-    }
-
-    if (!RegExp(r'^[a-zA-Z\s]{2,}$').hasMatch(v)) {
-      return 'Enter a valid name';
-    }
-
-    return null;
-  }
-
-  String? _validateCardNumber(String? value) {
-    final digits = (value ?? '').replaceAll(RegExp(r'\s'), '');
-
-    if (digits.isEmpty) {
-      return 'Enter your card number';
-    }
-
-    final result = _validator.validateCCNum(digits);
-
-    if (!result.isValid) {
-      return 'Enter a valid card number';
-    }
-
-    return null;
-  }
-
-  String? _validateExpiry(String? value) {
-    final v = value?.trim() ?? '';
-
-    if (v.isEmpty) {
-      return 'Enter expiry date';
-    }
-
-    if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(v)) {
-      return 'Enter expiry as MM/YY';
-    }
-
-    final parts = v.split('/');
-
-    final month = int.tryParse(parts[0]);
-    final year = int.tryParse(parts[1]);
-
-    if (month == null || year == null) {
-      return 'Enter a valid expiry date';
-    }
-
-    if (month < 1 || month > 12) {
-      return 'Enter a valid expiry month';
-    }
-
-    final now = DateTime.now();
-
-    final expiryYear = 2000 + year;
-
-    final expiryDate = DateTime(expiryYear, month + 1, 0, 23, 59, 59);
-
-    if (expiryDate.isBefore(now)) {
-      return 'Card has expired';
-    }
-
-    return null;
-  }
-
-  String? _validateCVV(String? value) {
-    final v = value?.trim() ?? '';
-
-    if (v.isEmpty) {
-      return 'Enter CVV';
-    }
-
-    final cardNumber = _cardNumberController.text.replaceAll(RegExp(r'\s'), '');
-
-    if (cardNumber.isNotEmpty) {
-      final cardResult = _validator.validateCCNum(cardNumber);
-
-      if (cardResult.isValid) {
-        final result = _validator.validateCVV(v, cardResult.ccType);
-
-        if (!result.isValid) {
-          return 'Enter a valid CVV';
-        }
-
-        return null;
-      }
-    }
-
-    if (v.length < 3 || v.length > 4) {
-      return 'Enter a valid CVV';
-    }
-
-    return null;
   }
 
   // ============================================================
@@ -368,7 +276,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
 
                       8.heightBox,
 
-                      _PortfolioPaymentOption(
+                      PortfolioPaymentOption(
                         balance: portfolioBalance,
                         amount: _classPrice,
                         isEnabled: portfolioEnabled,
@@ -391,7 +299,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                       // ======================================================
                       // CARD OPTION
                       // ======================================================
-                      _CardPaymentOption(
+                      CardPaymentOption(
                         isSelected: !_usePortfolio,
                         onTap: _selectCard,
                       ),
@@ -406,14 +314,15 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                             cardNumberController: _cardNumberController,
                             expiryController: _expiryController,
                             cvvController: _cvvController,
-
-                            cardholderValidator: _validateCardholder,
-
-                            cardNumberValidator: _validateCardNumber,
-
-                            expiryValidator: _validateExpiry,
-
-                            cvvValidator: _validateCVV,
+                            cardholderValidator:
+                                CardValidators.validateCardholder,
+                            cardNumberValidator:
+                                CardValidators.validateCardNumber,
+                            expiryValidator: CardValidators.validateExpiry,
+                            cvvValidator: (v) => CardValidators.validateCVV(
+                              v,
+                              cardNumber: _cardNumberController.text,
+                            ),
                           ),
                         ),
                       ],
@@ -484,158 +393,6 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _PortfolioPaymentOption extends StatelessWidget {
-  final double balance;
-  final double amount;
-  final bool isEnabled;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _PortfolioPaymentOption({
-    required this.balance,
-    required this.amount,
-    required this.isEnabled,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Opacity(
-        opacity: isEnabled ? 1 : 0.5,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: kWhiteColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isSelected ? kPrimaryColor : kWhiteFo,
-              width: isSelected ? 1.5 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                height: 44,
-                width: 44,
-                decoration: BoxDecoration(
-                  color: kCardColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.account_balance_wallet_outlined,
-                  color: kPrimaryColor,
-                ),
-              ),
-
-              12.widthBox,
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Portfolio Balance',
-                      style: AppStyles.w500f14inter.copyWith(
-                        color: kDarkTextColor,
-                      ),
-                    ),
-
-                    4.heightBox,
-
-                    Text(
-                      'Balance: ${formatPrice(balance)}',
-                      style: AppStyles.w400f12inter.copyWith(
-                        color: kGreyTextColor,
-                      ),
-                    ),
-
-                    if (!isEnabled) ...[
-                      4.heightBox,
-                      Text(
-                        'Insufficient balance',
-                        style: AppStyles.w400f12inter.copyWith(
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-
-              Radio<bool>(
-                value: true,
-                groupValue: isSelected ? true : null,
-                onChanged: isEnabled ? (_) => onTap() : null,
-                activeColor: kPrimaryColor,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CardPaymentOption extends StatelessWidget {
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _CardPaymentOption({required this.isSelected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: kWhiteColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? kPrimaryColor : kWhiteFo,
-            width: isSelected ? 1.5 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              height: 44,
-              width: 44,
-              decoration: BoxDecoration(
-                color: kCardColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.credit_card_outlined,
-                color: kPrimaryColor,
-              ),
-            ),
-
-            12.widthBox,
-
-            Expanded(
-              child: Text(
-                'Credit / Debit Card',
-                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
-              ),
-            ),
-
-            Radio<bool>(
-              value: true,
-              groupValue: isSelected ? true : null,
-              onChanged: (_) => onTap(),
-              activeColor: kPrimaryColor,
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -1,7 +1,10 @@
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
+import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/request_sent_dialog.dart';
+import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
@@ -9,36 +12,130 @@ import '/app_exports.dart';
 class BookingSummaryScreen extends StatefulWidget {
   final Booking match;
   final double distanceKm;
+  final String? message;
 
-  const BookingSummaryScreen(
-      {super.key, required this.match, required this.distanceKm});
+  const BookingSummaryScreen({
+    super.key,
+    required this.match,
+    required this.distanceKm,
+    this.message,
+  });
 
   @override
   State<BookingSummaryScreen> createState() => _BookingSummaryScreenState();
 }
 
 class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
-  final TextEditingController _cardHolderController = TextEditingController();
-  final TextEditingController _cardNumberController = TextEditingController();
-  final TextEditingController _expiryController = TextEditingController();
-  final TextEditingController _cvvController = TextEditingController();
-  bool _agreeToTerms = false;
+  final _formKey = GlobalKey<FormState>();
+
+  final _cardholderController = TextEditingController();
+  final _cardNumberController = TextEditingController();
+  final _expiryController = TextEditingController();
+  final _cvvController = TextEditingController();
+
+  bool _usePortfolio = false;
+  bool _agreedToTerms = false;
+  bool _fieldsValid = false;
+
+  double get _matchFee {
+    if (widget.match.paymentType == "pay_my_part") {
+      return widget.match.totalPrice?.toDouble() ?? 0.0;
+    } else if (widget.match.paymentType == "pay_all_receive_later") {
+      if (widget.match.format == MatchFormat.singles) {
+        return (widget.match.totalPrice?.toDouble() ?? 0.0) / 2;
+      } else {
+        return (widget.match.totalPrice?.toDouble() ?? 0.0) / 4;
+      }
+    } else {
+      return widget.match.totalPrice?.toDouble() ?? 0.0;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _cardholderController.addListener(_revalidate);
+    _cardNumberController.addListener(_revalidate);
+    _expiryController.addListener(_revalidate);
+    _cvvController.addListener(_revalidate);
+  }
 
   @override
   void dispose() {
-    _cardHolderController.dispose();
+    _cardholderController.removeListener(_revalidate);
+    _cardNumberController.removeListener(_revalidate);
+    _expiryController.removeListener(_revalidate);
+    _cvvController.removeListener(_revalidate);
+
+    _cardholderController.dispose();
     _cardNumberController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
     super.dispose();
   }
 
+  // ============================================================
+  // VALIDATION (now backed by the global CardValidators)
+  // ============================================================
+
+  void _revalidate() {
+    if (_usePortfolio) {
+      if (_fieldsValid) {
+        setState(() => _fieldsValid = false);
+      }
+      return;
+    }
+
+    final cardholderValid =
+        CardValidators.validateCardholder(_cardholderController.text) == null;
+    final cardNumberValid =
+        CardValidators.validateCardNumber(_cardNumberController.text) == null;
+    final expiryValid =
+        CardValidators.validateExpiry(_expiryController.text) == null;
+    final cvvValid =
+        CardValidators.validateCVV(
+          _cvvController.text,
+          cardNumber: _cardNumberController.text,
+        ) ==
+            null;
+
+    final isValid =
+        cardholderValid && cardNumberValid && expiryValid && cvvValid;
+
+    if (isValid != _fieldsValid && mounted) {
+      setState(() => _fieldsValid = isValid);
+    }
+  }
+
+  // ============================================================
+  // PAYMENT SELECTION
+  // ============================================================
+
+  void _selectPortfolio(bool value) {
+    if (!value) {
+      setState(() => _usePortfolio = false);
+      _revalidate();
+      return;
+    }
+    setState(() {
+      _usePortfolio = true;
+      _fieldsValid = false;
+    });
+  }
+
+  void _selectCard() {
+    setState(() => _usePortfolio = false);
+    _revalidate();
+  }
+
+  bool get _canConfirm {
+    if (!_agreedToTerms) return false;
+    if (_usePortfolio) return true;
+    return _fieldsValid;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final matchFee = 60.0; // Example fee
-    final serviceFee = 2.0;
-    final total = matchFee + serviceFee;
-
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: AppBar(
@@ -61,73 +158,139 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            16.heightBox,
-            _buildSectionHeader('COURT DETAILS'),
-            8.heightBox,
-            _buildCourtDetailsCard(widget.match),
-            16.heightBox,
+      body: BlocConsumer<MatchesBloc, MatchesState>(
+        listener: (context, state) {
+          if (state.status == MatchesStateStatus.booked) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => RequestSentDialog(),
+            ).then((_) {
+              if (!mounted) return;
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              context.read<AgendaBloc>().add(GetAllAgenda());
+            });
+          }
 
-            // Payment Method Section
-            _buildSectionHeader('PAYMENT METHOD'),
-            8.heightBox,
-            _buildPaymentMethodForm(),
-            8.heightBox,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.lock_outline, size: 16, color: kGreyTextColor),
-                const SizedBox(width: 6),
-                Text(
-                  'Secure Encrypted Payment',
-                  style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+          if (state.status == MatchesStateStatus.failure) {
+            context.showToast(
+              state.error ?? 'Something went wrong',
+              isError: true,
+            );
+          }
+        },
+        builder: (context, state) {
+          final portfolioBalance = state.balance.toDouble();
+          final portfolioEnabled = portfolioBalance >= _matchFee;
+
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionHeader('COURT DETAILS'),
+                      8.heightBox,
+                      _buildCourtDetailsCard(widget.match),
+                      20.heightBox,
+
+                      _buildSectionHeader('PAYMENT METHOD'),
+                      8.heightBox,
+
+                      PortfolioPaymentOption(
+                        balance: portfolioBalance,
+                        amount: _matchFee,
+                        isEnabled: portfolioEnabled,
+                        isSelected: _usePortfolio,
+                        onTap: () {
+                          if (!portfolioEnabled) {
+                            context.showToast(
+                              'Insufficient portfolio balance',
+                              isError: true,
+                            );
+                            return;
+                          }
+                          _selectPortfolio(true);
+                        },
+                      ).withPaddingSymmetric(20, 0),
+
+                      12.heightBox,
+
+                      CardPaymentOption(
+                        isSelected: !_usePortfolio,
+                        onTap: _selectCard,
+                      ).withPaddingSymmetric(20, 0),
+
+                      if (!_usePortfolio) ...[
+                        10.heightBox,
+                        Form(
+                          key: _formKey,
+                          child: PaymentForm(
+                            cardholderController: _cardholderController,
+                            cardNumberController: _cardNumberController,
+                            expiryController: _expiryController,
+                            cvvController: _cvvController,
+                            cardholderValidator:
+                            CardValidators.validateCardholder,
+                            cardNumberValidator:
+                            CardValidators.validateCardNumber,
+                            expiryValidator: CardValidators.validateExpiry,
+                            cvvValidator: (v) =>
+                                CardValidators.validateCVV(
+                                  v,
+                                  cardNumber: _cardNumberController.text,
+                                ),
+                          ),
+                        ).withPaddingSymmetric(20, 0),
+                      ],
+
+                      20.heightBox,
+                      _buildSectionHeader('PRICE DETAILS'),
+                      8.heightBox,
+                      _buildPriceDetails(_matchFee, 0, _matchFee),
+                      16.heightBox,
+
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() => _agreedToTerms = !_agreedToTerms),
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: _agreedToTerms,
+                              activeColor: kPrimaryColor,
+                              side: BorderSide(color: kTextColor, width: 2),
+                              onChanged: (val) =>
+                                  setState(() => _agreedToTerms = val ?? false),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'I agree to the terms of use.',
+                                style: AppStyles.w400f14inter.copyWith(
+                                  color: kTextColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ).withPaddingSymmetric(20, 0),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            16.heightBox,
-
-            // Price Details Section
-            _buildSectionHeader('PRICE DETAILS'),
-            8.heightBox,
-            _buildPriceDetails(matchFee, serviceFee, total),
-            16.heightBox,
-            GestureDetector(
-              onTap: () => setState(() => _agreeToTerms = !_agreeToTerms),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: _agreeToTerms,
-                    activeColor: kPrimaryColor,
-                    side: BorderSide(color: kTextColor, width: 2),
-                    onChanged: (val) =>
-                        setState(() => _agreeToTerms = val ?? false),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'I agree to the terms of use.',
-                      style: AppStyles.w400f14inter.copyWith(color: kTextColor),
-                    ),
-                  ),
-                ],
               ),
-            ).withPaddingSymmetric(20, 0),
-            32.heightBox,
 
-            // Pay Now Button
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: CustomActionButton(
-                buttonText: "Pay Now",
-                onTap: _agreeToTerms ? _processPayment : null,
-                isEnabled: _agreeToTerms,
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: CustomActionButton(
+                  buttonText: 'Pay Now',
+                  onTap: _canConfirm ? _processPayment : null,
+                  isEnabled: _canConfirm,
+                ),
               ),
-            ),
-            32.heightBox,
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -150,7 +313,6 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image placeholder
           Row(
             children: [
               ClipRRect(
@@ -180,8 +342,8 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       ),
                     ),
                     Text(
-                      "${match.club?.city} • ${widget
-                          .distanceKm} miles • ${getFormatDateMonth(
+                      "${match.club?.city} • ${formatDistanceKm(
+                          widget.distanceKm)} • ${getFormatDateMonth(
                           match.bookingDate)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
@@ -198,7 +360,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             children: [
               CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: 'match.category'),
+              CommonBadge(label: match.category),
               4.widthBox,
               CommonBadge(label: "Ranking"),
               4.widthBox,
@@ -206,48 +368,6 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             ],
           ),
           12.heightBox,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentMethodForm() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: kWhiteColor,
-        border: Border.all(color: kBorderF0),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        children: [
-          // buildTextField(
-          //   _cardHolderController,
-          //   'Cardholder name',
-          //   icon: Icons.person_outline,
-          // ),
-          // 10.heightBox,
-          // buildTextField(
-          //   _cardNumberController,
-          //   'Card number',
-          //   icon: Icons.credit_card,
-          // ),
-          // 10.heightBox,
-          // Row(
-          //   children: [
-          //     Expanded(
-          //       child: buildTextField(
-          //         _expiryController,
-          //         'MM/YY',
-          //       ),
-          //     ),
-          //     10.widthBox,
-          //     Expanded(
-          //       child: buildTextField(_cvvController, 'CVV'),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -268,7 +388,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Match Fee (2 hrs)',
+                'Match Fee',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
@@ -311,15 +431,15 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   }
 
   void _processPayment() {
-    Navigator.pop(context);
-    _showRequestSentDialog();
-  }
-
-  void _showRequestSentDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => RequestSentDialog(),
-    );
+    if (!_canConfirm) return;
+    context.read<MatchesBloc>().add(JoinMatchBooking(
+      bookingId: widget.match.id ?? '',
+      isPortfolio: _usePortfolio,
+      cvc: _cvvController.text,
+      cardName: _cardholderController.text,
+      cardNumber: _cardNumberController.text,
+      expiry: _expiryController.text,
+      message: widget.message,
+    ));
   }
 }

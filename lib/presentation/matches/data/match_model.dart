@@ -68,6 +68,7 @@ class Booking {
     required this.filledSlots,
     required this.needsPlayers,
     required this.isFull,
+    required this.category
   });
 
   final String? id;
@@ -92,6 +93,7 @@ class Booking {
   final int? filledSlots;
   final int? needsPlayers;
   final bool? isFull;
+  final String category;
 
   factory Booking.fromJson(Map<String, dynamic> json){
     return Booking(
@@ -119,6 +121,7 @@ class Booking {
       filledSlots: json["filledSlots"],
       needsPlayers: json["needsPlayers"],
       isFull: json["isFull"],
+        category: json['category'] ?? ''
     );
   }
 

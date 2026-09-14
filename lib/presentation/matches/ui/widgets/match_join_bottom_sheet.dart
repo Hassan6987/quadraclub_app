@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/booking_summary_screen.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
@@ -113,13 +114,16 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
             child: CustomActionButton(
               buttonText: "Send Request",
               onTap: () {
+                context.read<MatchesBloc>().add(FetchPortfolio());
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
                         BookingSummaryScreen(
-                          match: widget.match, distanceKm: widget.distanceKm,),
+                          match: widget.match,
+                          distanceKm: widget.distanceKm,
+                          message: _messageController.text.trim(),),
                   ),
                 );
               },
@@ -167,8 +171,8 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                       ),
                     ),
                     Text(
-                      "${match.club?.city} • ${widget
-                          .distanceKm} miles • ${getFormatDateMonth(
+                      "${match.club?.city} • ${formatDistanceKm(
+                          widget.distanceKm)} • ${getFormatDateMonth(
                           match.bookingDate)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
@@ -185,7 +189,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
             children: [
               CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: "match.category"),
+              CommonBadge(label: match.category),
               4.widthBox,
               CommonBadge(label: "Ranking"),
               4.widthBox,
