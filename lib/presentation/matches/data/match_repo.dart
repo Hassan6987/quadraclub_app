@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:quadraclub_app/data/stripe-services.dart';
 import 'package:quadraclub_app/di/locator.dart';
+import 'package:quadraclub_app/presentation/authentication/data/model/user_model.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_services.dart';
 
@@ -80,6 +81,18 @@ class MatchRepo {
             message: message
         );
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+  Future<UserModel> getUserDetails(String id) async {
+    try {
+      final response = await _services.getUserDetails(id);
+      final responseData = response.data;
+      final user = UserModel.fromJson(responseData['user']);
+      return user;
     } catch (e) {
       rethrow;
     }

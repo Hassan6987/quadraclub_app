@@ -2,19 +2,57 @@ import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 
 import '/app_exports.dart';
 
-enum MatchTimeOfDay { morning, afternoon, night }
-
 enum MatchLevelFilter { all, select }
 
 class MatchFilterBottomSheet extends StatefulWidget {
-  const MatchFilterBottomSheet({super.key});
+  final String? initialTimeOfDay;
+  final String? initialCity;
+  final double? initialDistance;
+  final MatchFormat? initialFormat;
+  final List<String> availableCities;
+  final void Function(
+      String? timeOfDay,
+      String? city,
+      double? distance,
+      MatchFormat? format,
+      ) onApply;
 
-  static Future<void> show(BuildContext context) {
+  const MatchFilterBottomSheet({
+    super.key,
+    this.initialTimeOfDay,
+    this.initialCity,
+    this.initialDistance,
+    this.initialFormat,
+    this.availableCities = const [],
+    required this.onApply,
+  });
+
+  static Future<void> show(BuildContext context, {
+    String? initialTimeOfDay,
+    String? initialCity,
+    double? initialDistance,
+    MatchFormat? initialFormat,
+    List<String> availableCities = const [],
+    required void Function(
+        String? timeOfDay,
+        String? city,
+        double? distance,
+        MatchFormat? format,
+        ) onApply,
+  }) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       constraints: BoxConstraints(maxHeight: 680),
-      builder: (_) => const MatchFilterBottomSheet(),
+      builder: (_) =>
+          MatchFilterBottomSheet(
+            initialTimeOfDay: initialTimeOfDay,
+            initialCity: initialCity,
+            initialDistance: initialDistance,
+            initialFormat: initialFormat,
+            availableCities: availableCities,
+            onApply: onApply,
+          ),
     );
   }
 
@@ -23,11 +61,59 @@ class MatchFilterBottomSheet extends StatefulWidget {
 }
 
 class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
-  final Set<MatchTimeOfDay> _selectedTimes = {};
-  MatchLevelFilter _level = MatchLevelFilter.all;
-  MatchFormat _format = MatchFormat.doubles;
+  String? _timeOfDay;
+  MatchLevelFilter _level = MatchLevelFilter
+      .all; // visual only — see note below
+  MatchFormat? _format;
+  String? _selectedCity;
   double _distance = 25;
+  bool _enableDistance = false;
   final TextEditingController _searchController = TextEditingController();
+
+  List<String> get _quickCities {
+    if (widget.availableCities.isNotEmpty)
+      return widget.availableCities.take(3).toList();
+    return const ['New York', 'Los Angeles', 'Chicago'];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _timeOfDay = widget.initialTimeOfDay;
+    _format = widget.initialFormat;
+    _selectedCity = widget.initialCity;
+    if (widget.initialDistance != null) {
+      _distance = widget.initialDistance!;
+      _enableDistance = true;
+    }
+    if (_selectedCity != null) {
+      _searchController.text = _selectedCity!;
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _selectTime(String label) {
+    setState(() {
+      _timeOfDay = _timeOfDay == label ? null : label;
+    });
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _timeOfDay = null;
+      _level = MatchLevelFilter.all;
+      _format = null;
+      _selectedCity = null;
+      _distance = 25;
+      _enableDistance = false;
+      _searchController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,26 +156,20 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       TimeChip(
                         label: 'Morning',
                         subtitle: '6h - 12h',
-                        isSelected: _selectedTimes.contains(
-                          MatchTimeOfDay.morning,
-                        ),
-                        onTap: () => _toggleTime(MatchTimeOfDay.morning),
+                        isSelected: _timeOfDay == 'Morning',
+                        onTap: () => _selectTime('Morning'),
                       ),
                       TimeChip(
                         label: 'Afternoon',
                         subtitle: '12h - 18h',
-                        isSelected: _selectedTimes.contains(
-                          MatchTimeOfDay.afternoon,
-                        ),
-                        onTap: () => _toggleTime(MatchTimeOfDay.afternoon),
+                        isSelected: _timeOfDay == 'Afternoon',
+                        onTap: () => _selectTime('Afternoon'),
                       ),
                       TimeChip(
                         label: 'Night',
                         subtitle: '6 PM - 12 AM',
-                        isSelected: _selectedTimes.contains(
-                          MatchTimeOfDay.night,
-                        ),
-                        onTap: () => _toggleTime(MatchTimeOfDay.night),
+                        isSelected: _timeOfDay == 'Night',
+                        onTap: () => _selectTime('Night'),
                       ),
                     ],
                   ),
@@ -120,6 +200,11 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
+                        label: 'All formats',
+                        isSelected: _format == null,
+                        onTap: () => setState(() => _format = null),
+                      ),
+                      ToggleChip(
                         label: 'Singles',
                         isSelected: _format == MatchFormat.singles,
                         onTap: () =>
@@ -140,35 +225,77 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                     controller: _searchController,
                     hintText: 'Search...',
                     borderRadius: 999,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCity = value
+                            .trim()
+                            .isEmpty ? null : value.trim();
+                      });
+                    },
                   ),
                   8.heightBox,
                   IntrinsicHeight(
                     child: Row(
                       spacing: getProportionateScreenHeight(6),
-                      children: [
-                        _buildCityDistanceCard(
-                          label: 'New York',
-                          distance: '0 km',
-                        ),
-                        _buildCityDistanceCard(
-                          label: 'Los Angeles',
-                          distance: '10 km',
-                        ),
-                        _buildCityDistanceCard(
-                          label: 'Chicago',
-                          distance: '15 km',
-                        ),
-                      ],
+                      children: _quickCities.map((city) {
+                        final isSelected =
+                            (_selectedCity ?? '').toLowerCase() ==
+                                city.toLowerCase();
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedCity = null;
+                                  _searchController.clear();
+                                } else {
+                                  _selectedCity = city;
+                                  _searchController.text = city;
+                                }
+                              });
+                            },
+                            child: _buildCityCard(
+                                label: city, isSelected: isSelected),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                   24.heightBox,
-                  _sectionLabel(label: 'Max Distance'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _sectionLabel(label: 'Max Distance'),
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() => _enableDistance = !_enableDistance),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _enableDistance ? kPrimaryColor : kGreyColor,
+                            borderRadius: BorderRadius.circular(12),
+                            border: _enableDistance ? null : Border.all(
+                                color: kBorderColor),
+                          ),
+                          child: Text(
+                            _enableDistance
+                                ? 'Within ${_distance.round()} km'
+                                : 'Any distance',
+                            style: AppStyles.w500f12inter.copyWith(
+                                color: kDarkTextColor),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   6.heightBox,
                   DistanceSlider(
                     distance: _distance,
                     onChanged: (value) {
                       setState(() {
                         _distance = value;
+                        _enableDistance = true;
                       });
                     },
                   ),
@@ -195,6 +322,12 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                 child: CustomActionButton(
                   buttonText: "Show Results",
                   onTap: () {
+                    widget.onApply(
+                      _timeOfDay,
+                      _selectedCity,
+                      _enableDistance ? _distance : null,
+                      _format,
+                    );
                     Navigator.pop(context);
                   },
                 ),
@@ -205,25 +338,6 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
       ).withPaddingSymmetric(0, 16),
     );
   }
-
-  void _toggleTime(MatchTimeOfDay t) {
-    setState(() {
-      if (_selectedTimes.contains(t)) {
-        _selectedTimes.remove(t);
-      } else {
-        _selectedTimes.add(t);
-      }
-    });
-  }
-
-  void _clearFilters() {
-    setState(() {
-      _selectedTimes.clear();
-      _level = MatchLevelFilter.all;
-      _format = MatchFormat.doubles;
-      _distance = 25;
-    });
-  }
 }
 
 Widget _sectionLabel({required String label}) {
@@ -233,30 +347,17 @@ Widget _sectionLabel({required String label}) {
   );
 }
 
-Widget _buildCityDistanceCard({
-  required String label,
-  required String distance,
-}) {
-  return Expanded(
-    child: Container(
-      decoration: BoxDecoration(
-        color: kGreyColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        spacing: getProportionateScreenHeight(6),
-        children: [
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
-          ),
-          Text(
-            distance,
-            style: AppStyles.w400f12inter.copyWith(color: kDarkTextColor),
-          ),
-        ],
-      ).withPaddingSymmetric(8, 8),
+Widget _buildCityCard({required String label, required bool isSelected}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: isSelected ? kPrimaryColor.withValues(alpha: 0.2) : kGreyColor,
+      borderRadius: BorderRadius.circular(12),
+      border: isSelected ? Border.all(color: kPrimaryColor) : null,
     ),
+    child: Text(
+      label,
+      textAlign: TextAlign.center,
+      style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
+    ).withPaddingSymmetric(8, 8),
   );
 }

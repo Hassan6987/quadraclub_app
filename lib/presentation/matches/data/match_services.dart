@@ -57,4 +57,18 @@ class MatchServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+  Future<Response> getUserDetails(String id) async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/users/$id',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

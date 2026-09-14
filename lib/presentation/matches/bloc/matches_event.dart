@@ -30,3 +30,9 @@ class JoinMatchBooking extends MatchesEvent {
     this.message,
   });
 }
+
+class FetchPlayerDetails extends MatchesEvent {
+  final String id;
+
+  const FetchPlayerDetails({required this.id});
+}

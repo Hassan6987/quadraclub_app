@@ -175,7 +175,8 @@ Widget buildPlayer(BuildContext cxt, PlayersDetail player,
         Navigator.push(
           cxt,
           MaterialPageRoute(
-            builder: (_) => PlayerProfileScreen(player: player),
+            builder: (_) =>
+                PlayerProfileScreen(playerId: player.user?.id ?? ''),
           ),
         );
       },

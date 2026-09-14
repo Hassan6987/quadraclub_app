@@ -10,7 +10,7 @@ extension SportTypeExtension on SportType {
   String get label {
     switch (this) {
       case SportType.pedal:
-        return 'Pedal';
+        return 'Padel';
       case SportType.tennis:
         return 'Tennis';
       case SportType.beachTennis:
