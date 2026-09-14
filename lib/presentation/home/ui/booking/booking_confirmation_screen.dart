@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
@@ -9,6 +10,7 @@ class BookingConfirmationScreen extends StatelessWidget {
   final String dateLabel;
   final String timeLabel;
   final String blockLabel;
+  final double distance;
 
   const BookingConfirmationScreen({
     super.key,
@@ -16,6 +18,7 @@ class BookingConfirmationScreen extends StatelessWidget {
     required this.dateLabel,
     required this.timeLabel,
     required this.blockLabel,
+    required this.distance,
   });
 
   @override
@@ -135,7 +138,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                       ),
                     ).withPaddingSymmetric(10, 0),
                     Text(
-                      '${club.city} • 2.5 miles',
+                      '${club.city} • ${formatDistanceKm(distance)}',
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

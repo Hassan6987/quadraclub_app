@@ -49,5 +49,5 @@ double getDistanceKm({
 /// Formats a km distance for display, e.g. "2.4 km away" or "—" when unknown.
 String formatDistanceKm(double distanceKm) {
   if (distanceKm.isInfinite || distanceKm.isNaN) return '—';
-  return '${distanceKm.toStringAsFixed(1)} km';
+  return '${distanceKm.toStringAsFixed(1)} miles';
 }

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
@@ -47,14 +48,55 @@ class _CourtMapViewState extends State<CourtMapView> {
   GoogleMapController? _mapController;
   late final PageController _pageController;
   int _activePageIndex = 0;
+  LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
 
   // Only courts we can actually place a pin for.
   List<Club> get _mappableCourts => widget.courts.toList();
+
+  double _clubDistance(Club club) {
+    if (club.coordinates?.latitude == null ||
+        club.coordinates?.longitude == null) {
+      return double.infinity;
+    }
+    return Geolocator.distanceBetween(
+          _currentLatLng.latitude,
+          _currentLatLng.longitude,
+          club.coordinates!.latitude!,
+          club.coordinates!.longitude!,
+        ) /
+        1000.0;
+  }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.85);
+    _initUserLocation();
+  }
+
+  Future<void> _initUserLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final pos =
+            await Geolocator.getLastKnownPosition() ??
+            await Geolocator.getCurrentPosition(
+              timeLimit: const Duration(seconds: 5),
+            );
+        if (mounted) {
+          setState(() {
+            _currentLatLng = LatLng(pos.latitude, pos.longitude);
+          });
+        }
+      }
+    } catch (_) {}
   }
 
   @override
@@ -396,8 +438,10 @@ class _CourtMapViewState extends State<CourtMapView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      CourtDetailScreen(club: court),
+                                  builder: (_) => CourtDetailScreen(
+                                    club: court,
+                                    distance: _clubDistance(court),
+                                  ),
                                 ),
                               );
                             },

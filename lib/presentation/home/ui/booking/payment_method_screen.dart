@@ -8,6 +8,7 @@ import 'package:quadraclub_app/presentation/home/data/models/individual_booking_
 import 'package:quadraclub_app/presentation/home/data/models/match_booking_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../data/booking/booking_models.dart';
@@ -26,6 +27,7 @@ class PaymentMethodScreen extends StatefulWidget {
   final String? matchType;
   final String? matchFormat;
   final String? paymentType;
+  final double distance;
 
   const PaymentMethodScreen({
     super.key,
@@ -42,6 +44,7 @@ class PaymentMethodScreen extends StatefulWidget {
     this.matchType,
     this.matchFormat,
     this.paymentType,
+    required this.distance
   });
 
   @override
@@ -310,6 +313,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   dateLabel: widget.dateLabel,
                   timeLabel: widget.timeLabel,
                   blockLabel: widget.court.courtName ?? '',
+                  distance: widget.distance,
                 ),
               ),
             );
@@ -407,7 +411,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                   ),
 
                                   Text(
-                                    '${widget.court.courtName ?? ''} • ${widget.club.city}',
+                                    '${widget.club.city ??
+                                        ''} • ${formatDistanceKm(
+                                        widget.distance)}',
                                     style: AppStyles.w400f14inter.copyWith(
                                       color: kTextColor,
                                     ),

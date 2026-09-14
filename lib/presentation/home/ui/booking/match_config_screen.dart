@@ -7,6 +7,7 @@ import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/invite_player_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MatchConfigScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class MatchConfigScreen extends StatefulWidget {
   final String endTime;
   final String timeLabel;
   final double amount;
+  final double distance;
 
   const MatchConfigScreen({
     super.key,
@@ -29,6 +31,7 @@ class MatchConfigScreen extends StatefulWidget {
     required this.bookingDate,
     required this.startTime,
     required this.endTime,
+    required this.distance,
   });
 
   @override
@@ -97,6 +100,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           matchType: _matchType.label,
           matchFormat: _format.label,
           paymentType: _paymentOption.type,
+          distance: widget.distance,
         ),
       ),
     );
@@ -191,7 +195,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                 ),
                               ),
                               Text(
-                                '${widget.court.courtName ?? ''} • $_locationLabel',
+                                '$_locationLabel • ${formatDistanceKm(widget.distance)}',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),

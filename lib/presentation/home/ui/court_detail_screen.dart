@@ -3,12 +3,15 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_sheet.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CourtDetailScreen extends StatefulWidget {
   final Club club;
+  final double distance;
 
-  const CourtDetailScreen({super.key, required this.club});
+  const CourtDetailScreen(
+      {super.key, required this.club, required this.distance});
 
   @override
   State<CourtDetailScreen> createState() => _CourtDetailScreenState();
@@ -221,6 +224,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
       startTime: slot.startTime ?? '',
       sportName: _selectedSportName,
       court: court,
+        distance: widget.distance
     );
   }
 
@@ -317,7 +321,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   4.heightBox,
 
                   Text(
-                    _locationLabel,
+                    "$_locationLabel • ${formatDistanceKm(widget.distance)}",
                     style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                   ),
 

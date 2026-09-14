@@ -5,6 +5,7 @@ import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dar
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/match_config_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummarySheet extends StatefulWidget {
@@ -14,6 +15,7 @@ class BookingSummarySheet extends StatefulWidget {
   final DateTime date;
   final String startTime;
   final String? endTime;
+  final double distance;
 
   const BookingSummarySheet({
     super.key,
@@ -22,6 +24,7 @@ class BookingSummarySheet extends StatefulWidget {
     required this.sportName,
     required this.date,
     required this.startTime,
+    required this.distance,
     this.endTime,
   });
 
@@ -32,7 +35,7 @@ class BookingSummarySheet extends StatefulWidget {
     required String? sportName,
     required DateTime date,
     required String startTime,
-    String? endTime,
+        String? endTime, required double distance
   }) {
     return showModalBottomSheet(
       context: context,
@@ -48,6 +51,7 @@ class BookingSummarySheet extends StatefulWidget {
         date: date,
         startTime: startTime,
         endTime: endTime,
+        distance: distance,
       ),
     );
   }
@@ -219,6 +223,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             bookingDate: widget.date,
             timeLabel: '$_selectedStartTime-$_selectedEndTime',
             amount: _amount,
+            distance: widget.distance,
           ),
         ),
       );
@@ -236,6 +241,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             dateLabel: _dateLabel,
             timeLabel: '$_selectedStartTime-$_selectedEndTime',
             amount: _amount,
+            distance: widget.distance,
           ),
         ),
       );
@@ -337,7 +343,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                         Text(
                           // Distance isn't real geodata yet — carried over
                           // from the original mock as a visual placeholder.
-                          '$_locationLabel  •  2.5 miles',
+                          '$_locationLabel  •  ${formatDistanceKm(
+                              widget.distance)}',
                           style: AppStyles.w400f14inter.copyWith(
                             color: kGreyTextColor,
                           ),

@@ -586,6 +586,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                         builder: (_) => CourtDetailScreen(
                                           club: clubsList[index],
+                                          distance: _clubDistance(
+                                              clubsList[index]),
                                         ),
                                       ),
                                     );
