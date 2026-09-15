@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
@@ -31,7 +32,7 @@ class DetailsTab extends StatelessWidget {
             16.heightBox,
             _playersSection(match),
             16.heightBox,
-            _groupChatSection(),
+            _groupChatSection(context, match.chat),
             Spacer(),
             CommonDivider(),
             CustomActionButton(
@@ -159,7 +160,7 @@ class DetailsTab extends StatelessWidget {
     );
   }
 
-  Widget _groupChatSection() {
+  Widget _groupChatSection(BuildContext context, AgendaMatchChat? chat) {
     return Container(
       decoration: BoxDecoration(
         color: kPrimaryColor.withValues(alpha: 0.10),
@@ -191,7 +192,17 @@ class DetailsTab extends StatelessWidget {
           ),
           CustomActionButton(
             buttonText: 'Chat',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      AgendaChatScreen(chatId: chat?.id ?? '',
+                          label: chat?.chatName ?? "Group Chat",
+                          userCount: chat?.users.length ?? 1),
+                ),
+              );
+            },
             width: 84,
             height: 40,
           ),

@@ -21,6 +21,7 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     on<RespondToMatchRequest>(_handleRespondToMatchRequest);
     on<RespondToInvitation>(_handleRespondToInvitation);
     on<CancelJoinRequest>(_handleCancelJoinRequest);
+    on<FetchPortfolio>(_handleFetchPortfolio);
   }
 
   Future<void> _handleLoadAgenda(
@@ -139,6 +140,19 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
+  Future<void> _handleFetchPortfolio(FetchPortfolio event,
+      Emitter<AgendaState> emit,) async {
+    try {
+      emit(state.copyWith(status: AgendaStateStatus.fetching));
+      final balance = await _repo.getPortfolioBalance();
+      emit(state.copyWith(status: AgendaStateStatus.fetched, balance: balance));
+    } catch (e) {
+      emit(
+        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
   Future<void> _handleRespondToMatchRequest(RespondToMatchRequest event,
       Emitter<AgendaState> emit,) async {
     try {
@@ -151,7 +165,7 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
       final details = await _repo.getMatchDetails(event.matchId);
       emit(
         state.copyWith(
-          status: AgendaStateStatus.success,
+          status: AgendaStateStatus.updated,
           matchDetails: details,
         ),
       );
@@ -167,23 +181,31 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
       Emitter<AgendaState> emit,) async {
     try {
       emit(state.copyWith(status: AgendaStateStatus.updating));
-      await _repo.respondToMatchInvitation(event.id, event.action);
+      await _repo.respondToMatchInvitation(
+          matchId: event.id,
+          action: event.action,
+          requirePayment: event.requiresPayment,
+          usePortfolio: event.usePortfolio,
+          name: event.cardHolderName,
+          number: event.cardNumber,
+          expiry: event.expiry,
+          cvc: event.cvc
+      );
       final response = await _repo.getPlayerInvitations();
       final confirmed = await _repo.getConfirmedAgenda();
       emit(
         state.copyWith(
-            status: AgendaStateStatus.success,
-            invitations: response,
-            confirmedAgenda: confirmed
+          status: AgendaStateStatus.updated,
+          invitations: response,
+          confirmedAgenda: confirmed,
         ),
       );
     } catch (e) {
       emit(
-        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+        state.copyWith(status: AgendaStateStatus.error, error: e.toString()),
       );
     }
   }
-
 
   Future<void> _handleCancelJoinRequest(CancelJoinRequest event,
       Emitter<AgendaState> emit,) async {

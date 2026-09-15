@@ -2,6 +2,7 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/chat_item.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class MyChatsScreen extends StatefulWidget {
   const MyChatsScreen({super.key});
@@ -93,7 +94,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
         if (state is ChatsLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CustomLoadingView());
         }
 
         if (state is ChatsError) {

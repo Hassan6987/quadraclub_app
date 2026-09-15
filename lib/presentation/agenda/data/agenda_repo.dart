@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:parsing_util/parsing_util.dart';
+import 'package:quadraclub_app/data/stripe-services.dart';
 import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/data/agenda_services.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
@@ -25,8 +29,8 @@ class AgendaRepo {
     try {
       final response = await _services.getPendingAgenda();
       final data = response.data as Map<String, dynamic>;
-      final List<dynamic> classesJson = data['requested'] as List<dynamic>? ??
-          [];
+      final List<dynamic> classesJson =
+          data['requested'] as List<dynamic>? ?? [];
       return classesJson
           .map((json) => AgendaItem.fromJson(json as Map<String, dynamic>))
           .toList();
@@ -63,8 +67,8 @@ class AgendaRepo {
     try {
       final response = await _services.getPendingInvitations();
       final data = response.data as Map<String, dynamic>;
-      final List<dynamic> playersJson = data['invitations'] as List<dynamic>? ??
-          [];
+      final List<dynamic> playersJson =
+          data['invitations'] as List<dynamic>? ?? [];
       return playersJson
           .map(
             (json) => AgendaInvitation.fromJson(json as Map<String, dynamic>),
@@ -108,6 +112,16 @@ class AgendaRepo {
     }
   }
 
+  Future<double> getPortfolioBalance() async {
+    try {
+      final response = await _services.getPortfolioBalance();
+      final data = response.data as Map<String, dynamic>;
+      return ParsingUtil.toSafeDouble(data['portfolioBalance']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<InvitePlayerModel>> cancelPlayerInvite(
     String playerId,
     String matchId,
@@ -135,8 +149,9 @@ class AgendaRepo {
     }
   }
 
-  Future<void> respondToMatchRequest(String matchId, String playerId,
-      String action) async {
+  Future<void> respondToMatchRequest(String matchId,
+      String playerId,
+      String action,) async {
     try {
       await _services.respondToMatchRequest(matchId, playerId, action);
     } catch (e) {
@@ -152,9 +167,54 @@ class AgendaRepo {
     }
   }
 
-  Future<void> respondToMatchInvitation(String matchId, String action) async {
+  Future<void> respondToMatchInvitation({
+    required String matchId,
+    required String action,
+    required bool requirePayment,
+    required bool usePortfolio,
+    String? name,
+    String? number,
+    String? cvc,
+    String? expiry,
+  }) async {
     try {
-      await _services.respondToInvitation(matchId, action);
+      if (!requirePayment) {
+        await _services.respondToInvitationFree(matchId, action);
+      } else {
+        if (usePortfolio) {
+          await _services.respondToInvitationPaid(
+              matchId, usePortfolio, '', '');
+        } else {
+          // Example:
+          // "08/28" -> ["08", "28"]
+          final expiryParts = expiry!.split('/');
+          if (expiryParts.length != 2) {
+            throw Exception('Invalid card expiry date');
+          }
+          final expMonth = int.tryParse(expiryParts[0]);
+          final expYearShort = int.tryParse(expiryParts[1]);
+          if (expMonth == null || expYearShort == null) {
+            throw Exception('Invalid card expiry date');
+          }
+          // Convert 28 -> 2028
+          final expYear = 2000 + expYearShort;
+
+          final paymentMethodId = await StripeServices.createPaymentMethod(
+            cardNumber: number!,
+            expMonth: expMonth,
+            expYear: expYear,
+            cvc: cvc!,
+            cardholderName: name!,
+          );
+
+          if (paymentMethodId == null) {
+            throw Exception('Failed to create Stripe PaymentMethod');
+          }
+          log('Payment Method ID: $paymentMethodId');
+          await _services.respondToInvitationPaid(
+              matchId, usePortfolio, paymentMethodId, name);
+        }
+      }
     } catch (e) {
       rethrow;
     }

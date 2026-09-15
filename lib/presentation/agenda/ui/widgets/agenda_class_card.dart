@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 class AgendaClassCard extends StatelessWidget {
@@ -71,7 +72,17 @@ class AgendaClassCard extends StatelessWidget {
             backgroundColor: actionLabel == "Cancel request"
                 ? kLightPinkColor
                 : kPrimaryColor,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      AgendaChatScreen(chatId: item.chatId ?? '',
+                          label: item.title,
+                          userCount: item.players?.length ?? 1),
+                ),
+              );
+            },
           ).paddingOnly(top: 16),
       ],
     ),

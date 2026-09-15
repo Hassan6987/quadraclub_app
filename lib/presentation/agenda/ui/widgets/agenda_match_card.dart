@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
@@ -93,6 +94,23 @@ class AgendaMatchCard extends StatelessWidget {
                 onTap: () {
                   context.read<AgendaBloc>().add(
                       CancelJoinRequest(matchId: item.id));
+                },
+              ).withPaddingSymmetric(24, 12),
+            if (item.tab == 'confirmed')
+              CustomActionButton(
+                backgroundColor: kPrimaryColor,
+                height: 40,
+                buttonText: "Chat",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          AgendaChatScreen(chatId: item.chatId ?? '',
+                              label: item.courtName,
+                              userCount: item.players?.length ?? 1),
+                    ),
+                  );
                 },
               ).withPaddingSymmetric(24, 12),
           ],

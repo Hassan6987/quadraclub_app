@@ -67,7 +67,14 @@ class AgendaCourtCard extends StatelessWidget {
             CustomActionButton(
               backgroundColor: kPrimaryColor,
               buttonText: "Rebook",
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  RouteName.customBottomNavbar,
+                  (_) => false,
+                  arguments: {"index": 2},
+                );
+              },
             ).withPaddingSymmetric(16, 12),
         ],
       ),

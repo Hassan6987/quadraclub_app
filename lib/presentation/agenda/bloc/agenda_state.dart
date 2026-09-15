@@ -5,8 +5,11 @@ enum AgendaStateStatus {
   loading,
   success,
   failure,
+  error,
   fetching,
+  fetched,
   updating,
+  updated,
 }
 
 class AgendaState extends Equatable {
@@ -18,6 +21,7 @@ class AgendaState extends Equatable {
   final List<AgendaInvitation> invitations;
   final AgendaMatchDetails? matchDetails;
   final List<InvitePlayerModel> players;
+  final double balance;
 
   const AgendaState({
     this.status = AgendaStateStatus.initial,
@@ -28,6 +32,7 @@ class AgendaState extends Equatable {
     this.invitations = const [],
     this.matchDetails,
     this.players = const [],
+    this.balance = 0.0
   });
 
   @override
@@ -40,6 +45,7 @@ class AgendaState extends Equatable {
     invitations,
     matchDetails,
     players,
+    balance
   ];
 
   AgendaState copyWith({
@@ -51,6 +57,7 @@ class AgendaState extends Equatable {
     List<AgendaInvitation>? invitations,
     AgendaMatchDetails? matchDetails,
     List<InvitePlayerModel>? players,
+    double? balance
   }) {
     return AgendaState(
       status: status ?? this.status,
@@ -61,6 +68,7 @@ class AgendaState extends Equatable {
       invitations: invitations ?? this.invitations,
       matchDetails: matchDetails ?? this.matchDetails,
       players: players ?? this.players,
+        balance: balance ?? this.balance
     );
   }
 }

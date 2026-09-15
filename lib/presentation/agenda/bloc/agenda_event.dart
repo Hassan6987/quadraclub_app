@@ -22,6 +22,8 @@ class InvitePlayers extends AgendaEvent {
   const InvitePlayers({required this.playerIds, required this.matchId});
 }
 
+class FetchPortfolio extends AgendaEvent {}
+
 class CancelPlayerInvite extends AgendaEvent {
   final String playerId;
   final String matchId;
@@ -40,15 +42,33 @@ class RespondToMatchRequest extends AgendaEvent {
   final String playerId;
   final String action;
 
-  const RespondToMatchRequest(
-      {required this.matchId, required this.playerId, required this.action});
+  const RespondToMatchRequest({
+    required this.matchId,
+    required this.playerId,
+    required this.action,
+  });
 }
 
 class RespondToInvitation extends AgendaEvent {
   final String id;
   final String action;
+  final bool requiresPayment;
+  final bool usePortfolio;
+  final String? cardHolderName;
+  final String? cardNumber;
+  final String? cvc;
+  final String? expiry;
 
-  const RespondToInvitation({required this.id, required this.action});
+  const RespondToInvitation({
+    required this.id,
+    required this.action,
+    this.requiresPayment = false,
+    this.usePortfolio = false,
+    this.cardHolderName,
+    this.cardNumber,
+    this.cvc,
+    this.expiry,
+  });
 }
 
 class CancelJoinRequest extends AgendaEvent {

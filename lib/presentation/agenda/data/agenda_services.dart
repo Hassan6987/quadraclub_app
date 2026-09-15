@@ -101,6 +101,20 @@ class AgendaServices extends BaseApiProvider {
     }
   }
 
+  Future<Response> getPortfolioBalance() async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/payment/portfolio',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> cancelPlayerInvite(String playerId, String matchId) async {
     try {
       final response = await request(
@@ -143,15 +157,16 @@ class AgendaServices extends BaseApiProvider {
     }
   }
 
-  Future<Response> respondToMatchRequest(String matchId, String playerId,
-      String action) async {
+  Future<Response> respondToMatchRequest(
+    String matchId,
+    String playerId,
+    String action,
+  ) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/agenda/matches/$matchId/requests/$playerId/respond',
-          data: {
-            "action": action
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/agenda/matches/$matchId/requests/$playerId/respond',
+        data: {"action": action},
       );
       return response;
     } on DioException catch (e) {
@@ -175,14 +190,15 @@ class AgendaServices extends BaseApiProvider {
     }
   }
 
-  Future<Response> respondToInvitation(String matchId, String action) async {
+  Future<Response> respondToInvitationFree(
+    String matchId,
+    String action,
+  ) async {
     try {
       final response = await request(
-          method: HttpMethod.post,
-          endpoint: '/api/agenda/matches/$matchId/invitation/respond',
-          data: {
-            "action": action
-          }
+        method: HttpMethod.post,
+        endpoint: '/api/agenda/matches/$matchId/invitation/respond',
+        data: {"action": action},
       );
       return response;
     } on DioException catch (e) {
@@ -192,5 +208,28 @@ class AgendaServices extends BaseApiProvider {
     }
   }
 
-
+  Future<Response> respondToInvitationPaid(
+    String matchId,
+    bool usePortfolio,
+    String paymentId,
+    String cardHolderName,
+  ) async {
+    try {
+      final response = await request(
+        method: HttpMethod.post,
+        endpoint: '/api/agenda/matches/$matchId/invitation/respond',
+        data: {
+          "action": "accept",
+          if (usePortfolio) "usePortfolio": usePortfolio,
+          if (!usePortfolio) "paymentMethodId": paymentId,
+          if (!usePortfolio) "cardholderName": cardHolderName,
+        },
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

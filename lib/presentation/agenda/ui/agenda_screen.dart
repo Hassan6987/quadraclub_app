@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/payment_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_court_card.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_invitation_card.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
@@ -151,21 +152,36 @@ class _AgendaScreenState extends State<AgendaScreen>
             return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
           }
           return AgendaMatchCard(item: item, onTap: () {
-
+            context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MatchDetailsScreen(),
+              ),
+            );
           },).paddingOnly(bottom: 12);
         }
 
         final invitation = invitations[index - filtered.length];
         return AgendaInvitationCard(
           item: invitation,
-          onAccept: () =>
+          onAccept: () {
+            if (!invitation.requiresPayment) {
               context.read<AgendaBloc>().add(
-                RespondToInvitation(id: invitation.id, action: "accept"),
-              ),
+                  RespondToInvitation(id: invitation.id, action: "accept"));
+            } else {
+              context.read<AgendaBloc>().add(FetchPortfolio());
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AgendaPaymentScreen(match: invitation),
+                ),
+              );
+            }
+          },
           onReject: () =>
               context.read<AgendaBloc>().add(
-                RespondToInvitation(id: invitation.id, action: "reject"),
-              ),
+                  RespondToInvitation(id: invitation.id, action: "reject")),
         ).paddingOnly(bottom: 12);
       },
     );
