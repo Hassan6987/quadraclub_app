@@ -12,7 +12,17 @@ class MyChatsScreen extends StatefulWidget {
 }
 
 class _MyChatsScreenState extends State<MyChatsScreen> {
-  String _selectedFilter = 'All';
+  // 'All' is exclusive; the rest are multi-selectable.
+  Set<String> _selectedFilters = {'All'};
+
+  final List<String> _filters = ['All', 'Games', 'Classes', 'Courts'];
+
+  // Maps a filter chip label to the chatType value stored on the chat.
+  static const Map<String, String> _filterToChatType = {
+    'Games': 'Game',
+    'Classes': 'Classroom',
+    'Courts': 'Court',
+  };
 
   @override
   void initState() {
@@ -23,8 +33,6 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     context.read<ChatsBloc>().add(LoadChats());
     super.initState();
   }
-
-  final List<String> _filters = ['All', 'Games', 'Classes', 'Courts'];
 
   @override
   Widget build(BuildContext context) {
@@ -64,14 +72,10 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
   }
 
   Widget _buildChip(String label) {
-    final isSelected = _selectedFilter == label;
+    final isSelected = _selectedFilters.contains(label);
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedFilter = label;
-        });
-      },
+      onTap: () => _toggleFilter(label),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: EdgeInsets.symmetric(
@@ -90,6 +94,41 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     );
   }
 
+  void _toggleFilter(String label) {
+    setState(() {
+      if (label == 'All') {
+        _selectedFilters = {'All'};
+        return;
+      }
+
+      _selectedFilters.remove('All');
+
+      if (_selectedFilters.contains(label)) {
+        _selectedFilters.remove(label);
+      } else {
+        _selectedFilters.add(label);
+      }
+
+      // Never end up with nothing selected — fall back to All.
+      if (_selectedFilters.isEmpty) {
+        _selectedFilters = {'All'};
+      }
+    });
+  }
+
+  List<Chat> _applyFilters(List<Chat> chats) {
+    if (_selectedFilters.contains('All')) {
+      return chats;
+    }
+
+    final allowedTypes = _selectedFilters
+        .map((f) => _filterToChatType[f])
+        .whereType<String>()
+        .toSet();
+
+    return chats.where((c) => allowedTypes.contains(c.chatType)).toList();
+  }
+
   Widget _buildChatList() {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
@@ -102,7 +141,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         }
 
         if (state is ChatsLoaded) {
-          final chats = state.chats;
+          final chats = _applyFilters(state.chats);
 
           if (chats.isEmpty) {
             return const Center(child: Text('No chats found'));

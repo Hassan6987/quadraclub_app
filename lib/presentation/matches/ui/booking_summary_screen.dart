@@ -443,6 +443,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       cardNumber: _cardNumberController.text,
       expiry: _expiryController.text,
       message: widget.message,
+        amount: _matchFee
     ));
   }
 }

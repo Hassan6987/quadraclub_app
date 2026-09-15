@@ -36,6 +36,7 @@ class MatchServices extends BaseApiProvider {
     required bool isPortfolio,
     String? paymentId,
     String? cardHolderName,
+    required double amount,
   }) async {
     try {
       final response = await request(
@@ -45,6 +46,7 @@ class MatchServices extends BaseApiProvider {
           "currency": "usd",
           if (message != null && message.isNotEmpty) "message": message,
           "usePortfolio": isPortfolio,
+          "amountRequested": amount,
           "paymentMethod": isPortfolio ? "portfolio" : "stripe",
           if (!isPortfolio) "paymentMethodId": paymentId,
           if (!isPortfolio) "cardholderName": cardHolderName,

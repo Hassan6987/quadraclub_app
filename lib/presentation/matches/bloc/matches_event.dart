@@ -14,6 +14,7 @@ class FetchPortfolio extends MatchesEvent {}
 class JoinMatchBooking extends MatchesEvent {
   final String bookingId;
   final bool isPortfolio;
+  final double amount;
   final String? cardName;
   final String? cardNumber;
   final String? cvc;
@@ -23,6 +24,7 @@ class JoinMatchBooking extends MatchesEvent {
   const JoinMatchBooking({
     required this.bookingId,
     required this.isPortfolio,
+    required this.amount,
     required this.cardName,
     required this.cardNumber,
     required this.cvc,

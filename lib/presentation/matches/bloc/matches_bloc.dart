@@ -55,6 +55,7 @@ class MatchesBloc extends Bloc<MatchesEvent, MatchesState> {
       await _repo.joinMatchBooking(
           id: event.bookingId,
           isPortfolio: event.isPortfolio,
+          amount: event.amount,
           name: event.cardName,
           number: event.cardNumber,
           cvc: event.cvc,
