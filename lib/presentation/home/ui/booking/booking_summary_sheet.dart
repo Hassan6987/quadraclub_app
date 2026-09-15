@@ -179,21 +179,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   }
 
   String get _dateLabel {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
+    const weekdays = dayNames;
+    const months = monthNames;
     final d = widget.date;
     return '${weekdays[d.weekday - 1]}, ${months[d.month - 1]} ${d.day}';
   }

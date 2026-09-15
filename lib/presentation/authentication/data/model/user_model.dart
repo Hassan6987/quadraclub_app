@@ -1,3 +1,5 @@
+import 'package:parsing_util/parsing_util.dart';
+
 class UserModel {
   UserModel({
     required this.id,
@@ -27,7 +29,7 @@ class UserModel {
   final String? dominantHand;
   final List<SportsInfo> sportsInfo;
   final int? registrationStep;
-  final int? portfolioBalance;
+  final double? portfolioBalance;
 
   UserModel copyWith({
     String? id,
@@ -42,7 +44,7 @@ class UserModel {
     String? dominantHand,
     List<SportsInfo>? sportsInfo,
     int? registrationStep,
-    int? portfolioBalance,
+    double? portfolioBalance,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -79,7 +81,7 @@ class UserModel {
               json["sportsInfo"]!.map((x) => SportsInfo.fromJson(x)),
             ),
       registrationStep: json["registrationStep"],
-      portfolioBalance: json["portfolioBalance"],
+      portfolioBalance: ParsingUtil.toSafeDouble(json["portfolioBalance"]),
     );
   }
 }

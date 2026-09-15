@@ -216,6 +216,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
   void _onTimeSlotTap(Court court, Padel slot) {
     if (slot.status != 'Available') return;
+    context.read<CourtsBloc>().add(LoadPortfolio());
 
     BookingSummarySheet.show(
       context,

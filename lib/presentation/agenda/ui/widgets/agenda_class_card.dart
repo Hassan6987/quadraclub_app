@@ -48,7 +48,7 @@ class AgendaClassCard extends StatelessWidget {
         Row(
           children: [
             AppCachedImage(
-              imageUrl: item.coachPhoto ?? playerOneImageUrl,
+              imageUrl: item.coachPhoto ?? '',
               height: 36,
               width: 36,
               fit: BoxFit.cover,

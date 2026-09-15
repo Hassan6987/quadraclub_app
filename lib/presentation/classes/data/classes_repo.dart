@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:parsing_util/parsing_util.dart';
 import 'package:quadraclub_app/data/stripe-services.dart';
 import 'package:quadraclub_app/presentation/classes/data/classes_services.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
@@ -22,11 +23,11 @@ class ClassesRepo {
     }
   }
 
-  Future<int> getPortfolioBalance() async {
+  Future<double> getPortfolioBalance() async {
     try {
       final response = await classesServices.getPortfolioBalance();
       final data = response.data as Map<String, dynamic>;
-      return data['portfolioBalance'];
+      return ParsingUtil.toSafeDouble(data['portfolioBalance']);
     } catch (e) {
       rethrow;
     }

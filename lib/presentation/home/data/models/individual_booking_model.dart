@@ -10,6 +10,7 @@ class IndividualBookingModel {
   final String cardExpiryDate;
   final int totalPrice;
   final int serviceFee;
+  final bool isPortfolio;
 
   IndividualBookingModel({
     required this.clubId,
@@ -23,5 +24,6 @@ class IndividualBookingModel {
     required this.cardExpiryDate,
     required this.totalPrice,
     required this.serviceFee,
+    required this.isPortfolio
   });
 }

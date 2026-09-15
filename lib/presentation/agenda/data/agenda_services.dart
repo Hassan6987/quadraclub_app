@@ -20,7 +20,7 @@ class AgendaServices extends BaseApiProvider {
     try {
       final response = await request(
         method: HttpMethod.get,
-        endpoint: '/api/agenda?tab=pending&type=all',
+        endpoint: '/api/agenda/requested-bookings',
       );
       return response;
     } on DioException catch (e) {
@@ -35,6 +35,20 @@ class AgendaServices extends BaseApiProvider {
       final response = await request(
         method: HttpMethod.get,
         endpoint: '/api/agenda?tab=past&type=all',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> getPendingInvitations() async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/agenda/invitations',
       );
       return response;
     } on DioException catch (e) {
@@ -146,4 +160,37 @@ class AgendaServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+  Future<Response> cancelMatchRequest(String matchId) async {
+    try {
+      final response = await request(
+        method: HttpMethod.delete,
+        endpoint: '/api/agenda/matches/$matchId/request',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> respondToInvitation(String matchId, String action) async {
+    try {
+      final response = await request(
+          method: HttpMethod.post,
+          endpoint: '/api/agenda/matches/$matchId/invitation/respond',
+          data: {
+            "action": action
+          }
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
 }

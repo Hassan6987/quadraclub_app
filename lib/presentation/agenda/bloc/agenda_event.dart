@@ -43,3 +43,16 @@ class RespondToMatchRequest extends AgendaEvent {
   const RespondToMatchRequest(
       {required this.matchId, required this.playerId, required this.action});
 }
+
+class RespondToInvitation extends AgendaEvent {
+  final String id;
+  final String action;
+
+  const RespondToInvitation({required this.id, required this.action});
+}
+
+class CancelJoinRequest extends AgendaEvent {
+  final String matchId;
+
+  const CancelJoinRequest({required this.matchId});
+}

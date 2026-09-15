@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
@@ -31,7 +32,7 @@ class AgendaMatchCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppCachedImage(
-                  imageUrl: courtImageUrl,
+                  imageUrl: item.clubImage,
                   // still a placeholder unless API sends one
                   height: 64,
                   width: 64,
@@ -84,27 +85,16 @@ class AgendaMatchCard extends StatelessWidget {
             ),
             16.heightBox,
             PlayersRow(players: item.players ?? const [], format: item.format),
-            if (actionLabel != null)
+            if (item.tab == 'pending')
               CustomActionButton(
-                backgroundColor: actionLabel == "Cancel request"
-                    ? kLightPinkColor
-                    : kPrimaryColor,
-                buttonText: actionLabel!,
+                backgroundColor: kLightPinkColor,
+                height: 40,
+                buttonText: "Cancel request",
                 onTap: () {
-                  if (actionLabel == "Chat") {
-                    if (item.chatId != null && item.chatId!.isNotEmpty) {
-                      ///todo navigate to chat here
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (_) =>
-                      //         ChatScreen(chat: chat),
-                      //   ),
-                      // );
-                    }
-                  }
+                  context.read<AgendaBloc>().add(
+                      CancelJoinRequest(matchId: item.id));
                 },
-              ).withPaddingSymmetric(16, 12),
+              ).withPaddingSymmetric(24, 12),
           ],
         ),
       ),

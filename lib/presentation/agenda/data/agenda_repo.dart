@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/data/agenda_services.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
+import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 
@@ -24,7 +25,8 @@ class AgendaRepo {
     try {
       final response = await _services.getPendingAgenda();
       final data = response.data as Map<String, dynamic>;
-      final List<dynamic> classesJson = data['agenda'] as List<dynamic>? ?? [];
+      final List<dynamic> classesJson = data['requested'] as List<dynamic>? ??
+          [];
       return classesJson
           .map((json) => AgendaItem.fromJson(json as Map<String, dynamic>))
           .toList();
@@ -52,6 +54,22 @@ class AgendaRepo {
       final data = response.data as Map<String, dynamic>;
       final matchJson = data['match'] as Map<String, dynamic>;
       return AgendaMatchDetails.fromJson(matchJson);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<AgendaInvitation>> getPlayerInvitations() async {
+    try {
+      final response = await _services.getPendingInvitations();
+      final data = response.data as Map<String, dynamic>;
+      final List<dynamic> playersJson = data['invitations'] as List<dynamic>? ??
+          [];
+      return playersJson
+          .map(
+            (json) => AgendaInvitation.fromJson(json as Map<String, dynamic>),
+      )
+          .toList();
     } catch (e) {
       rethrow;
     }
@@ -121,6 +139,22 @@ class AgendaRepo {
       String action) async {
     try {
       await _services.respondToMatchRequest(matchId, playerId, action);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> cancelMatchRequest(String matchId) async {
+    try {
+      await _services.cancelMatchRequest(matchId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> respondToMatchInvitation(String matchId, String action) async {
+    try {
+      await _services.respondToInvitation(matchId, action);
     } catch (e) {
       rethrow;
     }

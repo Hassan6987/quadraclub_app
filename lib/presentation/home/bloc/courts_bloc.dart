@@ -19,6 +19,7 @@ class CourtsBloc extends Bloc<CourtsEvent, CourtsState> {
     on<BookIndividual>(_handleBookIndividual);
     on<BookMatch>(_handleBookMatch);
     on<FetchAllUsers>(_handleLoadPlayers);
+    on<LoadPortfolio>(_handleLoadBalance);
   }
 
   Future<void> _handleLoadCourts(
@@ -80,6 +81,18 @@ class CourtsBloc extends Bloc<CourtsEvent, CourtsState> {
       emit(
         state.copyWith(status: CourtStateStatus.failure, error: e.toString()),
       );
+    }
+  }
+
+  Future<void> _handleLoadBalance(LoadPortfolio event,
+      Emitter<CourtsState> emit,) async {
+    try {
+      emit(state.copyWith(status: CourtStateStatus.fetching));
+      final balance = await _courtsRepo.getPortfolioBalance();
+      emit(state.copyWith(status: CourtStateStatus.success, balance: balance));
+    } catch (e) {
+      emit(state.copyWith(
+          status: CourtStateStatus.failure, error: e.toString()));
     }
   }
 }

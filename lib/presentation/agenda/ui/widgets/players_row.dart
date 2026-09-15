@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 
@@ -13,7 +11,6 @@ class PlayersRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("current match format is : $format");
     final totalSlots = format == MatchFormat.singles ? 2 : 4;
 
     return Row(

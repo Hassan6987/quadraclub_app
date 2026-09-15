@@ -22,3 +22,5 @@ class BookMatch extends CourtsEvent {
 }
 
 class FetchAllUsers extends CourtsEvent {}
+
+class LoadPortfolio extends CourtsEvent {}

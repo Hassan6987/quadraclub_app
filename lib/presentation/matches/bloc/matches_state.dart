@@ -14,14 +14,14 @@ class MatchesState extends Equatable {
   final MatchesStateStatus status;
   final String? error;
   final List<Booking> bookings;
-  final int balance;
+  final double balance;
   final UserModel? user;
 
   const MatchesState({
     this.status = MatchesStateStatus.initial,
     this.error,
     this.bookings = const [],
-    this.balance = 0,
+    this.balance = 0.0,
     this.user
   });
 
@@ -32,7 +32,7 @@ class MatchesState extends Equatable {
     MatchesStateStatus? status,
     String? error,
     List<Booking>? bookings,
-    int? balance,
+    double? balance,
     UserModel? user,
   }) {
     return MatchesState(

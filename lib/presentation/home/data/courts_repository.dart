@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:parsing_util/parsing_util.dart';
 import 'package:quadraclub_app/data/stripe-services.dart';
 import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/home/data/courts_services.dart';
@@ -27,6 +28,10 @@ class CourtsRepository {
 
   Future<void> bookIndividual(IndividualBookingModel model) async {
     try {
+      if (model.isPortfolio) {
+        await courtServices.bookIndividual(model, '');
+        return;
+      }
       // Example:
       // "08/28" -> ["08", "28"]
       final expiryParts = model.cardExpiryDate.split('/');
@@ -63,6 +68,10 @@ class CourtsRepository {
 
   Future<void> bookMatch(MatchBookingModel model) async {
     try {
+      if (model.isPortfolio) {
+        await courtServices.bookMatch(model, '');
+        return;
+      }
       // Example:
       // "08/28" -> ["08", "28"]
       final expiryParts = model.cardExpiryDate.split('/');
@@ -107,6 +116,16 @@ class CourtsRepository {
             (json) => InvitePlayerModel.fromJson(json as Map<String, dynamic>),
           )
           .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<double> getPortfolioBalance() async {
+    try {
+      final response = await courtServices.getPortfolioBalance();
+      final data = response.data as Map<String, dynamic>;
+      return ParsingUtil.toSafeDouble(data['portfolioBalance']);
     } catch (e) {
       rethrow;
     }

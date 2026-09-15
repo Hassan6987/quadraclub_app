@@ -14,6 +14,7 @@ class MatchBookingModel {
   final int totalPrice;
   final int serviceFee;
   final List<String> invitedPlayers;
+  final bool isPortfolio;
 
   MatchBookingModel({
     required this.clubId,
@@ -31,5 +32,6 @@ class MatchBookingModel {
     required this.totalPrice,
     required this.serviceFee,
     required this.invitedPlayers,
+    required this.isPortfolio
   });
 }

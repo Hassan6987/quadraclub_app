@@ -6,13 +6,13 @@ class ClassesState extends Equatable {
   final ClassStats status;
   final String? error;
   final List<Class> classes;
-  final int balance;
+  final double balance;
 
   const ClassesState({
     this.status = ClassStats.initial,
     this.error,
     this.classes = const [],
-    this.balance = 0,
+    this.balance = 0.0,
   });
 
   @override
@@ -22,7 +22,7 @@ class ClassesState extends Equatable {
     ClassStats? status,
     String? error,
     List<Class>? classes,
-    int? balance,
+    double? balance,
   }) {
     return ClassesState(
       status: status ?? this.status,

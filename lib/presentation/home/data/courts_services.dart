@@ -37,7 +37,8 @@ class CourtsServices extends BaseApiProvider {
           "endTime": model.endTime,
           "bookingType": "Reserve Individual",
           "cardholderName": model.cardHolderName,
-          "paymentMethodId": paymentId,
+          "usePortfolio": model.isPortfolio,
+          if (!model.isPortfolio) "paymentMethodId": paymentId,
           "totalPrice": model.totalPrice,
           "serviceFee": model.serviceFee,
         },
@@ -69,7 +70,8 @@ class CourtsServices extends BaseApiProvider {
           "format": model.format,
           "paymentType": model.paymentType,
           "cardholderName": model.cardHolderName,
-          "paymentMethodId": paymentId,
+          "usePortfolio": model.isPortfolio,
+          if (!model.isPortfolio) "paymentMethodId": paymentId,
           "totalPrice": model.totalPrice,
           "serviceFee": model.serviceFee,
         },
@@ -87,6 +89,20 @@ class CourtsServices extends BaseApiProvider {
       final response = await request(
         method: HttpMethod.get,
         endpoint: '/api/users/players',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> getPortfolioBalance() async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/payment/portfolio',
       );
       return response;
     } on DioException catch (e) {

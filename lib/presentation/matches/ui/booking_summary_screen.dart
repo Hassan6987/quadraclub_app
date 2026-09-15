@@ -5,6 +5,7 @@ import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/request_sent_dialog.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
@@ -279,7 +280,9 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                   ),
                 ),
               ),
-
+              if (state.status == MatchesStateStatus.booking)
+                Center(child: CustomLoadingView())
+              else
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: CustomActionButton(

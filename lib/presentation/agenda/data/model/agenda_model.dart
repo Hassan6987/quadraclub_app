@@ -13,6 +13,7 @@ class AgendaItem {
   final String title;
   final String courtName;
   final String location;
+  final String clubImage;
   final String sport;
   final DateTime bookingDate;
   final String dateString;
@@ -37,6 +38,7 @@ class AgendaItem {
   final String? classType;
   final String? coachName;
   final String? coachPhoto;
+  final String tab;
 
   AgendaItem({
     required this.id,
@@ -44,6 +46,7 @@ class AgendaItem {
     required this.title,
     required this.courtName,
     required this.location,
+    required this.clubImage,
     required this.sport,
     required this.bookingDate,
     required this.dateString,
@@ -64,6 +67,7 @@ class AgendaItem {
     this.classType,
     this.coachName,
     this.coachPhoto,
+    required this.tab,
   });
 
   factory AgendaItem.fromJson(Map<String, dynamic> json) {
@@ -88,6 +92,7 @@ class AgendaItem {
       title: json['title'] ?? '',
       courtName: json['courtName'] ?? '',
       location: json['location'] ?? '',
+        clubImage: json['clubImage'] ?? '',
       sport: json['sport'] ?? '',
       bookingDate: DateTime.parse(json['bookingDate']),
       dateString: json['dateString'] ?? '',
@@ -110,6 +115,7 @@ class AgendaItem {
       classType: json['classType'],
       coachName: json['coachName'],
       coachPhoto: json['coachPhoto'],
+        tab: json['tab'] ?? ''
     );
   }
 }

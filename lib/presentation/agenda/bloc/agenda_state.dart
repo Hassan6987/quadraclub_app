@@ -15,6 +15,7 @@ class AgendaState extends Equatable {
   final List<AgendaItem> confirmedAgenda;
   final List<AgendaItem> pendingAgenda;
   final List<AgendaItem> pastAgenda;
+  final List<AgendaInvitation> invitations;
   final AgendaMatchDetails? matchDetails;
   final List<InvitePlayerModel> players;
 
@@ -24,6 +25,7 @@ class AgendaState extends Equatable {
     this.confirmedAgenda = const [],
     this.pendingAgenda = const [],
     this.pastAgenda = const [],
+    this.invitations = const [],
     this.matchDetails,
     this.players = const [],
   });
@@ -35,6 +37,7 @@ class AgendaState extends Equatable {
     confirmedAgenda,
     pendingAgenda,
     pastAgenda,
+    invitations,
     matchDetails,
     players,
   ];
@@ -45,6 +48,7 @@ class AgendaState extends Equatable {
     List<AgendaItem>? confirmedAgenda,
     List<AgendaItem>? pendingAgenda,
     List<AgendaItem>? pastAgenda,
+    List<AgendaInvitation>? invitations,
     AgendaMatchDetails? matchDetails,
     List<InvitePlayerModel>? players,
   }) {
@@ -54,6 +58,7 @@ class AgendaState extends Equatable {
       confirmedAgenda: confirmedAgenda ?? this.confirmedAgenda,
       pendingAgenda: pendingAgenda ?? this.pendingAgenda,
       pastAgenda: pastAgenda ?? this.pastAgenda,
+      invitations: invitations ?? this.invitations,
       matchDetails: matchDetails ?? this.matchDetails,
       players: players ?? this.players,
     );

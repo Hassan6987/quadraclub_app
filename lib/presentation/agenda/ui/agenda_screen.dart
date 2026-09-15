@@ -1,6 +1,8 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_court_card.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_invitation_card.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
@@ -98,9 +100,9 @@ class _AgendaScreenState extends State<AgendaScreen>
                     return TabBarView(
                       controller: _tabController,
                       children: [
-                        _agendaList(state.confirmedAgenda),
-                        _agendaList(state.pendingAgenda),
-                        _agendaList(state.pastAgenda),
+                        _agendaList(state.confirmedAgenda, []),
+                        _agendaList(state.pendingAgenda, state.invitations),
+                        _agendaList(state.pastAgenda, []),
                       ],
                     );
                   },
@@ -113,7 +115,8 @@ class _AgendaScreenState extends State<AgendaScreen>
     );
   }
 
-  Widget _agendaList(List<AgendaItem> items) {
+  Widget _agendaList(List<AgendaItem> items,
+      List<AgendaInvitation> invitations) {
     final filtered = items.where((item) {
       switch (_filter) {
         case 'Courts':
@@ -127,33 +130,42 @@ class _AgendaScreenState extends State<AgendaScreen>
       }
     }).toList();
 
-    if (filtered.isEmpty) {
+    final totalCount = filtered.length + invitations.length;
+
+    if (totalCount == 0) {
       return const Center(child: Text('Nothing here yet'));
     }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: filtered.length,
+      itemCount: totalCount,
       itemBuilder: (context, index) {
-        final item = filtered[index];
-        if (item.agendaType == AgendaType.class_) {
-          return AgendaClassCard(
-            item: item,
-            actionLabel: _actionLabel,
-          ).paddingOnly(bottom: 12);
-        } else if (item.agendaType == AgendaType.court) {
-          return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
+        if (index < filtered.length) {
+          final item = filtered[index];
+          if (item.agendaType == AgendaType.class_) {
+            return AgendaClassCard(
+              item: item,
+              actionLabel: _actionLabel,
+            ).paddingOnly(bottom: 12);
+          } else if (item.agendaType == AgendaType.court) {
+            return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
+          }
+          return AgendaMatchCard(item: item, onTap: () {
+
+          },).paddingOnly(bottom: 12);
         }
-        return AgendaMatchCard(
-          item: item,
-          actionLabel: _actionLabel,
-          onTap: () {
-            context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => MatchDetailsScreen()),
-            );
-          },
+
+        final invitation = invitations[index - filtered.length];
+        return AgendaInvitationCard(
+          item: invitation,
+          onAccept: () =>
+              context.read<AgendaBloc>().add(
+                RespondToInvitation(id: invitation.id, action: "accept"),
+              ),
+          onReject: () =>
+              context.read<AgendaBloc>().add(
+                RespondToInvitation(id: invitation.id, action: "reject"),
+              ),
         ).paddingOnly(bottom: 12);
       },
     );
