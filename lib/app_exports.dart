@@ -10,6 +10,7 @@ export 'package:flutter_svg/flutter_svg.dart';
 export 'package:loading_animation_widget/loading_animation_widget.dart';
 export 'package:quadraclub_app/blocs_observer.dart';
 export 'package:quadraclub_app/generated/assets.dart';
+export 'package:quadraclub_app/l10n/app_localizations.dart';
 export 'package:quadraclub_app/presentation/agenda/data/agenda_dummy_data.dart';
 export 'package:quadraclub_app/presentation/agenda/data/model/agenda_model.dart';
 export 'package:quadraclub_app/presentation/agenda/ui/match_details_screen.dart';

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
@@ -95,7 +93,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log("Rebuilding ....");
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.success) {
@@ -105,7 +103,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           );
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-            state.error ?? 'Something went wrong',
+            state.error ?? l10n.somethingWentWrong,
             isError: true,
           );
         }
@@ -123,13 +121,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 children: [
                   24.heightBox,
                   Text(
-                    "Create your account",
+                    l10n.createYourAccount,
                     style: AppStyles.headingSemibold.copyWith(
                       color: kBlackColor,
                     ),
                   ),
                   Text(
-                    "Fill in your details to start playing.",
+                    l10n.fillInYourDetailsToStartPlaying,
                     style: AppStyles.subtitleRegular.copyWith(
                       color: kTextColor,
                     ),
@@ -166,13 +164,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Profile Photo",
+                              l10n.profilePhoto,
                               style: AppStyles.w500f14inter.copyWith(
                                 color: kBlackColor,
                               ),
                             ),
                             Text(
-                              "JPG or PNG, max 5MB",
+                              l10n.jpgOrPNGMaxMB,
                               style: AppStyles.w400f12inter.copyWith(
                                 color: kTextColor,
                               ),
@@ -184,44 +182,44 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   ),
                   20.heightBox,
                   CustomTextField(
-                    label: "Full Name",
+                    label: l10n.fullName,
                     controller: _fullNameController,
-                    hintText: "Enter your name",
+                    hintText: l10n.enterYourName,
                     validator: ValidateForm.fullNameValidator,
                   ),
                   12.heightBox,
                   CustomTextField(
-                    label: "Date of Birth",
+                    label: l10n.dateOfBirth,
                     controller: _dobController,
-                    hintText: "dd/mm/yyyy",
+                    hintText: l10n.ddMmYyyy,
                     readOnly: true,
                     onTap: _pickDateOfBirth,
                     suffixIcon: const Icon(Icons.calendar_today_outlined),
                     validator: (v) => (v == null || v.isEmpty)
-                        ? "Date of birth is required"
+                        ? l10n.dateOfBirthIsRequired
                         : null,
                   ),
                   12.heightBox,
                   CustomTextField(
-                    label: "Email",
+                    label: l10n.email,
                     controller: _emailController,
-                    hintText: "Enter your email",
+                    hintText: l10n.enterYourEmail,
                     keyboardType: TextInputType.emailAddress,
                     validator: ValidateForm.validateEmail,
                   ),
                   12.heightBox,
                   CustomTextField(
-                    label: "Password",
+                    label: l10n.password,
                     controller: _passwordController,
-                    hintText: "Enter your password",
+                    hintText: l10n.enterYourPassword,
                     obscureText: _obscurePassword,
                     validator: ValidateForm.passwordValidator,
                   ),
                   12.heightBox,
                   CustomTextField(
-                    label: "Confirm Password",
+                    label: l10n.confirmPassword,
                     controller: _confirmPasswordController,
-                    hintText: "Confirm your password",
+                    hintText: l10n.confirmYourPassword,
                     obscureText: _obscureConfirmPassword,
                     validator: (v) => ValidateForm.confirmPasswordValidator(
                       v,
@@ -233,7 +231,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     Center(child: CustomLoadingView()),
                   if (state.status != AuthStateStatus.loading)
                     CustomActionButton(
-                      buttonText: "Continue",
+                      buttonText: l10n.continuee,
                       onTap: _onContinue,
                       isEnabled: _isButtonEnabled,
                       backgroundColor: const Color(0xFFC5E028),

@@ -55,8 +55,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
           permission == LocationPermission.deniedForever) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Location permission is required to use this.'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .locationPermissionIsRequiredToUseThis),
             ),
           );
         }
@@ -66,7 +67,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (mounted) {
-          context.showToast("Please enable location services.", isError: true);
+          context.showToast(
+              AppLocalizations.of(context)!.pleaseEnableLocationServices,
+              isError: true);
         }
         return;
       }
@@ -85,9 +88,10 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
         setState(() => _locationController.text = cityName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Could not determine your city. Please search manually.',
+              AppLocalizations.of(context)!
+                  .couldNotDetermineYourCityPleaseSearchManually,
             ),
           ),
         );
@@ -95,8 +99,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Something went wrong getting your location.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .somethingWentWrongGettingYourLocation),
           ),
         );
       }
@@ -165,6 +170,7 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: const OnboardingAppBar(currentStep: 3, totalSteps: 5),
@@ -175,11 +181,11 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
           children: [
             24.heightBox,
             Text(
-              "About you",
+              l10n.aboutYou,
               style: AppStyles.subHeadingSemibold.copyWith(color: kBlackColor),
             ),
             Text(
-              "This helps you find courts and players near you.",
+              l10n.thisHelpsYouFindCourtsAndPlayersNearYou,
               style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
             ),
             20.heightBox,
@@ -187,7 +193,7 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Location",
+                  l10n.location,
                   style: AppStyles.subtitleMedium.copyWith(
                     color: kTextPrimaryColor,
                   ),
@@ -201,19 +207,19 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.location_on_outlined, size: 18),
-                  label: const Text("Use my location"),
+                  label: Text(l10n.useMyLocation),
                 ),
               ],
             ),
             CustomTextField(
               controller: _locationController,
-              hintText: "City/area",
+              hintText: l10n.cityArea,
               readOnly: true,
               onTap: _onSelectLocation,
             ),
             24.heightBox,
             Text(
-              "Gender",
+              l10n.gender,
               style: AppStyles.subtitleMedium.copyWith(
                 color: kTextPrimaryColor,
               ),
@@ -222,15 +228,27 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: ["Masculine", "Feminine", "Prefer not to say"].map((
-                gender,
-              ) {
+              children: [
+                _GenderOption(
+                  value: 'Masculine',
+                  label: l10n.masculine,
+                ),
+                _GenderOption(
+                  value: 'Feminine',
+                  label: l10n.feminine,
+                ),
+                _GenderOption(
+                  value: 'Prefer not to say',
+                  label: l10n.preferNotToSay,
+                ),
+              ].map((option) {
                 return _choiceChip(
-                  label: gender,
-                  selected: _gender == gender,
+                  label: option.label,
+                  selected: _gender == option.value,
                   onTap: () {
                     setState(() {
-                      _gender = gender;
+                      // English value is stored for the API.
+                      _gender = option.value;
                     });
                   },
                 );
@@ -238,7 +256,7 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             ),
             24.heightBox,
             Text(
-              "Dominant Hand",
+              l10n.dominantHand,
               style: AppStyles.subtitleMedium.copyWith(
                 color: kTextPrimaryColor,
               ),
@@ -247,14 +265,14 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             Row(
               children: [
                 _choiceChip(
-                  label: "Left",
+                  label: l10n.left,
                   selected: _dominantHand == "Left",
                   icon: SvgPicture.asset(Assets.svg.leftHand.path),
                   onTap: () => setState(() => _dominantHand = "Left"),
                   expand: true,
                 ),
                 _choiceChip(
-                  label: "Right",
+                  label: l10n.right,
                   selected: _dominantHand == "Right",
                   icon: SvgPicture.asset(Assets.svg.rightHand.path),
                   onTap: () => setState(() => _dominantHand = "Right"),
@@ -264,7 +282,7 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             ),
             40.heightBox,
             CustomActionButton(
-              buttonText: "Continue",
+              buttonText: l10n.continuee,
               onTap: _onContinue,
               isEnabled: _isButtonEnabled,
               backgroundColor: const Color(0xFFC5E028),
@@ -278,4 +296,14 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
       ),
     );
   }
+}
+
+class _GenderOption {
+  final String value;
+  final String label;
+
+  const _GenderOption({
+    required this.value,
+    required this.label,
+  });
 }

@@ -1,3 +1,5 @@
+import 'package:quadraclub_app/l10n/app_localizations.dart';
+
 import '/app_exports.dart';
 
 /// Shared app bar for the 5-step signup flow: back button + "Step X/5" badge
@@ -19,6 +21,7 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       backgroundColor: kWhiteColor,
       elevation: 0,
@@ -38,7 +41,7 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Icon(Icons.arrow_back, size: 20, color: kBlackColor),
                   6.widthBox,
                   Text(
-                    "Back",
+                    l10n.back,
                     style: AppStyles.titleRegular.copyWith(color: kBlackColor),
                   ),
                 ],
@@ -52,7 +55,7 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                "Step $currentStep/$totalSteps",
+                "${l10n.step} $currentStep/$totalSteps",
                 style: AppStyles.titleRegular.copyWith(
                   color: kTextColor,
                   fontSize: 12,

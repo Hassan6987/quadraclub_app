@@ -69,6 +69,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final defaultPinTheme = PinTheme(
       width: 48,
       height: 48,
@@ -88,9 +89,9 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
               builder: (_) => AboutYouScreen(data: widget.data),
             ),
           );
-          context.showToast("Email verified Successfully");
+          context.showToast(l10n.emailVerifiedSuccessfully);
         } else if (state.status == AuthStateStatus.failure) {
-          context.showToast(state.error ?? "Something Went Wrong");
+          context.showToast(state.error ?? l10n.somethingWentWrong);
         }
       },
       builder: (context, state) {
@@ -104,7 +105,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
               children: [
                 24.heightBox,
                 Text(
-                  "OTP Verification",
+                  l10n.otpVerification,
                   style: AppStyles.w600f18inter.copyWith(
                     color: kTextPrimaryColor,
                   ),
@@ -112,7 +113,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                 8.heightBox,
                 Text.rich(
                   TextSpan(
-                    text: "Enter the 6-digit code sent to you at:\n",
+                    text: "${l10n.enterTheDigitCodeSentToYouAt}\n",
                     style: AppStyles.w400f14inter.copyWith(
                       color: kTextSecondary.withValues(alpha: 0.60),
                     ),
@@ -148,7 +149,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                       _secondsRemaining > 0
                           ? RichText(
                               text: TextSpan(
-                                text: "I didn't receive a code ",
+                                text: l10n.iDidNotReceiveCode,
                                 style: AppStyles.subtitleRegular.copyWith(
                                   color: kTextSecondary.withValues(alpha: 0.70),
                                 ),
@@ -170,7 +171,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                                 _startTimer();
                               },
                               child: Text(
-                                "Resend Code",
+                                l10n.resendCode,
                                 style: AppStyles.subtitleSemiBold.copyWith(
                                   color: kPrimaryColor,
                                 ),
@@ -187,7 +188,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    "Didn't receive the code? Check your spam folder or try resending it.",
+                    l10n.didNotReceiveTheCodeCheckYourSpamFolderOrTryResendingIt,
                     style: AppStyles.subtitleRegular.copyWith(
                       color: kTextColor,
                     ),
@@ -198,7 +199,7 @@ class _OtpVerificationScrState extends State<OtpVerificationScr> {
                   Center(child: CustomLoadingView()),
                 if (state.status != AuthStateStatus.loading)
                   CustomActionButton(
-                    buttonText: "Verify & Continue",
+                    buttonText: l10n.verifyContinue,
                     onTap: _onVerify,
                     isEnabled: _isButtonEnabled,
                     backgroundColor: kPrimaryColor,

@@ -70,26 +70,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
   }
 
-  String? _confirmPasswordValidator(String? value) {
+  String? _confirmPasswordValidator(String? value,) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm your password.';
+      return AppLocalizations.of(context)!.pleaseConfirmYourPassword;
     }
     if (value != _passwordController.text) {
-      return 'Passwords do not match.';
+      return AppLocalizations.of(context)!.passwordsDoNotMatch;
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.verified) {
-          context.showToast("Password Changed Successfully");
+          context.showToast(l10n.passwordChangedSuccessfully);
           Navigator.popUntil(context, (route) => route.isFirst);
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-            state.error ?? "Something went wrong",
+            state.error ?? l10n.somethingWentWrong,
             isError: true,
           );
         }
@@ -104,23 +105,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               children: [
                 32.heightBox,
                 Text(
-                  "Set New Password",
+                  l10n.setNewPassword,
                   style: AppStyles.w500f24inter.copyWith(
                     color: kTextPrimaryColor,
                   ),
                 ),
                 8.heightBox,
                 Text(
-                  "Set new password to secure your account.",
+                  l10n.setNewPasswordToSecureYourAccount,
                   style: AppStyles.w400f16inter.copyWith(
                     color: kTextSecondary.withValues(alpha: 0.60),
                   ),
                 ),
                 40.heightBox,
                 CustomTextField(
-                  label: "Password",
+                  label: l10n.password,
                   controller: _passwordController,
-                  hintText: "Enter new password",
+                  hintText: l10n.enterYourPassword,
                   prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
                   obscureText: true,
                   keyboardType: TextInputType.visiblePassword,
@@ -128,9 +129,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 12.heightBox,
                 CustomTextField(
-                  label: "Confirm Password",
+                  label: l10n.confirmPassword,
                   controller: _confirmPasswordController,
-                  hintText: "Confirm new password",
+                  hintText: l10n.confirmNewPassword,
                   prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
                   obscureText: true,
                   keyboardType: TextInputType.visiblePassword,
@@ -143,7 +144,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       return Center(child: CustomLoadingView());
                     }
                     return CustomActionButton(
-                      buttonText: "Done",
+                      buttonText: l10n.done,
                       onTap: _onContinue,
                       isEnabled: true,
                       backgroundColor: kPrimaryColor,

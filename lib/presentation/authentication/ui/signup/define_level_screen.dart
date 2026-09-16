@@ -18,10 +18,13 @@ class DefineLevelScreen extends StatefulWidget {
 }
 
 class _CategoryOption {
-  final String label;
+  /// English value used internally and sent to the API.
+  final String value;
+
+  /// English description used internally.
   final String description;
 
-  const _CategoryOption(this.label, this.description);
+  const _CategoryOption(this.value, this.description);
 }
 
 class _DefineLevelScreenState extends State<DefineLevelScreen> {
@@ -50,6 +53,7 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
 
   void _selectCategory(String sport, String category) {
     setState(() {
+      // Keep the English value for the API.
       widget.data.sportCategories[sport] = category;
       _openDropdownSport = null;
     });
@@ -57,11 +61,68 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
 
   void _onComplete() {
     if (!_isButtonEnabled) return;
+
+    // Keep the English value for the API.
     widget.data.preferredSide = _preferredSide;
+
     context.read<AuthBloc>().add(SetupProfile(data: widget.data));
   }
 
-  Widget _sportCategoryField(String sport) {
+  String _getCategoryLabel(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Open':
+        return l10n.categoryOpen;
+
+      case 'Category 1':
+        return l10n.category1;
+
+      case 'Category 2':
+        return l10n.category2;
+
+      case 'Category 3':
+        return l10n.category3;
+
+      default:
+        return category;
+    }
+  }
+
+  String _getCategoryDescription(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Open':
+        return l10n.categoryOpenDescription;
+
+      case 'Category 1':
+        return l10n.category1Description;
+
+      case 'Category 2':
+        return l10n.category2Description;
+
+      case 'Category 3':
+        return l10n.category3Description;
+
+      default:
+        return category;
+    }
+  }
+
+  String _getPreferredSideLabel(AppLocalizations l10n, String side) {
+    switch (side) {
+      case 'Left':
+        return l10n.left;
+
+      case 'Right':
+        return l10n.right;
+
+      case 'Both':
+        return l10n.both;
+
+      default:
+        return side;
+    }
+  }
+
+  Widget _sportCategoryField(String sport, AppLocalizations l10n) {
     final selected = widget.data.sportCategories[sport];
     final isOpen = _openDropdownSport == sport;
 
@@ -84,16 +145,23 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
               ),
               4.widthBox,
               Tooltip(
-                message: "You can change this later",
+                message: l10n.youCanChangeThisLater,
                 triggerMode: TooltipTriggerMode.tap,
-                child: Icon(Icons.info_outline, size: 14, color: kTextColor),
+                child: const Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: kTextColor,
+                ),
               ),
             ],
           ),
           8.heightBox,
           GestureDetector(
-            onTap: () =>
-                setState(() => _openDropdownSport = isOpen ? null : sport),
+            onTap: () {
+              setState(() {
+                _openDropdownSport = isOpen ? null : sport;
+              });
+            },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
@@ -104,7 +172,9 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    selected ?? "Select your category",
+                    selected == null
+                        ? l10n.selectYourCategory
+                        : _getCategoryLabel(l10n, selected),
                     style: AppStyles.subtitleRegular.copyWith(
                       color: selected == null ? kTextColor : kBlackColor,
                     ),
@@ -127,9 +197,10 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
               ),
               child: Column(
                 children: _categoryOptions.map((option) {
-                  final isSelected = selected == option.label;
+                  final isSelected = selected == option.value;
+
                   return InkWell(
-                    onTap: () => _selectCategory(sport, option.label),
+                    onTap: () => _selectCategory(sport, option.value),
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -146,16 +217,19 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
                       child: Row(
                         children: [
                           Text(
-                            option.label,
+                            _getCategoryLabel(l10n, option.value),
                             style: AppStyles.subtitleRegular.copyWith(
                               color: kBlackColor,
                             ),
                           ),
                           4.widthBox,
                           Tooltip(
-                            message: option.description,
+                            message: _getCategoryDescription(
+                              l10n,
+                              option.value,
+                            ),
                             triggerMode: TooltipTriggerMode.tap,
-                            child: Icon(
+                            child: const Icon(
                               Icons.info_outline,
                               size: 14,
                               color: kTextColor,
@@ -173,23 +247,31 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
     );
   }
 
-  Widget _preferredSideField() {
+  Widget _preferredSideField(AppLocalizations l10n) {
+    const sides = ['Left', 'Right', 'Both'];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Preferred Side",
+            l10n.preferredSide,
             style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
           ),
           12.heightBox,
           Row(
-            children: ['Left', 'Right', 'Both'].map((side) {
+            children: sides.map((side) {
               final isSelected = _preferredSide == side;
+
               return Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _preferredSide = side),
+                  onTap: () {
+                    setState(() {
+                      // Keep the English value internally.
+                      _preferredSide = side;
+                    });
+                  },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     padding: const EdgeInsets.symmetric(vertical: 6),
@@ -203,7 +285,7 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
-                      side,
+                      _getPreferredSideLabel(l10n, side),
                       textAlign: TextAlign.center,
                       style: AppStyles.subtitleMedium.copyWith(
                         color: kBlackColor,
@@ -221,6 +303,7 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final sports = widget.data.selectedSports;
 
     return BlocConsumer<AuthBloc, AuthState>(
@@ -234,7 +317,7 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
             (route) => false,
           );
         } else if (state.status == AuthStateStatus.failure) {
-          context.showToast(state.error ?? "Something Went Wrong");
+          context.showToast(state.error ?? l10n.somethingWentWrong);
         }
       },
       builder: (context, state) {
@@ -247,32 +330,40 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 24.heightBox,
+
                 Text(
-                  "Define your level.",
+                  l10n.defineYourLevel,
                   style: AppStyles.subHeadingSemibold.copyWith(
                     color: kBlackColor,
                   ),
                 ),
+
                 Text(
-                  "Select your category for each sport. You can change it later.",
+                  l10n.selectCategoryForEachSport,
                   style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
                 ),
+
                 24.heightBox,
+
                 for (int i = 0; i < sports.length; i++) ...[
-                  _sportCategoryField(sports[i]),
-                  if (i == 0) _preferredSideField(),
+                  _sportCategoryField(sports[i], l10n),
+
+                  if (i == 0) _preferredSideField(l10n),
                 ],
+
                 if (state.status == AuthStateStatus.loading)
                   Center(child: CustomLoadingView()),
+
                 if (state.status != AuthStateStatus.loading)
                   CustomActionButton(
-                    buttonText: "Complete Registration",
+                    buttonText: l10n.completeRegistration,
                     onTap: _onComplete,
                     isEnabled: _isButtonEnabled,
                     backgroundColor: const Color(0xFFC5E028),
                     buttonTextColor: kBlackColor,
                     width: double.infinity,
                   ),
+
                 24.heightBox,
               ],
             ),

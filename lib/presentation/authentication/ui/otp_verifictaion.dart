@@ -83,6 +83,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final defaultPinTheme = PinTheme(
       width: 48,
       height: 48,
@@ -98,9 +99,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       listener: (context, state) {
         if (state.status == AuthStateStatus.verified) {
           Navigator.popUntil(context, (route) => route.isFirst);
-          context.showToast("Email verified Successfully");
+          context.showToast(l10n.emailVerifiedSuccessfully);
         } else if (state.status == AuthStateStatus.failure) {
-          context.showToast(state.error ?? "Something Went Wrong");
+          context.showToast(state.error ?? l10n.somethingWentWrong);
         }
       },
       child: Scaffold(
@@ -111,7 +112,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             children: [
               32.heightBox,
               Text(
-                "OTP Verification",
+                l10n.otpVerification,
                 style: AppStyles.w500f24inter.copyWith(
                   color: kTextPrimaryColor,
                 ),
@@ -119,7 +120,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               8.heightBox,
               Text.rich(
                 TextSpan(
-                  text: "Enter the 6-digit code sent to you at:\n",
+                  text: "${l10n.enterTheDigitCodeSentToYouAt}\n",
                   style: AppStyles.w400f16inter.copyWith(
                     color: kTextSecondary.withValues(alpha: 0.60),
                   ),
@@ -149,7 +150,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               ),
               24.heightBox,
               CustomActionButton(
-                buttonText: "Verify",
+                buttonText: l10n.verify,
                 onTap: _onVerify,
                 isEnabled: _isButtonEnabled,
                 backgroundColor: kPrimaryColor,
@@ -163,7 +164,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     _secondsRemaining > 0
                         ? RichText(
                             text: TextSpan(
-                              text: "I didn't receive a code ",
+                              text: l10n.iDidNotReceiveCode,
                               style: AppStyles.subtitleRegular.copyWith(
                                 color: kTextSecondary.withValues(alpha: 0.70),
                               ),
@@ -189,7 +190,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                               _startTimer();
                             },
                             child: Text(
-                              "Resend Code",
+                              l10n.resendCode,
                               style: AppStyles.subtitleSemiBold.copyWith(
                                 color: kPrimaryColor,
                               ),

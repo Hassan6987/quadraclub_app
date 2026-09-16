@@ -1,6 +1,10 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/language_provider.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
@@ -10,6 +14,7 @@ import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/presentation/onboarding/onboarding_screens.dart';
 import 'package:quadraclub_app/utils/components/safe_area_wrapper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'di/locator.dart';
 
@@ -37,12 +42,17 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
   await GetStorage.init();
+  final prefs = await SharedPreferences.getInstance();
+  final initialLocale = Locale(prefs.getString('language_code') ?? 'en');
   initServices();
   Bloc.observer = SimpleBlocObserver();
 
   runApp(
     MultiBlocProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) => LanguageProvider(initialLocale: initialLocale),
+        ),
         BlocProvider(create: (context) => AuthBloc()..add(AuthStarted())),
         BlocProvider(create: (context) => CourtsBloc()..add(LoadCourts())),
         BlocProvider(create: (_) => ChatsBloc()..add(const LoadChats())),
@@ -66,33 +76,46 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ResponsiveConfig().init(context);
-    return SafeAreaWrapper(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'QuadraClub',
-        theme: AppTheme.lightTheme,
-        navigatorKey: navigatorKey,
-        onGenerateRoute: AppGenerateRoute.generateRoute,
-        home: BlocBuilder<AuthBloc, AuthState>(
-          buildWhen: (previous, current) {
-            return previous.status == AuthStateStatus.initial ||
-                previous.status == AuthStateStatus.authenticating;
-          },
-          builder: (context, state) {
-            if (state.status == AuthStateStatus.onboarding) {
-              return const OnboardingScreen();
-            }
-            if (state.status == AuthStateStatus.success) {
-              return const CustomBottomNavBar(index: 2);
-            }
-            // Unauthenticated users land on home as a guest (can browse freely)
-            if (state.status == AuthStateStatus.unAuthenticated) {
-              return const CustomBottomNavBar(index: 2);
-            }
-            return const SplashScreen();
-          },
-        ),
-      ),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        return SafeAreaWrapper(
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'QuadraClub',
+            theme: AppTheme.lightTheme,
+            navigatorKey: navigatorKey,
+            locale: languageProvider.currentLocale,
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              FlutterQuillLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en'), Locale('pt')],
+            onGenerateRoute: AppGenerateRoute.generateRoute,
+            home: BlocBuilder<AuthBloc, AuthState>(
+              buildWhen: (previous, current) {
+                return previous.status == AuthStateStatus.initial ||
+                    previous.status == AuthStateStatus.authenticating;
+              },
+              builder: (context, state) {
+                if (state.status == AuthStateStatus.onboarding) {
+                  return const OnboardingScreen();
+                }
+                if (state.status == AuthStateStatus.success) {
+                  return const CustomBottomNavBar(index: 2);
+                }
+                // Unauthenticated users land on home as a guest (can browse freely)
+                if (state.status == AuthStateStatus.unAuthenticated) {
+                  return const CustomBottomNavBar(index: 2);
+                }
+                return const SplashScreen();
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -45,6 +45,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.otpSent) {
@@ -57,10 +58,10 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               ),
             ),
           );
-          context.showToast("An otp has been sent to your email");
+          context.showToast(l10n.anOtpHasBeenSentToYourEmail);
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-            state.error ?? "Something went wrong",
+            state.error ?? l10n.somethingWentWrong,
             isError: true,
           );
         }
@@ -76,23 +77,23 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 children: [
                   32.heightBox,
                   Text(
-                    "Forgot Password",
+                    l10n.forgotPasswordd,
                     style: AppStyles.w500f24inter.copyWith(
                       color: kTextPrimaryColor,
                     ),
                   ),
                   8.heightBox,
                   Text(
-                    "Enter the email address associated with account and we'll send you a recovery code.",
+                    l10n.enterTheEmailAddressAssociatedWithAccountWeSendYouRecoveryCode,
                     style: AppStyles.w400f16inter.copyWith(
                       color: kTextSecondary.withValues(alpha: 0.60),
                     ),
                   ),
                   40.heightBox,
                   CustomTextField(
-                    label: "Email",
+                    label: l10n.email,
                     controller: _emailController,
-                    hintText: "Enter your email",
+                    hintText: l10n.enterYourEmail,
                     prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
                     keyboardType: TextInputType.emailAddress,
                     validator: ValidateForm.validateEmail,
@@ -103,7 +104,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     Center(child: CustomLoadingView()),
                   if (state.status != AuthStateStatus.loading)
                     CustomActionButton(
-                      buttonText: "Send Code",
+                      buttonText: l10n.sendCode,
                       onTap: _onContinue,
                       backgroundColor: kPrimaryColor,
                       buttonTextColor: kDarkTextColor,

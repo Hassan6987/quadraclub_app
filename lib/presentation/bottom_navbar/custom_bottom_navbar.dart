@@ -29,6 +29,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final screens = [
       ClassesScreen(),
       MatchesScreen(),
@@ -36,7 +38,15 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       AgendaScreen(),
       ProfileScreen(),
     ];
-    final labels = ["Classes", "Matches", "Courts", "Agenda", "Profile"];
+
+    final labels = [
+      l10n.classes,
+      l10n.matches,
+      l10n.courts,
+      l10n.agenda,
+      l10n.profile,
+    ];
+
     final icons = [
       Assets.svg.classes.path,
       Assets.svg.matches.path,

@@ -3,6 +3,8 @@ import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/otp_verifictaion.dart';
 import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/components/language_toggle_button.dart'
+    show LanguageToggleButton;
 
 import '/app_exports.dart';
 
@@ -60,6 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.success) {
@@ -73,7 +76,7 @@ class _SignInScreenState extends State<SignInScreen> {
           context.read<MatchesBloc>().add(GetAllBookings());
         } else if (state.status == AuthStateStatus.unVerified) {
           context.showToast(
-            state.error ?? 'Something went wrong',
+            state.error ?? l10n.somethingWentWrong,
             isError: true,
           );
           Navigator.push(
@@ -85,7 +88,7 @@ class _SignInScreenState extends State<SignInScreen> {
           );
         } else if (state.status == AuthStateStatus.failure) {
           context.showToast(
-            state.error ?? 'Something went wrong',
+            state.error ?? l10n.somethingWentWrong,
             isError: true,
           );
         }
@@ -105,25 +108,30 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          10.heightBox,
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: const LanguageToggleButton(),
+                          ),
                           50.heightBox,
                           Text(
-                            "Sign In",
+                            l10n.signIn,
                             style: AppStyles.w500f24inter.copyWith(
                               color: kTextPrimaryColor,
                             ),
                           ),
                           8.heightBox,
                           Text(
-                            "Enter your credentials to manage your bookings.",
+                            l10n.enterYourCredentialsManageYourBookings,
                             style: AppStyles.w400f16inter.copyWith(
                               color: kTextSecondary.withValues(alpha: 0.60),
                             ),
                           ),
                           40.heightBox,
                           CustomTextField(
-                            label: "Email",
+                            label: l10n.email,
                             controller: _emailController,
-                            hintText: "Enter your email",
+                            hintText: l10n.enterYourEmail,
                             prefixIcon: SvgPicture.asset(
                               Assets.svg.emailIcon.path,
                             ),
@@ -133,9 +141,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           12.heightBox,
                           CustomTextField(
-                            label: "Password",
+                            label: l10n.password,
                             controller: _passwordController,
-                            hintText: "Enter your password",
+                            hintText: l10n.enterYourPassword,
                             obscureText: true,
                             prefixIcon: SvgPicture.asset(
                               Assets.svg.lockIcon.path,
@@ -155,7 +163,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 );
                               },
                               child: Text(
-                                "Forgot Password?",
+                                l10n.forgotPassword,
                                 style: AppStyles.subtitleMedium.copyWith(
                                   color: kTextPrimaryColor,
                                 ),
@@ -167,7 +175,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             Center(child: CustomLoadingView()),
                           if (state.status != AuthStateStatus.loading)
                             CustomActionButton(
-                              buttonText: "Sign In",
+                              buttonText: l10n.signIn,
                               onTap: _onContinue,
                               backgroundColor: kPrimaryColor,
                               buttonTextColor: kDarkTextColor,
@@ -179,7 +187,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Don't have an account? ",
+                                  l10n.doNotHaveAnAccount,
                                   style: AppStyles.w400f14inter.copyWith(
                                     color: kTextSecondary.withValues(
                                       alpha: 0.70,
@@ -194,7 +202,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     );
                                   },
                                   child: Text(
-                                    "Create Account",
+                                    l10n.createAccount,
                                     style: AppStyles.w500f14inter.copyWith(
                                       color: kTextPrimaryColor,
                                     ),

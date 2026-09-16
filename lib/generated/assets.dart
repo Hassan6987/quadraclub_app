@@ -30,9 +30,11 @@ class $AssetsPngGen {
   final AssetGenImage profilePlaceholder = const AssetGenImage(
     'assets/png/profile_placeholder.png',
   );
+  final AssetGenImage pt = const AssetGenImage('assets/png/pt.png');
   final AssetGenImage splashLogo = const AssetGenImage(
     'assets/png/splash_logo.png',
   );
+  final AssetGenImage uk = const AssetGenImage('assets/png/uk.png');
 }
 
 class $AssetsSvgGen {

@@ -49,6 +49,7 @@ class _GamesPreferenceScreenState extends State<GamesPreferenceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: const OnboardingAppBar(currentStep: 4, totalSteps: 5),
@@ -59,11 +60,11 @@ class _GamesPreferenceScreenState extends State<GamesPreferenceScreen> {
           children: [
             24.heightBox,
             Text(
-              "What games do you play?",
+              l10n.whatGamesDoYouPlay,
               style: AppStyles.subHeadingSemibold.copyWith(color: kBlackColor),
             ),
             Text(
-              "Select one or more. You can add others later.",
+              l10n.selectOneOrMoreYouCanAddOthersLater,
               style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
             ),
             24.heightBox,
@@ -118,8 +119,8 @@ class _GamesPreferenceScreenState extends State<GamesPreferenceScreen> {
             ),
             CustomActionButton(
               buttonText: _selected.isEmpty
-                  ? "Continue"
-                  : "Continue with ${_selected.length} sport${_selected.length > 1 ? 's' : ''}",
+                  ? l10n.continuee
+                  : "${l10n.continueWith} ${_selected.length} ${l10n.sport}${_selected.length > 1 ? 's' : ''}",
               onTap: _onContinue,
               isEnabled: _selected.isNotEmpty,
               backgroundColor: const Color(0xFFC5E028),
