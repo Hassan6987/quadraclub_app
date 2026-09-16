@@ -35,7 +35,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   DateTime? _selectedDate;
 
   final TextEditingController _searchController = TextEditingController();
-  final String _searchQuery = '';
+  String _searchQuery = '';
   String? _filterTimeOfDay;
   String? _filterCity;
   double? _filterDistance;
@@ -124,6 +124,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
       if (query.isNotEmpty &&
           !(match.club?.name ?? '').toLowerCase().contains(query) &&
           !(match.club?.name ?? '').toLowerCase().contains(query)) {
+        return false;
+      }
+
+      // --- new: date filter ---
+      final matchDate = match.bookingDate;
+      if (matchDate == null) return false;
+      final matchDateOnly = DateTime(
+        matchDate.year,
+        matchDate.month,
+        matchDate.day,
+      );
+      if (!_isSameDate(matchDateOnly, _selectedDate)) {
         return false;
       }
 
@@ -381,6 +393,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                       hintText: "Search...",
                                       borderRadius: 100,
                                       hintStyle: AppStyles.w400f14inter,
+                                      onChanged: (value) =>
+                                          setState(() => _searchQuery = value),
                                     ),
                                   ),
                                   8.widthBox,

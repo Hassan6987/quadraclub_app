@@ -1,7 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/profile/ui/widgets/account_section.dart';
-import 'package:quadraclub_app/presentation/profile/ui/widgets/feedback_card.dart';
 import 'package:quadraclub_app/presentation/profile/ui/widgets/game_info_card.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -36,19 +35,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 ProfileHeader(profile: profile, user: state.user),
                 24.heightBox,
-                StatisticsCard(
-                  stats: profile.stats,
-                  selected: _filter,
-                  onFilterChanged: (f) => setState(() => _filter = f),
-                ),
-                8.heightBox,
+                // StatisticsCard(
+                //   stats: profile.stats,
+                //   selected: _filter,
+                //   onFilterChanged: (f) => setState(() => _filter = f),
+                // ),
+                // 8.heightBox,
                 GameInfoCard(
                   dominantHand: state.user?.dominantHand ?? "Unknown",
                   preferredSide: state.user?.dominantHand ?? 'Unknown',
                 ),
-                8.heightBox,
-                FeedbackCard(tags: profile.feedback),
-                8.heightBox,
+                10.heightBox,
+
+                // FeedbackCard(tags: profile.feedback),
+                // 8.heightBox,
                 AccountSection(),
               ],
             ).withPaddingSymmetric(20, 16),

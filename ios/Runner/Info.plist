@@ -7,7 +7,17 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Quadraclub App</string>
+	<string>Quadraclub</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app uses your location to show your position on the map.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Quadraclub needs access to your camera so you can take and upload photos.</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Quadraclub needs access to your photo library so you can select and upload photos.</string>
+
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Quadraclub uses your location to show your position and provide distance of courts from your location.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

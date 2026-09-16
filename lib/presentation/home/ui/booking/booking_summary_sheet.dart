@@ -150,7 +150,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     super.initState();
     _selectedCourt = widget.court;
     _selectedStartTime = widget.startTime;
-    _selectedEndTime = widget.endTime;
+    _selectedEndTime =
+        widget.endTime ??
+            _endTimeForDuration(_selectedStartTime, _selectedDurationSlots);
   }
 
   void _onCourtSelected(Court court) {

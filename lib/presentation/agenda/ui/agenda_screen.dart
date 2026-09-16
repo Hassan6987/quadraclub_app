@@ -116,8 +116,10 @@ class _AgendaScreenState extends State<AgendaScreen>
     );
   }
 
-  Widget _agendaList(List<AgendaItem> items,
-      List<AgendaInvitation> invitations) {
+  Widget _agendaList(
+    List<AgendaItem> items,
+    List<AgendaInvitation> invitations,
+  ) {
     final filtered = items.where((item) {
       switch (_filter) {
         case 'Courts':
@@ -151,15 +153,18 @@ class _AgendaScreenState extends State<AgendaScreen>
           } else if (item.agendaType == AgendaType.court) {
             return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
           }
-          return AgendaMatchCard(item: item, onTap: () {
-            context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MatchDetailsScreen(),
-              ),
-            );
-          },).paddingOnly(bottom: 12);
+          return AgendaMatchCard(
+            item: item,
+            onTap: () {
+              if (item.tab == "confirmed") {
+                context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MatchDetailsScreen()),
+                );
+              }
+            },
+          ).paddingOnly(bottom: 12);
         }
 
         final invitation = invitations[index - filtered.length];
@@ -168,7 +173,8 @@ class _AgendaScreenState extends State<AgendaScreen>
           onAccept: () {
             if (!invitation.requiresPayment) {
               context.read<AgendaBloc>().add(
-                  RespondToInvitation(id: invitation.id, action: "accept"));
+                RespondToInvitation(id: invitation.id, action: "accept"),
+              );
             } else {
               context.read<AgendaBloc>().add(FetchPortfolio());
               Navigator.push(
@@ -179,9 +185,9 @@ class _AgendaScreenState extends State<AgendaScreen>
               );
             }
           },
-          onReject: () =>
-              context.read<AgendaBloc>().add(
-                  RespondToInvitation(id: invitation.id, action: "reject")),
+          onReject: () => context.read<AgendaBloc>().add(
+            RespondToInvitation(id: invitation.id, action: "reject"),
+          ),
         ).paddingOnly(bottom: 12);
       },
     );
