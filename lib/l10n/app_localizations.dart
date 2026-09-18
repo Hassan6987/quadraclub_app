@@ -991,6 +991,438 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pickleball'**
   String get pickleball;
+
+  /// No description provided for @signInToBookThisCourt.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to book this court'**
+  String get signInToBookThisCourt;
+
+  /// No description provided for @pleaseLogInCreateAccountToReserveYourSpot.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in or create an account to reserve your spot.'**
+  String get pleaseLogInCreateAccountToReserveYourSpot;
+
+  /// No description provided for @signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signup;
+
+  /// No description provided for @findCourtsNearYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Find courts near you.'**
+  String get findCourtsNearYou;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAll;
+
+  /// No description provided for @noCourtsMatchSearchFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No courts match your search/filters.'**
+  String get noCourtsMatchSearchFilters;
+
+  /// No description provided for @resetFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Filters'**
+  String get resetFilters;
+
+  /// No description provided for @availableTimeSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Time Slots'**
+  String get availableTimeSlots;
+
+  /// No description provided for @noSportsInformationAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No sports information available for this club.'**
+  String get noSportsInformationAvailable;
+
+  /// No description provided for @noCourtsOfferThisSport.
+  ///
+  /// In en, this message translates to:
+  /// **'No courts offer this sport yet.'**
+  String get noCourtsOfferThisSport;
+
+  /// No description provided for @noSlotsPublishedForDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots published for this date.'**
+  String get noSlotsPublishedForDate;
+
+  /// No description provided for @clubDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Club Details'**
+  String get clubDetails;
+
+  /// No description provided for @distanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'< {distance} km'**
+  String distanceKm(String distance);
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @full.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get full;
+
+  /// No description provided for @slotsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots Left'**
+  String get slotsLeft;
+
+  /// No description provided for @invitePlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Players'**
+  String get invitePlayers;
+
+  /// No description provided for @cancelInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'CANCEL INVITE'**
+  String get cancelInvite;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITE'**
+  String get invite;
+
+  /// No description provided for @bookingConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Confirmed!'**
+  String get bookingConfirmed;
+
+  /// No description provided for @yourCourtIsReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your court is reserved. Get ready for\nan amazing match.'**
+  String get yourCourtIsReserved;
+
+  /// No description provided for @bookingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Summary'**
+  String get bookingSummary;
+
+  /// No description provided for @courtDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'COURT DETAILS'**
+  String get courtDetails;
+
+  /// No description provided for @court.
+  ///
+  /// In en, this message translates to:
+  /// **'COURT'**
+  String get court;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME'**
+  String get time;
+
+  /// No description provided for @bookingType.
+  ///
+  /// In en, this message translates to:
+  /// **'BOOKING TYPE'**
+  String get bookingType;
+
+  /// No description provided for @reserveIndividual.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve Individual'**
+  String get reserveIndividual;
+
+  /// No description provided for @createAMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a Match'**
+  String get createAMatch;
+
+  /// No description provided for @bookCourtWithoutMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Book the court without creating a match in the app.'**
+  String get bookCourtWithoutMatch;
+
+  /// No description provided for @createGameForPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a game where other players can join.'**
+  String get createGameForPlayers;
+
+  /// No description provided for @book.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get book;
+
+  /// No description provided for @configureMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure Match'**
+  String get configureMatch;
+
+  /// No description provided for @matchType.
+  ///
+  /// In en, this message translates to:
+  /// **'MATCH TYPE'**
+  String get matchType;
+
+  /// No description provided for @invitePlayersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITE PLAYERS'**
+  String get invitePlayersSection;
+
+  /// No description provided for @payment.
+  ///
+  /// In en, this message translates to:
+  /// **'PAYMENT'**
+  String get payment;
+
+  /// No description provided for @searchPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search players...'**
+  String get searchPlayers;
+
+  /// No description provided for @private.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get private;
+
+  /// No description provided for @privateMatchDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only invited players can join.'**
+  String get privateMatchDescription;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @openMatchDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Other players can join the match.'**
+  String get openMatchDescription;
+
+  /// No description provided for @single.
+  ///
+  /// In en, this message translates to:
+  /// **'Single'**
+  String get single;
+
+  /// No description provided for @double.
+  ///
+  /// In en, this message translates to:
+  /// **'Double'**
+  String get double;
+
+  /// No description provided for @payAllReceiveLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay all, receive later'**
+  String get payAllReceiveLater;
+
+  /// No description provided for @payOnlyMyPart.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay only my part'**
+  String get payOnlyMyPart;
+
+  /// No description provided for @payAllReceiveLaterDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay the full amount now and collect the other players\' share later.'**
+  String get payAllReceiveLaterDescription;
+
+  /// No description provided for @payOnlyMyPartDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay only your share of the booking.'**
+  String get payOnlyMyPartDescription;
+
+  /// No description provided for @bookingDateAndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} | {time}'**
+  String bookingDateAndTime(String date, String time);
+
+  /// No description provided for @doubleFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Double'**
+  String get doubleFormat;
+
+  /// No description provided for @portfolio.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio'**
+  String get portfolio;
+
+  /// No description provided for @card.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get card;
+
+  /// No description provided for @priceDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'PRICE DETAILS'**
+  String get priceDetails;
+
+  /// No description provided for @courtFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Court Fee'**
+  String get courtFee;
+
+  /// No description provided for @serviceFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Fee'**
+  String get serviceFee;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @payNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Now'**
+  String get payNow;
+
+  /// No description provided for @portfolioPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio Payment'**
+  String get portfolioPayment;
+
+  /// No description provided for @cardPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Payment'**
+  String get cardPayment;
+
+  /// No description provided for @changeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Location'**
+  String get changeLocation;
+
+  /// No description provided for @searchLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search location'**
+  String get searchLocation;
+
+  /// No description provided for @noLocationsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No locations found'**
+  String get noLocationsFound;
+
+  /// No description provided for @currentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get currentLocation;
+
+  /// No description provided for @searchCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Search city'**
+  String get searchCity;
+
+  /// No description provided for @withinDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {distance} km'**
+  String withinDistance(Object distance);
+
+  /// No description provided for @anyDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Any distance'**
+  String get anyDistance;
+
+  /// No description provided for @noAvailableSlotsForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No available slots for this day'**
+  String get noAvailableSlotsForDay;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @noCourtsWithLocationToShowHereYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No courts with a location to show here yet'**
+  String get noCourtsWithLocationToShowHereYet;
+
+  /// No description provided for @searchCourts.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Courts'**
+  String get searchCourts;
+
+  /// No description provided for @searchCourtsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search courts'**
+  String get searchCourtsHint;
+
+  /// No description provided for @noCourtsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No courts found'**
+  String get noCourtsFound;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @space.
+  ///
+  /// In en, this message translates to:
+  /// **'space'**
+  String get space;
 }
 
 class _AppLocalizationsDelegate

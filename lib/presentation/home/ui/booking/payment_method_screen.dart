@@ -70,6 +70,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   @override
   void initState() {
     super.initState();
+
     _cardholderController.addListener(_revalidate);
     _cardNumberController.addListener(_revalidate);
     _expiryController.addListener(_revalidate);
@@ -101,10 +102,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     final expiryValid =
         CardValidators.validateExpiry(_expiryController.text) == null;
 
-    final cvvValid = CardValidators.validateCVV(
-      _cvvController.text,
-      cardNumber: _cardNumberController.text,
-    ) ==
+    final cvvValid =
+        CardValidators.validateCVV(
+          _cvvController.text,
+          cardNumber: _cardNumberController.text,
+        ) ==
         null;
 
     final isValid =
@@ -121,6 +123,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       _revalidate();
       return;
     }
+
     setState(() {
       _usePortfolio = true;
       _fieldsValid = false;
@@ -134,7 +137,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
   bool get _canPay {
     if (!_agreedToTerms) return false;
+
     if (_usePortfolio) return true;
+
     return _fieldsValid;
   }
 
@@ -167,43 +172,50 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         format: widget.matchFormat ?? '',
         paymentType: widget.paymentType ?? '',
         invitedPlayers: widget.invitedPlayers,
-          // Card fields are only meaningful when paying by card; left blank
-          // for portfolio payments, mirroring the isPortfolio pattern used
-          // in PaymentForLessonScreen's EnrollInClass event.
-          cardHolderName: _usePortfolio ? '' : _cardholderController.text
-              .trim(),
-          cardNo: _usePortfolio ? '' : _cardNumberController.text.trim(),
-          cvc: _usePortfolio ? '' : _cvvController.text.trim(),
-          cardExpiryDate: _usePortfolio ? '' : _expiryController.text.trim(),
+
+        cardHolderName: _usePortfolio ? '' : _cardholderController.text.trim(),
+
+        cardNo: _usePortfolio ? '' : _cardNumberController.text.trim(),
+
+        cvc: _usePortfolio ? '' : _cvvController.text.trim(),
+
+        cardExpiryDate: _usePortfolio ? '' : _expiryController.text.trim(),
+
         totalPrice: widget.amount.toInt(),
         serviceFee: _serviceFee.toInt(),
-          isPortfolio: _usePortfolio
+        isPortfolio: _usePortfolio,
       );
+
       context.read<CourtsBloc>().add(BookMatch(bookingData: bookingModel));
     } else {
-      final bookingModels = IndividualBookingModel(
+      final bookingModel = IndividualBookingModel(
         clubId: widget.club.id ?? '',
         courtId: widget.court.id ?? '',
         bookingDate: widget.bookingDate,
         startTime: widget.startTime,
         endTime: widget.endTime,
-          cardHolderName: _usePortfolio ? '' : _cardholderController.text
-              .trim(),
-          cardNo: _usePortfolio ? '' : _cardNumberController.text.trim(),
-          cvc: _usePortfolio ? '' : _cvvController.text.trim(),
-          cardExpiryDate: _usePortfolio ? '' : _expiryController.text.trim(),
+
+        cardHolderName: _usePortfolio ? '' : _cardholderController.text.trim(),
+
+        cardNo: _usePortfolio ? '' : _cardNumberController.text.trim(),
+
+        cvc: _usePortfolio ? '' : _cvvController.text.trim(),
+
+        cardExpiryDate: _usePortfolio ? '' : _expiryController.text.trim(),
+
         totalPrice: widget.amount.toInt(),
         serviceFee: _serviceFee.toInt(),
-          isPortfolio: _usePortfolio
+        isPortfolio: _usePortfolio,
       );
 
-      context.read<CourtsBloc>().add(
-          BookIndividual(bookingData: bookingModels));
+      context.read<CourtsBloc>().add(BookIndividual(bookingData: bookingModel));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: AppBar(
@@ -221,7 +233,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
         ),
         title: Text(
-          'Booking Summary',
+          l10n.bookingSummary,
           style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         ),
         centerTitle: true,
@@ -241,18 +253,18 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 ),
               ),
             );
+
             context.read<AgendaBloc>().add(GetAllAgenda());
           } else if (state.status == CourtStateStatus.failure) {
             context.showToast(
-              state.error ?? "Something Went wrong",
+              state.error ?? l10n.somethingWentWrong,
               isError: true,
             );
           }
         },
         builder: (context, state) {
           // TODO: replace with the real portfolio/wallet balance once a
-          // source is available on CourtsState (or another bloc), the same
-          // way ClassesBloc.state.balance feeds PaymentForLessonScreen.
+          // source is available on CourtsState.
           final portfolioBalance = state.balance.toDouble();
           final portfolioEnabled = portfolioBalance >= _total;
 
@@ -261,19 +273,23 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 16),
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // =========================================================
+                      // =======================================================
                       // COURT DETAILS
-                      // =========================================================
+                      // =======================================================
                       Text(
-                        'COURT DETAILS',
+                        l10n.courtDetails,
                         style: AppStyles.w500f12inter.copyWith(
-                            color: kTextColor),
+                          color: kTextColor,
+                        ),
                       ),
                       8.heightBox,
+
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -298,7 +314,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                         height: 96,
                                         width: 96,
                                         decoration: const BoxDecoration(
-                                            color: Colors.white),
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                 errorWidget: (context, url, error) {
@@ -312,6 +329,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                               ),
                             ),
                             12.widthBox,
+
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,19 +337,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                   Text(
                                     widget.club.name ?? '',
                                     style: AppStyles.w600f16inter.copyWith(
-                                        color: kDarkTextColor),
+                                      color: kDarkTextColor,
+                                    ),
                                   ),
                                   Text(
-                                    '${widget.club.city ??
-                                        ''} • ${formatDistanceKm(
-                                        widget.distance)}',
+                                    '${widget.club.city ?? ''} • ${formatDistanceKm(widget.distance)}',
                                     style: AppStyles.w400f14inter.copyWith(
-                                        color: kTextColor),
+                                      color: kTextColor,
+                                    ),
                                   ),
                                   Text(
                                     '${widget.dateLabel} | ${widget.timeLabel}',
                                     style: AppStyles.w500f12inter.copyWith(
-                                        color: kLightGreenColor),
+                                      color: kLightGreenColor,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -339,15 +358,17 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                           ],
                         ),
                       ),
+
                       20.heightBox,
 
-                      // =========================================================
+                      // =======================================================
                       // PAYMENT METHOD
-                      // =========================================================
+                      // =======================================================
                       Text(
-                        'PAYMENT METHOD',
+                        l10n.paymentMethod,
                         style: AppStyles.w500f12inter.copyWith(
-                            color: kTextColor),
+                          color: kTextColor,
+                        ),
                       ),
                       8.heightBox,
 
@@ -358,10 +379,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         isSelected: _usePortfolio,
                         onTap: () {
                           if (!portfolioEnabled) {
-                            context.showToast('Insufficient portfolio balance',
-                                isError: true);
+                            context.showToast(
+                              l10n.insufficientPortfolioBalance,
+                              isError: true,
+                            );
                             return;
                           }
+
                           _selectPortfolio(true);
                         },
                       ),
@@ -375,11 +399,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
                       if (!_usePortfolio) ...[
                         10.heightBox,
-                        // IMPORTANT:
-                        // We intentionally don't set autovalidateMode here.
-                        // Each CustomTextField handles its own validation
-                        // using AutovalidateMode.onUserInteraction, so an
-                        // interaction with one field doesn't validate all.
+
                         Form(
                           key: _formKey,
                           child: PaymentForm(
@@ -387,31 +407,32 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                             cardNumberController: _cardNumberController,
                             expiryController: _expiryController,
                             cvvController: _cvvController,
-                            cardholderValidator: CardValidators
-                                .validateCardholder,
-                            cardNumberValidator: CardValidators
-                                .validateCardNumber,
+                            cardholderValidator:
+                                CardValidators.validateCardholder,
+                            cardNumberValidator:
+                                CardValidators.validateCardNumber,
                             expiryValidator: CardValidators.validateExpiry,
-                            cvvValidator: (v) =>
-                                CardValidators.validateCVV(
-                                  v,
-                                  cardNumber: _cardNumberController.text,
-                                ),
+                            cvvValidator: (v) => CardValidators.validateCVV(
+                              v,
+                              cardNumber: _cardNumberController.text,
+                            ),
                           ),
                         ),
                       ],
 
                       20.heightBox,
 
-                      // =========================================================
+                      // =======================================================
                       // PRICE DETAILS
-                      // =========================================================
+                      // =======================================================
                       Text(
-                        'PRICE DETAILS',
+                        l10n.priceDetails,
                         style: AppStyles.w500f12inter.copyWith(
-                            color: kTextColor),
+                          color: kTextColor,
+                        ),
                       ),
                       8.heightBox,
+
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -424,65 +445,93 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Court Fee',
-                                    style: AppStyles.w400f14inter.copyWith(
-                                        color: kGreyTextColor)),
-                                Text(formatPrice(widget.amount),
-                                    style: AppStyles.w500f14inter.copyWith(
-                                        color: kDarkTextColor)),
+                                Text(
+                                  l10n.courtFee,
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kGreyTextColor,
+                                  ),
+                                ),
+                                Text(
+                                  formatPrice(widget.amount),
+                                  style: AppStyles.w500f14inter.copyWith(
+                                    color: kDarkTextColor,
+                                  ),
+                                ),
                               ],
                             ),
+
                             8.heightBox,
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Service Fee',
-                                    style: AppStyles.w400f14inter.copyWith(
-                                        color: kGreyTextColor)),
-                                Text('${_serviceFee.toInt()} %',
-                                    style: AppStyles.w500f14inter.copyWith(
-                                        color: kDarkTextColor)),
+                                Text(
+                                  l10n.serviceFee,
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kGreyTextColor,
+                                  ),
+                                ),
+                                Text(
+                                  '${_serviceFee.toInt()} %',
+                                  style: AppStyles.w500f14inter.copyWith(
+                                    color: kDarkTextColor,
+                                  ),
+                                ),
                               ],
                             ),
+
                             const Divider(height: 24, color: kBorderColor),
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Total',
-                                    style: AppStyles.w400f14inter.copyWith(
-                                        color: kGreyTextColor)),
-                                Text(formatPrice(_total),
-                                    style: AppStyles.w600f16inter.copyWith(
-                                        color: kBlueColor)),
+                                Text(
+                                  l10n.total,
+                                  style: AppStyles.w400f14inter.copyWith(
+                                    color: kGreyTextColor,
+                                  ),
+                                ),
+                                Text(
+                                  formatPrice(_total),
+                                  style: AppStyles.w600f16inter.copyWith(
+                                    color: kBlueColor,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
                         ),
                       ),
+
                       14.heightBox,
 
-                      // =========================================================
+                      // =======================================================
                       // TERMS
-                      // =========================================================
+                      // =======================================================
                       GestureDetector(
-                        onTap: () =>
-                            setState(() => _agreedToTerms = !_agreedToTerms),
+                        onTap: () {
+                          setState(() => _agreedToTerms = !_agreedToTerms);
+                        },
                         child: Row(
                           children: [
                             Checkbox(
                               value: _agreedToTerms,
                               activeColor: kPrimaryColor,
                               side: const BorderSide(
-                                  color: kTextColor, width: 2),
-                              onChanged: (value) =>
-                                  setState(() =>
-                              _agreedToTerms = value ?? false),
+                                color: kTextColor,
+                                width: 2,
+                              ),
+                              onChanged: (value) {
+                                setState(() => _agreedToTerms = value ?? false);
+                              },
                             ),
+
                             Expanded(
                               child: Text(
-                                'I agree to the terms of use.',
+                                l10n.agreeToTermsOfUse,
                                 style: AppStyles.w400f14inter.copyWith(
-                                    color: kTextColor),
+                                  color: kTextColor,
+                                ),
                               ),
                             ),
                           ],
@@ -493,16 +542,17 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 ),
               ),
 
-              // ===============================================================
+              // =============================================================
               // PAY NOW
-              // ===============================================================
+              // =============================================================
               if (state.status == CourtStateStatus.booking)
                 Center(child: CustomLoadingView()),
+
               if (state.status != CourtStateStatus.booking)
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: CustomActionButton(
-                    buttonText: 'Pay Now',
+                    buttonText: l10n.payNow,
                     isEnabled: _canPay,
                     onTap: _onPayNow,
                   ),
@@ -516,13 +566,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 }
 
 // ===========================================================================
-// EXPIRY DATE FORMATTER (unchanged — used by PaymentForm)
+// EXPIRY DATE FORMATTER
 // ===========================================================================
 
 class ExpiryDateInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
-      TextEditingValue newValue,) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
 
     if (digits.isEmpty) {
@@ -532,11 +584,12 @@ class ExpiryDateInputFormatter extends TextInputFormatter {
     final limitedDigits = digits.length > 4 ? digits.substring(0, 4) : digits;
 
     String formatted;
+
     if (limitedDigits.length <= 2) {
       formatted = limitedDigits;
     } else {
       formatted =
-      '${limitedDigits.substring(0, 2)}/${limitedDigits.substring(2)}';
+          '${limitedDigits.substring(0, 2)}/${limitedDigits.substring(2)}';
     }
 
     return TextEditingValue(
@@ -547,13 +600,15 @@ class ExpiryDateInputFormatter extends TextInputFormatter {
 }
 
 // ===========================================================================
-// CARD NUMBER FORMATTER (unchanged — used by PaymentForm)
+// CARD NUMBER FORMATTER
 // ===========================================================================
 
 class CardNumberInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
-      TextEditingValue newValue,) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
 
     if (digits.isEmpty) {
@@ -563,12 +618,15 @@ class CardNumberInputFormatter extends TextInputFormatter {
     final limitedDigits = digits.length > 16 ? digits.substring(0, 16) : digits;
 
     final buffer = StringBuffer();
+
     for (int i = 0; i < limitedDigits.length; i++) {
       if (i > 0 && i % 4 == 0) {
         buffer.write(' ');
       }
+
       buffer.write(limitedDigits[i]);
     }
+
     final formatted = buffer.toString();
 
     return TextEditingValue(

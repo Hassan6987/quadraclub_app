@@ -164,6 +164,7 @@ class _CourtMapViewState extends State<CourtMapView> {
   @override
   Widget build(BuildContext context) {
     final courts = _mappableCourts;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Column(
@@ -398,13 +399,13 @@ class _CourtMapViewState extends State<CourtMapView> {
                   ),
                 ),
                 if (courts.isEmpty)
-                  const Positioned(
+                  Positioned(
                     left: 0,
                     right: 0,
                     bottom: 32,
                     child: Center(
                       child: Text(
-                        'No courts with a location to show here yet',
+                        l10n.noCourtsWithLocationToShowHereYet,
                         style: TextStyle(color: kTextColor),
                       ),
                     ),
@@ -429,9 +430,8 @@ class _CourtMapViewState extends State<CourtMapView> {
                               if (authState.user == null) {
                                 LoginToBookDialog.show(
                                   context,
-                                  title: 'Sign in to book this court',
-                                  subtitle:
-                                      'Please log in or create an account to reserve your spot.',
+                                  title: l10n.signInToBookThisCourt,
+                                  subtitle: l10n.loginToReserveYourSpot,
                                 );
                                 return;
                               }

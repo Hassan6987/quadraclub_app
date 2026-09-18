@@ -14,6 +14,31 @@ import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 /// The 4 sport types the filter row always shows, regardless of what
 /// happens to be present in the currently loaded clubs.
+
+
+String localizedSportName(BuildContext context,
+    String? sportName,) {
+  final l10n = AppLocalizations.of(context)!;
+
+  switch (sportName?.trim().toLowerCase()) {
+    case 'padel':
+      return l10n.padel;
+
+    case 'tennis':
+      return l10n.tennis;
+
+    case 'beach tennis':
+    case 'beach_tennis':
+      return l10n.beachTennis;
+
+    case 'pickleball':
+      return l10n.pickleball;
+
+    default:
+      return sportName ?? '';
+  }
+}
+
 const List<String> kAllSportSlugs = [
   'padel',
   'tennis',
@@ -232,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<CourtsBloc, CourtsState>(
       builder: (context, state) {
         // If GPS is not active and location is still the London placeholder,
@@ -293,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return Scaffold(
           appBar: CustomAppBar(
-            title: "Find courts near you.",
+            title: l10n.findCourtsNearYou,
             centerTile: false,
             backgroundColor: kWhiteColor,
           ),
@@ -312,8 +338,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           final sport = kAllSportSlugs[index];
                           final isSelected = _selectedSports.contains(sport);
-                          final label =
-                              '${sport[0].toUpperCase()}${sport.substring(1).replaceAll('_', ' ')}';
+
+                          final label = localizedSportName(
+                            context,
+                            sport,
+                          );
+
                           return GestureDetector(
                             onTap: () {
                               setState(() {
@@ -334,7 +364,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderRadius: BorderRadius.circular(12),
                                 border: isSelected
                                     ? null
-                                    : Border.all(color: kBorderColor),
+                                    : Border.all(
+                                  color: kBorderColor,
+                                ),
                               ),
                               child: Center(
                                 child: Text(
@@ -388,7 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Text(
                                       _searchQuery.isNotEmpty
                                           ? _searchQuery
-                                          : 'Search by name...',
+                                          : l10n.searchByName,
                                       style: AppStyles.w400f14inter.copyWith(
                                         color: kDarkTextColor,
                                       ),
@@ -491,7 +523,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                             if (_filterDistance != null) ...[
                               _buildFilterBadge(
-                                label: '< ${_filterDistance!.round()} km',
+                                label: l10n.distanceKm(
+                                    _filterDistance!.round().toString()),
                                 icon: Icons.near_me_outlined,
                                 onClear: () =>
                                     setState(() => _filterDistance = null),
@@ -505,7 +538,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _filterDistance = null;
                               }),
                               child: Text(
-                                'Clear all',
+                                l10n.clearAll,
                                 style: AppStyles.w500f12inter.copyWith(
                                   color: kDarkTextColor,
                                   decoration: TextDecoration.underline,
@@ -537,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'No courts match your search/filters.',
+                                    l10n.noCourtsMatchSearchFilters,
                                     style: AppStyles.w500f14inter.copyWith(
                                       color: kTextColor,
                                     ),
@@ -553,7 +586,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         _filterDistance = null;
                                       });
                                     },
-                                    child: const Text('Reset Filters'),
+                                    child: Text(
+                                      l10n.resetFilters,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -575,9 +610,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     if (authState.user == null) {
                                       LoginToBookDialog.show(
                                         context,
-                                        title: 'Sign in to book this court',
-                                        subtitle:
-                                            'Please log in or create an account to reserve your spot.',
+                                        title: l10n.signInToBookThisCourt,
+                                        subtitle: l10n
+                                            .pleaseLogInCreateAccountToReserveYourSpot,
                                       );
                                       return;
                                     }

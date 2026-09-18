@@ -29,6 +29,7 @@ class LoginToBookDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: const BoxDecoration(
         color: kWhiteColor,
@@ -117,7 +118,7 @@ class LoginToBookDialog extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Sign In',
+                    l10n.signIn,
                     style: AppStyles.w600f16inter.copyWith(color: kWhiteColor),
                   ),
                 ),
@@ -142,7 +143,7 @@ class LoginToBookDialog extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Signup',
+                    l10n.signup,
                     style: AppStyles.w600f16inter.copyWith(
                       color: kDarkTextColor,
                     ),

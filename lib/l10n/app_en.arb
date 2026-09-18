@@ -188,5 +188,95 @@
   "padel": "Padel",
   "tennis": "Tennis",
   "beachTennis": "Beach Tennis",
-  "pickleball": "Pickleball"
+  "pickleball": "Pickleball",
+  "signInToBookThisCourt": "Sign in to book this court",
+  "pleaseLogInCreateAccountToReserveYourSpot": "Please log in or create an account to reserve your spot.",
+  "signup": "Sign Up",
+  "findCourtsNearYou": "Find courts near you.",
+  "clearAll": "Clear all",
+  "noCourtsMatchSearchFilters": "No courts match your search/filters.",
+  "resetFilters": "Reset Filters",
+  "availableTimeSlots": "Available Time Slots",
+  "noSportsInformationAvailable": "No sports information available for this club.",
+  "noCourtsOfferThisSport": "No courts offer this sport yet.",
+  "noSlotsPublishedForDate": "No slots published for this date.",
+  "clubDetails": "Club Details",
+  "distanceKm": "< {distance} km",
+  "@distanceKm": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "Available",
+  "full": "Full",
+  "slotsLeft": "Slots Left",
+  "invitePlayers": "Invite Players",
+  "cancelInvite": "CANCEL INVITE",
+  "invite": "INVITE",
+  "bookingConfirmed": "Booking Confirmed!",
+  "yourCourtIsReserved": "Your court is reserved. Get ready for\nan amazing match.",
+  "bookingSummary": "Booking Summary",
+  "courtDetails": "COURT DETAILS",
+  "court": "COURT",
+  "time": "TIME",
+  "bookingType": "BOOKING TYPE",
+  "reserveIndividual": "Reserve Individual",
+  "createAMatch": "Create a Match",
+  "bookCourtWithoutMatch": "Book the court without creating a match in the app.",
+  "createGameForPlayers": "Create a game where other players can join.",
+  "book": "Book",
+  "configureMatch": "Configure Match",
+  "matchType": "MATCH TYPE",
+  "invitePlayersSection": "INVITE PLAYERS",
+  "payment": "PAYMENT",
+  "searchPlayers": "Search players...",
+  "private": "Private",
+  "privateMatchDescription": "Only invited players can join.",
+  "open": "Open",
+  "openMatchDescription": "Other players can join the match.",
+  "single": "Single",
+  "double": "Double",
+  "payAllReceiveLater": "Pay all, receive later",
+  "payOnlyMyPart": "Pay only my part",
+  "payAllReceiveLaterDescription": "Pay the full amount now and collect the other players' share later.",
+  "payOnlyMyPartDescription": "Pay only your share of the booking.",
+  "bookingDateAndTime": "{date} | {time}",
+  "@bookingDateAndTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "doubleFormat": "Double",
+  "portfolio": "Portfolio",
+  "card": "Card",
+  "priceDetails": "PRICE DETAILS",
+  "courtFee": "Court Fee",
+  "serviceFee": "Service Fee",
+  "total": "Total",
+  "payNow": "Pay Now",
+  "portfolioPayment": "Portfolio Payment",
+  "cardPayment": "Card Payment",
+  "changeLocation": "Change Location",
+  "searchLocation": "Search location",
+  "noLocationsFound": "No locations found",
+  "currentLocation": "Current location",
+  "searchCity": "Search city",
+  "withinDistance": "Within {distance} km",
+  "anyDistance": "Any distance",
+  "noAvailableSlotsForDay": "No available slots for this day",
+  "viewDetails": "View Details",
+  "noCourtsWithLocationToShowHereYet": "No courts with a location to show here yet",
+  "searchCourts": "Search Courts",
+  "searchCourtsHint": "Search courts",
+  "noCourtsFound": "No courts found",
+  "send": "Send",
+  "space": "space"
+
 }

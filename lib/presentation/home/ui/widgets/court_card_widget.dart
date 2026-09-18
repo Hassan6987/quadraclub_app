@@ -25,14 +25,6 @@ class CourtCardWidget extends StatefulWidget {
 
 class _CourtCardWidgetState extends State<CourtCardWidget> {
   /// Each sport/time-slot row has its own controller.
-  ///
-  /// Example:
-  /// Court 1 - Tennis      -> controller
-  /// Court 1 - Padel       -> controller
-  /// Court 2 - Tennis      -> controller
-  /// Court 2 - Padel       -> controller
-  ///
-  /// All of them are synchronized.
   final Map<String, ScrollController> _scrollControllers = {};
 
   bool _isSyncingScroll = false;
@@ -73,7 +65,6 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     final sourceOffset = sourceController.offset;
 
     for (final controller in _scrollControllers.values) {
-      // Don't update the controller that is currently scrolling.
       if (controller == sourceController) {
         continue;
       }
@@ -84,10 +75,6 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
 
       final maxScrollExtent = controller.position.maxScrollExtent;
 
-      // Different rows can have different content widths.
-      //
-      // Therefore we clamp the offset so that a shorter row doesn't
-      // receive an invalid offset.
       final targetOffset = sourceOffset.clamp(0.0, maxScrollExtent);
 
       if ((controller.offset - targetOffset).abs() > 0.5) {
@@ -122,6 +109,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     final state = widget.club.state ?? '';
 
     String loc = '';
+
     if (city.isNotEmpty && state.isNotEmpty) {
       loc = '$city, $state';
     } else if (city.isNotEmpty) {
@@ -134,7 +122,9 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
         !widget.distanceKm!.isInfinite &&
         !widget.distanceKm!.isNaN) {
       final d = widget.distanceKm!;
+
       final dStr = d < 10 ? '${d.toStringAsFixed(1)} km' : '${d.round()} km';
+
       return loc.isNotEmpty ? '$loc • $dStr' : dStr;
     }
 
@@ -159,6 +149,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final courts = widget.club.courts;
 
     return Container(
@@ -241,7 +232,9 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                           fontSize: 20,
                         ),
                       ),
+
                       const SizedBox(height: 4),
+
                       Row(
                         children: [
                           Icon(
@@ -249,7 +242,9 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                             color: kWhiteColor.withValues(alpha: 0.8),
                             size: 14,
                           ),
+
                           const SizedBox(width: 4),
+
                           Expanded(
                             child: Text(
                               _locationLabel,
@@ -304,12 +299,14 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'View Details',
+                      l10n.viewDetails,
                       style: AppStyles.w500f12inter.copyWith(
                         color: kDarkTextColor,
                       ),
                     ),
+
                     const SizedBox(width: 2),
+
                     const Icon(
                       Icons.chevron_right,
                       size: 14,
@@ -365,6 +362,8 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   // ---------------------------------------------------------------------------
 
   Widget _buildSportSlots(Court court, Sport sport, WeeklySlot? daySlots) {
+    final l10n = AppLocalizations.of(context)!;
+
     final sportKey = (sport.sportName ?? '').toLowerCase();
 
     List<Padel> slots;
@@ -388,18 +387,6 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     // -------------------------------------------------------------------------
     // UNIQUE KEY
     // -------------------------------------------------------------------------
-    //
-    // We need a different controller for every sport row.
-    //
-    // Example:
-    //
-    // court1 + tennis
-    // court1 + padel
-    // court2 + tennis
-    // court2 + padel
-    //
-    // Each gets its own ScrollController.
-    //
 
     final controllerKey =
         '${court.courtName ?? 'court'}_${sport.sportName ?? 'sport'}';
@@ -424,7 +411,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
           // -------------------------------------------------------------------
           if (availableSlots.isEmpty)
             Text(
-              'No available slots for this day',
+              l10n.noAvailableSlotsForDay,
               style: AppStyles.w400f12inter.copyWith(color: kTextColor),
             )
           // -------------------------------------------------------------------
@@ -436,17 +423,11 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
               child: ListView.separated(
                 controller: scrollController,
                 scrollDirection: Axis.horizontal,
-
-                // This is important because we want this ListView to
-                // respond to horizontal drag gestures.
                 physics: const BouncingScrollPhysics(),
-
                 itemCount: availableSlots.length,
-
                 separatorBuilder: (_, __) {
                   return const SizedBox(width: 4);
                 },
-
                 itemBuilder: (context, index) {
                   final slot = availableSlots[index];
 

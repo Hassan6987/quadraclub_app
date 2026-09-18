@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -485,4 +484,234 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickleball => 'Pickleball';
+
+  @override
+  String get signInToBookThisCourt => 'Sign in to book this court';
+
+  @override
+  String get pleaseLogInCreateAccountToReserveYourSpot =>
+      'Please log in or create an account to reserve your spot.';
+
+  @override
+  String get signup => 'Sign Up';
+
+  @override
+  String get findCourtsNearYou => 'Find courts near you.';
+
+  @override
+  String get clearAll => 'Clear all';
+
+  @override
+  String get noCourtsMatchSearchFilters =>
+      'No courts match your search/filters.';
+
+  @override
+  String get resetFilters => 'Reset Filters';
+
+  @override
+  String get availableTimeSlots => 'Available Time Slots';
+
+  @override
+  String get noSportsInformationAvailable =>
+      'No sports information available for this club.';
+
+  @override
+  String get noCourtsOfferThisSport => 'No courts offer this sport yet.';
+
+  @override
+  String get noSlotsPublishedForDate => 'No slots published for this date.';
+
+  @override
+  String get clubDetails => 'Club Details';
+
+  @override
+  String distanceKm(String distance) {
+    return '< $distance km';
+  }
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get full => 'Full';
+
+  @override
+  String get slotsLeft => 'Slots Left';
+
+  @override
+  String get invitePlayers => 'Invite Players';
+
+  @override
+  String get cancelInvite => 'CANCEL INVITE';
+
+  @override
+  String get invite => 'INVITE';
+
+  @override
+  String get bookingConfirmed => 'Booking Confirmed!';
+
+  @override
+  String get yourCourtIsReserved =>
+      'Your court is reserved. Get ready for\nan amazing match.';
+
+  @override
+  String get bookingSummary => 'Booking Summary';
+
+  @override
+  String get courtDetails => 'COURT DETAILS';
+
+  @override
+  String get court => 'COURT';
+
+  @override
+  String get time => 'TIME';
+
+  @override
+  String get bookingType => 'BOOKING TYPE';
+
+  @override
+  String get reserveIndividual => 'Reserve Individual';
+
+  @override
+  String get createAMatch => 'Create a Match';
+
+  @override
+  String get bookCourtWithoutMatch =>
+      'Book the court without creating a match in the app.';
+
+  @override
+  String get createGameForPlayers =>
+      'Create a game where other players can join.';
+
+  @override
+  String get book => 'Book';
+
+  @override
+  String get configureMatch => 'Configure Match';
+
+  @override
+  String get matchType => 'MATCH TYPE';
+
+  @override
+  String get invitePlayersSection => 'INVITE PLAYERS';
+
+  @override
+  String get payment => 'PAYMENT';
+
+  @override
+  String get searchPlayers => 'Search players...';
+
+  @override
+  String get private => 'Private';
+
+  @override
+  String get privateMatchDescription => 'Only invited players can join.';
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get openMatchDescription => 'Other players can join the match.';
+
+  @override
+  String get single => 'Single';
+
+  @override
+  String get double => 'Double';
+
+  @override
+  String get payAllReceiveLater => 'Pay all, receive later';
+
+  @override
+  String get payOnlyMyPart => 'Pay only my part';
+
+  @override
+  String get payAllReceiveLaterDescription =>
+      'Pay the full amount now and collect the other players\' share later.';
+
+  @override
+  String get payOnlyMyPartDescription => 'Pay only your share of the booking.';
+
+  @override
+  String bookingDateAndTime(String date, String time) {
+    return '$date | $time';
+  }
+
+  @override
+  String get doubleFormat => 'Double';
+
+  @override
+  String get portfolio => 'Portfolio';
+
+  @override
+  String get card => 'Card';
+
+  @override
+  String get priceDetails => 'PRICE DETAILS';
+
+  @override
+  String get courtFee => 'Court Fee';
+
+  @override
+  String get serviceFee => 'Service Fee';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get payNow => 'Pay Now';
+
+  @override
+  String get portfolioPayment => 'Portfolio Payment';
+
+  @override
+  String get cardPayment => 'Card Payment';
+
+  @override
+  String get changeLocation => 'Change Location';
+
+  @override
+  String get searchLocation => 'Search location';
+
+  @override
+  String get noLocationsFound => 'No locations found';
+
+  @override
+  String get currentLocation => 'Current location';
+
+  @override
+  String get searchCity => 'Search city';
+
+  @override
+  String withinDistance(Object distance) {
+    return 'Within $distance km';
+  }
+
+  @override
+  String get anyDistance => 'Any distance';
+
+  @override
+  String get noAvailableSlotsForDay => 'No available slots for this day';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get noCourtsWithLocationToShowHereYet =>
+      'No courts with a location to show here yet';
+
+  @override
+  String get searchCourts => 'Search Courts';
+
+  @override
+  String get searchCourtsHint => 'Search courts';
+
+  @override
+  String get noCourtsFound => 'No courts found';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get space => 'space';
 }

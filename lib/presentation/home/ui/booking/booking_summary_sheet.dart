@@ -1,4 +1,3 @@
-// lib/presentation/booking/ui/widgets/booking_summary_sheet.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
@@ -35,7 +34,8 @@ class BookingSummarySheet extends StatefulWidget {
     required String? sportName,
     required DateTime date,
     required String startTime,
-        String? endTime, required double distance
+    String? endTime,
+    required double distance,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -64,21 +64,23 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   late Court _selectedCourt;
   late String _selectedStartTime;
   late String? _selectedEndTime;
+
   int _selectedDurationSlots = 1;
+
   BookingType _bookingType = BookingType.individual;
 
   String _dateKey(DateTime d) {
     final y = d.year.toString().padLeft(4, '0');
     final m = d.month.toString().padLeft(2, '0');
     final day = d.day.toString().padLeft(2, '0');
+
     return '$y-$m-$day';
   }
 
-  /// Every court in the club that offers this sport — lets the user
-  /// switch courts, the same role the mock's "Block" picker played,
-  /// but driven by which courts actually exist and carry this sport.
+  /// Every court in the club that offers this sport.
   List<Court> get _eligibleCourts {
     final sport = (widget.sportName ?? '').toLowerCase();
+
     return widget.club.courts
         .where(
           (c) =>
@@ -87,24 +89,31 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
         .toList();
   }
 
-  /// The full ordered slot list for the current court/date/sport,
-  /// Available and Booked alike — needed to check contiguity.
-  /// WeeklySlot only decodes "Tennis"/"Padel" keys today.
+  /// The full ordered slot list for the current
+  /// court/date/sport.
   List<Padel> get _daySlotsForSport {
     final daySlots = _selectedCourt.weeklySlots[_dateKey(widget.date)];
-    if (daySlots == null) return const [];
+
+    if (daySlots == null) {
+      return const [];
+    }
 
     final sport = (widget.sportName ?? '').toLowerCase();
+
     switch (sport) {
       case 'tennis':
         return daySlots.tennis;
+
       case 'padel':
         return daySlots.padel;
+
       case 'pickleball':
         return daySlots.pickleball;
+
       case 'beach tennis':
       case 'beach_tennis':
         return daySlots.beachTennis;
+
       default:
         return const [];
     }
@@ -115,29 +124,47 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
   int _maxContiguousFrom(String startTime) {
     final all = _daySlotsForSport;
+
     final startIndex = all.indexWhere((s) => s.startTime == startTime);
-    if (startIndex == -1) return 0;
+
+    if (startIndex == -1) {
+      return 0;
+    }
+
     var count = 0;
+
     for (var i = startIndex; i < all.length; i++) {
-      if (all[i].status != 'Available') break;
+      if (all[i].status != 'Available') {
+        break;
+      }
+
       count++;
     }
+
     return count;
   }
 
   String? _endTimeForDuration(String startTime, int durationSlots) {
     final all = _daySlotsForSport;
+
     final startIndex = all.indexWhere((s) => s.startTime == startTime);
-    if (startIndex == -1 || startIndex + durationSlots - 1 >= all.length)
+
+    if (startIndex == -1 || startIndex + durationSlots - 1 >= all.length) {
       return null;
+    }
+
     return all[startIndex + durationSlots - 1].endTime;
   }
 
   Sport? get _sportInfo {
     final sport = (widget.sportName ?? '').toLowerCase();
+
     for (final s in _selectedCourt.sports) {
-      if ((s.sportName ?? '').toLowerCase() == sport) return s;
+      if ((s.sportName ?? '').toLowerCase() == sport) {
+        return s;
+      }
     }
+
     return null;
   }
 
@@ -148,23 +175,29 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   @override
   void initState() {
     super.initState();
+
     _selectedCourt = widget.court;
     _selectedStartTime = widget.startTime;
+
     _selectedEndTime =
         widget.endTime ??
-            _endTimeForDuration(_selectedStartTime, _selectedDurationSlots);
+        _endTimeForDuration(_selectedStartTime, _selectedDurationSlots);
   }
 
   void _onCourtSelected(Court court) {
     setState(() {
       _selectedCourt = court;
       _selectedDurationSlots = 1;
+
       final slots = _startableSlots;
+
       final match = slots.where((s) => s.startTime == _selectedStartTime);
+
       if (match.isNotEmpty) {
         _selectedEndTime = match.first.endTime;
       } else if (slots.isNotEmpty) {
         _selectedStartTime = slots.first.startTime ?? _selectedStartTime;
+
         _selectedEndTime = slots.first.endTime;
       } else {
         _selectedEndTime = null;
@@ -173,9 +206,13 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   }
 
   void _onDurationSelected(int slots) {
-    if (_maxContiguousFrom(_selectedStartTime) < slots) return;
+    if (_maxContiguousFrom(_selectedStartTime) < slots) {
+      return;
+    }
+
     setState(() {
       _selectedDurationSlots = slots;
+
       _selectedEndTime = _endTimeForDuration(_selectedStartTime, slots);
     });
   }
@@ -183,23 +220,36 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   String get _dateLabel {
     const weekdays = dayNames;
     const months = monthNames;
+
     final d = widget.date;
-    return '${weekdays[d.weekday - 1]}, ${months[d.month - 1]} ${d.day}';
+
+    return '${weekdays[d.weekday - 1]}, '
+        '${months[d.month - 1]} ${d.day}';
   }
 
   String get _locationLabel {
     final city = widget.club.city ?? '';
     final state = widget.club.state ?? '';
-    if (city.isEmpty) return state;
-    if (state.isEmpty) return city;
+
+    if (city.isEmpty) {
+      return state;
+    }
+
+    if (state.isEmpty) {
+      return city;
+    }
+
     return '$city, $state';
   }
 
   void _onPrimaryTap() {
-    if (_selectedEndTime == null) return;
+    if (_selectedEndTime == null) {
+      return;
+    }
 
     if (_bookingType == BookingType.individual) {
-      Navigator.pop(context); // close sheet
+      Navigator.pop(context);
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -208,7 +258,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             court: _selectedCourt,
             dateLabel: _dateLabel,
             startTime: _selectedStartTime,
-            endTime: _selectedEndTime ?? "",
+            endTime: _selectedEndTime ?? '',
             bookingDate: widget.date,
             timeLabel: '$_selectedStartTime-$_selectedEndTime',
             amount: _amount,
@@ -217,7 +267,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
         ),
       );
     } else {
-      Navigator.pop(context); // close sheet
+      Navigator.pop(context);
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -225,7 +276,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             club: widget.club,
             court: _selectedCourt,
             startTime: _selectedStartTime,
-            endTime: _selectedEndTime ?? "",
+            endTime: _selectedEndTime ?? '',
             bookingDate: widget.date,
             dateLabel: _dateLabel,
             timeLabel: '$_selectedStartTime-$_selectedEndTime',
@@ -239,9 +290,14 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final isIndividual = _bookingType == BookingType.individual;
+
     final startableSlots = _startableSlots;
+
     final maxContiguous = _maxContiguousFrom(_selectedStartTime);
+
     final canBook = _selectedEndTime != null;
 
     return Padding(
@@ -258,7 +314,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Booking Summary',
+                  l10n.bookingSummary,
                   style: AppStyles.w600f16inter.copyWith(
                     color: kDarkTextColor,
                     fontSize: 18,
@@ -274,16 +330,18 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 ),
               ],
             ).withPaddingSymmetric(16, 0),
+
             30.heightBox,
 
-            // Club / court details card
             Text(
-              "COURT DETAILS",
+              l10n.courtDetails,
               style: AppStyles.w500f12inter.copyWith(
                 color: kDarkTextColor.withValues(alpha: 0.7),
               ),
             ).withPaddingSymmetric(16, 0),
+
             8.heightBox,
+
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -318,7 +376,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       },
                     ),
                   ),
+
                   12.widthBox,
+
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,10 +390,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                           ),
                         ),
                         Text(
-                          // Distance isn't real geodata yet — carried over
-                          // from the original mock as a visual placeholder.
-                          '$_locationLabel  •  ${formatDistanceKm(
-                              widget.distance)}',
+                          '$_locationLabel • '
+                          '${formatDistanceKm(widget.distance)}',
                           style: AppStyles.w400f14inter.copyWith(
                             color: kGreyTextColor,
                           ),
@@ -350,20 +408,22 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 ],
               ),
             ).withPaddingSymmetric(16, 0),
+
             20.heightBox,
 
-            // Court switcher — only shown when more than one court in
-            // this club offers the sport being booked.
             Text(
-              'COURT',
+              l10n.court,
               style: AppStyles.w500f12inter.copyWith(
                 color: kDarkTextColor.withValues(alpha: 0.7),
               ),
             ).withPaddingSymmetric(16, 0),
+
             8.heightBox,
+
             Row(
               children: _eligibleCourts.map((court) {
                 final isSelected = court.id == _selectedCourt.id;
+
                 return Expanded(
                   child: GestureDetector(
                     onTap: () => _onCourtSelected(court),
@@ -388,24 +448,31 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 );
               }).toList(),
             ).withPaddingSymmetric(16, 0),
+
             20.heightBox,
 
             if (startableSlots.isNotEmpty) ...[
               Text(
-                'TIME',
+                l10n.time,
                 style: AppStyles.w500f12inter.copyWith(
                   color: kDarkTextColor.withValues(alpha: 0.7),
                 ),
               ).withPaddingSymmetric(16, 0),
+
               8.heightBox,
+
               Row(
                 children: [1, 2, 3].map((slots) {
                   final isSelected = _selectedDurationSlots == slots;
+
                   final enabled = maxContiguous >= slots;
+
                   final end = _endTimeForDuration(_selectedStartTime, slots);
+
                   final label = end != null
                       ? '$_selectedStartTime-$end'
                       : '${slots}h';
+
                   return Expanded(
                     child: GestureDetector(
                       onTap: enabled ? () => _onDurationSelected(slots) : null,
@@ -434,16 +501,19 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                   );
                 }).toList(),
               ).withPaddingSymmetric(16, 0),
+
               20.heightBox,
             ],
 
             Text(
-              'BOOKING TYPE',
+              l10n.bookingType,
               style: AppStyles.w500f12inter.copyWith(
                 color: kDarkTextColor.withValues(alpha: 0.7),
               ),
             ).withPaddingSymmetric(16, 0),
+
             8.heightBox,
+
             Row(
               children: [
                 Expanded(
@@ -461,7 +531,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       ),
                       child: Center(
                         child: Text(
-                          'Reserve Individual',
+                          l10n.reserveIndividual,
                           style: AppStyles.w500f14inter.copyWith(
                             color: kDarkTextColor,
                           ),
@@ -470,6 +540,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                     ),
                   ),
                 ),
+
                 Expanded(
                   child: GestureDetector(
                     onTap: () =>
@@ -485,7 +556,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                       ),
                       child: Center(
                         child: Text(
-                          'Create a Match',
+                          l10n.createAMatch,
                           style: AppStyles.w500f14inter.copyWith(
                             color: kDarkTextColor,
                           ),
@@ -496,7 +567,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 ),
               ],
             ).withPaddingSymmetric(16, 0),
+
             8.heightBox,
+
             Row(
               children: [
                 Icon(
@@ -508,8 +581,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 Expanded(
                   child: Text(
                     isIndividual
-                        ? 'Book the court without creating a match in the app.'
-                        : 'Create a game where other players can join.',
+                        ? l10n.bookCourtWithoutMatch
+                        : l10n.createGameForPlayers,
                     style: AppStyles.w400f12inter.copyWith(
                       color: kDarkTextColor.withValues(alpha: 0.7),
                     ),
@@ -517,6 +590,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 ),
               ],
             ).withPaddingSymmetric(16, 0),
+
             24.heightBox,
 
             GestureDetector(
@@ -532,8 +606,10 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                   child: Center(
                     child: Text(
                       isIndividual
-                          ? 'Book - ${formatPrice(_amount)}'
-                          : 'Configure Match - ${formatPrice(_amount)}',
+                          ? '${l10n.book} - '
+                                '${formatPrice(_amount)}'
+                          : '${l10n.configureMatch} - '
+                                '${formatPrice(_amount)}',
                       style: AppStyles.w500f16inter.copyWith(
                         color: kDarkTextColor,
                       ),

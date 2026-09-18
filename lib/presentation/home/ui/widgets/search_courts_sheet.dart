@@ -35,11 +35,14 @@ class SearchCourtsSheet extends StatefulWidget {
 
 class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
   List<Club> _searchResults = [];
 
   @override
   void initState() {
     super.initState();
+
     _controller.addListener(_onSearchChanged);
   }
 
@@ -47,11 +50,13 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
   void dispose() {
     _controller.removeListener(_onSearchChanged);
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _onSearchChanged() {
     final query = _controller.text.trim().toLowerCase();
+
     if (query.isEmpty) {
       setState(() => _searchResults = []);
     } else {
@@ -59,14 +64,23 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
         _searchResults = widget.courts.where((court) {
           final name = (court.name ?? '').toLowerCase();
           final location = (court.city ?? '').toLowerCase();
+
           return name.contains(query) || location.contains(query);
         }).toList();
       });
     }
   }
 
+  void _activateSearchField() {
+    if (!_focusNode.hasFocus) {
+      _focusNode.requestFocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.9,
       child: Column(
@@ -77,7 +91,7 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Search Courts',
+                  l10n.searchCourts,
                   style: AppStyles.w600f18inter.copyWith(
                     color: kDarkTextColor,
                     fontSize: 20,
@@ -94,44 +108,79 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
               ],
             ),
           ),
+
           const Divider(height: 1, color: kBorderColor),
+
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kBlackColor, width: 1.5),
-              ),
-              child: Row(
-                children: [
-                  const SizedBox(width: 12),
-                  const Icon(Icons.search, color: kTextColor, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        hintText: 'Search courts',
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      style: AppStyles.w400f14inter,
-                    ),
+            child: GestureDetector(
+              onTap: _activateSearchField,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                height: 48,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _focusNode.hasFocus ? kPrimaryColor : kBlackColor,
+                    width: 1.5,
                   ),
-                ],
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 12),
+
+                    const Icon(Icons.search, color: kTextColor, size: 20),
+
+                    const SizedBox(width: 8),
+
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+
+                        // Keep the system keyboard hidden because
+                        // we are using our own MockKeyboard.
+                        readOnly: true,
+
+                        showCursor: true,
+                        cursorColor: kPrimaryColor,
+                        cursorWidth: 2,
+                        cursorHeight: 20,
+
+                        onTap: _activateSearchField,
+
+                        decoration: InputDecoration(
+                          hintText: l10n.searchCourtsHint,
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+
+                          // Make the cursor visible even when the
+                          // field is read-only.
+                          suffixIconConstraints: const BoxConstraints(
+                            minWidth: 0,
+                            minHeight: 0,
+                          ),
+                        ),
+
+                        style: AppStyles.w400f14inter.copyWith(
+                          color: kDarkTextColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
+
           Expanded(
             child: _controller.text.isEmpty
                 ? _buildSkeletonLoader()
                 : _searchResults.isEmpty
                 ? Center(
                     child: Text(
-                      'No courts found',
+                      l10n.noCourtsFound,
                       style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                     ),
                   )
@@ -142,6 +191,7 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                         const Divider(color: kBorderColor),
                     itemBuilder: (context, index) {
                       final court = _searchResults[index];
+
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: ClipRRect(
@@ -161,7 +211,7 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                         subtitle: Text(
                           [
                             court.city,
-                            court.city,
+                            court.state,
                           ].where((s) => s != null && s.isNotEmpty).join(' • '),
                           style: AppStyles.w400f12inter.copyWith(
                             color: kTextColor,
@@ -175,9 +225,13 @@ class _SearchCourtsSheetState extends State<SearchCourtsSheet> {
                     },
                   ),
           ),
+
           MockKeyboard(
             controller: _controller,
-            onSend: () => Navigator.pop(context),
+            onSend: () {
+              _focusNode.unfocus();
+              Navigator.pop(context);
+            },
           ),
         ],
       ),

@@ -1,4 +1,3 @@
-// lib/presentation/booking/ui/widgets/invite_players_sheet.dart
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 
@@ -37,14 +36,18 @@ class InvitePlayersSheet extends StatefulWidget {
 
 class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
   final TextEditingController _searchController = TextEditingController();
+
   late List<InvitePlayerModel> _invited;
   late List<InvitePlayerModel> _filtered;
 
   @override
   void initState() {
     super.initState();
+
     _invited = List.of(widget.initiallyInvited);
+
     _searchController.addListener(_onSearchChanged);
+
     _filtered = widget.allPlayers;
   }
 
@@ -52,11 +55,13 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+
     super.dispose();
   }
 
   void _onSearchChanged() {
     final query = _searchController.text.trim().toLowerCase();
+
     setState(() {
       _filtered = query.isEmpty
           ? widget.allPlayers
@@ -69,6 +74,7 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
   void _toggleInvite(InvitePlayerModel player) {
     setState(() {
       final alreadyInvited = _invited.any((p) => p.id == player.id);
+
       if (alreadyInvited) {
         _invited.removeWhere((p) => p.id == player.id);
       } else {
@@ -79,6 +85,8 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.85,
       child: Column(
@@ -89,7 +97,7 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Invite Players',
+                  l10n.invitePlayers,
                   style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
                 ),
                 GestureDetector(
@@ -103,7 +111,9 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
               ],
             ),
           ),
+
           const Divider(thickness: 4, color: kCardColor),
+
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Container(
@@ -118,7 +128,7 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search players...',
+                    hintText: l10n.searchPlayers,
                     hintStyle: AppStyles.w400f14inter.copyWith(
                       color: kDarkTextColor.withValues(alpha: 0.6),
                     ),
@@ -130,6 +140,7 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
               ),
             ),
           ),
+
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -137,7 +148,9 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
               separatorBuilder: (_, __) => 10.heightBox,
               itemBuilder: (context, index) {
                 final player = _filtered[index];
+
                 final isInvited = _invited.any((p) => p.id == player.id);
+
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: ClipOval(
@@ -165,7 +178,7 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
                   trailing: GestureDetector(
                     onTap: () => _toggleInvite(player),
                     child: Text(
-                      isInvited ? 'CANCEL INVITE' : 'INVITE',
+                      isInvited ? l10n.cancelInvite : l10n.invite,
                       style: AppStyles.w600f12inter.copyWith(
                         color: isInvited ? kRedColor : kBlueColor,
                       ),

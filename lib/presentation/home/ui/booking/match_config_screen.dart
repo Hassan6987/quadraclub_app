@@ -41,13 +41,16 @@ class MatchConfigScreen extends StatefulWidget {
 class _MatchConfigScreenState extends State<MatchConfigScreen> {
   MatchType _matchType = MatchType.private;
   BookingFormat _format = BookingFormat.single;
-  PaymentSplitOption _paymentOption = PaymentSplitOption.payAllReceiveLater;
+  PaymentSplitOption _paymentOption =
+      PaymentSplitOption.payAllReceiveLater;
+
   List<InvitePlayerModel> _invitedPlayers = [];
 
   List<PaymentSplitOption> get _availablePaymentOptions {
     if (_matchType == MatchType.private) {
       return PaymentSplitOption.values;
     }
+
     return const [
       PaymentSplitOption.payAllReceiveLater,
       PaymentSplitOption.payOnlyMyPart,
@@ -57,8 +60,10 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
   String get _locationLabel {
     final city = widget.club.city ?? '';
     final state = widget.club.state ?? '';
+
     if (city.isEmpty) return state;
     if (state.isEmpty) return city;
+
     return '$city, $state';
   }
 
@@ -67,17 +72,85 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
       final divisor = _format == BookingFormat.single ? 2 : 4;
       return widget.amount / divisor;
     }
+
     return widget.amount;
   }
 
-  Future<void> _openInvitePlayers(List<InvitePlayerModel> allPlayers) async {
+  Future<void> _openInvitePlayers(List<InvitePlayerModel> allPlayers,) async {
     final result = await InvitePlayersSheet.show(
       context,
       initiallyInvited: _invitedPlayers,
       allPlayers: allPlayers,
     );
+
     if (result != null) {
       setState(() => _invitedPlayers = result);
+    }
+  }
+
+  String _localizedMatchTypeLabel(BuildContext context,
+      MatchType type,) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (type) {
+      case MatchType.open:
+        return l10n.open;
+      case MatchType.private:
+        return l10n.private;
+    }
+  }
+
+  String _localizedMatchTypeDescription(BuildContext context,
+      MatchType type,) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (type) {
+      case MatchType.open:
+        return l10n.openMatchDescription;
+      case MatchType.private:
+        return l10n.privateMatchDescription;
+    }
+  }
+
+  String _localizedFormatLabel(BuildContext context,
+      BookingFormat format,) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (format) {
+      case BookingFormat.single:
+        return l10n.single;
+      case BookingFormat.double_:
+        return l10n.doubleFormat;
+    }
+  }
+
+  String _localizedPaymentTitle(BuildContext context,
+      PaymentSplitOption option,) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (option) {
+      case PaymentSplitOption.payAllReceiveLater:
+        return l10n.payAllReceiveLater;
+
+      case PaymentSplitOption.payOnlyMyPart:
+        return l10n.payOnlyMyPart;
+      case PaymentSplitOption.payAllNoSplit:
+        return '';
+    }
+  }
+
+  String _localizedPaymentDescription(BuildContext context,
+      PaymentSplitOption option,) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (option) {
+      case PaymentSplitOption.payAllReceiveLater:
+        return l10n.payAllReceiveLaterDescription;
+
+      case PaymentSplitOption.payOnlyMyPart:
+        return l10n.payOnlyMyPartDescription;
+      case PaymentSplitOption.payAllNoSplit:
+        return '';
     }
   }
 
@@ -94,9 +167,9 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           dateLabel: widget.dateLabel,
           timeLabel: widget.timeLabel,
           amount: _displayAmount,
-          // <-- changed from widget.amount
           isMatch: true,
           invitedPlayers: _invitedPlayers.map((p) => p.id).toList(),
+          // Keep canonical model/API values.
           matchType: _matchType.label,
           matchFormat: _format.label,
           paymentType: _paymentOption.type,
@@ -108,6 +181,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_availablePaymentOptions.contains(_paymentOption)) {
       _paymentOption = _availablePaymentOptions.first;
     }
@@ -120,17 +195,23 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: kBorderColor),
             ),
-            child: Icon(Icons.arrow_back, size: 24, color: kDarkTextColor),
+            child: const Icon(
+              Icons.arrow_back,
+              size: 24,
+              color: kDarkTextColor,
+            ),
           ),
         ),
         title: Text(
-          'Booking Summary',
-          style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
+          l10n.bookingSummary,
+          style: AppStyles.w600f16inter.copyWith(
+            color: kDarkTextColor,
+          ),
         ),
         centerTitle: true,
       ),
@@ -143,10 +224,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'COURT DETAILS',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
+                    l10n.courtDetails.toUpperCase(),
+                    style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                   8.heightBox,
+
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -162,17 +246,19 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             imageUrl: widget.club.photo ?? '',
                             height: 96,
                             width: 96,
-                            placeholder: (context, url) => Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Container(
-                                height: 96,
-                                width: 96,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  child: Container(
+                                    height: 96,
+                                    width: 96,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
                             errorWidget: (context, url, error) {
                               return Image.asset(
                                 Assets.png.clubLogo.path,
@@ -186,7 +272,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                         12.widthBox,
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Text(
                                 widget.club.name ?? '',
@@ -195,7 +282,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                 ),
                               ),
                               Text(
-                                '$_locationLabel • ${formatDistanceKm(widget.distance)}',
+                                '$_locationLabel • '
+                                    '${formatDistanceKm(widget.distance)}',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
@@ -212,23 +300,42 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       ],
                     ),
                   ),
+
                   20.heightBox,
 
                   Text(
-                    'MATCH TYPE',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
+                    l10n.matchType.toUpperCase(),
+                    style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                   8.heightBox,
+
                   Row(
                     children: MatchType.values.map((type) {
                       final isSelected = _matchType == type;
+
                       return Expanded(
                         child: GestureDetector(
-                          onTap: () => setState(() => _matchType = type),
+                          onTap: () {
+                            setState(() {
+                              _matchType = type;
+
+                              if (!_availablePaymentOptions
+                                  .contains(_paymentOption)) {
+                                _paymentOption =
+                                    _availablePaymentOptions.first;
+                              }
+                            });
+                          },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
-                              color: isSelected ? kPrimaryColor : kWhiteColor,
+                              color: isSelected
+                                  ? kPrimaryColor
+                                  : kWhiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(
                                   type == MatchType.open ? 40 : 0,
@@ -245,12 +352,15 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               ),
                               border: isSelected
                                   ? null
-                                  : Border.all(color: kBorderColor),
+                                  : Border.all(
+                                color: kBorderColor,
+                              ),
                             ),
                             child: Column(
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
                                   children: [
                                     Icon(
                                       type == MatchType.open
@@ -261,8 +371,12 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     ),
                                     4.widthBox,
                                     Text(
-                                      type.label,
-                                      style: AppStyles.w400f14inter.copyWith(
+                                      _localizedMatchTypeLabel(
+                                        context,
+                                        type,
+                                      ),
+                                      style:
+                                      AppStyles.w400f14inter.copyWith(
                                         color: kDarkTextColor,
                                         fontWeight: isSelected
                                             ? FontWeight.w500
@@ -272,8 +386,12 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                   ],
                                 ),
                                 Text(
-                                  type.description,
-                                  style: AppStyles.w400f10inter.copyWith(
+                                  _localizedMatchTypeDescription(
+                                    context,
+                                    type,
+                                  ),
+                                  style:
+                                  AppStyles.w400f10inter.copyWith(
                                     color: kDarkTextColor,
                                   ),
                                   textAlign: TextAlign.center,
@@ -285,42 +403,64 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       );
                     }).toList(),
                   ),
+
                   20.heightBox,
+
                   Text(
-                    'FORMAT',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
+                    l10n.format.toUpperCase(),
+                    style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                   8.heightBox,
+
                   Row(
                     children: BookingFormat.values.map((format) {
                       final isSelected = _format == format;
+
                       return Expanded(
                         child: GestureDetector(
-                          onTap: () => setState(() => _format = format),
+                          onTap: () =>
+                              setState(() => _format = format),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
-                              color: isSelected ? kPrimaryColor : kWhiteColor,
+                              color: isSelected
+                                  ? kPrimaryColor
+                                  : kWhiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(
-                                  format == BookingFormat.single ? 20 : 0,
+                                  format == BookingFormat.single
+                                      ? 20
+                                      : 0,
                                 ),
                                 bottomLeft: Radius.circular(
-                                  format == BookingFormat.single ? 20 : 0,
+                                  format == BookingFormat.single
+                                      ? 20
+                                      : 0,
                                 ),
                                 topRight: Radius.circular(
-                                  format == BookingFormat.single ? 0 : 20,
+                                  format == BookingFormat.single
+                                      ? 0
+                                      : 20,
                                 ),
                                 bottomRight: Radius.circular(
-                                  format == BookingFormat.single ? 0 : 20,
+                                  format == BookingFormat.single
+                                      ? 0
+                                      : 20,
                                 ),
                               ),
                               border: isSelected
                                   ? null
-                                  : Border.all(color: kBorderColor),
+                                  : Border.all(
+                                color: kBorderColor,
+                              ),
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   format == BookingFormat.double_
@@ -331,8 +471,12 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  format.label,
-                                  style: AppStyles.w400f14inter.copyWith(
+                                  _localizedFormatLabel(
+                                    context,
+                                    format,
+                                  ),
+                                  style:
+                                  AppStyles.w400f14inter.copyWith(
                                     color: kDarkTextColor,
                                     fontWeight: isSelected
                                         ? FontWeight.w500
@@ -346,13 +490,17 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       );
                     }).toList(),
                   ),
+
                   20.heightBox,
 
                   Text(
-                    'INVITE PLAYERS',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
+                    l10n.invitePlayers.toUpperCase(),
+                    style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                   8.heightBox,
+
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -360,20 +508,26 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
                       children: [
                         BlocBuilder<CourtsBloc, CourtsState>(
                           builder: (context, state) {
                             return GestureDetector(
-                              onTap: () => _openInvitePlayers(state.players),
+                              onTap: () =>
+                                  _openInvitePlayers(state.players),
                               child: Container(
                                 height: 44,
-                                padding: const EdgeInsets.symmetric(
+                                padding:
+                                const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(color: kBorderColor),
+                                  borderRadius:
+                                  BorderRadius.circular(100),
+                                  border: Border.all(
+                                    color: kBorderColor,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -384,8 +538,9 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Search players...',
-                                      style: AppStyles.w400f14inter.copyWith(
+                                      l10n.searchPlayers,
+                                      style:
+                                      AppStyles.w400f14inter.copyWith(
                                         color: kTextColor,
                                       ),
                                     ),
@@ -395,6 +550,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             );
                           },
                         ),
+
                         if (_invitedPlayers.isNotEmpty) ...[
                           10.heightBox,
                           Wrap(
@@ -402,34 +558,40 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             runSpacing: 8,
                             children: _invitedPlayers.map((player) {
                               return Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding:
+                                const EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
                                   color: kPrimaryColor,
-                                  borderRadius: BorderRadius.circular(100),
+                                  borderRadius:
+                                  BorderRadius.circular(100),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     CircleAvatar(
                                       radius: 10,
-                                      backgroundImage: NetworkImage(
+                                      backgroundImage:
+                                      NetworkImage(
                                         player.profilePhoto,
                                       ),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       player.name,
-                                      style: AppStyles.w500f12inter.copyWith(
+                                      style:
+                                      AppStyles.w500f12inter.copyWith(
                                         color: kDarkTextColor,
                                       ),
                                     ),
                                     const SizedBox(width: 6),
                                     GestureDetector(
                                       onTap: () => setState(
-                                        () => _invitedPlayers.remove(player),
+                                            () =>
+                                            _invitedPlayers
+                                                .remove(player),
                                       ),
                                       child: const Icon(
                                         Icons.close,
@@ -446,17 +608,23 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                       ],
                     ),
                   ),
+
                   20.heightBox,
 
                   Text(
-                    'PAYMENT',
-                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
+                    l10n.payment.toUpperCase(),
+                    style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                   8.heightBox,
+
                   ..._availablePaymentOptions.map((option) {
                     final isSelected = _paymentOption == option;
+
                     return GestureDetector(
-                      onTap: () => setState(() => _paymentOption = option),
+                      onTap: () =>
+                          setState(() => _paymentOption = option),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.symmetric(
@@ -468,16 +636,21 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               ? kPrimaryColor.withValues(alpha: 0.15)
                               : kWhiteColor,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: kWhiteColor, width: 4),
+                          border: Border.all(
+                            color: kWhiteColor,
+                            width: 4,
+                          ),
                         ),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: kWhiteColor,
-                                borderRadius: BorderRadius.circular(100),
+                                borderRadius:
+                                BorderRadius.circular(100),
                                 border: Border.all(
                                   color: kPrimaryColor,
                                   width: isSelected ? 6 : 3,
@@ -487,18 +660,27 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             12.widthBox,
                             Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    option.title,
-                                    style: AppStyles.w500f14inter.copyWith(
+                                    _localizedPaymentTitle(
+                                      context,
+                                      option,
+                                    ),
+                                    style:
+                                    AppStyles.w500f14inter.copyWith(
                                       color: kBlack12Color,
                                     ),
                                   ),
                                   2.heightBox,
                                   Text(
-                                    option.description,
-                                    style: AppStyles.w400f12inter.copyWith(
+                                    _localizedPaymentDescription(
+                                      context,
+                                      option,
+                                    ),
+                                    style:
+                                    AppStyles.w400f12inter.copyWith(
                                       color: kBlack12Color,
                                     ),
                                   ),
@@ -519,8 +701,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: CustomActionButton(
-              buttonText: 'Book - ${formatPrice(_displayAmount)}',
-              // <-- changed from widget.amount
+              buttonText:
+              '${l10n.book} - ${formatPrice(_displayAmount)}',
               onTap: _onBookTap,
             ),
           ),

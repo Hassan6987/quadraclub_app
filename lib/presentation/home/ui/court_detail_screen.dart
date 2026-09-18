@@ -250,6 +250,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final sportNames = _sportNames;
     final matchingCourts = _matchingCourts;
 
@@ -276,7 +277,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
               ),
             ),
             title: Text(
-              'Club Details',
+              l10n.clubDetails,
               style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             ),
             centerTitle: true,
@@ -342,7 +343,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   10.heightBox,
 
                   Text(
-                    'Available Time Slots',
+                    l10n.availableTimeSlots,
                     style: AppStyles.w500f14inter.copyWith(
                       color: kDarkTextColor,
                     ),
@@ -352,7 +353,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
                   if (sportNames.isEmpty)
                     Text(
-                      'No sports information available for this club.',
+                      l10n.noSportsInformationAvailable,
                       style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                     )
                   else ...[
@@ -370,6 +371,11 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
                           final isSelected = _selectedSportName == name;
 
+                          final localizedName = localizedSportName(
+                            context,
+                            name,
+                          );
+
                           return GestureDetector(
                             onTap: () =>
                                 setState(() => _selectedSportName = name),
@@ -384,7 +390,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  name,
+                                  localizedName,
                                   style: AppStyles.w400f14inter.copyWith(
                                     color: kDarkTextColor,
                                   ),
@@ -419,7 +425,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                     // ------------------------------------------------
                     if (matchingCourts.isEmpty)
                       Text(
-                        'No courts offer this sport yet.',
+                        l10n.noCourtsOfferThisSport,
                         style: AppStyles.w400f14inter.copyWith(
                           color: kTextColor,
                         ),
@@ -455,7 +461,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
                               if (slots.isEmpty)
                                 Text(
-                                  'No slots published for this date.',
+                                  l10n.noSlotsPublishedForDate,
                                   style: AppStyles.w400f14inter.copyWith(
                                     color: kTextColor,
                                   ),

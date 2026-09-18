@@ -1,4 +1,3 @@
-// lib/presentation/booking/ui/confirmation_screen.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
@@ -23,6 +22,8 @@ class BookingConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: kWhiteColor,
       body: SafeArea(
@@ -51,7 +52,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
               24.heightBox,
+
               Center(
                 child: Container(
                   width: 84,
@@ -63,25 +66,31 @@ class BookingConfirmationScreen extends StatelessWidget {
                   child: const Icon(Icons.check, color: kBlackColor, size: 40),
                 ),
               ),
+
               20.heightBox,
+
               Center(
                 child: Text(
-                  'Booking Confirmed!',
+                  l10n.bookingConfirmed,
                   style: AppStyles.w600f18inter.copyWith(
                     color: kDarkTextColor,
                     fontSize: 20,
                   ),
                 ),
               ),
+
               8.heightBox,
+
               Center(
                 child: Text(
-                  'Your court is reserved. Get ready for\nan amazing match.',
+                  l10n.yourCourtIsReserved,
                   textAlign: TextAlign.center,
                   style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
                 ),
               ),
+
               32.heightBox,
+
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
@@ -98,21 +107,17 @@ class BookingConfirmationScreen extends StatelessWidget {
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,
-
                         placeholder: (context, url) => Shimmer.fromColors(
                           baseColor: Colors.grey.shade300,
                           highlightColor: Colors.grey.shade100,
-
                           child: Container(
-                                height: 150,
-                                width: double.infinity,
-
+                            height: 150,
+                            width: double.infinity,
                             decoration: const BoxDecoration(
                               color: Colors.white,
                             ),
                           ),
                         ),
-
                         errorWidget: (context, url, error) {
                           return Image.asset(
                             Assets.png.clubLogo.path,
@@ -123,33 +128,41 @@ class BookingConfirmationScreen extends StatelessWidget {
                         },
                       ),
                     ),
+
                     10.heightBox,
+
                     Text(
                       '$dateLabel | $timeLabel | $blockLabel',
                       style: AppStyles.w500f12inter.copyWith(
                         color: kLightGreenColor,
                       ),
                     ).withPaddingSymmetric(10, 0),
+
                     4.heightBox,
+
                     Text(
                       club.name ?? '',
                       style: AppStyles.w600f16inter.copyWith(
                         color: kDarkTextColor,
                       ),
                     ).withPaddingSymmetric(10, 0),
+
                     Text(
                       '${club.city} • ${formatDistanceKm(distance)}',
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),
                     ).withPaddingSymmetric(10, 0),
+
                     10.heightBox,
                   ],
                 ),
               ),
+
               const Spacer(),
+
               CustomActionButton(
-                buttonText: "Done",
+                buttonText: l10n.done,
                 buttonTextColor: kDarkTextColor,
                 backgroundColor: kWhiteColor,
                 borderColor: kBorderColor,

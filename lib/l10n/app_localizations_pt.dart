@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -488,4 +487,238 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get pickleball => 'Pickleball';
+
+  @override
+  String get signInToBookThisCourt => 'Faça login para reservar este quadra.';
+
+  @override
+  String get pleaseLogInCreateAccountToReserveYourSpot =>
+      'Faça login ou crie uma conta para reservar sua vaga.';
+
+  @override
+  String get signup => 'Inscreva-se';
+
+  @override
+  String get findCourtsNearYou => 'Encontre quadras perto de você.';
+
+  @override
+  String get clearAll => 'Limpar tudo';
+
+  @override
+  String get noCourtsMatchSearchFilters =>
+      'Nenhuma quadra corresponde à sua pesquisa/filtros.';
+
+  @override
+  String get resetFilters => 'Redefinir filtros';
+
+  @override
+  String get availableTimeSlots => 'Horários disponíveis';
+
+  @override
+  String get noSportsInformationAvailable =>
+      'Nenhuma informação de esportes disponível para este clube.';
+
+  @override
+  String get noCourtsOfferThisSport =>
+      'Nenhuma quadra oferece este esporte ainda.';
+
+  @override
+  String get noSlotsPublishedForDate =>
+      'Nenhum horário publicado para esta data.';
+
+  @override
+  String get clubDetails => 'Detalhes do clube';
+
+  @override
+  String distanceKm(String distance) {
+    return '< $distance km';
+  }
+
+  @override
+  String get available => 'Disponível';
+
+  @override
+  String get full => 'Lotado';
+
+  @override
+  String get slotsLeft => 'Vagas restantes';
+
+  @override
+  String get invitePlayers => 'Convidar jogadores';
+
+  @override
+  String get cancelInvite => 'CANCELAR CONVITE';
+
+  @override
+  String get invite => 'CONVIDAR';
+
+  @override
+  String get bookingConfirmed => 'Reserva confirmada!';
+
+  @override
+  String get yourCourtIsReserved =>
+      'Sua quadra está reservada. Prepare-se para\numa partida incrível.';
+
+  @override
+  String get bookingSummary => 'Resumo da reserva';
+
+  @override
+  String get courtDetails => 'DETALHES DA QUADRA';
+
+  @override
+  String get court => 'QUADRA';
+
+  @override
+  String get time => 'HORÁRIO';
+
+  @override
+  String get bookingType => 'TIPO DE RESERVA';
+
+  @override
+  String get reserveIndividual => 'Reservar individualmente';
+
+  @override
+  String get createAMatch => 'Criar uma partida';
+
+  @override
+  String get bookCourtWithoutMatch =>
+      'Reserve a quadra sem criar uma partida no aplicativo.';
+
+  @override
+  String get createGameForPlayers =>
+      'Crie uma partida para que outros jogadores possam participar.';
+
+  @override
+  String get book => 'Reservar';
+
+  @override
+  String get configureMatch => 'Configurar partida';
+
+  @override
+  String get matchType => 'TIPO DE PARTIDA';
+
+  @override
+  String get invitePlayersSection => 'CONVIDAR JOGADORES';
+
+  @override
+  String get payment => 'PAGAMENTO';
+
+  @override
+  String get searchPlayers => 'Pesquisar jogadores...';
+
+  @override
+  String get private => 'Privada';
+
+  @override
+  String get privateMatchDescription =>
+      'Somente jogadores convidados podem participar.';
+
+  @override
+  String get open => 'Aberta';
+
+  @override
+  String get openMatchDescription =>
+      'Outros jogadores podem participar da partida.';
+
+  @override
+  String get single => 'Individual';
+
+  @override
+  String get double => 'Dupla';
+
+  @override
+  String get payAllReceiveLater => 'Pagar tudo e receber depois';
+
+  @override
+  String get payOnlyMyPart => 'Pagar apenas minha parte';
+
+  @override
+  String get payAllReceiveLaterDescription =>
+      'Pague o valor total agora e receba a parte dos outros jogadores depois.';
+
+  @override
+  String get payOnlyMyPartDescription => 'Pague apenas sua parte da reserva.';
+
+  @override
+  String bookingDateAndTime(String date, String time) {
+    return '$date | $time';
+  }
+
+  @override
+  String get doubleFormat => 'Dupla';
+
+  @override
+  String get portfolio => 'Carteira';
+
+  @override
+  String get card => 'Cartão';
+
+  @override
+  String get priceDetails => 'DETALHES DO PREÇO';
+
+  @override
+  String get courtFee => 'Taxa da Quadra';
+
+  @override
+  String get serviceFee => 'Taxa de Serviço';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get payNow => 'Pagar Agora';
+
+  @override
+  String get portfolioPayment => 'Pagamento pela Carteira';
+
+  @override
+  String get cardPayment => 'Pagamento com Cartão';
+
+  @override
+  String get changeLocation => 'Change Location';
+
+  @override
+  String get searchLocation => 'Search location';
+
+  @override
+  String get noLocationsFound => 'No locations found';
+
+  @override
+  String get currentLocation => 'Current location';
+
+  @override
+  String get searchCity => 'Search city';
+
+  @override
+  String withinDistance(Object distance) {
+    return 'Within $distance km';
+  }
+
+  @override
+  String get anyDistance => 'Any distance';
+
+  @override
+  String get noAvailableSlotsForDay => 'No available slots for this day';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get noCourtsWithLocationToShowHereYet =>
+      'Ainda não há tribunais com localização definida para exibir aqui';
+
+  @override
+  String get searchCourts => 'Pesquisar quadras';
+
+  @override
+  String get searchCourtsHint => 'Pesquisar quadras';
+
+  @override
+  String get noCourtsFound => 'Nenhuma quadra encontrada';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get space => 'espaço';
 }
