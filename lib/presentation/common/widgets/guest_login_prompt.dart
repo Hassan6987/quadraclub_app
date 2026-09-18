@@ -1,4 +1,7 @@
+import 'package:provider/provider.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/language_provider.dart';
+import 'package:quadraclub_app/utils/components/language_toggle_button.dart';
 
 /// Full-screen widget shown in place of user-specific screens (Profile, Agenda)
 /// when the current user is not authenticated.
@@ -14,6 +17,7 @@ class GuestLoginPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: CustomAppBar(title: title, centerTile: false),
@@ -74,7 +78,7 @@ class GuestLoginPrompt extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Login',
+                    l10n.signIn,
                     style: AppStyles.w600f16inter.copyWith(color: kWhiteColor),
                   ),
                 ),
@@ -87,7 +91,7 @@ class GuestLoginPrompt extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    l10n.doNotHaveAnAccount,
                     style: AppStyles.w400f14inter.copyWith(
                       color: kGreyTextColor,
                     ),
@@ -95,18 +99,81 @@ class GuestLoginPrompt extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Navigator.pushNamed(context, RouteName.signUp),
                     child: Text(
-                      'Sign Up',
+                      l10n.createYourAccount,
                       style: AppStyles.w600f14inter.copyWith(
-                        color: kMatchDayGreen,
+                        color: kPrimaryColor,
                       ),
                     ),
                   ),
                 ],
               ),
+              20.heightBox,
+              TextButton(
+                onPressed: () {
+                  _showLanguageDialog(context);
+                },
+                child: Text(
+                  l10n.language,
+                  style: AppStyles.w400f16inter.copyWith(
+                      color: kLightGreenColor),
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Consumer<LanguageProvider>(
+          builder: (context, languageProvider, _) {
+            final l10n = AppLocalizations.of(context)!;
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(
+                l10n.language,
+                style: AppStyles.w600f18inter.copyWith(
+                  color: kBlackColor,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.chooseLanguage,
+                    style: AppStyles.w500f12inter.copyWith(
+                      color: kTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  const LanguageToggleButton(),
+                ],
+              ),
+              actionsAlignment: MainAxisAlignment.center,
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(
+                    l10n.close,
+                    style: AppStyles.titleMedium.copyWith(
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

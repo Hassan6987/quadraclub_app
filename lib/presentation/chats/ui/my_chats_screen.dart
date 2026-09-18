@@ -12,12 +12,14 @@ class MyChatsScreen extends StatefulWidget {
 }
 
 class _MyChatsScreenState extends State<MyChatsScreen> {
+  // Internal values remain English/canonical.
   // 'All' is exclusive; the rest are multi-selectable.
   Set<String> _selectedFilters = {'All'};
 
   final List<String> _filters = ['All', 'Games', 'Classes', 'Courts'];
 
-  // Maps a filter chip label to the chatType value stored on the chat.
+  // Maps the internal filter value to the chatType
+  // value stored on the chat/API.
   static const Map<String, String> _filterToChatType = {
     'Games': 'Game',
     'Classes': 'Classroom',
@@ -26,27 +28,33 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   @override
   void initState() {
+    super.initState();
+
     final authState = context.read<AuthBloc>().state;
+
     if (authState.user == null) {
       return;
     }
+
     context.read<ChatsBloc>().add(LoadChats());
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state.user == null) {
-          return const GuestLoginPrompt(
-            title: 'My Chats',
-            subtitle: 'Sign in to view your chats & Conversations',
+          return GuestLoginPrompt(
+            title: l10n.myChats,
+            subtitle: l10n.signInToViewYourChatsAndConversations,
           );
         }
+
         return Scaffold(
           appBar: CustomAppBar(
-            title: "My Chats",
+            title: l10n.myChats,
             titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             showBackIcon: true,
             showActions: false,
@@ -65,17 +73,36 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
   }
 
   Widget _buildFilterChips() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       spacing: 8,
-      children: _filters.map(_buildChip).toList(),
+      children: _filters.map((filter) {
+        return _buildChip(filter, _getFilterLabel(l10n, filter));
+      }).toList(),
     ).withPaddingAll(16);
   }
 
-  Widget _buildChip(String label) {
-    final isSelected = _selectedFilters.contains(label);
+  String _getFilterLabel(AppLocalizations l10n, String filter) {
+    switch (filter) {
+      case 'All':
+        return l10n.all;
+      case 'Games':
+        return l10n.games;
+      case 'Classes':
+        return l10n.classes;
+      case 'Courts':
+        return l10n.courts;
+      default:
+        return filter;
+    }
+  }
+
+  Widget _buildChip(String value, String label) {
+    final isSelected = _selectedFilters.contains(value);
 
     return GestureDetector(
-      onTap: () => _toggleFilter(label),
+      onTap: () => _toggleFilter(value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: EdgeInsets.symmetric(
@@ -122,14 +149,16 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
     }
 
     final allowedTypes = _selectedFilters
-        .map((f) => _filterToChatType[f])
+        .map((filter) => _filterToChatType[filter])
         .whereType<String>()
         .toSet();
 
-    return chats.where((c) => allowedTypes.contains(c.chatType)).toList();
+    return chats.where((chat) => allowedTypes.contains(chat.chatType)).toList();
   }
 
   Widget _buildChatList() {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
         if (state is ChatsLoading) {
@@ -144,7 +173,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
           final chats = _applyFilters(state.chats);
 
           if (chats.isEmpty) {
-            return const Center(child: Text('No chats found'));
+            return Center(child: Text(l10n.noChatsFound));
           }
 
           return ListView.builder(
@@ -155,11 +184,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
               return ChatListItem(
                 chat: chat,
-
-                // Replace this with the actual logged-in
-                // user's ID from your AuthBloc/AuthCubit.
                 currentUserId: _currentUserId(context),
-
                 onTap: () {
                   Navigator.push(
                     context,

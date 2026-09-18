@@ -60,6 +60,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   @override
   void initState() {
     super.initState();
+
     _selectedTimes = {...widget.selectedTimes};
     _level = widget.level;
     _format = widget.format;
@@ -76,22 +77,23 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       decoration: BoxDecoration(
         color: kWhiteColor,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
       ),
-
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
               Text(
-                'Filters',
+                l10n.filters,
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
               const Spacer(),
@@ -101,27 +103,31 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
             ],
           ).paddingOnly(top: 5, bottom: 21, left: 20, right: 20),
+
           CommonDivider().withPaddingSymmetric(0, 20),
+
           Flexible(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionLabel(label: 'Time of Day'),
+                  _sectionLabel(label: l10n.timeOfDay),
+
                   6.heightBox,
+
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       TimeChip(
-                        label: 'Morning',
-                        subtitle: '6h - 12h',
+                        label: l10n.morning,
+                        subtitle: l10n.morningTime,
                         isSelected: _selectedTimes.contains(TimeOfDay.morning),
                         onTap: () => _toggleTime(TimeOfDay.morning),
                       ),
 
                       TimeChip(
-                        label: 'Afternoon',
-                        subtitle: '12h - 18h',
+                        label: l10n.afternoon,
+                        subtitle: l10n.afternoonTime,
                         isSelected: _selectedTimes.contains(
                           TimeOfDay.afternoon,
                         ),
@@ -129,40 +135,49 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
 
                       TimeChip(
-                        label: 'Night',
-                        subtitle: '6 PM - 12 AM',
+                        label: l10n.night,
+                        subtitle: l10n.nightTime,
                         isSelected: _selectedTimes.contains(TimeOfDay.night),
                         onTap: () => _toggleTime(TimeOfDay.night),
                       ),
                     ],
                   ),
+
                   24.heightBox,
-                  _sectionLabel(label: 'Level'),
+
+                  _sectionLabel(label: l10n.level),
+
                   6.heightBox,
+
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
-                        label: 'All levels',
+                        label: l10n.allLevels,
                         isSelected: _level == LevelFilter.all,
                         onTap: () => setState(() => _level = LevelFilter.all),
                       ),
+
                       ToggleChip(
-                        label: 'Select Levels',
+                        label: l10n.selectLevels,
                         isSelected: _level == LevelFilter.select,
                         onTap: () =>
                             setState(() => _level = LevelFilter.select),
                       ),
                     ],
                   ),
+
                   24.heightBox,
-                  _sectionLabel(label: 'Format'),
+
+                  _sectionLabel(label: l10n.format),
+
                   6.heightBox,
+
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
-                        label: 'All',
+                        label: l10n.all,
                         isSelected: _format == FormatFilter.all,
                         onTap: () {
                           setState(() {
@@ -172,7 +187,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
 
                       ToggleChip(
-                        label: 'Group',
+                        label: l10n.group,
                         isSelected: _format == FormatFilter.group,
                         onTap: () {
                           setState(() {
@@ -182,7 +197,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
 
                       ToggleChip(
-                        label: 'Individual',
+                        label: l10n.individual,
                         isSelected: _format == FormatFilter.individual,
                         onTap: () {
                           setState(() {
@@ -192,15 +207,21 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                     ],
                   ),
+
                   24.heightBox,
-                  _sectionLabel(label: 'City'),
+
+                  _sectionLabel(label: l10n.city),
+
                   6.heightBox,
+
                   CustomTextField(
                     controller: _searchController,
-                    hintText: 'Search..',
+                    hintText: l10n.search,
                     borderRadius: 999,
                   ),
+
                   6.heightBox,
+
                   IntrinsicHeight(
                     child: Row(
                       spacing: getProportionateScreenHeight(6),
@@ -209,12 +230,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           label: 'New York',
                           distance: '0 km',
                         ),
-
                         _buildCityDistanceCard(
                           label: 'Los Angeles',
                           distance: '10 km',
                         ),
-
                         _buildCityDistanceCard(
                           label: 'Chicago',
                           distance: '15 km',
@@ -222,9 +241,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ],
                     ),
                   ),
+
                   24.heightBox,
-                  _sectionLabel(label: 'Distance'),
+
+                  _sectionLabel(label: l10n.distance),
+
                   6.heightBox,
+
                   DistanceSlider(
                     distance: _distance,
                     onChanged: (value) {
@@ -237,24 +260,30 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ).withPaddingSymmetric(20, 0),
             ),
           ),
+
           32.heightBox,
+
           CommonDivider(),
+
           16.heightBox,
+
           Row(
             children: [
               Expanded(
                 child: CustomActionButton(
                   onTap: _clearFilters,
-                  buttonText: "Clear Filters",
+                  buttonText: l10n.clearFilters,
                   backgroundColor: kWhiteColor,
                   borderColor: kBorderColor,
                   isEnabled: true,
                 ),
               ),
+
               const SizedBox(width: 12),
+
               Expanded(
                 child: CustomActionButton(
-                  buttonText: "Show Results",
+                  buttonText: l10n.showResults,
                   onTap: () {
                     Navigator.pop(
                       context,

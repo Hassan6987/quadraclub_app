@@ -619,6 +619,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred language'**
+  String get chooseLanguage;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @myChats.
+  ///
+  /// In en, this message translates to:
+  /// **'My Chats'**
+  String get myChats;
+
+  /// No description provided for @signInToViewYourChatsAndConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view your chats & conversations'**
+  String get signInToViewYourChatsAndConversations;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @games.
+  ///
+  /// In en, this message translates to:
+  /// **'Games'**
+  String get games;
+
+  /// No description provided for @noChatsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats found'**
+  String get noChatsFound;
+
+  /// No description provided for @game.
+  ///
+  /// In en, this message translates to:
+  /// **'Game'**
+  String get game;
+
+  /// No description provided for @classroom.
+  ///
+  /// In en, this message translates to:
+  /// **'Classroom'**
+  String get classroom;
+
+  /// No description provided for @now.
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get now;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'YOU'**
+  String get you;
+
+  /// No description provided for @players.
+  ///
+  /// In en, this message translates to:
+  /// **'players'**
+  String get players;
+
+  /// No description provided for @playersInChat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} players in chat'**
+  String playersInChat(int count);
+
+  /// No description provided for @typeYourMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message'**
+  String get typeYourMessage;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'YESTERDAY'**
+  String get yesterday;
+
+  /// No description provided for @classDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Class Details'**
+  String get classDetails;
+
+  /// No description provided for @registrationUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration until {date}'**
+  String registrationUntil(String date);
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @classFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Class Full'**
+  String get classFull;
+
+  /// No description provided for @confirmLesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Lesson'**
+  String get confirmLesson;
+
+  /// No description provided for @registrationClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Closed'**
+  String get registrationClosed;
+
+  /// No description provided for @classBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Class Booked'**
+  String get classBooked;
+
+  /// No description provided for @classConfirmedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your class is confirmed. We look forward to seeing you!'**
+  String get classConfirmedMessage;
+
+  /// No description provided for @categoryWithLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category {level}'**
+  String categoryWithLevel(String level);
+
+  /// No description provided for @group.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get group;
+
+  /// No description provided for @individual.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get individual;
+
+  /// No description provided for @coach.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach'**
+  String get coach;
+
+  /// No description provided for @availableClasses.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Classes'**
+  String get availableClasses;
+
+  /// No description provided for @noClassesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No classes found.'**
+  String get noClassesFound;
+
+  /// No description provided for @searchByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name...'**
+  String get searchByName;
+
+  /// No description provided for @todayWithDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, {date}'**
+  String todayWithDate(String date);
+
+  /// No description provided for @tomorrowWithDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow, {date}'**
+  String tomorrowWithDate(String date);
+
+  /// No description provided for @signInToBookThisClass.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to book this class'**
+  String get signInToBookThisClass;
+
+  /// No description provided for @loginToReserveYourSpot.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in or create an account to reserve your spot.'**
+  String get loginToReserveYourSpot;
+
+  /// No description provided for @paymentForLesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment For Lesson'**
+  String get paymentForLesson;
+
+  /// No description provided for @afterPaymentCoachApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'After payment, your request will be sent to the Coach for approval.'**
+  String get afterPaymentCoachApproval;
+
+  /// No description provided for @paymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'PAYMENT METHOD'**
+  String get paymentMethod;
+
+  /// No description provided for @insufficientPortfolioBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient portfolio balance'**
+  String get insufficientPortfolioBalance;
+
+  /// No description provided for @agreeToTermsOfUse.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the terms of use.'**
+  String get agreeToTermsOfUse;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @timeOfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Time of Day'**
+  String get timeOfDay;
+
+  /// No description provided for @morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get morning;
+
+  /// No description provided for @afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get afternoon;
+
+  /// No description provided for @night.
+  ///
+  /// In en, this message translates to:
+  /// **'Night'**
+  String get night;
+
+  /// No description provided for @morningTime.
+  ///
+  /// In en, this message translates to:
+  /// **'6h - 12h'**
+  String get morningTime;
+
+  /// No description provided for @afternoonTime.
+  ///
+  /// In en, this message translates to:
+  /// **'12h - 18h'**
+  String get afternoonTime;
+
+  /// No description provided for @nightTime.
+  ///
+  /// In en, this message translates to:
+  /// **'6 PM - 12 AM'**
+  String get nightTime;
+
+  /// No description provided for @level.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get level;
+
+  /// No description provided for @allLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'All levels'**
+  String get allLevels;
+
+  /// No description provided for @selectLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Levels'**
+  String get selectLevels;
+
+  /// No description provided for @format.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get format;
+
+  /// No description provided for @city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get city;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search..'**
+  String get search;
+
+  /// No description provided for @distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @showResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Results'**
+  String get showResults;
+
+  /// No description provided for @padel.
+  ///
+  /// In en, this message translates to:
+  /// **'Padel'**
+  String get padel;
+
+  /// No description provided for @tennis.
+  ///
+  /// In en, this message translates to:
+  /// **'Tennis'**
+  String get tennis;
+
+  /// No description provided for @beachTennis.
+  ///
+  /// In en, this message translates to:
+  /// **'Beach Tennis'**
+  String get beachTennis;
+
+  /// No description provided for @pickleball.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickleball'**
+  String get pickleball;
 }
 
 class _AppLocalizationsDelegate

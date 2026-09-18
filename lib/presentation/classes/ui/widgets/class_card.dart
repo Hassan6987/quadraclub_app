@@ -10,10 +10,20 @@ class ClassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final isFull = classModel.isFull ?? true;
+
+    final format = classModel.format?.trim().toLowerCase();
+
+    final formatLabel = format == ClassFormat.group.name.toLowerCase()
+        ? l10n.group
+        : l10n.individual;
+
     return GestureDetector(
-      onTap: (classModel.isFull ?? true) ? null : onTap,
+      onTap: isFull ? null : onTap,
       child: Opacity(
-        opacity: (classModel.isFull ?? true) ? 0.3 : 1,
+        opacity: isFull ? 0.3 : 1,
         child: Container(
           margin: EdgeInsets.symmetric(
             horizontal: getProportionateScreenWidth(20),
@@ -34,39 +44,44 @@ class ClassCard extends StatelessWidget {
                       classModel.sportName ?? '',
                     ),
                   ),
+
                   4.widthBox,
-                  CommonBadge(label: 'Category ${classModel.level}'),
-                  4.widthBox,
+
                   CommonBadge(
-                    label:
-                        classModel.format?.trim().toLowerCase() ==
-                            ClassFormat.group.name.toLowerCase()
-                        ? 'Group'
-                        : 'Individual',
+                    label: l10n.categoryWithLevel(classModel.level ?? ''),
                   ),
 
+                  4.widthBox,
+
+                  CommonBadge(label: formatLabel),
+
                   const Spacer(),
+
                   Text(
                     '\$${classModel.price?.toStringAsFixed(0)}',
                     style: AppStyles.w600f14inter.copyWith(color: kBlueF1),
                   ),
                 ],
               ),
+
               8.heightBox,
+
               Text(
-                classModel.className ?? 'Unknown',
+                classModel.className,
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
+
               4.heightBox,
 
-              // Time + location
               Text(
-                '${classModel.startTime}-${classModel.endTime}  •  ${classModel.locationName}  •  ${classModel.distanceKm} km',
+                '${classModel.startTime}-${classModel.endTime}  •  '
+                '${classModel.locationName}  •  '
+                '${classModel.distanceKm} km',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
+
               8.heightBox,
 
-              // Coach row
               Row(
                 children: [
                   AppCachedImage(
@@ -75,22 +90,27 @@ class ClassCard extends StatelessWidget {
                     width: 36,
                     imageUrl: classModel.coachPhoto ?? '',
                   ),
+
                   10.widthBox,
+
                   Text(
-                    'Coach ',
+                    '${l10n.coach} ',
                     style: AppStyles.w400f14inter.copyWith(
                       color: kGreyTextColor,
                     ),
                   ),
+
                   Text(
-                    classModel.coachName ?? '',
+                    classModel.coachName,
                     style: AppStyles.w500f14inter.copyWith(
                       color: kDarkTextColor,
                     ),
                   ),
                 ],
               ),
+
               Divider(color: kBorderColor).withPaddingSymmetric(0, 8),
+
               ParticipantsRow(classModel: classModel),
             ],
           ).withPaddingAll(12),

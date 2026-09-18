@@ -18,16 +18,15 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final latestMessage = chat.latestMessage;
 
-    // A message is unread for the current user when
-    // the current user's ID is NOT inside seenBy.
     final bool hasUnread =
         latestMessage != null && !latestMessage.seenBy.contains(currentUserId);
 
     final String timeAgo = latestMessage == null
         ? ''
-        : _formatTimeAgo(latestMessage.createdAt);
+        : _formatTimeAgo(latestMessage.createdAt, l10n);
 
     return GestureDetector(
       onTap: onTap,
@@ -45,7 +44,6 @@ class ChatListItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Avatars
             if (chat.users.isNotEmpty)
               StackedAvatars(
                 imgUrls: chat.users.map((user) => user.profilePhoto).toList(),
@@ -60,7 +58,6 @@ class ChatListItem extends StatelessWidget {
 
             12.widthBox,
 
-            // Chat information
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +85,6 @@ class ChatListItem extends StatelessWidget {
 
             8.widthBox,
 
-            // Unread + time
             SizedBox(
               width: 45,
               child: Column(
@@ -126,12 +122,12 @@ class ChatListItem extends StatelessWidget {
     );
   }
 
-  String _formatTimeAgo(DateTime dateTime) {
+  String _formatTimeAgo(DateTime dateTime, AppLocalizations l10n) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
     if (difference.inSeconds < 60) {
-      return 'now';
+      return l10n.now;
     }
 
     if (difference.inMinutes < 60) {
@@ -146,6 +142,6 @@ class ChatListItem extends StatelessWidget {
       return '${difference.inDays}d';
     }
 
-    return DateFormat('MMM d').format(dateTime);
+    return DateFormat('MMM d', l10n.localeName).format(dateTime);
   }
 }

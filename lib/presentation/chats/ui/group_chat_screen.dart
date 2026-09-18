@@ -65,11 +65,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: CustomAppBar(
         title: widget.chat.chatName,
         subtitle: widget.chat.isGroupChat
-            ? '${widget.chat.users.length} players'
+            ? '${widget.chat.users.length} ${l10n.players}'
             : null,
         titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         showBackIcon: true,
@@ -108,25 +110,39 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  String _dayLabel(DateTime dt) {
+  String _dayLabel(DateTime dt, AppLocalizations l10n) {
     final now = DateTime.now();
+
     final today = DateTime(now.year, now.month, now.day);
+
     final msgDay = DateTime(dt.year, dt.month, dt.day);
-    if (msgDay == today) return 'TODAY';
-    if (msgDay == today.subtract(const Duration(days: 1))) return 'YESTERDAY';
-    return DateFormat('MMM d, yyyy').format(dt).toUpperCase();
+
+    if (msgDay == today) {
+      return l10n.today;
+    }
+
+    if (msgDay == today.subtract(const Duration(days: 1))) {
+      return l10n.yesterday;
+    }
+
+    return DateFormat('MMM d, yyyy', l10n.localeName).format(dt).toUpperCase();
   }
 
   Widget _buildParticipantBanner() {
+    final l10n = AppLocalizations.of(context)!;
+
     final imgUrls = widget.chat.users.map((e) => e.profilePhoto).toList();
+
     return Container(
       color: kPrimaryColor.withValues(alpha: 0.20),
       child: Row(
         children: [
           StackedAvatars(avatarSize: 30, imgUrls: imgUrls),
+
           8.widthBox,
+
           Text(
-            '${widget.chat.users.length} players in chat',
+            l10n.playersInChat(widget.chat.users.length),
             style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
           ),
         ],
@@ -135,12 +151,16 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageList(List<ChatMessage> messages) {
+    final l10n = AppLocalizations.of(context)!;
+
     final groups = <String, List<ChatMessage>>{};
 
     for (final message in messages) {
-      final key = _dayLabel(message.createdAt);
+      final key = _dayLabel(message.createdAt, l10n);
+
       groups.putIfAbsent(key, () => []).add(message);
     }
+
     final keys = groups.keys.toList();
 
     return ListView.builder(
@@ -169,6 +189,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildInputBar({required bool isSending}) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: const BoxDecoration(
@@ -181,11 +203,13 @@ class _ChatScreenState extends State<ChatScreen> {
             child: CustomTextField(
               controller: _controller,
               borderRadius: 1000,
-              hintText: "Type your message",
+              hintText: l10n.typeYourMessage,
               onSubmitted: (_) => _sendMessage(),
             ),
           ),
+
           8.widthBox,
+
           GestureDetector(
             onTap: _sendMessage,
             child: Container(

@@ -91,5 +91,102 @@
   "matches": "Matches",
   "courts": "Courts",
   "agenda": "Agenda",
-  "profile": "Profile"
+  "profile": "Profile",
+  "language": "Language",
+  "chooseLanguage": "Choose your preferred language",
+  "close": "Close",
+  "myChats": "My Chats",
+  "signInToViewYourChatsAndConversations": "Sign in to view your chats & conversations",
+  "all": "All",
+  "games": "Games",
+  "noChatsFound": "No chats found",
+  "game": "Game",
+  "classroom": "Classroom",
+  "now": "now",
+  "you": "YOU",
+  "players": "players",
+  "playersInChat": "{count} players in chat",
+  "@playersInChat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "typeYourMessage": "Type your message",
+  "today": "TODAY",
+  "yesterday": "YESTERDAY",
+  "classDetails": "Class Details",
+  "registrationUntil": "Registration until {date}",
+  "@registrationUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "description": "Description",
+  "classFull": "Class Full",
+  "confirmLesson": "Confirm Lesson",
+  "registrationClosed": "Registration Closed",
+  "classBooked": "Class Booked",
+  "classConfirmedMessage": "Your class is confirmed. We look forward to seeing you!",
+  "categoryWithLevel": "Category {level}",
+  "@categoryWithLevel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "group": "Group",
+  "individual": "Individual",
+  "coach": "Coach",
+  "availableClasses": "Available Classes",
+  "noClassesFound": "No classes found.",
+  "searchByName": "Search by name...",
+  "todayWithDate": "Today, {date}",
+  "@todayWithDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tomorrowWithDate": "Tomorrow, {date}",
+  "@tomorrowWithDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToBookThisClass": "Sign in to book this class",
+  "loginToReserveYourSpot": "Please log in or create an account to reserve your spot.",
+  "paymentForLesson": "Payment For Lesson",
+  "afterPaymentCoachApproval": "After payment, your request will be sent to the Coach for approval.",
+  "paymentMethod": "PAYMENT METHOD",
+  "insufficientPortfolioBalance": "Insufficient portfolio balance",
+  "agreeToTermsOfUse": "I agree to the terms of use.",
+  "filters": "Filters",
+  "timeOfDay": "Time of Day",
+  "morning": "Morning",
+  "afternoon": "Afternoon",
+  "night": "Night",
+  "morningTime": "6h - 12h",
+  "afternoonTime": "12h - 18h",
+  "nightTime": "6 PM - 12 AM",
+  "level": "Level",
+  "allLevels": "All levels",
+  "selectLevels": "Select Levels",
+  "format": "Format",
+  "city": "City",
+  "search": "Search..",
+  "distance": "Distance",
+  "clearFilters": "Clear Filters",
+  "showResults": "Show Results",
+  "padel": "Padel",
+  "tennis": "Tennis",
+  "beachTennis": "Beach Tennis",
+  "pickleball": "Pickleball"
 }

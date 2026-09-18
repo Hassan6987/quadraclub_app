@@ -285,4 +285,204 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile => 'Profile';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get chooseLanguage => 'Choose your preferred language';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get myChats => 'My Chats';
+
+  @override
+  String get signInToViewYourChatsAndConversations =>
+      'Sign in to view your chats & conversations';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get games => 'Games';
+
+  @override
+  String get noChatsFound => 'No chats found';
+
+  @override
+  String get game => 'Game';
+
+  @override
+  String get classroom => 'Classroom';
+
+  @override
+  String get now => 'now';
+
+  @override
+  String get you => 'YOU';
+
+  @override
+  String get players => 'players';
+
+  @override
+  String playersInChat(int count) {
+    return '$count players in chat';
+  }
+
+  @override
+  String get typeYourMessage => 'Type your message';
+
+  @override
+  String get today => 'TODAY';
+
+  @override
+  String get yesterday => 'YESTERDAY';
+
+  @override
+  String get classDetails => 'Class Details';
+
+  @override
+  String registrationUntil(String date) {
+    return 'Registration until $date';
+  }
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get classFull => 'Class Full';
+
+  @override
+  String get confirmLesson => 'Confirm Lesson';
+
+  @override
+  String get registrationClosed => 'Registration Closed';
+
+  @override
+  String get classBooked => 'Class Booked';
+
+  @override
+  String get classConfirmedMessage =>
+      'Your class is confirmed. We look forward to seeing you!';
+
+  @override
+  String categoryWithLevel(String level) {
+    return 'Category $level';
+  }
+
+  @override
+  String get group => 'Group';
+
+  @override
+  String get individual => 'Individual';
+
+  @override
+  String get coach => 'Coach';
+
+  @override
+  String get availableClasses => 'Available Classes';
+
+  @override
+  String get noClassesFound => 'No classes found.';
+
+  @override
+  String get searchByName => 'Search by name...';
+
+  @override
+  String todayWithDate(String date) {
+    return 'Today, $date';
+  }
+
+  @override
+  String tomorrowWithDate(String date) {
+    return 'Tomorrow, $date';
+  }
+
+  @override
+  String get signInToBookThisClass => 'Sign in to book this class';
+
+  @override
+  String get loginToReserveYourSpot =>
+      'Please log in or create an account to reserve your spot.';
+
+  @override
+  String get paymentForLesson => 'Payment For Lesson';
+
+  @override
+  String get afterPaymentCoachApproval =>
+      'After payment, your request will be sent to the Coach for approval.';
+
+  @override
+  String get paymentMethod => 'PAYMENT METHOD';
+
+  @override
+  String get insufficientPortfolioBalance => 'Insufficient portfolio balance';
+
+  @override
+  String get agreeToTermsOfUse => 'I agree to the terms of use.';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get timeOfDay => 'Time of Day';
+
+  @override
+  String get morning => 'Morning';
+
+  @override
+  String get afternoon => 'Afternoon';
+
+  @override
+  String get night => 'Night';
+
+  @override
+  String get morningTime => '6h - 12h';
+
+  @override
+  String get afternoonTime => '12h - 18h';
+
+  @override
+  String get nightTime => '6 PM - 12 AM';
+
+  @override
+  String get level => 'Level';
+
+  @override
+  String get allLevels => 'All levels';
+
+  @override
+  String get selectLevels => 'Select Levels';
+
+  @override
+  String get format => 'Format';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get search => 'Search..';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get showResults => 'Show Results';
+
+  @override
+  String get padel => 'Padel';
+
+  @override
+  String get tennis => 'Tennis';
+
+  @override
+  String get beachTennis => 'Beach Tennis';
+
+  @override
+  String get pickleball => 'Pickleball';
 }

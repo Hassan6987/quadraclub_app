@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
@@ -21,9 +22,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
   DateTime? _selectedDate;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+
   final Set<TimeOfDay> _selectedTimes = {};
   LevelFilter _level = LevelFilter.all;
   FormatFilter _format = FormatFilter.all;
+
   double _distance = 25;
   String _city = '';
 
@@ -104,10 +107,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
   }
 
   Map<String, List<Class>> _groupedClasses(List<Class> allClasses) {
+    final l10n = AppLocalizations.of(context)!;
+
     final now = DateTime.now();
 
     final today = DateTime(now.year, now.month, now.day);
-
     final tomorrow = today.add(const Duration(days: 1));
 
     final result = <String, List<Class>>{};
@@ -121,14 +125,16 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
       final dateOnly = DateTime(classDate.year, classDate.month, classDate.day);
 
+      final date = DateFormat('d MMM', l10n.localeName).format(dateOnly);
+
       final String label;
 
       if (_isSameDate(dateOnly, today)) {
-        label = 'Today, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = l10n.todayWithDate(date);
       } else if (_isSameDate(dateOnly, tomorrow)) {
-        label = 'Tomorrow, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = l10n.tomorrowWithDate(date);
       } else {
-        label = '${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = date;
       }
 
       result.putIfAbsent(label, () => []).add(c);
@@ -145,10 +151,12 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: CustomAppBar(
-        title: "Available Classes",
+        title: l10n.availableClasses,
         centerTile: false,
         backgroundColor: kWhiteColor,
       ),
@@ -160,13 +168,14 @@ class _ClassesScreenState extends State<ClassesScreen> {
               state.classes.isEmpty) {
             return Center(
               child: Text(
-                'No classes found.',
+                l10n.noClassesFound,
                 style: AppStyles.w600f18inter.copyWith(color: kDarkTextColor),
               ),
             );
           }
 
           final grouped = _groupedClasses(state.classes);
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -184,7 +193,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                         children: [
                           for (final sport in SportType.values) ...[
                             CommonChip(
-                              label: sport.label,
+                              label: sport.localizedLabel(context),
                               isSelected: _selectedSports.contains(sport),
                               onTap: () => setState(() {
                                 if (_selectedSports.contains(sport)) {
@@ -202,13 +211,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
                         ],
                       ),
                     ).withPaddingSymmetric(16, 0),
+
                     12.heightBox,
+
                     Row(
                       children: [
                         Expanded(
                           child: CustomTextField(
                             controller: _searchController,
-                            hintText: "Search by name...",
+                            hintText: l10n.searchByName,
                             borderRadius: 100,
                             onChanged: (value) {
                               setState(() {
@@ -217,7 +228,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
                             },
                           ),
                         ),
+
                         8.widthBox,
+
                         GestureDetector(
                           onTap: () async {
                             final result = await FilterBottomSheet.show(
@@ -255,6 +268,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                         ),
                       ],
                     ).withPaddingSymmetric(16, 0),
+
                     12.heightBox,
 
                     CommonDateSelectionRow(
@@ -262,6 +276,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                       selectedDate: _selectedDate,
                       onDateSelected: (d) => setState(() => _selectedDate = d),
                     ),
+
                     16.heightBox,
                   ],
                 ),
@@ -271,7 +286,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 child: grouped.isEmpty
                     ? Center(
                         child: Text(
-                          'No classes found.',
+                          l10n.noClassesFound,
                           style: AppStyles.w600f18inter.copyWith(
                             color: kDarkTextColor,
                           ),
@@ -298,18 +313,22 @@ class _ClassesScreenState extends State<ClassesScreen> {
   }
 
   void _openDetails(Class classModel) {
+    final l10n = AppLocalizations.of(context)!;
+
     // Gate: show login dialog for unauthenticated users
     final authState = context.read<AuthBloc>().state;
+
     if (authState.user == null) {
       LoginToBookDialog.show(
         context,
-        title: 'Sign in to book this class',
-        subtitle: 'Please log in or create an account to reserve your spot.',
+        title: l10n.signInToBookThisClass,
+        subtitle: l10n.loginToReserveYourSpot,
       );
       return;
     }
 
     context.read<ClassesBloc>().add(FetchPortfolioBalance());
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ClassDetailsScreen(classModel: classModel),
@@ -321,11 +340,14 @@ class _ClassesScreenState extends State<ClassesScreen> {
     return Row(
       children: [
         SvgPicture.asset(Assets.svg.calendarBlank.path),
+
         4.widthBox,
+
         Text(
           label,
           style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
         ),
+
         6.widthBox,
 
         Expanded(child: Divider(color: kTextColor.withValues(alpha: 0.50))),
@@ -337,6 +359,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
     if (b == null) {
       return true;
     }
+
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 

@@ -7,7 +7,10 @@ class ChatTypeTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final isGame = type == ChatType.game;
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: getProportionateScreenWidth(6),
@@ -21,7 +24,7 @@ class ChatTypeTag extends StatelessWidget {
         border: Border.all(color: isGame ? kBlueF1 : kGreenColor, width: 0.8),
       ),
       child: Text(
-        isGame ? 'Game' : 'Classroom',
+        isGame ? l10n.game : l10n.classroom,
         style: AppStyles.w500f10inter.copyWith(
           color: isGame ? kBlueF1 : kGreenColor,
         ),

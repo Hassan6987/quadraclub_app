@@ -1,10 +1,32 @@
+import 'package:flutter/widgets.dart';
 import 'package:parsing_util/parsing_util.dart';
+import 'package:quadraclub_app/l10n/app_localizations.dart';
 
 enum SportType { pedal, tennis, beachTennis, pickleball }
 
 enum ClassFormat { group, individual }
 
 enum ClassStatus { available, full, slotsLeft }
+
+extension SportTypeLocalization on SportType {
+  String localizedLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (this) {
+      case SportType.pedal:
+        return l10n.padel;
+
+      case SportType.tennis:
+        return l10n.tennis;
+
+      case SportType.beachTennis:
+        return l10n.beachTennis;
+
+      case SportType.pickleball:
+        return l10n.pickleball;
+    }
+  }
+}
 
 extension SportTypeExtension on SportType {
   String get label {

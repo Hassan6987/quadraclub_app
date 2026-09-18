@@ -288,4 +288,204 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get profile => 'Perfil';
+
+  @override
+  String get language => 'linguagem';
+
+  @override
+  String get chooseLanguage => 'Escolha seu idioma preferido';
+
+  @override
+  String get close => 'Fechar';
+
+  @override
+  String get myChats => 'Meus chats';
+
+  @override
+  String get signInToViewYourChatsAndConversations =>
+      'Entre para ver seus chats e conversas';
+
+  @override
+  String get all => 'Todos';
+
+  @override
+  String get games => 'Partidas';
+
+  @override
+  String get noChatsFound => 'Nenhum chat encontrado';
+
+  @override
+  String get game => 'Partida';
+
+  @override
+  String get classroom => 'Aula';
+
+  @override
+  String get now => 'agora';
+
+  @override
+  String get you => 'VOCÊ';
+
+  @override
+  String get players => 'jogadores';
+
+  @override
+  String playersInChat(int count) {
+    return '$count jogadores no chat';
+  }
+
+  @override
+  String get typeYourMessage => 'Digite sua mensagem';
+
+  @override
+  String get today => 'HOJE';
+
+  @override
+  String get yesterday => 'ONTEM';
+
+  @override
+  String get classDetails => 'Detalhes da aula';
+
+  @override
+  String registrationUntil(String date) {
+    return 'Inscrições até $date';
+  }
+
+  @override
+  String get description => 'Descrição';
+
+  @override
+  String get classFull => 'Aula lotada';
+
+  @override
+  String get confirmLesson => 'Confirmar aula';
+
+  @override
+  String get registrationClosed => 'Inscrições encerradas';
+
+  @override
+  String get classBooked => 'Aula reservada';
+
+  @override
+  String get classConfirmedMessage =>
+      'Sua aula está confirmada. Esperamos por você!';
+
+  @override
+  String categoryWithLevel(String level) {
+    return 'Categoria $level';
+  }
+
+  @override
+  String get group => 'Grupo';
+
+  @override
+  String get individual => 'Individual';
+
+  @override
+  String get coach => 'Professor';
+
+  @override
+  String get availableClasses => 'Aulas disponíveis';
+
+  @override
+  String get noClassesFound => 'Nenhuma aula encontrada.';
+
+  @override
+  String get searchByName => 'Pesquisar por nome...';
+
+  @override
+  String todayWithDate(String date) {
+    return 'Hoje, $date';
+  }
+
+  @override
+  String tomorrowWithDate(String date) {
+    return 'Amanhã, $date';
+  }
+
+  @override
+  String get signInToBookThisClass => 'Entre para reservar esta aula';
+
+  @override
+  String get loginToReserveYourSpot =>
+      'Entre ou crie uma conta para reservar sua vaga.';
+
+  @override
+  String get paymentForLesson => 'Pagamento da aula';
+
+  @override
+  String get afterPaymentCoachApproval =>
+      'Após o pagamento, sua solicitação será enviada ao professor para aprovação.';
+
+  @override
+  String get paymentMethod => 'MÉTODO DE PAGAMENTO';
+
+  @override
+  String get insufficientPortfolioBalance => 'Saldo insuficiente no portfólio';
+
+  @override
+  String get agreeToTermsOfUse => 'Concordo com os termos de uso.';
+
+  @override
+  String get filters => 'Filtros';
+
+  @override
+  String get timeOfDay => 'Horário';
+
+  @override
+  String get morning => 'Manhã';
+
+  @override
+  String get afternoon => 'Tarde';
+
+  @override
+  String get night => 'Noite';
+
+  @override
+  String get morningTime => '6h - 12h';
+
+  @override
+  String get afternoonTime => '12h - 18h';
+
+  @override
+  String get nightTime => '18h - 00h';
+
+  @override
+  String get level => 'Nível';
+
+  @override
+  String get allLevels => 'Todos os níveis';
+
+  @override
+  String get selectLevels => 'Selecionar níveis';
+
+  @override
+  String get format => 'Formato';
+
+  @override
+  String get city => 'Cidade';
+
+  @override
+  String get search => 'Pesquisar..';
+
+  @override
+  String get distance => 'Distância';
+
+  @override
+  String get clearFilters => 'Limpar filtros';
+
+  @override
+  String get showResults => 'Mostrar resultados';
+
+  @override
+  String get padel => 'Padel';
+
+  @override
+  String get tennis => 'Tênis';
+
+  @override
+  String get beachTennis => 'Tênis de praia';
+
+  @override
+  String get pickleball => 'Pickleball';
 }
