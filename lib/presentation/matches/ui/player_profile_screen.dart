@@ -112,7 +112,10 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                       8.heightBox,
                       buildInfoRow(
                         label: l10n.dateOfBirth,
-                        value: getFormatDateMonthYear(state.user?.dateOfBirth),
+                        value: getFormatDateMonthYear(
+                          state.user?.dateOfBirth,
+                          locale: l10n.localeName,
+                        ),
                       ),
                     ],
                   ),

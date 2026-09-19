@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/language_provider.dart';
@@ -44,6 +45,7 @@ void main() async {
   await GetStorage.init();
   final prefs = await SharedPreferences.getInstance();
   final initialLocale = Locale(prefs.getString('language_code') ?? 'en');
+  Intl.defaultLocale = initialLocale.languageCode;
   initServices();
   Bloc.observer = SimpleBlocObserver();
 

@@ -125,7 +125,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   prefixIcon: SvgPicture.asset(Assets.svg.lockIcon.path),
                   obscureText: true,
                   keyboardType: TextInputType.visiblePassword,
-                  validator: ValidateForm.passwordValidator,
+                  validator: (v) => ValidateForm.passwordValidator(v, l10n),
                 ),
                 12.heightBox,
                 CustomTextField(

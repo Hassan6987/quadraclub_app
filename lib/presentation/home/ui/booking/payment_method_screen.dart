@@ -341,7 +341,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '${widget.club.city ?? ''} • ${formatDistanceKm(widget.distance)}',
+                                    '${widget.club.city ?? ''} • ${formatDistanceKm(widget.distance, AppLocalizations.of(context)!)}',
                                     style: AppStyles.w400f14inter.copyWith(
                                       color: kTextColor,
                                     ),

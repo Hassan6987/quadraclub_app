@@ -136,7 +136,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               Assets.svg.emailIcon.path,
                             ),
                             keyboardType: TextInputType.emailAddress,
-                            validator: ValidateForm.validateEmail,
+                            validator: (v) =>
+                                ValidateForm.validateEmail(v, l10n),
                             onChanged: (_) => _updateButtonState(),
                           ),
                           12.heightBox,
@@ -149,7 +150,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               Assets.svg.lockIcon.path,
                             ),
                             keyboardType: TextInputType.emailAddress,
-                            validator: ValidateForm.passwordValidator,
+                            validator: (v) =>
+                                ValidateForm.passwordValidator(v, l10n),
                             onChanged: (_) => _updateButtonState(),
                           ),
                           8.heightBox,

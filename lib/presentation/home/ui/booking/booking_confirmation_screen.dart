@@ -148,7 +148,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ).withPaddingSymmetric(10, 0),
 
                     Text(
-                      '${club.city} • ${formatDistanceKm(distance)}',
+                      '${club.city} • ${formatDistanceKm(distance, AppLocalizations.of(context)!)}',
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

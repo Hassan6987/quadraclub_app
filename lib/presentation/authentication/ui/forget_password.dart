@@ -96,7 +96,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     hintText: l10n.enterYourEmail,
                     prefixIcon: SvgPicture.asset(Assets.svg.emailIcon.path),
                     keyboardType: TextInputType.emailAddress,
-                    validator: ValidateForm.validateEmail,
+                    validator: (v) => ValidateForm.validateEmail(v, l10n),
                     onChanged: (_) => _updateButtonState(),
                   ),
                   24.heightBox,

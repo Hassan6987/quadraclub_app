@@ -1106,4 +1106,118 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterValidCvv => 'Enter a valid CVV';
+
+  @override
+  String get pleaseEnterYourEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get passwordCannotBeEmpty => 'Password cannot be empty';
+
+  @override
+  String get passwordMinEightCharacters =>
+      'Password must be at least 8 characters';
+
+  @override
+  String get passwordMustContainLowercase =>
+      'Password must contain at least one lowercase letter';
+
+  @override
+  String get passwordMustContainUppercase =>
+      'Password must contain at least one uppercase letter';
+
+  @override
+  String get passwordMustContainNumber =>
+      'Password must contain at least one number';
+
+  @override
+  String get pleaseEnterName => 'Please enter name';
+
+  @override
+  String get fullNameMinFiveCharacters =>
+      'Full name must be at least 5 characters';
+
+  @override
+  String get fullNameMaxFortyCharacters =>
+      'Full name must be less than 40 characters';
+
+  @override
+  String get cannotBeEmpty => 'Cannot be empty';
+
+  @override
+  String get enterAValidNumber => 'Enter a valid number';
+
+  @override
+  String get addressCannotBeEmpty => 'Address can\'t be empty';
+
+  @override
+  String get addressMinTenCharacters =>
+      'Address must be at least 10 characters';
+
+  @override
+  String get collegeNameCannotBeEmpty => 'College name can not be empty';
+
+  @override
+  String get pleaseEnterValidUrl =>
+      'Please enter a valid URL (e.g., https://example.com)';
+
+  @override
+  String get pleaseEnterBreedName => 'Please enter breed name';
+
+  @override
+  String get todayLabel => 'Today';
+
+  @override
+  String get yesterdayLabel => 'Yesterday';
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weeksAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks ago',
+      one: '1 week ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String monthsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months ago',
+      one: '1 month ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String yearsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years ago',
+      one: '1 year ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String formattedDistanceKm(String distance) {
+    return '$distance km';
+  }
 }

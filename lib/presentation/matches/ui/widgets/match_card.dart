@@ -83,8 +83,8 @@ class MatchCard extends StatelessWidget {
                       ),
                       Text(
                         "${match.club?.city} • ${formatDistanceKm(
-                            distanceKm)} • ${getFormatDateMonth(
-                            match.bookingDate)}",
+                            distanceKm, l10n)} • ${getFormatDateMonth(
+                            match.bookingDate, locale: l10n.localeName)}",
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),

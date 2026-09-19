@@ -349,8 +349,10 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     ),
                     Text(
                       "${match.club?.city} • ${formatDistanceKm(
-                          widget.distanceKm)} • ${getFormatDateMonth(
-                          match.bookingDate)}",
+                          widget.distanceKm, AppLocalizations.of(
+                          context)!)} • ${getFormatDateMonth(
+                          match.bookingDate,
+                          locale: AppLocalizations.of(context)!.localeName)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

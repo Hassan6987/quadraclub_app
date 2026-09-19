@@ -438,5 +438,64 @@
   "enterValidExpiryMonth": "Enter a valid expiry month",
   "cardHasExpired": "Card has expired",
   "enterCvv": "Enter CVV",
-  "enterValidCvv": "Enter a valid CVV"
+  "enterValidCvv": "Enter a valid CVV",
+  "pleaseEnterYourEmail": "Please enter your email",
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "passwordCannotBeEmpty": "Password cannot be empty",
+  "passwordMinEightCharacters": "Password must be at least 8 characters",
+  "passwordMustContainLowercase": "Password must contain at least one lowercase letter",
+  "passwordMustContainUppercase": "Password must contain at least one uppercase letter",
+  "passwordMustContainNumber": "Password must contain at least one number",
+  "pleaseEnterName": "Please enter name",
+  "fullNameMinFiveCharacters": "Full name must be at least 5 characters",
+  "fullNameMaxFortyCharacters": "Full name must be less than 40 characters",
+  "cannotBeEmpty": "Cannot be empty",
+  "enterAValidNumber": "Enter a valid number",
+  "addressCannotBeEmpty": "Address can't be empty",
+  "addressMinTenCharacters": "Address must be at least 10 characters",
+  "collegeNameCannotBeEmpty": "College name can not be empty",
+  "pleaseEnterValidUrl": "Please enter a valid URL (e.g., https://example.com)",
+  "pleaseEnterBreedName": "Please enter breed name",
+  "todayLabel": "Today",
+  "yesterdayLabel": "Yesterday",
+  "daysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksAgo": "{count, plural, =1{1 week ago} other{{count} weeks ago}}",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthsAgo": "{count, plural, =1{1 month ago} other{{count} months ago}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "formattedDistanceKm": "{distance} km",
+  "@formattedDistanceKm": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -283,7 +283,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               ),
                               Text(
                                 '$_locationLabel • '
-                                    '${formatDistanceKm(widget.distance)}',
+                                    '${formatDistanceKm(widget.distance,
+                                    AppLocalizations.of(context)!)}',
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),

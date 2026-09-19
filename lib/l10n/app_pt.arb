@@ -388,5 +388,64 @@
   "enterValidExpiryMonth": "Digite um mês de validade válido",
   "cardHasExpired": "O cartão expirou",
   "enterCvv": "Digite o CVV",
-  "enterValidCvv": "Digite um CVV válido"
+  "enterValidCvv": "Digite um CVV válido",
+  "pleaseEnterYourEmail": "Por favor, digite seu e-mail",
+  "pleaseEnterValidEmail": "Por favor, digite um e-mail válido",
+  "passwordCannotBeEmpty": "A senha não pode estar vazia",
+  "passwordMinEightCharacters": "A senha deve ter pelo menos 8 caracteres",
+  "passwordMustContainLowercase": "A senha deve conter pelo menos uma letra minúscula",
+  "passwordMustContainUppercase": "A senha deve conter pelo menos uma letra maiúscula",
+  "passwordMustContainNumber": "A senha deve conter pelo menos um número",
+  "pleaseEnterName": "Por favor, digite o nome",
+  "fullNameMinFiveCharacters": "O nome completo deve ter pelo menos 5 caracteres",
+  "fullNameMaxFortyCharacters": "O nome completo deve ter menos de 40 caracteres",
+  "cannotBeEmpty": "Não pode estar vazio",
+  "enterAValidNumber": "Digite um número válido",
+  "addressCannotBeEmpty": "O endereço não pode estar vazio",
+  "addressMinTenCharacters": "O endereço deve ter pelo menos 10 caracteres",
+  "collegeNameCannotBeEmpty": "O nome da faculdade não pode estar vazio",
+  "pleaseEnterValidUrl": "Por favor, digite uma URL válida (ex.: https://exemplo.com)",
+  "pleaseEnterBreedName": "Por favor, digite o nome da raça",
+  "todayLabel": "Hoje",
+  "yesterdayLabel": "Ontem",
+  "daysAgo": "{count, plural, =1{há 1 dia} other{há {count} dias}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksAgo": "{count, plural, =1{há 1 semana} other{há {count} semanas}}",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthsAgo": "{count, plural, =1{há 1 mês} other{há {count} meses}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yearsAgo": "{count, plural, =1{há 1 ano} other{há {count} anos}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "formattedDistanceKm": "{distance} km",
+  "@formattedDistanceKm": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  }
 }

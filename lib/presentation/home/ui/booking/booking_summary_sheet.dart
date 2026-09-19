@@ -391,7 +391,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                         ),
                         Text(
                           '$_locationLabel • '
-                          '${formatDistanceKm(widget.distance)}',
+                          '${formatDistanceKm(widget.distance, AppLocalizations.of(context)!)}',
                           style: AppStyles.w400f14inter.copyWith(
                             color: kGreyTextColor,
                           ),

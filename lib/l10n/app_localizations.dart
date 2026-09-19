@@ -2137,6 +2137,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid CVV'**
   String get enterValidCvv;
+
+  /// No description provided for @pleaseEnterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get pleaseEnterYourEmail;
+
+  /// No description provided for @pleaseEnterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get pleaseEnterValidEmail;
+
+  /// No description provided for @passwordCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be empty'**
+  String get passwordCannotBeEmpty;
+
+  /// No description provided for @passwordMinEightCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordMinEightCharacters;
+
+  /// No description provided for @passwordMustContainLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one lowercase letter'**
+  String get passwordMustContainLowercase;
+
+  /// No description provided for @passwordMustContainUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one uppercase letter'**
+  String get passwordMustContainUppercase;
+
+  /// No description provided for @passwordMustContainNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one number'**
+  String get passwordMustContainNumber;
+
+  /// No description provided for @pleaseEnterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter name'**
+  String get pleaseEnterName;
+
+  /// No description provided for @fullNameMinFiveCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name must be at least 5 characters'**
+  String get fullNameMinFiveCharacters;
+
+  /// No description provided for @fullNameMaxFortyCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name must be less than 40 characters'**
+  String get fullNameMaxFortyCharacters;
+
+  /// No description provided for @cannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot be empty'**
+  String get cannotBeEmpty;
+
+  /// No description provided for @enterAValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number'**
+  String get enterAValidNumber;
+
+  /// No description provided for @addressCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Address can\'t be empty'**
+  String get addressCannotBeEmpty;
+
+  /// No description provided for @addressMinTenCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Address must be at least 10 characters'**
+  String get addressMinTenCharacters;
+
+  /// No description provided for @collegeNameCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'College name can not be empty'**
+  String get collegeNameCannotBeEmpty;
+
+  /// No description provided for @pleaseEnterValidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid URL (e.g., https://example.com)'**
+  String get pleaseEnterValidUrl;
+
+  /// No description provided for @pleaseEnterBreedName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter breed name'**
+  String get pleaseEnterBreedName;
+
+  /// No description provided for @todayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get todayLabel;
+
+  /// No description provided for @yesterdayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterdayLabel;
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String daysAgo(int count);
+
+  /// No description provided for @weeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week ago} other{{count} weeks ago}}'**
+  String weeksAgo(int count);
+
+  /// No description provided for @monthsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month ago} other{{count} months ago}}'**
+  String monthsAgo(int count);
+
+  /// No description provided for @yearsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
+  String yearsAgo(int count);
+
+  /// No description provided for @formattedDistanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String formattedDistanceKm(String distance);
 }
 
 class _AppLocalizationsDelegate

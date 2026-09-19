@@ -323,7 +323,8 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   4.heightBox,
 
                   Text(
-                    "$_locationLabel • ${formatDistanceKm(widget.distance)}",
+                    "$_locationLabel • ${formatDistanceKm(
+                        widget.distance, AppLocalizations.of(context)!)}",
                     style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                   ),
 

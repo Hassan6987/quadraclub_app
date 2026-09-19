@@ -185,7 +185,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     label: l10n.fullName,
                     controller: _fullNameController,
                     hintText: l10n.enterYourName,
-                    validator: ValidateForm.fullNameValidator,
+                    validator: (v) => ValidateForm.fullNameValidator(v, l10n),
                   ),
                   12.heightBox,
                   CustomTextField(
@@ -205,7 +205,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _emailController,
                     hintText: l10n.enterYourEmail,
                     keyboardType: TextInputType.emailAddress,
-                    validator: ValidateForm.validateEmail,
+                    validator: (v) => ValidateForm.validateEmail(v, l10n),
                   ),
                   12.heightBox,
                   CustomTextField(
@@ -213,7 +213,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _passwordController,
                     hintText: l10n.enterYourPassword,
                     obscureText: _obscurePassword,
-                    validator: ValidateForm.passwordValidator,
+                    validator: (v) => ValidateForm.passwordValidator(v, l10n),
                   ),
                   12.heightBox,
                   CustomTextField(
@@ -224,6 +224,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     validator: (v) => ValidateForm.confirmPasswordValidator(
                       v,
                       _passwordController.text,
+                      l10n,
                     ),
                   ),
                   32.heightBox,
