@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -627,17 +628,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get double => 'Dupla';
 
   @override
-  String get payAllReceiveLater => 'Pagar tudo e receber depois';
+  String get payAllReceiveLater => 'Pague tudo agora e receba depois';
 
   @override
-  String get payOnlyMyPart => 'Pagar apenas minha parte';
+  String get payOnlyMyPart => 'Pague apenas minha parte agora';
+
+  @override
+  String get payAllNoSplit => 'Pague tudo agora sem dividir depois';
 
   @override
   String get payAllReceiveLaterDescription =>
-      'Pague o valor total agora e receba a parte dos outros jogadores depois.';
+      'A quadra já está reservada e você recebe as peças dos outros jogadores automaticamente após a partida.';
 
   @override
-  String get payOnlyMyPartDescription => 'Pague apenas sua parte da reserva.';
+  String get payOnlyMyPartDescription =>
+      'O quadra ainda não está marcado. Só será reservado quando todos aderirem. Risco de perder reserva';
+
+  @override
+  String get payALlNoSplitDescription =>
+      'Os jogadores convidados podem entrar sem pagar nada.';
 
   @override
   String bookingDateAndTime(String date, String time) {

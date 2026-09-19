@@ -1247,7 +1247,7 @@ abstract class AppLocalizations {
   /// No description provided for @payAllReceiveLater.
   ///
   /// In en, this message translates to:
-  /// **'Pay all, receive later'**
+  /// **'Pay everything now and receive later'**
   String get payAllReceiveLater;
 
   /// No description provided for @payOnlyMyPart.
@@ -1256,17 +1256,29 @@ abstract class AppLocalizations {
   /// **'Pay only my part'**
   String get payOnlyMyPart;
 
+  /// No description provided for @payAllNoSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay everything now without splitting later'**
+  String get payAllNoSplit;
+
   /// No description provided for @payAllReceiveLaterDescription.
   ///
   /// In en, this message translates to:
-  /// **'Pay the full amount now and collect the other players\' share later.'**
+  /// **'Court is already booked now, and you receive other players parts automatically after the match.'**
   String get payAllReceiveLaterDescription;
 
   /// No description provided for @payOnlyMyPartDescription.
   ///
   /// In en, this message translates to:
-  /// **'Pay only your share of the booking.'**
+  /// **'Court is not booked yet. It will only be booked when everyone joins. Risk loosing booking'**
   String get payOnlyMyPartDescription;
+
+  /// No description provided for @payALlNoSplitDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited players can join without paying anything.'**
+  String get payALlNoSplitDescription;
 
   /// No description provided for @bookingDateAndTime.
   ///

@@ -135,7 +135,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
       case PaymentSplitOption.payOnlyMyPart:
         return l10n.payOnlyMyPart;
       case PaymentSplitOption.payAllNoSplit:
-        return '';
+        return l10n.payAllNoSplit;
     }
   }
 
@@ -150,7 +150,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
       case PaymentSplitOption.payOnlyMyPart:
         return l10n.payOnlyMyPartDescription;
       case PaymentSplitOption.payAllNoSplit:
-        return '';
+        return l10n.payALlNoSplitDescription;
     }
   }
 

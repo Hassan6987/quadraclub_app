@@ -238,10 +238,12 @@
   "openMatchDescription": "Other players can join the match.",
   "single": "Single",
   "double": "Double",
-  "payAllReceiveLater": "Pay all, receive later",
+  "payAllReceiveLater": "Pay everything now and receive later",
   "payOnlyMyPart": "Pay only my part",
-  "payAllReceiveLaterDescription": "Pay the full amount now and collect the other players' share later.",
-  "payOnlyMyPartDescription": "Pay only your share of the booking.",
+  "payAllNoSplit": "Pay everything now without splitting later",
+  "payAllReceiveLaterDescription": "Court is already booked now, and you receive other players parts automatically after the match.",
+  "payOnlyMyPartDescription": "Court is not booked yet. It will only be booked when everyone joins. Risk loosing booking",
+  "payALlNoSplitDescription": "Invited players can join without paying anything.",
   "bookingDateAndTime": "{date} | {time}",
   "@bookingDateAndTime": {
     "placeholders": {
