@@ -52,8 +52,8 @@ class _TermsScreenState extends State<TermsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BlueAppBar(
-        title: 'Terms & Conditions',
+      appBar: BlueAppBar(
+        title: AppLocalizations.of(context)!.termsAndConditions,
         showBackArrow: true,
       ),
       body: SafeArea(

@@ -1,5 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
@@ -100,16 +101,30 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
     if (startHour == null || endHour == null) return false;
 
-    if (_filterTimeOfDay == 'Morning' && startHour >= 6 && endHour < 12) {
+    final timeOfDay = _filterTimeOfDay?.toLowerCase();
+    if (timeOfDay == 'morning' && startHour >= 6 && endHour < 12) {
       return true;
     }
-    if (_filterTimeOfDay == 'Afternoon' && startHour >= 12 && endHour < 18) {
+    if (timeOfDay == 'afternoon' && startHour >= 12 && endHour < 18) {
       return true;
     }
-    if (_filterTimeOfDay == 'Night' && (startHour >= 18 || endHour < 6)) {
+    if (timeOfDay == 'night' && (startHour >= 18 || endHour < 6)) {
       return true;
     }
     return false;
+  }
+
+  String _sportSlug(SportType sport) {
+    switch (sport) {
+      case SportType.pedal:
+        return 'padel';
+      case SportType.tennis:
+        return 'tennis';
+      case SportType.beachTennis:
+        return 'beach_tennis';
+      case SportType.pickleball:
+        return 'pickleball';
+    }
   }
 
   List<Booking> _filteredMatches(List<Booking> allBookings) {
@@ -117,7 +132,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
     final filtered = allBookings.where((match) {
       if (_selectedSports.isNotEmpty &&
-          !_selectedSports.contains(match.sport.label.toLowerCase())) {
+          !_selectedSports.contains(_sportSlug(match.sport))) {
         return false;
       }
 
@@ -211,6 +226,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Map<String, List<Booking>> _groupedBookings(List<Booking> allBookings) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
@@ -222,14 +238,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
         continue;
       }
       final dateOnly = DateTime(classDate.year, classDate.month, classDate.day);
+      final date = DateFormat('d MMM', l10n.localeName).format(dateOnly);
       final String label;
 
       if (_isSameDate(dateOnly, today)) {
-        label = 'Today, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = l10n.todayWithDate(date);
       } else if (_isSameDate(dateOnly, tomorrow)) {
-        label = 'Tomorrow, ${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = l10n.tomorrowWithDate(date);
       } else {
-        label = '${dateOnly.day} ${monthNames[dateOnly.month - 1]}';
+        label = date;
       }
 
       result.putIfAbsent(label, () => []).add(c);
@@ -246,12 +263,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         if (authState.user == null) {
-          return const GuestLoginPrompt(
-            title: 'Open Matches',
-            subtitle: 'Sign in to view & join open matches',
+          return GuestLoginPrompt(
+            title: l10n.openMatches,
+            subtitle: l10n.signInToViewJoinOpenMatches,
           );
         }
         return BlocBuilder<MatchesBloc, MatchesState>(
@@ -307,7 +325,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
             return Scaffold(
               backgroundColor: kWhiteFo,
               appBar: CustomAppBar(
-                title: "Open Matches",
+                title: l10n.openMatches,
                 centerTile: false,
                 backgroundColor: kWhiteColor,
               ),
@@ -342,8 +360,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                     final isSelected = _selectedSports.contains(
                                       sport,
                                     );
-                                    final label =
-                                        '${sport[0].toUpperCase()}${sport.substring(1).replaceAll('_', ' ')}';
+                                    final label = localizedSportName(
+                                      context,
+                                      sport,
+                                    );
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -390,7 +410,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                   Expanded(
                                     child: CustomTextField(
                                       controller: _searchController,
-                                      hintText: "Search...",
+                                      hintText: l10n.searchByName,
                                       borderRadius: 100,
                                       hintStyle: AppStyles.w400f14inter,
                                       onChanged: (value) =>
@@ -472,7 +492,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                     children: [
                                       if (_filterTimeOfDay != null) ...[
                                         _buildFilterBadge(
-                                          label: _filterTimeOfDay!,
+                                          label: localizedTimeOfDay(
+                                            context,
+                                            _filterTimeOfDay!,
+                                          ),
                                           icon: Icons.access_time,
                                           onClear: () => setState(
                                             () => _filterTimeOfDay = null,
@@ -482,7 +505,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                       ],
                                       if (_filterFormat != null) ...[
                                         _buildFilterBadge(
-                                          label: _filterFormat!.label,
+                                          label: _filterFormat!.localizedLabel(
+                                            context,
+                                          ),
                                           icon: Icons.groups_outlined,
                                           onClear: () => setState(
                                             () => _filterFormat = null,
@@ -502,8 +527,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                       ],
                                       if (_filterDistance != null) ...[
                                         _buildFilterBadge(
-                                          label:
-                                              '< ${_filterDistance!.round()} km',
+                                          label: l10n.distanceKm(
+                                            _filterDistance!.round().toString(),
+                                          ),
                                           icon: Icons.near_me_outlined,
                                           onClear: () => setState(
                                             () => _filterDistance = null,
@@ -519,7 +545,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                           _filterFormat = null;
                                         }),
                                         child: Text(
-                                          'Clear all',
+                                          l10n.clearAll,
                                           style: AppStyles.w500f12inter
                                               .copyWith(
                                                 color: kDarkTextColor,
@@ -550,7 +576,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           child: grouped.isEmpty
                               ? Center(
                                   child: Text(
-                                    'No matches found.',
+                                    l10n.noMatchesFound,
                                     style: AppStyles.w600f18inter.copyWith(
                                       color: kDarkTextColor,
                                     ),

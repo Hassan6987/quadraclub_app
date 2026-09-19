@@ -1,4 +1,6 @@
+import 'package:flutter/widgets.dart';
 import 'package:parsing_util/parsing_util.dart';
+import 'package:quadraclub_app/l10n/app_localizations.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 enum MatchFormat { singles, doubles }
@@ -6,6 +8,18 @@ enum MatchFormat { singles, doubles }
 enum MatchStatus { available, full, pending }
 
 enum CourtStatus { confirmed, pending }
+
+extension MatchFormatLocalization on MatchFormat {
+  String localizedLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case MatchFormat.singles:
+        return l10n.singles;
+      case MatchFormat.doubles:
+        return l10n.doubles;
+    }
+  }
+}
 
 extension MatchFormatExtension on MatchFormat {
   String get label {

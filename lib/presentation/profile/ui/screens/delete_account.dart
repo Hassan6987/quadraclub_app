@@ -4,26 +4,26 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/utils/components/blue_app_bar.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 class DeleteAccount extends StatelessWidget {
   const DeleteAccount({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: BlueAppBar(title: 'Delete Account', showBackArrow: true),
+      appBar: BlueAppBar(title: l10n.deleteAccount, showBackArrow: true),
       body: Column(
         children: [
           20.heightBox,
           Text(
-            'This will delete your account and you will need to create your account again.',
+            l10n.deleteAccountWarning,
             style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
             textAlign: TextAlign.center,
           ),
           32.heightBox,
           CustomActionButton(
-            buttonText: 'I understand, delete account',
+            buttonText: l10n.iUnderstandDeleteAccount,
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -48,16 +48,30 @@ class ConfirmDeleteAccount extends StatefulWidget {
 class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
   String? selectedReason;
 
-  final List<String> deleteReasons = [
-    "I no longer need the app.",
-    "I want to delete this account and create a new one.",
-    "Trouble using the app.",
+  static const _reasonKeys = [
+    'no_longer_need',
+    'create_new',
+    'trouble',
   ];
+
+  String _reasonLabel(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'no_longer_need':
+        return l10n.deleteReasonNoLongerNeed;
+      case 'create_new':
+        return l10n.deleteReasonCreateNew;
+      case 'trouble':
+        return l10n.deleteReasonTrouble;
+      default:
+        return key;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: BlueAppBar(title: 'Delete Account', showBackArrow: true),
+      appBar: BlueAppBar(title: l10n.deleteAccount, showBackArrow: true),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.status == AuthStateStatus.unAuthenticated) {
@@ -67,10 +81,10 @@ class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
               (route) => true,
             );
 
-            context.showToast("Account Deleted Successfully");
+            context.showToast(l10n.accountDeletedSuccessfully);
           } else if (state.status == AuthStateStatus.failure) {
             context.showToast(
-              state.error ?? "Something went wrong",
+              state.error ?? l10n.somethingWentWrong,
               isError: true,
             );
           }
@@ -79,12 +93,12 @@ class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
           children: [
             20.heightBox,
             Text(
-              "Please tell us why you're leaving",
+              l10n.pleaseTellUsWhyYoureLeaving,
               style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
               textAlign: TextAlign.center,
             ),
             32.heightBox,
-            ...deleteReasons.map(
+            ..._reasonKeys.map(
               (reason) => Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
@@ -113,7 +127,7 @@ class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
                     });
                   },
                   title: Text(
-                    reason,
+                    _reasonLabel(l10n, reason),
                     style: AppStyles.bodyRegular.copyWith(color: kTextColor),
                   ),
                   activeColor: kPrimaryColor,
@@ -128,7 +142,7 @@ class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
                   return Center(child: CustomLoadingView());
                 }
                 return CustomActionButton(
-                  buttonText: 'Delete Account',
+                  buttonText: l10n.deleteAccount,
                   isEnabled: selectedReason != null,
                   onTap: () {
                     log('Selected reason: $selectedReason');
@@ -137,7 +151,7 @@ class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
                         DeleteAccountEvent(id: state.user!.id!),
                       );
                     } else {
-                      context.showToast("No User Id found", isError: true);
+                      context.showToast(l10n.noUserIdFound, isError: true);
                     }
                   },
                   backgroundColor: kErrorColor,

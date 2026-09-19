@@ -27,6 +27,7 @@ class PaymentForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -38,7 +39,7 @@ class PaymentForm extends StatelessWidget {
         children: [
           CustomTextField(
             controller: cardholderController,
-            hintText: 'Cardholder name',
+            hintText: l10n.cardholderName,
             prefixIcon: SvgPicture.asset(Assets.svg.accontIcon.path),
             validator: cardholderValidator,
             keyboardType: TextInputType.name,
@@ -52,7 +53,7 @@ class PaymentForm extends StatelessWidget {
 
           CustomTextField(
             controller: cardNumberController,
-            hintText: 'Card number',
+            hintText: l10n.cardNumber,
             prefixIcon: SvgPicture.asset(Assets.svg.creditCard.path),
             keyboardType: TextInputType.number,
             validator: cardNumberValidator,
@@ -70,7 +71,7 @@ class PaymentForm extends StatelessWidget {
               Expanded(
                 child: CustomTextField(
                   controller: expiryController,
-                  hintText: 'MM/YY',
+                  hintText: l10n.mmYy,
                   keyboardType: TextInputType.number,
                   validator: expiryValidator,
                   inputFormatters: [ExpiryDateInputFormatter()],
@@ -82,7 +83,7 @@ class PaymentForm extends StatelessWidget {
               Expanded(
                 child: CustomTextField(
                   controller: cvvController,
-                  hintText: 'CVV',
+                  hintText: l10n.cvv,
                   keyboardType: TextInputType.number,
                   validator: cvvValidator,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -102,7 +103,7 @@ class PaymentForm extends StatelessWidget {
               SvgPicture.asset(Assets.svg.lockIcon.path),
               6.widthBox,
               Text(
-                'Secure Encrypted Payment',
+                l10n.secureEncryptedPayment,
                 style: AppStyles.w400f14inter.copyWith(color: kTextColor),
               ),
             ],

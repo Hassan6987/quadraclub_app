@@ -50,7 +50,10 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BlueAppBar(title: 'Privacy Policy', showBackArrow: true),
+      appBar: BlueAppBar(
+        title: AppLocalizations.of(context)!.privacyPolicy,
+        showBackArrow: true,
+      ),
       body: SafeArea(
         child: Column(
           children: [

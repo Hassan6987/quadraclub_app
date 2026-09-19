@@ -2,6 +2,20 @@ import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 
 import '/app_exports.dart';
 
+String localizedTimeOfDay(BuildContext context, String key) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (key.toLowerCase()) {
+    case 'morning':
+      return l10n.morning;
+    case 'afternoon':
+      return l10n.afternoon;
+    case 'night':
+      return l10n.night;
+    default:
+      return key;
+  }
+}
+
 enum MatchLevelFilter { all, select }
 
 class MatchFilterBottomSheet extends StatefulWidget {
@@ -117,6 +131,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: kWhiteColor,
@@ -131,7 +146,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
           Row(
             children: [
               Text(
-                'Game Filters',
+                l10n.gameFilters,
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
               const Spacer(),
@@ -148,45 +163,45 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionLabel(label: 'Time of Day'),
+                  _sectionLabel(label: l10n.timeOfDay),
                   8.heightBox,
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       TimeChip(
-                        label: 'Morning',
-                        subtitle: '6h - 12h',
+                        label: l10n.morning,
+                        subtitle: l10n.morningTime,
                         isSelected: _timeOfDay == 'Morning',
                         onTap: () => _selectTime('Morning'),
                       ),
                       TimeChip(
-                        label: 'Afternoon',
-                        subtitle: '12h - 18h',
+                        label: l10n.afternoon,
+                        subtitle: l10n.afternoonTime,
                         isSelected: _timeOfDay == 'Afternoon',
                         onTap: () => _selectTime('Afternoon'),
                       ),
                       TimeChip(
-                        label: 'Night',
-                        subtitle: '6 PM - 12 AM',
+                        label: l10n.night,
+                        subtitle: l10n.nightTime,
                         isSelected: _timeOfDay == 'Night',
                         onTap: () => _selectTime('Night'),
                       ),
                     ],
                   ),
                   16.heightBox,
-                  _sectionLabel(label: 'Level'),
+                  _sectionLabel(label: l10n.level),
                   8.heightBox,
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
-                        label: 'All levels',
+                        label: l10n.allLevels,
                         isSelected: _level == MatchLevelFilter.all,
                         onTap: () =>
                             setState(() => _level = MatchLevelFilter.all),
                       ),
                       ToggleChip(
-                        label: 'Select Levels',
+                        label: l10n.selectLevels,
                         isSelected: _level == MatchLevelFilter.select,
                         onTap: () =>
                             setState(() => _level = MatchLevelFilter.select),
@@ -194,24 +209,24 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                     ],
                   ),
                   16.heightBox,
-                  _sectionLabel(label: 'Format'),
+                  _sectionLabel(label: l10n.format),
                   8.heightBox,
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
-                        label: 'All formats',
+                        label: l10n.allFormats,
                         isSelected: _format == null,
                         onTap: () => setState(() => _format = null),
                       ),
                       ToggleChip(
-                        label: 'Singles',
+                        label: l10n.singles,
                         isSelected: _format == MatchFormat.singles,
                         onTap: () =>
                             setState(() => _format = MatchFormat.singles),
                       ),
                       ToggleChip(
-                        label: 'Doubles',
+                        label: l10n.doubles,
                         isSelected: _format == MatchFormat.doubles,
                         onTap: () =>
                             setState(() => _format = MatchFormat.doubles),
@@ -219,11 +234,11 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                     ],
                   ),
                   16.heightBox,
-                  _sectionLabel(label: 'City'),
+                  _sectionLabel(label: l10n.city),
                   8.heightBox,
                   CustomTextField(
                     controller: _searchController,
-                    hintText: 'Search...',
+                    hintText: l10n.search,
                     borderRadius: 999,
                     onChanged: (value) {
                       setState(() {
@@ -265,7 +280,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _sectionLabel(label: 'Max Distance'),
+                      _sectionLabel(label: l10n.maxDistance),
                       GestureDetector(
                         onTap: () =>
                             setState(() => _enableDistance = !_enableDistance),
@@ -280,8 +295,8 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                           ),
                           child: Text(
                             _enableDistance
-                                ? 'Within ${_distance.round()} km'
-                                : 'Any distance',
+                                ? l10n.withinDistance(_distance.round())
+                                : l10n.anyDistance,
                             style: AppStyles.w500f12inter.copyWith(
                                 color: kDarkTextColor),
                           ),
@@ -311,7 +326,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
               Expanded(
                 child: CustomActionButton(
                   onTap: _clearFilters,
-                  buttonText: "Clear Filters",
+                  buttonText: l10n.clearFilters,
                   backgroundColor: kWhiteColor,
                   borderColor: kBorderColor,
                   isEnabled: true,
@@ -320,7 +335,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
               const SizedBox(width: 12),
               Expanded(
                 child: CustomActionButton(
-                  buttonText: "Show Results",
+                  buttonText: l10n.showResults,
                   onTap: () {
                     widget.onApply(
                       _timeOfDay,

@@ -72,10 +72,11 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: CustomAppBar(
         title: widget.label,
-        subtitle: '${widget.userCount} players',
+        subtitle: l10n.playersCount(widget.userCount),
         titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         showBackIcon: true,
         showActions: false,
@@ -112,12 +113,14 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
   }
 
   String _dayLabel(DateTime dt) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final msgDay = DateTime(dt.year, dt.month, dt.day);
-    if (msgDay == today) return 'TODAY';
-    if (msgDay == today.subtract(const Duration(days: 1))) return 'YESTERDAY';
-    return DateFormat('MMM d, yyyy').format(dt).toUpperCase();
+    if (msgDay == today) return l10n.today;
+    if (msgDay == today.subtract(const Duration(days: 1)))
+      return l10n.yesterday;
+    return DateFormat('MMM d, yyyy', l10n.localeName).format(dt).toUpperCase();
   }
 
   Widget _buildMessageList(List<ChatMessage> messages) {
@@ -167,7 +170,7 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
             child: CustomTextField(
               controller: _controller,
               borderRadius: 1000,
-              hintText: "Type your message",
+              hintText: AppLocalizations.of(context)!.typeYourMessage,
               onSubmitted: (_) => _sendMessage(),
             ),
           ),

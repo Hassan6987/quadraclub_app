@@ -18,6 +18,19 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
   StatFilter _filter = StatFilter.weekly;
   final UserProfile profile = dummyProfile;
 
+  String _localizedGender(AppLocalizations l10n, String? gender) {
+    switch (gender) {
+      case 'Masculine':
+        return l10n.masculine;
+      case 'Feminine':
+        return l10n.feminine;
+      case 'Prefer not to say':
+        return l10n.preferNotToSay;
+      default:
+        return gender ?? '';
+    }
+  }
+
   @override
   void initState() {
     context.read<MatchesBloc>().add(FetchPlayerDetails(id: widget.playerId));
@@ -26,6 +39,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: AppBar(
@@ -43,7 +57,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           ),
         ),
         title: Text(
-          'Player Details',
+          l10n.playerDetails,
           style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         ),
         centerTitle: true,
@@ -54,7 +68,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             return Center(child: CustomLoadingView());
           } else if (state.status != MatchesStateStatus.fetching &&
               state.user == null) {
-            return Center(child: Text("No player data found"));
+            return Center(child: Text(l10n.noPlayerDataFound));
           }
           return SingleChildScrollView(
             child: Column(
@@ -69,7 +83,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 ),
                 8.heightBox,
                 GameInfoCard(
-                  dominantHand: state.user?.dominantHand ?? "Unknown",
+                  dominantHand: state.user?.dominantHand ?? 'Unknown',
                   preferredSide: state.user?.dominantHand ?? 'Unknown',
                 ),
                 8.heightBox,
@@ -80,22 +94,26 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'About Player',
+                        l10n.aboutPlayer,
                         style: AppStyles.w500f14inter.copyWith(
                           color: kDarkTextColor,
                         ),
                       ),
                       16.heightBox,
                       buildInfoRow(
-                          label: 'Location', value: state.user?.location ?? ''),
+                        label: l10n.location,
+                        value: state.user?.location ?? '',
+                      ),
                       8.heightBox,
                       buildInfoRow(
-                          label: 'Gender', value: state.user?.gender ?? ''),
+                        label: l10n.gender,
+                        value: _localizedGender(l10n, state.user?.gender),
+                      ),
                       8.heightBox,
                       buildInfoRow(
-                          label: 'Date of Birth',
-                          value: getFormatDateMonthYear(state.user
-                              ?.dateOfBirth)),
+                        label: l10n.dateOfBirth,
+                        value: getFormatDateMonthYear(state.user?.dateOfBirth),
+                      ),
                     ],
                   ),
                 ),

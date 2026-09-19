@@ -1,3 +1,5 @@
+import 'package:quadraclub_app/utils/components/language_toggle_button.dart';
+
 import '../../../../app_exports.dart';
 import '../../../authentication/bloc/auth_bloc.dart';
 
@@ -6,6 +8,7 @@ class AccountSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CommonCard(
       padding: EdgeInsets.all(0),
       child: Column(
@@ -36,14 +39,14 @@ class AccountSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'My Account',
+                        l10n.myAccount,
                         style: AppStyles.w500f14inter.copyWith(
                           color: kDarkTextColor,
                         ),
                       ),
                       SizedBox(height: 2),
                       Text(
-                        'Manage your account details',
+                        l10n.manageYourAccountDetails,
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),
@@ -58,6 +61,27 @@ class AccountSection extends StatelessWidget {
               ],
             ).withPaddingAll(16),
           ),
+          Divider(color: kDividerColor),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: kPrimaryColor.withValues(alpha: 0.20),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.language, color: kDarkTextColor, size: 20),
+              ),
+              8.widthBox,
+              Expanded(
+                child: Text(
+                  l10n.language,
+                  style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+                ),
+              ),
+              const LanguageToggleButton(),
+            ],
+          ).withPaddingAll(16),
           Divider(color: kDividerColor),
           GestureDetector(
             onTap: () {
@@ -78,7 +102,7 @@ class AccountSection extends StatelessWidget {
                 ),
                 8.widthBox,
                 Text(
-                  'Logout',
+                  l10n.logout,
                   style: AppStyles.w500f14inter.copyWith(color: kRedColor),
                 ),
               ],

@@ -5,6 +5,7 @@ class ActionsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: const BoxDecoration(
         color: kWhiteColor,
@@ -17,6 +18,7 @@ class ActionsBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _header(
+            title: l10n.actions,
             onTap: () {
               Navigator.pop(context);
             },
@@ -24,14 +26,14 @@ class ActionsBottomSheet extends StatelessWidget {
           CommonDivider(),
           _actionItem(
             icon: Icons.edit_outlined,
-            title: 'Edit Details',
+            title: l10n.editDetails,
             onTap: () {
               Navigator.pop(context);
             },
           ),
           _actionItem(
             icon: Icons.delete_outline,
-            title: 'Delete Match',
+            title: l10n.deleteMatch,
             color: kRed5B,
             onTap: () {
               Navigator.pop(context);
@@ -43,13 +45,13 @@ class ActionsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _header({VoidCallback? onTap}) {
+  Widget _header({required String title, VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
       child: Row(
         children: [
           Text(
-            'Actions',
+            title,
             style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
           ),
           const Spacer(),

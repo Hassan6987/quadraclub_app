@@ -12,21 +12,43 @@ class GameInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CommonCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Game Information',
+            l10n.gameInformation,
             style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           16.heightBox,
-          buildInfoRow(label: 'Dominant Hand', value: dominantHand),
+          buildInfoRow(
+            label: l10n.dominantHand,
+            value: _localizedSide(l10n, dominantHand),
+          ),
           8.heightBox,
-          buildInfoRow(label: 'Preferred side', value: preferredSide),
+          buildInfoRow(
+            label: l10n.preferredSide,
+            value: _localizedSide(l10n, preferredSide),
+          ),
         ],
       ),
     );
+  }
+
+  String _localizedSide(AppLocalizations l10n, String value) {
+    switch (value) {
+      case 'Left':
+        return l10n.left;
+      case 'Right':
+        return l10n.right;
+      case 'Both':
+        return l10n.both;
+      case 'Unknown':
+        return l10n.unknown;
+      default:
+        return value;
+    }
   }
 }
 

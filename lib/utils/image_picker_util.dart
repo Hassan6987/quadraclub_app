@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:quadraclub_app/l10n/app_localizations.dart';
 
 class ImagePickerUtil {
   static final ImagePicker _picker = ImagePicker();
@@ -36,13 +38,14 @@ class ImagePickerUtil {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (_) {
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(sheetContext)!;
         return SafeArea(
           child: Wrap(
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Gallery'),
+                title: Text(l10n.gallery),
                 onTap: () async {
                   final file = await pickFromGallery(context);
                   Navigator.pop(context, file);
@@ -50,7 +53,7 @@ class ImagePickerUtil {
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                title: Text(l10n.camera),
                 onTap: () async {
                   final file = await pickFromCamera(context);
                   Navigator.pop(context, file);

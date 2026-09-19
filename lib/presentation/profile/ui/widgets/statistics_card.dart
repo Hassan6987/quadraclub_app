@@ -14,6 +14,7 @@ class StatisticsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CommonCard(
       borderRadius: 24,
       child: Column(
@@ -23,7 +24,7 @@ class StatisticsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Statistics',
+                l10n.statistics,
                 style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
               Row(
@@ -42,7 +43,7 @@ class StatisticsCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        f.name[0].toUpperCase() + f.name.substring(1),
+                        _localizedStatFilter(l10n, f),
                         style: AppStyles.w500f12inter.copyWith(
                           color: kDarkTextColor,
                           fontSize: 10,
@@ -62,25 +63,25 @@ class StatisticsCard extends StatelessWidget {
                 _StatItem(
                   icon: Assets.svg.personsIcon.path,
                   value: '${stats.matches}',
-                  label: 'Matches',
+                  label: l10n.matches,
                   color: kBlackColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.trophyIcon.path,
                   value: '${stats.victories}',
-                  label: 'Victories',
+                  label: l10n.victories,
                   color: kLightGreenColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.redCross.path,
                   value: '${stats.defeats}',
-                  label: 'Defeats',
+                  label: l10n.defeats,
                   color: kRedColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.timerIcon.path,
                   value: '${stats.hours} h',
-                  label: 'Hours',
+                  label: l10n.hours,
                   color: kBlackColor,
                 ),
               ],
@@ -89,6 +90,17 @@ class StatisticsCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _localizedStatFilter(AppLocalizations l10n, StatFilter filter) {
+    switch (filter) {
+      case StatFilter.weekly:
+        return l10n.weekly;
+      case StatFilter.monthly:
+        return l10n.monthly;
+      case StatFilter.overall:
+        return l10n.overall;
+    }
   }
 }
 

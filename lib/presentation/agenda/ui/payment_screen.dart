@@ -3,6 +3,7 @@ import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
@@ -128,6 +129,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: AppBar(
@@ -145,7 +147,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
           ),
         ),
         title: Text(
-          'Booking Summary',
+          l10n.bookingSummary,
           style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         ),
         centerTitle: true,
@@ -157,7 +159,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
           }
           if (state.status == AgendaStateStatus.error) {
             context.showToast(
-              state.error ?? 'Something went wrong',
+              state.error ?? l10n.somethingWentWrong,
               isError: true,
             );
           }
@@ -174,12 +176,12 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionHeader('COURT DETAILS'),
+                      _buildSectionHeader(l10n.courtDetails),
                       8.heightBox,
                       _buildCourtDetailsCard(widget.match),
                       20.heightBox,
 
-                      _buildSectionHeader('PAYMENT METHOD'),
+                      _buildSectionHeader(l10n.paymentMethod),
                       8.heightBox,
 
                       PortfolioPaymentOption(
@@ -190,7 +192,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                         onTap: () {
                           if (!portfolioEnabled) {
                             context.showToast(
-                              'Insufficient portfolio balance',
+                              l10n.insufficientPortfolioBalance,
                               isError: true,
                             );
                             return;
@@ -215,21 +217,23 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                             cardNumberController: _cardNumberController,
                             expiryController: _expiryController,
                             cvvController: _cvvController,
-                            cardholderValidator:
-                                CardValidators.validateCardholder,
-                            cardNumberValidator:
-                                CardValidators.validateCardNumber,
-                            expiryValidator: CardValidators.validateExpiry,
+                            cardholderValidator: (v) =>
+                                CardValidators.validateCardholder(v, l10n),
+                            cardNumberValidator: (v) =>
+                                CardValidators.validateCardNumber(v, l10n),
+                            expiryValidator: (v) =>
+                                CardValidators.validateExpiry(v, l10n),
                             cvvValidator: (v) => CardValidators.validateCVV(
                               v,
                               cardNumber: _cardNumberController.text,
+                              l10n: l10n,
                             ),
                           ),
                         ).withPaddingSymmetric(20, 0),
                       ],
 
                       20.heightBox,
-                      _buildSectionHeader('PRICE DETAILS'),
+                      _buildSectionHeader(l10n.priceDetails),
                       8.heightBox,
                       _buildPriceDetails(_matchFee, 0, _matchFee),
                       16.heightBox,
@@ -248,7 +252,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                             ),
                             Expanded(
                               child: Text(
-                                'I agree to the terms of use.',
+                                l10n.agreeToTermsOfUse,
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
@@ -267,7 +271,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: CustomActionButton(
-                    buttonText: 'Pay Now',
+                    buttonText: l10n.payNow,
                     onTap: _canConfirm ? _processPayment : null,
                     isEnabled: _canConfirm,
                   ),
@@ -343,9 +347,11 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
             children: [
               CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: match.category),
+              CommonBadge(
+                label: localizedMatchCategory(context, match.category),
+              ),
               4.widthBox,
-              CommonBadge(label: "Ranking"),
+              CommonBadge(label: AppLocalizations.of(context)!.ranking),
             ],
           ),
           12.heightBox,
@@ -369,7 +375,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Match Fee',
+                AppLocalizations.of(context)!.matchFee,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
@@ -383,7 +389,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Service Fee',
+                AppLocalizations.of(context)!.serviceFee,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
@@ -397,7 +403,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total',
+                AppLocalizations.of(context)!.total,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(

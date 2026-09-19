@@ -207,9 +207,10 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Payment For Lesson",
+        title: l10n.paymentForLesson,
         showActions: false,
         showBackIcon: true,
       ),
@@ -229,7 +230,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
 
           if (state.status == ClassStats.failure) {
             context.showToast(
-              state.error ?? 'Something went wrong',
+              state.error ?? l10n.somethingWentWrong,
               isError: true,
             );
           }
@@ -252,7 +253,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'After payment, your request will be sent to the Coach for approval.',
+                        l10n.afterPaymentCoachApproval,
                         style: AppStyles.w400f14inter.copyWith(
                           color: kTextColor,
                         ),
@@ -268,7 +269,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                       // PORTFOLIO
                       // ======================================================
                       Text(
-                        'PAYMENT METHOD',
+                        l10n.paymentMethod,
                         style: AppStyles.w500f12inter.copyWith(
                           color: kDarkTextColor.withValues(alpha: 0.70),
                         ),
@@ -284,7 +285,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                         onTap: () {
                           if (!portfolioEnabled) {
                             context.showToast(
-                              'Insufficient portfolio balance',
+                              l10n.insufficientPortfolioBalance,
                               isError: true,
                             );
                             return;
@@ -314,14 +315,16 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                             cardNumberController: _cardNumberController,
                             expiryController: _expiryController,
                             cvvController: _cvvController,
-                            cardholderValidator:
-                                CardValidators.validateCardholder,
-                            cardNumberValidator:
-                                CardValidators.validateCardNumber,
-                            expiryValidator: CardValidators.validateExpiry,
+                            cardholderValidator: (v) =>
+                                CardValidators.validateCardholder(v, l10n),
+                            cardNumberValidator: (v) =>
+                                CardValidators.validateCardNumber(v, l10n),
+                            expiryValidator: (v) =>
+                                CardValidators.validateExpiry(v, l10n),
                             cvvValidator: (v) => CardValidators.validateCVV(
                               v,
                               cardNumber: _cardNumberController.text,
+                              l10n: l10n,
                             ),
                           ),
                         ),
@@ -365,7 +368,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                             6.widthBox,
                             Expanded(
                               child: Text(
-                                'I agree to the terms of use.',
+                                l10n.agreeToTermsOfUse,
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
@@ -385,7 +388,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: CustomActionButton(
-                    buttonText: 'Confirm Lesson',
+                    buttonText: l10n.confirmLesson,
                     onTap: _handleConfirm,
                     isEnabled: _canConfirm,
                   ),

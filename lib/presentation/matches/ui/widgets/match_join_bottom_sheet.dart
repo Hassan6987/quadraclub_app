@@ -43,6 +43,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: kWhiteColor,
@@ -59,7 +60,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Join Match',
+                l10n.joinMatch,
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
               GestureDetector(
@@ -80,7 +81,9 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
 
                   // Description
                   Text(
-                    "${widget.match.sport.label} match for players. Come play!",
+                    l10n.sportMatchForPlayers(
+                      widget.match.sport.localizedLabel(context),
+                    ),
                     style: AppStyles.w400f14inter.copyWith(
                       color: kGreyTextColor,
                     ),
@@ -93,7 +96,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                   16.heightBox,
                   CustomTextField(
                     controller: _messageController,
-                    hintText: 'Send message to admin',
+                    hintText: l10n.sendMessageToAdmin,
                     maxLines: 3,
                     fillColor: kWhiteF9,
                     hintStyle: AppStyles.w400f14inter.copyWith(
@@ -112,7 +115,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: CustomActionButton(
-              buttonText: "Send Request",
+              buttonText: l10n.sendRequest,
               onTap: () {
                 context.read<MatchesBloc>().add(FetchPortfolio());
                 Navigator.pop(context);
@@ -161,7 +164,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SportBadge(sport: match.sport),
-                        buildSeatsBadge(match),
+                        buildSeatsBadge(context, match),
                       ],
                     ),
                     Text(
@@ -189,11 +192,13 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
             children: [
               CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: match.category),
+              CommonBadge(
+                label: localizedMatchCategory(context, match.category),
+              ),
               4.widthBox,
-              CommonBadge(label: "Ranking"),
+              CommonBadge(label: AppLocalizations.of(context)!.ranking),
               4.widthBox,
-              buildCourtStatusBadge(match),
+              buildCourtStatusBadge(context, match),
             ],
           ),
           12.heightBox,

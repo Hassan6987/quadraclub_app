@@ -33,8 +33,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  String _title(AppLocalizations l10n, int index) {
+    switch (index) {
+      case 0:
+        return l10n.findBestCourtsNearYou;
+      case 1:
+        return l10n.joinOpenMatchesMeetPlayers;
+      default:
+        return l10n.bookCourtsPlayMatches;
+    }
+  }
+
+  String _subtitle(AppLocalizations l10n, int index) {
+    switch (index) {
+      case 0:
+        return l10n.discoverPremiumCourts;
+      case 1:
+        return l10n.findLocalGames;
+      default:
+        return l10n.bookInstantly;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kPrimaryColor,
       body: PageView.builder(
@@ -76,7 +99,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           Spacer(),
                           Text(
-                            page.title,
+                            _title(l10n, index),
                             style: AppStyles.w600f24inter.copyWith(
                               color: kPrimaryColor,
                               fontSize: 24,
@@ -86,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           12.heightBox,
                           Text(
-                            page.subtitle,
+                            _subtitle(l10n, index),
                             style: AppStyles.w400f16inter.copyWith(
                               fontSize: 16,
                               color: kWhiteColor,
@@ -98,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                           /// ✅ Using CustomActionButton here
                           CustomActionButton(
-                            buttonText: "Continue",
+                            buttonText: l10n.continuee,
                             onTap: _onNext,
                             backgroundColor: kPrimaryColor,
                             buttonTextStyle: AppStyles.titleMedium.copyWith(

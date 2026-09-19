@@ -1,5 +1,4 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 class CustomBottomSheet {
   static Future<void> show({
@@ -73,7 +72,8 @@ class CustomBottomSheet {
                         Expanded(
                           child: CustomActionButton(
                             onTap: () => Navigator.pop(bottomSheetContext),
-                            buttonText: "Cancel",
+                            buttonText: AppLocalizations.of(bottomSheetContext)!
+                                .cancel,
                             borderColor: kTertiaryColor,
                           ),
                         ),

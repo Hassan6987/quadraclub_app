@@ -30,7 +30,7 @@ class SportBadge extends StatelessWidget {
         border: Border.all(color: _color, width: 0.5),
       ),
       child: Text(
-        sport.label,
+        sport.localizedLabel(context),
         style: AppStyles.w500f10inter.copyWith(color: _color),
       ),
     );

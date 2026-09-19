@@ -137,6 +137,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kCardColor,
       appBar: AppBar(
@@ -154,7 +155,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
           ),
         ),
         title: Text(
-          'Booking Summary',
+          l10n.bookingSummary,
           style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         ),
         centerTitle: true,
@@ -175,7 +176,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
           if (state.status == MatchesStateStatus.failure) {
             context.showToast(
-              state.error ?? 'Something went wrong',
+              state.error ?? l10n.somethingWentWrong,
               isError: true,
             );
           }
@@ -192,12 +193,12 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionHeader('COURT DETAILS'),
+                      _buildSectionHeader(l10n.courtDetails),
                       8.heightBox,
                       _buildCourtDetailsCard(widget.match),
                       20.heightBox,
 
-                      _buildSectionHeader('PAYMENT METHOD'),
+                      _buildSectionHeader(l10n.paymentMethod),
                       8.heightBox,
 
                       PortfolioPaymentOption(
@@ -208,7 +209,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                         onTap: () {
                           if (!portfolioEnabled) {
                             context.showToast(
-                              'Insufficient portfolio balance',
+                              l10n.insufficientPortfolioBalance,
                               isError: true,
                             );
                             return;
@@ -233,22 +234,24 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                             cardNumberController: _cardNumberController,
                             expiryController: _expiryController,
                             cvvController: _cvvController,
-                            cardholderValidator:
-                            CardValidators.validateCardholder,
-                            cardNumberValidator:
-                            CardValidators.validateCardNumber,
-                            expiryValidator: CardValidators.validateExpiry,
+                            cardholderValidator: (v) =>
+                                CardValidators.validateCardholder(v, l10n),
+                            cardNumberValidator: (v) =>
+                                CardValidators.validateCardNumber(v, l10n),
+                            expiryValidator: (v) =>
+                                CardValidators.validateExpiry(v, l10n),
                             cvvValidator: (v) =>
                                 CardValidators.validateCVV(
                                   v,
                                   cardNumber: _cardNumberController.text,
+                                  l10n: l10n,
                                 ),
                           ),
                         ).withPaddingSymmetric(20, 0),
                       ],
 
                       20.heightBox,
-                      _buildSectionHeader('PRICE DETAILS'),
+                      _buildSectionHeader(l10n.priceDetails),
                       8.heightBox,
                       _buildPriceDetails(_matchFee, 0, _matchFee),
                       16.heightBox,
@@ -267,7 +270,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                             ),
                             Expanded(
                               child: Text(
-                                'I agree to the terms of use.',
+                                l10n.agreeToTermsOfUse,
                                 style: AppStyles.w400f14inter.copyWith(
                                   color: kTextColor,
                                 ),
@@ -286,7 +289,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: CustomActionButton(
-                  buttonText: 'Pay Now',
+                  buttonText: l10n.payNow,
                   onTap: _canConfirm ? _processPayment : null,
                   isEnabled: _canConfirm,
                 ),
@@ -335,7 +338,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SportBadge(sport: match.sport),
-                        buildSeatsBadge(match),
+                        buildSeatsBadge(context, match),
                       ],
                     ),
                     Text(
@@ -363,11 +366,13 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             children: [
               CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
-              CommonBadge(label: match.category),
+              CommonBadge(
+                label: localizedMatchCategory(context, match.category),
+              ),
               4.widthBox,
-              CommonBadge(label: "Ranking"),
+              CommonBadge(label: AppLocalizations.of(context)!.ranking),
               4.widthBox,
-              buildCourtStatusBadge(match),
+              buildCourtStatusBadge(context, match),
             ],
           ),
           12.heightBox,
@@ -391,7 +396,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Match Fee',
+                AppLocalizations.of(context)!.matchFee,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
@@ -405,7 +410,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Service Fee',
+                AppLocalizations.of(context)!.serviceFee,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
@@ -419,7 +424,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total',
+                AppLocalizations.of(context)!.total,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(

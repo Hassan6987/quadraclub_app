@@ -48,19 +48,20 @@ class _AgendaScreenState extends State<AgendaScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         if (authState.user == null) {
-          return const GuestLoginPrompt(
-            title: 'My Reservations',
-            subtitle: 'Sign in to view your reservations, games and lessons',
+          return GuestLoginPrompt(
+            title: l10n.myReservations,
+            subtitle: l10n.signInToViewReservations,
           );
         }
 
         return Scaffold(
           backgroundColor: kCardColor,
           appBar: CustomAppBar(
-            title: "My Reservations,\nGames and Lessons",
+            title: l10n.myReservationsGamesAndLessons,
             centerTile: false,
             backgroundColor: kWhiteColor,
           ),
@@ -86,12 +87,12 @@ class _AgendaScreenState extends State<AgendaScreen>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(state.error ?? 'Something went wrong'),
+                            Text(state.error ?? l10n.somethingWentWrong),
                             TextButton(
                               onPressed: () => context.read<AgendaBloc>().add(
                                 GetAllAgenda(),
                               ),
-                              child: const Text('Retry'),
+                              child: Text(l10n.retry),
                             ),
                           ],
                         ),
@@ -136,7 +137,7 @@ class _AgendaScreenState extends State<AgendaScreen>
     final totalCount = filtered.length + invitations.length;
 
     if (totalCount == 0) {
-      return const Center(child: Text('Nothing here yet'));
+      return Center(child: Text(AppLocalizations.of(context)!.nothingHereYet));
     }
 
     return ListView.builder(
@@ -211,9 +212,12 @@ class _AgendaScreenState extends State<AgendaScreen>
     ),
   );
 
-  String _statusLabel(AgendaStatus status) => switch (status) {
-    AgendaStatus.confirmed => 'Confirmed',
-    AgendaStatus.pending => 'Pending',
-    AgendaStatus.past => 'Past',
-  };
+  String _statusLabel(AgendaStatus status) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (status) {
+      AgendaStatus.confirmed => l10n.confirmed,
+      AgendaStatus.pending => l10n.pending,
+      AgendaStatus.past => l10n.past,
+    };
+  }
 }

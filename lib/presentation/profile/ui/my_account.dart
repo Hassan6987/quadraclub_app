@@ -158,16 +158,17 @@ class _MyAccountState extends State<MyAccount> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == AuthStateStatus.success) {
           context.pop();
-          context.showToast("Profile updated successfully");
+          context.showToast(l10n.profileUpdatedSuccessfully);
         } else if (state.status == AuthStateStatus.failure &&
             state.error != null) {
           context.showToast(
-            state.error ?? "Something went wrong",
+            state.error ?? l10n.somethingWentWrong,
             isError: true,
           );
         }
@@ -177,7 +178,7 @@ class _MyAccountState extends State<MyAccount> {
 
         return Scaffold(
           appBar: CustomAppBar(
-            title: "My Account",
+            title: l10n.myAccount,
             showActions: false,
             centerTile: true,
             showBackIcon: true,
@@ -190,17 +191,17 @@ class _MyAccountState extends State<MyAccount> {
                 _buildHeader(),
                 32.heightBox,
                 CustomTextField(
-                  label: "Name",
+                  label: l10n.name,
                   controller: _nameController,
-                  hintText: "Enter your name",
+                  hintText: l10n.enterYourName,
                   prefixIcon: SvgPicture.asset(Assets.svg.accontIcon.path),
                   keyboardType: TextInputType.name,
                 ),
                 12.heightBox,
                 CustomTextField(
-                  label: "Location",
+                  label: l10n.location,
                   controller: _locationController,
-                  hintText: "Enter your location",
+                  hintText: l10n.enterYourLocation,
                   readOnly: true,
                   onTap: _onSelectLocation,
                   prefixIcon: SvgPicture.asset(Assets.svg.mapMarker.path),
@@ -208,18 +209,18 @@ class _MyAccountState extends State<MyAccount> {
                 12.heightBox,
                 CustomTextField(
                   controller: _dobController,
-                  label: 'Date of Birth',
-                  hintText: 'dd/mm/yyyy',
+                  label: l10n.dateOfBirth,
+                  hintText: l10n.ddMmYyyy,
                   readOnly: true,
                   onTap: () => _onSelectDate(),
                   suffixIcon: SvgPicture.asset(Assets.svg.calendarBlank.path),
                 ),
                 12.heightBox,
                 CustomTextField(
-                  label: "Email (Can’t Change)",
+                  label: l10n.emailCantChange,
                   controller: _emailController,
                   readOnly: true,
-                  hintText: "Enter your email",
+                  hintText: l10n.enterYourEmail,
                   textStyle: AppStyles.w400f14inter.copyWith(
                     color: kTextSecondary.withValues(alpha: 0.50),
                   ),
@@ -241,7 +242,7 @@ class _MyAccountState extends State<MyAccount> {
                     valueListenable: _hasChanges,
                     builder: (context, hasChanges, _) {
                       return CustomActionButton(
-                        buttonText: "Update",
+                        buttonText: l10n.update,
                         isEnabled: hasChanges,
                         onTap: hasChanges ? _onTapUpdate : null,
                       );
@@ -297,11 +298,11 @@ class _MyAccountState extends State<MyAccount> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Profile Photo',
+              AppLocalizations.of(context)!.profilePhoto,
               style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
             ),
             Text(
-              'JPG or PNG, max 5MB.',
+              AppLocalizations.of(context)!.jpgOrPNGMaxMB,
               style: AppStyles.w400f14inter.copyWith(color: kTextColor),
             ),
           ],

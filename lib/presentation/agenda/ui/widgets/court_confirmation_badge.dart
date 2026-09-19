@@ -15,9 +15,23 @@ class CourtConfirmationBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        label,
+        _localizedLabel(context, label),
         style: AppStyles.w500f10inter.copyWith(color: kGreen06),
       ),
     );
+  }
+
+  String _localizedLabel(BuildContext context, String label) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (label.toLowerCase()) {
+      case 'court confirmed':
+      case 'confirmed':
+        return l10n.courtConfirmed;
+      case 'pending confirmed':
+      case 'pending':
+        return l10n.pendingConfirmed;
+      default:
+        return label;
+    }
   }
 }

@@ -44,7 +44,7 @@ class CustomDateFieldState extends State<CustomDateField> {
             horizontal: 18,
             vertical: 14,
           ),
-          hintText: "Expire Date",
+          hintText: AppLocalizations.of(context)!.expireDate,
           hintStyle: AppStyles.w400f16inter.copyWith(
             color: kTertiaryColor,
             fontSize: 16,

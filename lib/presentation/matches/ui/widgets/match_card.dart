@@ -5,6 +5,22 @@ import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
 
+String localizedMatchCategory(BuildContext context, String category) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (category) {
+    case 'Open':
+      return l10n.categoryOpen;
+    case 'Category 1':
+      return l10n.category1;
+    case 'Category 2':
+      return l10n.category2;
+    case 'Category 3':
+      return l10n.category3;
+    default:
+      return category;
+  }
+}
+
 class MatchCard extends StatelessWidget {
   final Booking match;
   final VoidCallback onTap;
@@ -19,6 +35,7 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Opacity(
       opacity: match.isFull == true ? 0.7 : 1,
       child: Container(
@@ -55,7 +72,7 @@ class MatchCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SportBadge(sport: match.sport),
-                          buildSeatsBadge(match),
+                          buildSeatsBadge(context, match),
                         ],
                       ),
                       Text(
@@ -82,9 +99,11 @@ class MatchCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CommonBadge(label: '${match.startTime}-${match.endTime}'),
-                CommonBadge(label: match.category),
-                CommonBadge(label: "Ranking"),
-                buildCourtStatusBadge(match),
+                CommonBadge(
+                  label: localizedMatchCategory(context, match.category),
+                ),
+                CommonBadge(label: l10n.ranking),
+                buildCourtStatusBadge(context, match),
               ],
             ),
             // Players row
@@ -156,7 +175,7 @@ Widget buildPlayer(BuildContext cxt, PlayersDetail player,
           ),
           const SizedBox(height: 6),
           Text(
-            "Available",
+            AppLocalizations.of(cxt)!.available,
             style: AppStyles.w500f14inter.copyWith(color: kGreyTextColor),
           ),
           if (player.slotName != null)
@@ -202,7 +221,7 @@ Widget buildPlayer(BuildContext cxt, PlayersDetail player,
             style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           Text(
-            player.slotName ?? "Beginner",
+            player.slotName ?? AppLocalizations.of(cxt)!.beginner,
             style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
           ),
         ],
@@ -211,7 +230,8 @@ Widget buildPlayer(BuildContext cxt, PlayersDetail player,
   );
 }
 
-Widget buildSeatsBadge(Booking match) {
+Widget buildSeatsBadge(BuildContext context, Booking match) {
+  final l10n = AppLocalizations.of(context)!;
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
     decoration: BoxDecoration(
@@ -220,16 +240,15 @@ Widget buildSeatsBadge(Booking match) {
     ),
     child: Text(
       match.isFull == true
-          ? 'Full'
-          : '${match.needsPlayers} Seat${(match.needsPlayers ?? 0) > 1
-          ? 's'
-          : ''}',
+          ? l10n.full
+          : l10n.seatsCount(match.needsPlayers ?? 0),
       style: AppStyles.w400f12inter.copyWith(color: kWhiteColor),
     ),
   );
 }
 
-Widget buildCourtStatusBadge(Booking match) {
+Widget buildCourtStatusBadge(BuildContext context, Booking match) {
+  final l10n = AppLocalizations.of(context)!;
   final isConfirmed = match.status == CourtStatus.confirmed;
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
@@ -239,7 +258,7 @@ Widget buildCourtStatusBadge(Booking match) {
       border: Border.all(color: isConfirmed ? kGreenColor : kBorderColor),
     ),
     child: Text(
-      isConfirmed ? 'Court Confirmed' : 'Pending Confirmed',
+      isConfirmed ? l10n.courtConfirmed : l10n.pendingConfirmed,
       style: AppStyles.w500f10inter.copyWith(
         color: isConfirmed ? kGreenColor : kDarkTextColor,
       ),

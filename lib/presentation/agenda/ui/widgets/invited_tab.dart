@@ -23,7 +23,8 @@ class _InvitedTabState extends State<InvitedTab> {
         }
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
-          return const Center(child: Text('Nothing here yet'));
+          return Center(
+              child: Text(AppLocalizations.of(context)!.nothingHereYet));
         }
         return Column(
           children: [
@@ -45,7 +46,7 @@ class _InvitedTabState extends State<InvitedTab> {
             ),
             CommonDivider(),
             CustomActionButton(
-              buttonText: 'Invite Players',
+              buttonText: AppLocalizations.of(context)!.invitePlayers,
               onTap: () async {
                 final result = await InvitePlayersSheet.show(
                   context,

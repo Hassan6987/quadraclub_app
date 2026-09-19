@@ -3,21 +3,20 @@ import 'package:quadraclub_app/app_exports.dart';
 /// Modal bottom sheet shown when an unauthenticated user tries to book
 /// a court or class. Matches the design in the attached screenshot.
 class LoginToBookDialog extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  final String? title;
+  final String? subtitle;
 
   const LoginToBookDialog({
     super.key,
-    this.title = 'Sign in to book this court',
-    this.subtitle = 'Please log in or create an account to reserve your spot.',
+    this.title,
+    this.subtitle,
   });
 
   /// Convenience method to show the bottom sheet.
   static Future<void> show(
     BuildContext context, {
-    String title = 'Sign in to book this court',
-    String subtitle =
-        'Please log in or create an account to reserve your spot.',
+        String? title,
+        String? subtitle,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -75,7 +74,7 @@ class LoginToBookDialog extends StatelessWidget {
           16.heightBox,
 
           Text(
-            title,
+            title ?? l10n.signInToBookThisCourt,
             style: AppStyles.w600f18inter.copyWith(
               color: kDarkTextColor,
               fontSize: 20,
@@ -86,7 +85,7 @@ class LoginToBookDialog extends StatelessWidget {
           12.heightBox,
 
           Text(
-            subtitle,
+            subtitle ?? l10n.pleaseLogInCreateAccountToReserveYourSpot,
             style: AppStyles.w400f16inter.copyWith(
               color: kDarkTextColor,
               fontSize: 15,

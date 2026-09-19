@@ -2,6 +2,7 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 
 class AgendaInvitationCard extends StatelessWidget {
   final AgendaInvitation item;
@@ -47,7 +48,7 @@ class AgendaInvitationCard extends StatelessWidget {
                           sport: SportTypeExtension.fromString(item.sport),
                         ),
                         const Spacer(),
-                        _invitedByBadge(item.hostName),
+                        _invitedByBadge(context, item.hostName),
                       ],
                     ),
                     4.heightBox,
@@ -74,7 +75,9 @@ class AgendaInvitationCard extends StatelessWidget {
             runSpacing: 4,
             children: [
               CommonBadge(label: item.dateString),
-              CommonBadge(label: item.category),
+              CommonBadge(
+                label: localizedMatchCategory(context, item.category),
+              ),
               _courtConfirmedBadge(item.courtStatusLabel),
             ],
           ).withPaddingSymmetric(10, 0),
@@ -87,7 +90,7 @@ class AgendaInvitationCard extends StatelessWidget {
                 child: _iconActionButton(
                   icon: Icons.close_rounded,
                   color: kRedColor,
-                  label: 'Decline',
+                  label: AppLocalizations.of(context)!.decline,
                   onTap: onReject,
                 ),
               ),
@@ -96,7 +99,7 @@ class AgendaInvitationCard extends StatelessWidget {
                 child: _iconActionButton(
                   icon: Icons.check_rounded,
                   color: kPrimaryColor,
-                  label: 'Accept',
+                  label: AppLocalizations.of(context)!.accept,
                   onTap: onAccept,
                   filled: true,
                 ),
@@ -108,14 +111,14 @@ class AgendaInvitationCard extends StatelessWidget {
     );
   }
 
-  Widget _invitedByBadge(String hostName) => Container(
+  Widget _invitedByBadge(BuildContext context, String hostName) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
     decoration: BoxDecoration(
       color: kPrimaryColor.withValues(alpha: 0.10),
       borderRadius: BorderRadius.circular(16),
     ),
     child: Text(
-      'Invited by $hostName',
+      AppLocalizations.of(context)!.invitedBy(hostName),
       style: AppStyles.w400f12inter.copyWith(color: kPrimaryColor),
     ),
   );

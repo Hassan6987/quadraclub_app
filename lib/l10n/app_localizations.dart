@@ -1435,6 +1435,708 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'space'**
   String get space;
+
+  /// No description provided for @openMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Matches'**
+  String get openMatches;
+
+  /// No description provided for @signInToViewJoinOpenMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view & join open matches'**
+  String get signInToViewJoinOpenMatches;
+
+  /// No description provided for @noMatchesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches found.'**
+  String get noMatchesFound;
+
+  /// No description provided for @gameFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Filters'**
+  String get gameFilters;
+
+  /// No description provided for @allFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'All formats'**
+  String get allFormats;
+
+  /// No description provided for @singles.
+  ///
+  /// In en, this message translates to:
+  /// **'Singles'**
+  String get singles;
+
+  /// No description provided for @doubles.
+  ///
+  /// In en, this message translates to:
+  /// **'Doubles'**
+  String get doubles;
+
+  /// No description provided for @maxDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Distance'**
+  String get maxDistance;
+
+  /// No description provided for @ranking.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking'**
+  String get ranking;
+
+  /// No description provided for @courtConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Court Confirmed'**
+  String get courtConfirmed;
+
+  /// No description provided for @pendingConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Confirmed'**
+  String get pendingConfirmed;
+
+  /// No description provided for @seatsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} Seat} other{{count} Seats}}'**
+  String seatsCount(int count);
+
+  /// No description provided for @joinMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Match'**
+  String get joinMatch;
+
+  /// No description provided for @sportMatchForPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'{sport} match for players. Come play!'**
+  String sportMatchForPlayers(String sport);
+
+  /// No description provided for @sendMessageToAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message to admin'**
+  String get sendMessageToAdmin;
+
+  /// No description provided for @sendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get sendRequest;
+
+  /// No description provided for @matchFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Fee'**
+  String get matchFee;
+
+  /// No description provided for @requestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Sent'**
+  String get requestSent;
+
+  /// No description provided for @requestSentToOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request was sent to the match owner. We\'ll notify you once it\'s approved.'**
+  String get requestSentToOwner;
+
+  /// No description provided for @moneyBackIfNotAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'If you\'re not accepted, you will receive your money back automatically'**
+  String get moneyBackIfNotAccepted;
+
+  /// No description provided for @viewMatchesAnytimeIn.
+  ///
+  /// In en, this message translates to:
+  /// **'View your pending, accepted, and past matches anytime in'**
+  String get viewMatchesAnytimeIn;
+
+  /// No description provided for @createMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Match'**
+  String get createMatch;
+
+  /// No description provided for @wantToCreateMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to create match?'**
+  String get wantToCreateMatch;
+
+  /// No description provided for @selectCourtToCreateMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'To create a match, first select an available court.'**
+  String get selectCourtToCreateMatch;
+
+  /// No description provided for @selectCourt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Court'**
+  String get selectCourt;
+
+  /// No description provided for @playerDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Player Details'**
+  String get playerDetails;
+
+  /// No description provided for @noPlayerDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No player data found'**
+  String get noPlayerDataFound;
+
+  /// No description provided for @aboutPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'About Player'**
+  String get aboutPlayer;
+
+  /// No description provided for @gameInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Information'**
+  String get gameInformation;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @overall.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall'**
+  String get overall;
+
+  /// No description provided for @victories.
+  ///
+  /// In en, this message translates to:
+  /// **'Victories'**
+  String get victories;
+
+  /// No description provided for @defeats.
+  ///
+  /// In en, this message translates to:
+  /// **'Defeats'**
+  String get defeats;
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get hours;
+
+  /// No description provided for @feedBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Feed Back'**
+  String get feedBack;
+
+  /// No description provided for @beginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get beginner;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @myReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reservations'**
+  String get myReservations;
+
+  /// No description provided for @signInToViewReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view your reservations, games and lessons'**
+  String get signInToViewReservations;
+
+  /// No description provided for @myReservationsGamesAndLessons.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reservations,\nGames and Lessons'**
+  String get myReservationsGamesAndLessons;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @nothingHereYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get nothingHereYet;
+
+  /// No description provided for @confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get confirmed;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @past.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get past;
+
+  /// No description provided for @chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// No description provided for @cancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get cancelRequest;
+
+  /// No description provided for @rebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebook'**
+  String get rebook;
+
+  /// No description provided for @leaveThisMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this match'**
+  String get leaveThisMatch;
+
+  /// No description provided for @groupChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Chat'**
+  String get groupChat;
+
+  /// No description provided for @chatWithPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with players'**
+  String get chatWithPlayers;
+
+  /// No description provided for @matchDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Details'**
+  String get matchDetails;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get requests;
+
+  /// No description provided for @invited.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited'**
+  String get invited;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @invitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by {name}'**
+  String invitedBy(String name);
+
+  /// No description provided for @editDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Details'**
+  String get editDetails;
+
+  /// No description provided for @deleteMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Match'**
+  String get deleteMatch;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @signInToViewAndManageProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view and manage your profile'**
+  String get signInToViewAndManageProfile;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'My Account'**
+  String get myAccount;
+
+  /// No description provided for @manageYourAccountDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your account details'**
+  String get manageYourAccountDetails;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccessfully;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @enterYourLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your location'**
+  String get enterYourLocation;
+
+  /// No description provided for @emailCantChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (Can\'t Change)'**
+  String get emailCantChange;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This will delete your account and you will need to create your account again.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @iUnderstandDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand, delete account'**
+  String get iUnderstandDeleteAccount;
+
+  /// No description provided for @pleaseTellUsWhyYoureLeaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Please tell us why you\'re leaving'**
+  String get pleaseTellUsWhyYoureLeaving;
+
+  /// No description provided for @accountDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Deleted Successfully'**
+  String get accountDeletedSuccessfully;
+
+  /// No description provided for @noUserIdFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No User Id found'**
+  String get noUserIdFound;
+
+  /// No description provided for @deleteReasonNoLongerNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'I no longer need the app.'**
+  String get deleteReasonNoLongerNeed;
+
+  /// No description provided for @deleteReasonCreateNew.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to delete this account and create a new one.'**
+  String get deleteReasonCreateNew;
+
+  /// No description provided for @deleteReasonTrouble.
+  ///
+  /// In en, this message translates to:
+  /// **'Trouble using the app.'**
+  String get deleteReasonTrouble;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsAndConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsAndConditions;
+
+  /// No description provided for @findBestCourtsNearYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the best courts\n near you.'**
+  String get findBestCourtsNearYou;
+
+  /// No description provided for @discoverPremiumCourts.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover premium basketball, tennis, and pickleball courts in your area with ease.'**
+  String get discoverPremiumCourts;
+
+  /// No description provided for @joinOpenMatchesMeetPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Join open matches and\n meet new players'**
+  String get joinOpenMatchesMeetPlayers;
+
+  /// No description provided for @findLocalGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Find local games, level up your skills, and expand your sports circle effortlessly.'**
+  String get findLocalGames;
+
+  /// No description provided for @bookCourtsPlayMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Courts & Play\n Matches'**
+  String get bookCourtsPlayMatches;
+
+  /// No description provided for @bookInstantly.
+  ///
+  /// In en, this message translates to:
+  /// **'Book instantly and hit the court with your favorite partners.'**
+  String get bookInstantly;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @expireDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expire Date'**
+  String get expireDate;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @cardholderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardholder name'**
+  String get cardholderName;
+
+  /// No description provided for @cardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Card number'**
+  String get cardNumber;
+
+  /// No description provided for @mmYy.
+  ///
+  /// In en, this message translates to:
+  /// **'MM/YY'**
+  String get mmYy;
+
+  /// No description provided for @cvv.
+  ///
+  /// In en, this message translates to:
+  /// **'CVV'**
+  String get cvv;
+
+  /// No description provided for @secureEncryptedPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Encrypted Payment'**
+  String get secureEncryptedPayment;
+
+  /// No description provided for @convenienceFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Convenience fee'**
+  String get convenienceFee;
+
+  /// No description provided for @playersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} players'**
+  String playersCount(int count);
+
+  /// No description provided for @slotsLeftCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Slots Left'**
+  String slotsLeftCount(int count);
+
+  /// No description provided for @portfolioBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio Balance'**
+  String get portfolioBalance;
+
+  /// No description provided for @balanceAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance: {amount}'**
+  String balanceAmount(String amount);
+
+  /// No description provided for @insufficientBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get insufficientBalance;
+
+  /// No description provided for @creditDebitCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit / Debit Card'**
+  String get creditDebitCard;
+
+  /// No description provided for @enterCardholderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the cardholder name'**
+  String get enterCardholderName;
+
+  /// No description provided for @enterValidName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid name'**
+  String get enterValidName;
+
+  /// No description provided for @enterYourCardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your card number'**
+  String get enterYourCardNumber;
+
+  /// No description provided for @enterValidCardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid card number'**
+  String get enterValidCardNumber;
+
+  /// No description provided for @enterExpiryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter expiry date'**
+  String get enterExpiryDate;
+
+  /// No description provided for @enterExpiryAsMmYy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter expiry as MM/YY'**
+  String get enterExpiryAsMmYy;
+
+  /// No description provided for @enterValidExpiryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid expiry date'**
+  String get enterValidExpiryDate;
+
+  /// No description provided for @enterValidExpiryMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid expiry month'**
+  String get enterValidExpiryMonth;
+
+  /// No description provided for @cardHasExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Card has expired'**
+  String get cardHasExpired;
+
+  /// No description provided for @enterCvv.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter CVV'**
+  String get enterCvv;
+
+  /// No description provided for @enterValidCvv.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid CVV'**
+  String get enterValidCvv;
 }
 
 class _AppLocalizationsDelegate

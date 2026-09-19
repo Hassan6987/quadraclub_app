@@ -20,15 +20,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, state) {
         // Show guest prompt when user is not logged in
         if (state.user == null) {
-          return const GuestLoginPrompt(
-            title: 'Profile',
-            subtitle: 'Sign in to view and manage your profile',
+          return GuestLoginPrompt(
+            title: AppLocalizations.of(context)!.profile,
+            subtitle: AppLocalizations.of(context)!
+                .signInToViewAndManageProfile,
           );
         }
 
         return Scaffold(
           backgroundColor: kCardColor,
-          appBar: CustomAppBar(title: "Profile", centerTile: false),
+          appBar: CustomAppBar(
+            title: AppLocalizations.of(context)!.profile,
+            centerTile: false,
+          ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

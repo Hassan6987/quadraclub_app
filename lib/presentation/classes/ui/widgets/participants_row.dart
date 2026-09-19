@@ -47,17 +47,17 @@ class _StatusBadge extends StatelessWidget {
     switch (status) {
       case ClassStatus.full:
         return Text(
-          'Full',
+          AppLocalizations.of(context)!.full,
           style: AppStyles.w500f12inter.copyWith(color: kBlueColor),
         );
       case ClassStatus.slotsLeft:
         return Text(
-          '$slotsLeft Slots Left',
+          AppLocalizations.of(context)!.slotsLeftCount(slotsLeft),
           style: AppStyles.w500f12inter.copyWith(color: kBlueColor),
         );
       case ClassStatus.available:
         return Text(
-          'Available',
+          AppLocalizations.of(context)!.available,
           style: AppStyles.w500f12inter.copyWith(color: kBlueColor),
         );
     }

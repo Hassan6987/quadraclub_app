@@ -229,6 +229,164 @@
   "searchCourtsHint": "Pesquisar quadras",
   "noCourtsFound": "Nenhuma quadra encontrada",
   "send": "Enviar",
-  "space": "espaço"
-
+  "space": "espaço",
+  "openMatches": "Partidas abertas",
+  "signInToViewJoinOpenMatches": "Entre para ver e participar de partidas abertas",
+  "noMatchesFound": "Nenhuma partida encontrada.",
+  "gameFilters": "Filtros de jogo",
+  "allFormats": "Todos os formatos",
+  "singles": "Simples",
+  "doubles": "Duplas",
+  "maxDistance": "Distância máxima",
+  "ranking": "Ranking",
+  "courtConfirmed": "Quadra confirmada",
+  "pendingConfirmed": "Confirmação pendente",
+  "seatsCount": "{count, plural, =1{{count} vaga} other{{count} vagas}}",
+  "@seatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joinMatch": "Entrar na partida",
+  "sportMatchForPlayers": "Partida de {sport} para jogadores. Venha jogar!",
+  "@sportMatchForPlayers": {
+    "placeholders": {
+      "sport": {
+        "type": "String"
+      }
+    }
+  },
+  "sendMessageToAdmin": "Enviar mensagem ao administrador",
+  "sendRequest": "Enviar solicitação",
+  "matchFee": "Taxa da partida",
+  "requestSent": "Solicitação enviada",
+  "requestSentToOwner": "Sua solicitação foi enviada ao dono da partida. Avisaremos quando for aprovada.",
+  "moneyBackIfNotAccepted": "Se você não for aceito, o valor será devolvido automaticamente",
+  "viewMatchesAnytimeIn": "Veja suas partidas pendentes, aceitas e passadas a qualquer momento em",
+  "createMatch": "Criar partida",
+  "wantToCreateMatch": "Quer criar uma partida?",
+  "selectCourtToCreateMatch": "Para criar uma partida, primeiro selecione uma quadra disponível.",
+  "selectCourt": "Selecionar quadra",
+  "playerDetails": "Detalhes do jogador",
+  "noPlayerDataFound": "Nenhum dado do jogador encontrado",
+  "aboutPlayer": "Sobre o jogador",
+  "gameInformation": "Informações do jogo",
+  "statistics": "Estatísticas",
+  "weekly": "Semanal",
+  "monthly": "Mensal",
+  "overall": "Geral",
+  "victories": "Vitórias",
+  "defeats": "Derrotas",
+  "hours": "Horas",
+  "feedBack": "Feedback",
+  "beginner": "Iniciante",
+  "unknown": "Desconhecido",
+  "myReservations": "Minhas reservas",
+  "signInToViewReservations": "Entre para ver suas reservas, jogos e aulas",
+  "myReservationsGamesAndLessons": "Minhas reservas,\njogos e aulas",
+  "retry": "Tentar novamente",
+  "nothingHereYet": "Nada por aqui ainda",
+  "confirmed": "Confirmado",
+  "pending": "Pendente",
+  "past": "Passado",
+  "chat": "Chat",
+  "cancelRequest": "Cancelar solicitação",
+  "rebook": "Reservar novamente",
+  "leaveThisMatch": "Sair desta partida",
+  "groupChat": "Chat em grupo",
+  "chatWithPlayers": "Conversar com os jogadores",
+  "matchDetails": "Detalhes da partida",
+  "details": "Detalhes",
+  "requests": "Solicitações",
+  "invited": "Convidados",
+  "decline": "Recusar",
+  "accept": "Aceitar",
+  "invitedBy": "Convidado por {name}",
+  "@invitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editDetails": "Editar detalhes",
+  "deleteMatch": "Excluir partida",
+  "actions": "Ações",
+  "signInToViewAndManageProfile": "Entre para ver e gerenciar seu perfil",
+  "myAccount": "Minha conta",
+  "manageYourAccountDetails": "Gerencie os dados da sua conta",
+  "logout": "Sair",
+  "profileUpdatedSuccessfully": "Perfil atualizado com sucesso",
+  "name": "Nome",
+  "enterYourLocation": "Digite sua localização",
+  "emailCantChange": "E-mail (não pode alterar)",
+  "update": "Atualizar",
+  "deleteAccount": "Excluir conta",
+  "deleteAccountWarning": "Isso excluirá sua conta e você precisará criar sua conta novamente.",
+  "iUnderstandDeleteAccount": "Entendi, excluir conta",
+  "pleaseTellUsWhyYoureLeaving": "Diga-nos por que você está saindo",
+  "accountDeletedSuccessfully": "Conta excluída com sucesso",
+  "noUserIdFound": "ID de usuário não encontrado",
+  "deleteReasonNoLongerNeed": "Não preciso mais do aplicativo.",
+  "deleteReasonCreateNew": "Quero excluir esta conta e criar uma nova.",
+  "deleteReasonTrouble": "Dificuldade para usar o aplicativo.",
+  "privacyPolicy": "Política de privacidade",
+  "termsAndConditions": "Termos e condições",
+  "findBestCourtsNearYou": "Encontre as melhores quadras\n perto de você.",
+  "discoverPremiumCourts": "Descubra quadras de basquete, tênis e pickleball na sua região com facilidade.",
+  "joinOpenMatchesMeetPlayers": "Participe de partidas abertas e\n conheça novos jogadores",
+  "findLocalGames": "Encontre jogos locais, evolua suas habilidades e amplie seu círculo esportivo.",
+  "bookCourtsPlayMatches": "Reserve quadras e jogue\n partidas",
+  "bookInstantly": "Reserve na hora e vá para a quadra com seus parceiros favoritos.",
+  "gallery": "Galeria",
+  "camera": "Câmera",
+  "expireDate": "Data de validade",
+  "cancel": "Cancelar",
+  "notifications": "Notificações",
+  "cardholderName": "Nome do titular",
+  "cardNumber": "Número do cartão",
+  "mmYy": "MM/AA",
+  "cvv": "CVV",
+  "secureEncryptedPayment": "Pagamento seguro e criptografado",
+  "convenienceFee": "Taxa de conveniência",
+  "playersCount": "{count} jogadores",
+  "@playersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotsLeftCount": "{count} vagas restantes",
+  "@slotsLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "portfolioBalance": "Saldo da carteira",
+  "balanceAmount": "Saldo: {amount}",
+  "@balanceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "insufficientBalance": "Saldo insuficiente",
+  "creditDebitCard": "Cartão de crédito / débito",
+  "enterCardholderName": "Digite o nome do titular",
+  "enterValidName": "Digite um nome válido",
+  "enterYourCardNumber": "Digite o número do cartão",
+  "enterValidCardNumber": "Digite um número de cartão válido",
+  "enterExpiryDate": "Digite a data de validade",
+  "enterExpiryAsMmYy": "Digite a validade como MM/AA",
+  "enterValidExpiryDate": "Digite uma data de validade válida",
+  "enterValidExpiryMonth": "Digite um mês de validade válido",
+  "cardHasExpired": "O cartão expirou",
+  "enterCvv": "Digite o CVV",
+  "enterValidCvv": "Digite um CVV válido"
 }

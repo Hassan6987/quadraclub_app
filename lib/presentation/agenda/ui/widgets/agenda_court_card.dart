@@ -66,7 +66,7 @@ class AgendaCourtCard extends StatelessWidget {
           if (_isBeforeToday(item.bookingDate))
             CustomActionButton(
               backgroundColor: kPrimaryColor,
-              buttonText: "Rebook",
+              buttonText: AppLocalizations.of(context)!.rebook,
               onTap: () {
                 Navigator.pushNamedAndRemoveUntil(
                   context,

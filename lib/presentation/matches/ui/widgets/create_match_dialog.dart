@@ -5,6 +5,7 @@ class CreateMatchDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       child: Container(
@@ -20,7 +21,7 @@ class CreateMatchDialog extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Create Match',
+                  l10n.createMatch,
                   style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
                 ),
                 const Spacer(),
@@ -39,7 +40,7 @@ class CreateMatchDialog extends StatelessWidget {
 
             // Title
             Text(
-              'Want to create match?',
+              l10n.wantToCreateMatch,
               style: AppStyles.w600f18inter.copyWith(
                 color: kDarkTextColor,
                 fontSize: 20,
@@ -48,7 +49,7 @@ class CreateMatchDialog extends StatelessWidget {
 
             // Message
             Text(
-              'To create a match, first select an available court.',
+              l10n.selectCourtToCreateMatch,
               textAlign: TextAlign.center,
               style: AppStyles.w400f14inter.copyWith(color: kTextColor),
             ).withPaddingSymmetric(20, 2),
@@ -58,7 +59,7 @@ class CreateMatchDialog extends StatelessWidget {
 
             // OK button
             CustomActionButton(
-              buttonText: "Select Court",
+              buttonText: l10n.selectCourt,
               backgroundColor: kPrimaryColor,
               height: 48,
               onTap: () {

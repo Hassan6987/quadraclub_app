@@ -407,14 +407,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                             cardNumberController: _cardNumberController,
                             expiryController: _expiryController,
                             cvvController: _cvvController,
-                            cardholderValidator:
-                                CardValidators.validateCardholder,
-                            cardNumberValidator:
-                                CardValidators.validateCardNumber,
-                            expiryValidator: CardValidators.validateExpiry,
+                            cardholderValidator: (v) =>
+                                CardValidators.validateCardholder(v, l10n),
+                            cardNumberValidator: (v) =>
+                                CardValidators.validateCardNumber(v, l10n),
+                            expiryValidator: (v) =>
+                                CardValidators.validateExpiry(v, l10n),
                             cvvValidator: (v) => CardValidators.validateCVV(
                               v,
                               cardNumber: _cardNumberController.text,
+                              l10n: l10n,
                             ),
                           ),
                         ),

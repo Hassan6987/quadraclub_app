@@ -13,18 +13,34 @@ class AgendaFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const filters = ['All', 'Courts', 'Games', 'Classes'];
     return Row(
       spacing: getProportionateScreenWidth(6),
       children: filters
           .map(
             (filter) => CommonChip(
-              label: filter,
+              label: _filterLabel(l10n, filter),
               isSelected: filter == selectedFilter,
               onTap: () => onSelected(filter),
             ),
           )
           .toList(),
     ).withPaddingSymmetric(16, 12);
+  }
+
+  String _filterLabel(AppLocalizations l10n, String filter) {
+    switch (filter) {
+      case 'All':
+        return l10n.all;
+      case 'Courts':
+        return l10n.courts;
+      case 'Games':
+        return l10n.games;
+      case 'Classes':
+        return l10n.classes;
+      default:
+        return filter;
+    }
   }
 }

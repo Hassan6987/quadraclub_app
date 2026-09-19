@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 
 class AgendaClassCard extends StatelessWidget {
   final AgendaItem item;
@@ -23,10 +24,14 @@ class AgendaClassCard extends StatelessWidget {
           children: [
             SportBadge(sport: SportTypeExtension.fromString(item.sport)),
             4.widthBox,
-            CommonBadge(label: item.category),
+            CommonBadge(
+              label: localizedMatchCategory(context, item.category),
+            ),
             if (item.classType != null) ...[
               4.widthBox,
-              CommonBadge(label: item.classType!),
+              CommonBadge(
+                label: _localizedClassType(context, item.classType!),
+              ),
             ],
             const Spacer(),
             Text(
@@ -57,7 +62,7 @@ class AgendaClassCard extends StatelessWidget {
             ),
             10.widthBox,
             Text(
-              'Coach ',
+              '${AppLocalizations.of(context)!.coach} ',
               style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
             ),
             Text(
@@ -68,7 +73,9 @@ class AgendaClassCard extends StatelessWidget {
         ),
         if (actionLabel != null)
           CustomActionButton(
-            buttonText: actionLabel!,
+            buttonText: actionLabel == 'Cancel request'
+                ? AppLocalizations.of(context)!.cancelRequest
+                : AppLocalizations.of(context)!.chat,
             backgroundColor: actionLabel == "Cancel request"
                 ? kLightPinkColor
                 : kPrimaryColor,
@@ -87,4 +94,16 @@ class AgendaClassCard extends StatelessWidget {
       ],
     ),
   );
+
+  String _localizedClassType(BuildContext context, String type) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (type.toLowerCase()) {
+      case 'group':
+        return l10n.group;
+      case 'individual':
+        return l10n.individual;
+      default:
+        return type;
+    }
+  }
 }

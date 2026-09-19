@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:quadraclub_app/app_exports.dart';
 
 class CommonDateSelectionRow extends StatelessWidget {
@@ -24,8 +25,9 @@ class CommonDateSelectionRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final date = dates[index];
           final isSelected = _isSameDay(date, selectedDate);
-          final dayName = dayNames[date.weekday - 1];
-          final month = monthNames[date.month - 1];
+          final locale = Localizations.localeOf(context).toString();
+          final dayName = DateFormat.E(locale).format(date);
+          final month = DateFormat.MMM(locale).format(date);
 
           return GestureDetector(
             onTap: () => onDateSelected(date),

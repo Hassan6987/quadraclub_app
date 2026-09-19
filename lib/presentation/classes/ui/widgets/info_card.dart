@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 
 import '/app_exports.dart';
@@ -9,8 +10,11 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr =
-        '${dayNames[classModel.date!.weekday - 1]}, ${monthNames[classModel.date!.month - 1]} ${classModel.date?.day}';
+    final l10n = AppLocalizations.of(context)!;
+    final dateStr = DateFormat(
+      'EEE, MMM d',
+      l10n.localeName,
+    ).format(classModel.date!);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -43,7 +47,9 @@ class InfoCard extends StatelessWidget {
                 ),
               ),
               4.widthBox,
-              CommonBadge(label: 'Category ${classModel.level}'),
+              CommonBadge(
+                label: l10n.categoryWithLevel(classModel.level ?? ''),
+              ),
             ],
           ).withPaddingSymmetric(0, 8),
 
@@ -78,7 +84,7 @@ class InfoCard extends StatelessWidget {
               ),
               10.widthBox,
               Text(
-                'Coach ',
+                '${l10n.coach} ',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(

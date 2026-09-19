@@ -48,7 +48,7 @@ class ClassCard extends StatelessWidget {
                   4.widthBox,
 
                   CommonBadge(
-                    label: l10n.categoryWithLevel(classModel.level ?? ''),
+                    label: classModel.statusLabel ?? '',
                   ),
 
                   4.widthBox,

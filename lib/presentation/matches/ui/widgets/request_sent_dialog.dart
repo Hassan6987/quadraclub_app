@@ -5,6 +5,7 @@ class RequestSentDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
@@ -32,7 +33,7 @@ class RequestSentDialog extends StatelessWidget {
 
             // Title
             Text(
-              'Request Sent',
+              l10n.requestSent,
               style: AppStyles.w600f18inter.copyWith(
                 color: kDarkTextColor,
                 fontSize: 20,
@@ -42,13 +43,13 @@ class RequestSentDialog extends StatelessWidget {
 
             // Message
             Text(
-              'Your request was sent to the match owner. We\'ll notify you once it\'s approved.',
+              l10n.requestSentToOwner,
               textAlign: TextAlign.center,
               style: AppStyles.w500f14inter.copyWith(color: kTextColor),
             ),
             8.heightBox,
             Text(
-              'If you’re not accepted, you will receive your money back automatically',
+              l10n.moneyBackIfNotAccepted,
               textAlign: TextAlign.center,
               style: AppStyles.w500f14inter.copyWith(color: kTextColor),
             ),
@@ -58,12 +59,11 @@ class RequestSentDialog extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text:
-                        'View your pending, accepted, and past matches anytime in',
+                    text: l10n.viewMatchesAnytimeIn,
                     style: AppStyles.w500f14inter.copyWith(color: kTextColor),
                   ),
                   TextSpan(
-                    text: ' Agenda.',
+                    text: ' ${l10n.agenda}.',
                     style: AppStyles.w500f14inter.copyWith(
                       color: kPrimaryColor,
                     ),
@@ -75,7 +75,7 @@ class RequestSentDialog extends StatelessWidget {
 
             // OK button
             CustomActionButton(
-              buttonText: "Close",
+              buttonText: l10n.close,
               backgroundColor: kWhiteColor,
               borderColor: kBorderColor,
               height: 48,

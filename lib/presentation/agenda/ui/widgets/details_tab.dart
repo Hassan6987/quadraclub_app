@@ -3,6 +3,7 @@ import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_mode
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 import '/app_exports.dart';
@@ -19,24 +20,25 @@ class DetailsTab extends StatelessWidget {
         }
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
-          return const Center(child: Text('Nothing here yet'));
+          return Center(
+              child: Text(AppLocalizations.of(context)!.nothingHereYet));
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _venueCard(match!).withPaddingSymmetric(20, 16),
             16.heightBox,
-            _tagsRow(match).withPaddingSymmetric(20, 0),
+            _tagsRow(context, match).withPaddingSymmetric(20, 0),
             16.heightBox,
             CommonDivider(),
             16.heightBox,
-            _playersSection(match),
+            _playersSection(context, match),
             16.heightBox,
             _groupChatSection(context, match.chat),
             Spacer(),
             CommonDivider(),
             CustomActionButton(
-              buttonText: "Leave this match",
+              buttonText: AppLocalizations.of(context)!.leaveThisMatch,
               onTap: () {
                 context.pop();
                 context.read<AgendaBloc>().add(
@@ -86,20 +88,22 @@ class DetailsTab extends StatelessWidget {
     );
   }
 
-  Widget _tagsRow(AgendaMatchDetails match) {
+  Widget _tagsRow(BuildContext context, AgendaMatchDetails match) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
         CommonBadge(label: '${match.startTime} ${match.endTime}'),
-        CommonBadge(label: match.categoryTag ?? "D"),
-        const CommonBadge(label: 'Ranking'),
-        CourtConfirmationBadge(label: match.courtStatus ?? "Court Confirmed"),
+        CommonBadge(
+          label: localizedMatchCategory(context, match.categoryTag ?? 'D'),
+        ),
+        CommonBadge(label: AppLocalizations.of(context)!.ranking),
+        CourtConfirmationBadge(label: match.courtStatus ?? 'Court Confirmed'),
       ],
     );
   }
 
-  Widget _playersSection(AgendaMatchDetails match) {
+  Widget _playersSection(BuildContext context, AgendaMatchDetails match) {
     final players = match.players;
     final int maxPlayers = match.format?.toLowerCase() == 'single' ? 2 : 4;
 
@@ -110,7 +114,7 @@ class DetailsTab extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Players',
+              AppLocalizations.of(context)!.players,
               style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
             ),
             SportBadge(sport: SportTypeExtension.fromString(match.sport ?? '')),
@@ -124,7 +128,7 @@ class DetailsTab extends StatelessWidget {
               if (players.length > i)
                 _playerItem(players[i])
               else
-                _availablePlayerItem(),
+                _availablePlayerItem(context),
 
               // Divider sits in the middle: after slot 1 of 2 (singles),
               // or after slot 2 of 4 (doubles).
@@ -180,25 +184,26 @@ class DetailsTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Group Chat',
+                  AppLocalizations.of(context)!.groupChat,
                   style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
                 ),
                 Text(
-                  'Chat with players',
+                  AppLocalizations.of(context)!.chatWithPlayers,
                   style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
                 ),
               ],
             ),
           ),
           CustomActionButton(
-            buttonText: 'Chat',
+            buttonText: AppLocalizations.of(context)!.chat,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) =>
                       AgendaChatScreen(chatId: chat?.id ?? '',
-                          label: chat?.chatName ?? "Group Chat",
+                          label: chat?.chatName ??
+                              AppLocalizations.of(context)!.groupChat,
                           userCount: chat?.users.length ?? 1),
                 ),
               );
@@ -211,20 +216,21 @@ class DetailsTab extends StatelessWidget {
     ).withPaddingSymmetric(20, 0);
   }
 
-  Widget _availablePlayerItem() {
+  Widget _availablePlayerItem(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         CommonPlusAvatar(size: 34),
         6.heightBox,
         Text(
-          'Available',
+          l10n.available,
           style: AppStyles.w500f14inter.copyWith(
             color: kDarkTextColor,
             fontWeight: FontWeight.w400,
           ),
         ),
         Text(
-          'Open',
+          l10n.open,
           style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
         ),
       ],

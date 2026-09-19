@@ -21,6 +21,7 @@ class PortfolioPaymentOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Opacity(
@@ -55,20 +56,20 @@ class PortfolioPaymentOption extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Portfolio Balance',
+                      l10n.portfolioBalance,
                       style: AppStyles.w500f14inter.copyWith(
                           color: kDarkTextColor),
                     ),
                     4.heightBox,
                     Text(
-                      'Balance: ${formatPrice(balance)}',
+                      l10n.balanceAmount(formatPrice(balance)),
                       style: AppStyles.w400f12inter.copyWith(
                           color: kGreyTextColor),
                     ),
                     if (!isEnabled) ...[
                       4.heightBox,
                       Text(
-                        'Insufficient balance',
+                        l10n.insufficientBalance,
                         style: AppStyles.w400f12inter.copyWith(
                             color: Colors.red),
                       ),
@@ -99,6 +100,7 @@ class CardPaymentOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -126,7 +128,7 @@ class CardPaymentOption extends StatelessWidget {
             12.widthBox,
             Expanded(
               child: Text(
-                'Credit / Debit Card',
+                l10n.creditDebitCard,
                 style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
             ),

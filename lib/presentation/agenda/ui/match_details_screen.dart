@@ -18,6 +18,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<AgendaBloc, AgendaState>(
       builder: (context, state) {
         if (state.status == AgendaStateStatus.fetching) {
@@ -25,11 +26,11 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
         }
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
-          return const Center(child: Text('Nothing here yet'));
+          return Center(child: Text(l10n.nothingHereYet));
         }
         return Scaffold(
           appBar: CustomAppBar(
-            title: "Match Details",
+            title: l10n.matchDetails,
             showBackIcon: true,
             showActions: false,
             showThreeDotActions: state.matchDetails!.isOwner ?? false,
@@ -90,11 +91,14 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
     );
   }
 
-  String _tabLabel(MatchDetailsTab tab) => switch (tab) {
-    MatchDetailsTab.details => 'Details',
-    MatchDetailsTab.requests => 'Requests',
-    MatchDetailsTab.invited => 'Invited',
-  };
+  String _tabLabel(MatchDetailsTab tab) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (tab) {
+      MatchDetailsTab.details => l10n.details,
+      MatchDetailsTab.requests => l10n.requests,
+      MatchDetailsTab.invited => l10n.invited,
+    };
+  }
 
   Widget _buildTabContent() {
     switch (_selectedTab) {

@@ -17,7 +17,10 @@ class PlayersRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         for (int i = 0; i < totalSlots; i++) ...[
-          if (players.length > i) _playerSlot(players[i]) else _availableSlot(),
+          if (players.length > i)
+            _playerSlot(context, players[i])
+          else
+            _availableSlot(context),
 
           // Divider sits in the middle: after slot 1 of 2 (singles),
           // or after slot 2 of 4 (doubles).
@@ -28,14 +31,14 @@ class PlayersRow extends StatelessWidget {
     );
   }
 
-  Widget _playerSlot(Player player) {
+  Widget _playerSlot(BuildContext context, Player player) {
     final bool isAvailable =
         player.role == 'OpenPosition' ||
         player.status == 'Open' ||
         player.id == null;
 
     if (isAvailable) {
-      return _availableSlot();
+      return _availableSlot(context);
     }
 
     return _player(player);
@@ -67,20 +70,21 @@ class PlayersRow extends StatelessWidget {
     );
   }
 
-  Widget _availableSlot() {
+  Widget _availableSlot(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         CommonPlusAvatar(size: 34),
         6.heightBox,
         Text(
-          'Available',
+          l10n.available,
           style: AppStyles.w500f14inter.copyWith(
             color: kDarkTextColor,
             fontWeight: FontWeight.w400,
           ),
         ),
         Text(
-          'Open',
+          l10n.open,
           style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
         ),
       ],

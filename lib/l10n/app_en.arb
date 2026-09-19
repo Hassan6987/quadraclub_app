@@ -279,6 +279,164 @@
   "searchCourtsHint": "Search courts",
   "noCourtsFound": "No courts found",
   "send": "Send",
-  "space": "space"
-
+  "space": "space",
+  "openMatches": "Open Matches",
+  "signInToViewJoinOpenMatches": "Sign in to view & join open matches",
+  "noMatchesFound": "No matches found.",
+  "gameFilters": "Game Filters",
+  "allFormats": "All formats",
+  "singles": "Singles",
+  "doubles": "Doubles",
+  "maxDistance": "Max Distance",
+  "ranking": "Ranking",
+  "courtConfirmed": "Court Confirmed",
+  "pendingConfirmed": "Pending Confirmed",
+  "seatsCount": "{count, plural, =1{{count} Seat} other{{count} Seats}}",
+  "@seatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joinMatch": "Join Match",
+  "sportMatchForPlayers": "{sport} match for players. Come play!",
+  "@sportMatchForPlayers": {
+    "placeholders": {
+      "sport": {
+        "type": "String"
+      }
+    }
+  },
+  "sendMessageToAdmin": "Send message to admin",
+  "sendRequest": "Send Request",
+  "matchFee": "Match Fee",
+  "requestSent": "Request Sent",
+  "requestSentToOwner": "Your request was sent to the match owner. We'll notify you once it's approved.",
+  "moneyBackIfNotAccepted": "If you're not accepted, you will receive your money back automatically",
+  "viewMatchesAnytimeIn": "View your pending, accepted, and past matches anytime in",
+  "createMatch": "Create Match",
+  "wantToCreateMatch": "Want to create match?",
+  "selectCourtToCreateMatch": "To create a match, first select an available court.",
+  "selectCourt": "Select Court",
+  "playerDetails": "Player Details",
+  "noPlayerDataFound": "No player data found",
+  "aboutPlayer": "About Player",
+  "gameInformation": "Game Information",
+  "statistics": "Statistics",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "overall": "Overall",
+  "victories": "Victories",
+  "defeats": "Defeats",
+  "hours": "Hours",
+  "feedBack": "Feed Back",
+  "beginner": "Beginner",
+  "unknown": "Unknown",
+  "myReservations": "My Reservations",
+  "signInToViewReservations": "Sign in to view your reservations, games and lessons",
+  "myReservationsGamesAndLessons": "My Reservations,\nGames and Lessons",
+  "retry": "Retry",
+  "nothingHereYet": "Nothing here yet",
+  "confirmed": "Confirmed",
+  "pending": "Pending",
+  "past": "Past",
+  "chat": "Chat",
+  "cancelRequest": "Cancel request",
+  "rebook": "Rebook",
+  "leaveThisMatch": "Leave this match",
+  "groupChat": "Group Chat",
+  "chatWithPlayers": "Chat with players",
+  "matchDetails": "Match Details",
+  "details": "Details",
+  "requests": "Requests",
+  "invited": "Invited",
+  "decline": "Decline",
+  "accept": "Accept",
+  "invitedBy": "Invited by {name}",
+  "@invitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editDetails": "Edit Details",
+  "deleteMatch": "Delete Match",
+  "actions": "Actions",
+  "signInToViewAndManageProfile": "Sign in to view and manage your profile",
+  "myAccount": "My Account",
+  "manageYourAccountDetails": "Manage your account details",
+  "logout": "Logout",
+  "profileUpdatedSuccessfully": "Profile updated successfully",
+  "name": "Name",
+  "enterYourLocation": "Enter your location",
+  "emailCantChange": "Email (Can't Change)",
+  "update": "Update",
+  "deleteAccount": "Delete Account",
+  "deleteAccountWarning": "This will delete your account and you will need to create your account again.",
+  "iUnderstandDeleteAccount": "I understand, delete account",
+  "pleaseTellUsWhyYoureLeaving": "Please tell us why you're leaving",
+  "accountDeletedSuccessfully": "Account Deleted Successfully",
+  "noUserIdFound": "No User Id found",
+  "deleteReasonNoLongerNeed": "I no longer need the app.",
+  "deleteReasonCreateNew": "I want to delete this account and create a new one.",
+  "deleteReasonTrouble": "Trouble using the app.",
+  "privacyPolicy": "Privacy Policy",
+  "termsAndConditions": "Terms & Conditions",
+  "findBestCourtsNearYou": "Find the best courts\n near you.",
+  "discoverPremiumCourts": "Discover premium basketball, tennis, and pickleball courts in your area with ease.",
+  "joinOpenMatchesMeetPlayers": "Join open matches and\n meet new players",
+  "findLocalGames": "Find local games, level up your skills, and expand your sports circle effortlessly.",
+  "bookCourtsPlayMatches": "Book Courts & Play\n Matches",
+  "bookInstantly": "Book instantly and hit the court with your favorite partners.",
+  "gallery": "Gallery",
+  "camera": "Camera",
+  "expireDate": "Expire Date",
+  "cancel": "Cancel",
+  "notifications": "Notifications",
+  "cardholderName": "Cardholder name",
+  "cardNumber": "Card number",
+  "mmYy": "MM/YY",
+  "cvv": "CVV",
+  "secureEncryptedPayment": "Secure Encrypted Payment",
+  "convenienceFee": "Convenience fee",
+  "playersCount": "{count} players",
+  "@playersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotsLeftCount": "{count} Slots Left",
+  "@slotsLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "portfolioBalance": "Portfolio Balance",
+  "balanceAmount": "Balance: {amount}",
+  "@balanceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "insufficientBalance": "Insufficient balance",
+  "creditDebitCard": "Credit / Debit Card",
+  "enterCardholderName": "Enter the cardholder name",
+  "enterValidName": "Enter a valid name",
+  "enterYourCardNumber": "Enter your card number",
+  "enterValidCardNumber": "Enter a valid card number",
+  "enterExpiryDate": "Enter expiry date",
+  "enterExpiryAsMmYy": "Enter expiry as MM/YY",
+  "enterValidExpiryDate": "Enter a valid expiry date",
+  "enterValidExpiryMonth": "Enter a valid expiry month",
+  "cardHasExpired": "Card has expired",
+  "enterCvv": "Enter CVV",
+  "enterValidCvv": "Enter a valid CVV"
 }

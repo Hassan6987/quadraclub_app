@@ -7,12 +7,13 @@ class FeedbackCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CommonCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Feed Back',
+            l10n.feedBack,
             style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           16.heightBox,

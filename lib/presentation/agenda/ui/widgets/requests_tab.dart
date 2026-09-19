@@ -16,7 +16,8 @@ class RequestsTab extends StatelessWidget {
         }
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
-          return const Center(child: Text('Nothing here yet'));
+          return Center(
+              child: Text(AppLocalizations.of(context)!.nothingHereYet));
         }
         return ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

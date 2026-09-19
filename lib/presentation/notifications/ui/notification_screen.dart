@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/presentation/notifications/data/notification_model.dart';
 import 'package:quadraclub_app/presentation/notifications/ui/widgets/notification_tile.dart';
+
 import '/app_exports.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -9,7 +10,7 @@ class NotificationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Notifications",
+        title: AppLocalizations.of(context)!.notifications,
         centerTile: true,
         showBackIcon: true,
         showActions: false,

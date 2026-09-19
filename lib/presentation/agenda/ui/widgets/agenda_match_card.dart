@@ -3,6 +3,7 @@ import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 
 class AgendaMatchCard extends StatelessWidget {
   final AgendaItem item;
@@ -79,7 +80,9 @@ class AgendaMatchCard extends StatelessWidget {
               runSpacing: 4,
               children: [
                 CommonBadge(label: item.dateString),
-                CommonBadge(label: item.category),
+                CommonBadge(
+                  label: localizedMatchCategory(context, item.category),
+                ),
                 if (item.courtStatusLabel != null)
                   _courtConfirmedBadge(item.courtStatusLabel!),
               ],
@@ -90,7 +93,7 @@ class AgendaMatchCard extends StatelessWidget {
               CustomActionButton(
                 backgroundColor: kLightPinkColor,
                 height: 40,
-                buttonText: "Cancel request",
+                buttonText: AppLocalizations.of(context)!.cancelRequest,
                 onTap: () {
                   context.read<AgendaBloc>().add(
                       CancelJoinRequest(matchId: item.id));
@@ -100,7 +103,7 @@ class AgendaMatchCard extends StatelessWidget {
               CustomActionButton(
                 backgroundColor: kPrimaryColor,
                 height: 40,
-                buttonText: "Chat",
+                buttonText: AppLocalizations.of(context)!.chat,
                 onTap: () {
                   Navigator.push(
                     context,

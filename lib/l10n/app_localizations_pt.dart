@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -730,4 +729,387 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get space => 'espaço';
+
+  @override
+  String get openMatches => 'Partidas abertas';
+
+  @override
+  String get signInToViewJoinOpenMatches =>
+      'Entre para ver e participar de partidas abertas';
+
+  @override
+  String get noMatchesFound => 'Nenhuma partida encontrada.';
+
+  @override
+  String get gameFilters => 'Filtros de jogo';
+
+  @override
+  String get allFormats => 'Todos os formatos';
+
+  @override
+  String get singles => 'Simples';
+
+  @override
+  String get doubles => 'Duplas';
+
+  @override
+  String get maxDistance => 'Distância máxima';
+
+  @override
+  String get ranking => 'Ranking';
+
+  @override
+  String get courtConfirmed => 'Quadra confirmada';
+
+  @override
+  String get pendingConfirmed => 'Confirmação pendente';
+
+  @override
+  String seatsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vagas',
+      one: '$count vaga',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get joinMatch => 'Entrar na partida';
+
+  @override
+  String sportMatchForPlayers(String sport) {
+    return 'Partida de $sport para jogadores. Venha jogar!';
+  }
+
+  @override
+  String get sendMessageToAdmin => 'Enviar mensagem ao administrador';
+
+  @override
+  String get sendRequest => 'Enviar solicitação';
+
+  @override
+  String get matchFee => 'Taxa da partida';
+
+  @override
+  String get requestSent => 'Solicitação enviada';
+
+  @override
+  String get requestSentToOwner =>
+      'Sua solicitação foi enviada ao dono da partida. Avisaremos quando for aprovada.';
+
+  @override
+  String get moneyBackIfNotAccepted =>
+      'Se você não for aceito, o valor será devolvido automaticamente';
+
+  @override
+  String get viewMatchesAnytimeIn =>
+      'Veja suas partidas pendentes, aceitas e passadas a qualquer momento em';
+
+  @override
+  String get createMatch => 'Criar partida';
+
+  @override
+  String get wantToCreateMatch => 'Quer criar uma partida?';
+
+  @override
+  String get selectCourtToCreateMatch =>
+      'Para criar uma partida, primeiro selecione uma quadra disponível.';
+
+  @override
+  String get selectCourt => 'Selecionar quadra';
+
+  @override
+  String get playerDetails => 'Detalhes do jogador';
+
+  @override
+  String get noPlayerDataFound => 'Nenhum dado do jogador encontrado';
+
+  @override
+  String get aboutPlayer => 'Sobre o jogador';
+
+  @override
+  String get gameInformation => 'Informações do jogo';
+
+  @override
+  String get statistics => 'Estatísticas';
+
+  @override
+  String get weekly => 'Semanal';
+
+  @override
+  String get monthly => 'Mensal';
+
+  @override
+  String get overall => 'Geral';
+
+  @override
+  String get victories => 'Vitórias';
+
+  @override
+  String get defeats => 'Derrotas';
+
+  @override
+  String get hours => 'Horas';
+
+  @override
+  String get feedBack => 'Feedback';
+
+  @override
+  String get beginner => 'Iniciante';
+
+  @override
+  String get unknown => 'Desconhecido';
+
+  @override
+  String get myReservations => 'Minhas reservas';
+
+  @override
+  String get signInToViewReservations =>
+      'Entre para ver suas reservas, jogos e aulas';
+
+  @override
+  String get myReservationsGamesAndLessons => 'Minhas reservas,\njogos e aulas';
+
+  @override
+  String get retry => 'Tentar novamente';
+
+  @override
+  String get nothingHereYet => 'Nada por aqui ainda';
+
+  @override
+  String get confirmed => 'Confirmado';
+
+  @override
+  String get pending => 'Pendente';
+
+  @override
+  String get past => 'Passado';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get cancelRequest => 'Cancelar solicitação';
+
+  @override
+  String get rebook => 'Reservar novamente';
+
+  @override
+  String get leaveThisMatch => 'Sair desta partida';
+
+  @override
+  String get groupChat => 'Chat em grupo';
+
+  @override
+  String get chatWithPlayers => 'Conversar com os jogadores';
+
+  @override
+  String get matchDetails => 'Detalhes da partida';
+
+  @override
+  String get details => 'Detalhes';
+
+  @override
+  String get requests => 'Solicitações';
+
+  @override
+  String get invited => 'Convidados';
+
+  @override
+  String get decline => 'Recusar';
+
+  @override
+  String get accept => 'Aceitar';
+
+  @override
+  String invitedBy(String name) {
+    return 'Convidado por $name';
+  }
+
+  @override
+  String get editDetails => 'Editar detalhes';
+
+  @override
+  String get deleteMatch => 'Excluir partida';
+
+  @override
+  String get actions => 'Ações';
+
+  @override
+  String get signInToViewAndManageProfile =>
+      'Entre para ver e gerenciar seu perfil';
+
+  @override
+  String get myAccount => 'Minha conta';
+
+  @override
+  String get manageYourAccountDetails => 'Gerencie os dados da sua conta';
+
+  @override
+  String get logout => 'Sair';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Perfil atualizado com sucesso';
+
+  @override
+  String get name => 'Nome';
+
+  @override
+  String get enterYourLocation => 'Digite sua localização';
+
+  @override
+  String get emailCantChange => 'E-mail (não pode alterar)';
+
+  @override
+  String get update => 'Atualizar';
+
+  @override
+  String get deleteAccount => 'Excluir conta';
+
+  @override
+  String get deleteAccountWarning =>
+      'Isso excluirá sua conta e você precisará criar sua conta novamente.';
+
+  @override
+  String get iUnderstandDeleteAccount => 'Entendi, excluir conta';
+
+  @override
+  String get pleaseTellUsWhyYoureLeaving => 'Diga-nos por que você está saindo';
+
+  @override
+  String get accountDeletedSuccessfully => 'Conta excluída com sucesso';
+
+  @override
+  String get noUserIdFound => 'ID de usuário não encontrado';
+
+  @override
+  String get deleteReasonNoLongerNeed => 'Não preciso mais do aplicativo.';
+
+  @override
+  String get deleteReasonCreateNew =>
+      'Quero excluir esta conta e criar uma nova.';
+
+  @override
+  String get deleteReasonTrouble => 'Dificuldade para usar o aplicativo.';
+
+  @override
+  String get privacyPolicy => 'Política de privacidade';
+
+  @override
+  String get termsAndConditions => 'Termos e condições';
+
+  @override
+  String get findBestCourtsNearYou =>
+      'Encontre as melhores quadras\n perto de você.';
+
+  @override
+  String get discoverPremiumCourts =>
+      'Descubra quadras de basquete, tênis e pickleball na sua região com facilidade.';
+
+  @override
+  String get joinOpenMatchesMeetPlayers =>
+      'Participe de partidas abertas e\n conheça novos jogadores';
+
+  @override
+  String get findLocalGames =>
+      'Encontre jogos locais, evolua suas habilidades e amplie seu círculo esportivo.';
+
+  @override
+  String get bookCourtsPlayMatches => 'Reserve quadras e jogue\n partidas';
+
+  @override
+  String get bookInstantly =>
+      'Reserve na hora e vá para a quadra com seus parceiros favoritos.';
+
+  @override
+  String get gallery => 'Galeria';
+
+  @override
+  String get camera => 'Câmera';
+
+  @override
+  String get expireDate => 'Data de validade';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get notifications => 'Notificações';
+
+  @override
+  String get cardholderName => 'Nome do titular';
+
+  @override
+  String get cardNumber => 'Número do cartão';
+
+  @override
+  String get mmYy => 'MM/AA';
+
+  @override
+  String get cvv => 'CVV';
+
+  @override
+  String get secureEncryptedPayment => 'Pagamento seguro e criptografado';
+
+  @override
+  String get convenienceFee => 'Taxa de conveniência';
+
+  @override
+  String playersCount(int count) {
+    return '$count jogadores';
+  }
+
+  @override
+  String slotsLeftCount(int count) {
+    return '$count vagas restantes';
+  }
+
+  @override
+  String get portfolioBalance => 'Saldo da carteira';
+
+  @override
+  String balanceAmount(String amount) {
+    return 'Saldo: $amount';
+  }
+
+  @override
+  String get insufficientBalance => 'Saldo insuficiente';
+
+  @override
+  String get creditDebitCard => 'Cartão de crédito / débito';
+
+  @override
+  String get enterCardholderName => 'Digite o nome do titular';
+
+  @override
+  String get enterValidName => 'Digite um nome válido';
+
+  @override
+  String get enterYourCardNumber => 'Digite o número do cartão';
+
+  @override
+  String get enterValidCardNumber => 'Digite um número de cartão válido';
+
+  @override
+  String get enterExpiryDate => 'Digite a data de validade';
+
+  @override
+  String get enterExpiryAsMmYy => 'Digite a validade como MM/AA';
+
+  @override
+  String get enterValidExpiryDate => 'Digite uma data de validade válida';
+
+  @override
+  String get enterValidExpiryMonth => 'Digite um mês de validade válido';
+
+  @override
+  String get cardHasExpired => 'O cartão expirou';
+
+  @override
+  String get enterCvv => 'Digite o CVV';
+
+  @override
+  String get enterValidCvv => 'Digite um CVV válido';
 }

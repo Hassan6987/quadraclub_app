@@ -14,6 +14,7 @@ class PriceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -24,19 +25,19 @@ class PriceCard extends StatelessWidget {
       child: Column(
         children: [
           _PriceRow(
-            label: 'Classroom',
+            label: l10n.classroom,
             value: '\$${classPrice.toStringAsFixed(2)}',
             isTotal: false,
           ),
           const SizedBox(height: 6),
           _PriceRow(
-            label: 'Convenience fee',
+            label: l10n.convenienceFee,
             value: '\$${convenienceFee.toStringAsFixed(2)}',
             isTotal: false,
           ),
           Divider(color: kDividerColor).withPaddingSymmetric(0, 8),
           _PriceRow(
-            label: 'Total',
+            label: l10n.total,
             value: '\$${total.toStringAsFixed(2)}',
             isTotal: true,
           ),
