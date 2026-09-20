@@ -1,7 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
-import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 
 class AgendaClassCard extends StatelessWidget {
   final AgendaItem item;
@@ -23,10 +22,6 @@ class AgendaClassCard extends StatelessWidget {
         Row(
           children: [
             SportBadge(sport: SportTypeExtension.fromString(item.sport)),
-            4.widthBox,
-            CommonBadge(
-              label: localizedMatchCategory(context, item.category),
-            ),
             if (item.classType != null) ...[
               4.widthBox,
               CommonBadge(

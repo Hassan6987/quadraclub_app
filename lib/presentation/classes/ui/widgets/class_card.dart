@@ -1,14 +1,19 @@
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
 
 class ClassCard extends StatelessWidget {
   final Class classModel;
   final VoidCallback onTap;
+  final double distanceKm;
 
-  const ClassCard({super.key, required this.classModel, required this.onTap});
-
-  @override
+  const ClassCard({
+    super.key,
+    required this.classModel,
+    required this.onTap,
+    required this.distanceKm,
+  })@override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
@@ -76,7 +81,7 @@ class ClassCard extends StatelessWidget {
               Text(
                 '${classModel.startTime}-${classModel.endTime}  •  '
                 '${classModel.locationName}  •  '
-                '${classModel.distanceKm} km',
+                    '${formatDistanceKm(distanceKm)}',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
 

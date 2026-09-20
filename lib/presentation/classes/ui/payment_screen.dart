@@ -9,8 +9,10 @@ import '/app_exports.dart';
 
 class PaymentForLessonScreen extends StatefulWidget {
   final Class classModel;
+  final double distanceKm;
 
-  const PaymentForLessonScreen({super.key, required this.classModel});
+  const PaymentForLessonScreen(
+      {super.key, required this.classModel, required this.distanceKm});
 
   @override
   State<PaymentForLessonScreen> createState() => _PaymentForLessonScreenState();
@@ -261,7 +263,8 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
 
                       16.heightBox,
 
-                      InfoCard(classModel: widget.classModel),
+                      InfoCard(classModel: widget.classModel,
+                        distanceKm: widget.distanceKm,),
 
                       20.heightBox,
 

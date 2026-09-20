@@ -1,8 +1,6 @@
 import 'package:quadraclub_app/presentation/authentication/ui/forget_password.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dart';
 import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
-import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
-import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
 import 'package:quadraclub_app/presentation/notifications/ui/notification_screen.dart';
 import 'package:quadraclub_app/presentation/profile/ui/my_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/delete_account.dart';
@@ -28,9 +26,6 @@ class AppGenerateRoute {
         return _navigateScreen(const NotificationsScreen());
       case RouteName.myChats:
         return _navigateScreen(const MyChatsScreen());
-      case RouteName.classDetails:
-        final Class classModel = setting.arguments as Class;
-        return _navigateScreen(ClassDetailsScreen(classModel: classModel));
       case RouteName.termsConditionScreen:
         return _navigateScreen(const TermsScreen());
       case RouteName.privacyPolicyScreen:
@@ -86,7 +81,6 @@ class RouteName {
   static const customBottomNavbar = "/customBottomNavbar";
   static const myAccount = "/myAccount";
   static const notifications = "/notifications";
-  static const classDetails = "/classDetails";
   static const homeScreen = "/homeScreen";
   static const dotRegulationScreen = "/dotRegulationScreen";
   static const myProfileScreen = "/myProfileScreen";

@@ -6,7 +6,7 @@ class MatchServices extends BaseApiProvider {
     try {
       final response = await request(
         method: HttpMethod.get,
-        endpoint: '/api/booking?matchType=Open',
+        endpoint: '/api/booking?bookingType=Match&matchType=Open',
       );
       return response;
     } on DioException catch (e) {

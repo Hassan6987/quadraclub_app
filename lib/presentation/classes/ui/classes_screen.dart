@@ -1,3 +1,5 @@
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
@@ -22,6 +24,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
   DateTime? _selectedDate;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
 
   final Set<TimeOfDay> _selectedTimes = {};
   LevelFilter _level = LevelFilter.all;
@@ -141,6 +144,52 @@ class _ClassesScreenState extends State<ClassesScreen> {
     }
 
     return result;
+  }
+
+  Future<void> _initUserLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final pos =
+            await Geolocator.getLastKnownPosition() ??
+            await Geolocator.getCurrentPosition(
+              timeLimit: const Duration(seconds: 5),
+            );
+        if (mounted) {
+          setState(() {
+            _currentLatLng = LatLng(pos.latitude, pos.longitude);
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  double _clubDistance(Class club) {
+    if (club.court?.coordinates?.latitude == null ||
+        club.court?.coordinates?.longitude == null) {
+      return double.infinity;
+    }
+    return Geolocator.distanceBetween(
+          _currentLatLng.latitude,
+          _currentLatLng.longitude,
+          club.court!.coordinates!.latitude!,
+          club.court!.coordinates!.longitude!,
+        ) /
+        1000.0;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _initUserLocation();
+    super.initState();
   }
 
   @override
@@ -299,8 +348,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
                             for (final classModel in entry.value)
                               ClassCard(
                                 classModel: classModel,
-                                onTap: () => _openDetails(classModel),
-                              ),
+                                distanceKm: _clubDistance(classModel),
+                                onTap: () => _openDetails(
+                                  classModel,
+                                  _clubDistance(classModel),
+                                )),
                           ],
                         ],
                       ),
@@ -311,9 +363,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
       ),
     );
   }
+  }
 
-  void _openDetails(Class classModel) {
-    final l10n = AppLocalizations.of(context)!;
+  void _openDetails(Class classModel, double distance) final l10n = AppLocalizations.of(context)!;
 
     // Gate: show login dialog for unauthenticated users
     final authState = context.read<AuthBloc>().state;
@@ -331,7 +383,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ClassDetailsScreen(classModel: classModel),
+        builder: (_) =>
+            ClassDetailsScreen(classModel: classModel, distanceKm: distance,),
       ),
     );
   }

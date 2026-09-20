@@ -290,13 +290,13 @@ class CourtDetails {
 class Coordinates {
   Coordinates({required this.latitude, required this.longitude});
 
-  final int? latitude;
-  final int? longitude;
+  final double? latitude;
+  final double? longitude;
 
   factory Coordinates.fromJson(Map<String, dynamic> json) {
     return Coordinates(
-      latitude: json["latitude"],
-      longitude: json["longitude"],
+      latitude: ParsingUtil.toSafeDouble(json["latitude"] ?? 0),
+      longitude: ParsingUtil.toSafeDouble(json["longitude"] ?? 0),
     );
   }
 }

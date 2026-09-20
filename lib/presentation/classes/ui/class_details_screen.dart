@@ -5,10 +5,13 @@ import '../data/model/class_models.dart';
 
 class ClassDetailsScreen extends StatelessWidget {
   final Class classModel;
+  final double distanceKm;
 
-  const ClassDetailsScreen({super.key, required this.classModel});
-
-  @override
+  const ClassDetailsScreen({
+    super.key,
+    required this.classModel,
+    required this.distanceKm,
+  })@override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
@@ -35,7 +38,7 @@ class ClassDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InfoCard(classModel: classModel),
+            InfoCard(classModel: classModel, distanceKm: distanceKm,),
             4.heightBox,
 
             if (registrationDeadline != null)
@@ -89,7 +92,8 @@ class ClassDetailsScreen extends StatelessWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) =>
-                        PaymentForLessonScreen(classModel: classModel),
+                        PaymentForLessonScreen(
+                          classModel: classModel, distanceKm: distanceKm,),
                   ),
                 );
               },

@@ -1,14 +1,18 @@
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
 
 class InfoCard extends StatelessWidget {
   final Class classModel;
+  final double distanceKm;
 
-  const InfoCard({super.key, required this.classModel});
-
-  @override
+  const InfoCard({
+    super.key,
+    required this.classModel,
+    required this.distanceKm,
+  })@override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dateStr = DateFormat(
@@ -48,7 +52,7 @@ class InfoCard extends StatelessWidget {
               ),
               4.widthBox,
               CommonBadge(
-                label: l10n.categoryWithLevel(classModel.level ?? ''),
+                label: classModel.statusLabel ?? '',
               ),
             ],
           ).withPaddingSymmetric(0, 8),
@@ -66,7 +70,8 @@ class InfoCard extends StatelessWidget {
           10.heightBox,
           _InfoRow(
             icon: Assets.svg.locationIcon.path,
-            text: '${classModel.locationName} · ${classModel.distanceKm} km',
+            text: '${classModel.locationName} · ${formatDistanceKm(
+                distanceKm)}',
           ),
           8.heightBox,
           _InfoRow(
