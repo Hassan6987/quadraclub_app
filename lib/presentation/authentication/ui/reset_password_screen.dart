@@ -70,7 +70,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
   }
 
-  String? _confirmPasswordValidator(String? value,) {
+  String? _confirmPasswordValidator(String? value) {
     if (value == null || value.isEmpty) {
       return AppLocalizations.of(context)!.pleaseConfirmYourPassword;
     }

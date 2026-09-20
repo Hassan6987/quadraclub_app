@@ -72,8 +72,9 @@ class CustomBottomSheet {
                         Expanded(
                           child: CustomActionButton(
                             onTap: () => Navigator.pop(bottomSheetContext),
-                            buttonText: AppLocalizations.of(bottomSheetContext)!
-                                .cancel,
+                            buttonText: AppLocalizations.of(
+                              bottomSheetContext,
+                            )!.cancel,
                             borderColor: kTertiaryColor,
                           ),
                         ),

@@ -22,8 +22,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (state.user == null) {
           return GuestLoginPrompt(
             title: AppLocalizations.of(context)!.profile,
-            subtitle: AppLocalizations.of(context)!
-                .signInToViewAndManageProfile,
+            subtitle: AppLocalizations.of(
+              context,
+            )!.signInToViewAndManageProfile,
           );
         }
 

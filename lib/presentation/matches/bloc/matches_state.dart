@@ -7,7 +7,7 @@ enum MatchesStateStatus {
   failure,
   fetching,
   booking,
-  booked
+  booked,
 }
 
 class MatchesState extends Equatable {
@@ -22,7 +22,7 @@ class MatchesState extends Equatable {
     this.error,
     this.bookings = const [],
     this.balance = 0.0,
-    this.user
+    this.user,
   });
 
   @override
@@ -39,8 +39,8 @@ class MatchesState extends Equatable {
       status: status ?? this.status,
       error: error ?? this.error,
       bookings: bookings ?? this.bookings,
-        balance: balance ?? this.balance,
-        user: user ?? this.user
+      balance: balance ?? this.balance,
+      user: user ?? this.user,
     );
   }
 }

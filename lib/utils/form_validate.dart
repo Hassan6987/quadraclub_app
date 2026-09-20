@@ -20,9 +20,7 @@ class ValidateForm {
   }
 
   static String? validateField(String? value, String message) {
-    if (value == null || value.isEmpty || value
-        .trim()
-        .isEmpty) {
+    if (value == null || value.isEmpty || value.trim().isEmpty) {
       return message;
     }
     return null;
@@ -66,10 +64,11 @@ class ValidateForm {
     return null;
   }
 
-  static String? confirmPasswordValidator(String? value,
-      String? password, [
-        AppLocalizations? l10n,
-      ]) {
+  static String? confirmPasswordValidator(
+    String? value,
+    String? password, [
+    AppLocalizations? l10n,
+  ]) {
     if (value == null || value.isEmpty) {
       return l10n?.pleaseConfirmYourPassword ?? 'Please confirm your password';
     }
@@ -131,8 +130,10 @@ class ValidateForm {
     return null;
   }
 
-  static String? validateLoginPassword(String? value,
-      [AppLocalizations? l10n]) {
+  static String? validateLoginPassword(
+    String? value, [
+    AppLocalizations? l10n,
+  ]) {
     if (value == null || value.isEmpty) {
       return l10n?.passwordCannotBeEmpty ?? 'Password cannot be empty';
     }

@@ -140,8 +140,10 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
-  Future<void> _handleFetchPortfolio(FetchPortfolio event,
-      Emitter<AgendaState> emit,) async {
+  Future<void> _handleFetchPortfolio(
+    FetchPortfolio event,
+    Emitter<AgendaState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: AgendaStateStatus.fetching));
       final balance = await _repo.getPortfolioBalance();
@@ -153,8 +155,10 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
-  Future<void> _handleRespondToMatchRequest(RespondToMatchRequest event,
-      Emitter<AgendaState> emit,) async {
+  Future<void> _handleRespondToMatchRequest(
+    RespondToMatchRequest event,
+    Emitter<AgendaState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: AgendaStateStatus.updating));
       await _repo.respondToMatchRequest(
@@ -177,19 +181,21 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
-  Future<void> _handleRespondToInvitation(RespondToInvitation event,
-      Emitter<AgendaState> emit,) async {
+  Future<void> _handleRespondToInvitation(
+    RespondToInvitation event,
+    Emitter<AgendaState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: AgendaStateStatus.updating));
       await _repo.respondToMatchInvitation(
-          matchId: event.id,
-          action: event.action,
-          requirePayment: event.requiresPayment,
-          usePortfolio: event.usePortfolio,
-          name: event.cardHolderName,
-          number: event.cardNumber,
-          expiry: event.expiry,
-          cvc: event.cvc
+        matchId: event.id,
+        action: event.action,
+        requirePayment: event.requiresPayment,
+        usePortfolio: event.usePortfolio,
+        name: event.cardHolderName,
+        number: event.cardNumber,
+        expiry: event.expiry,
+        cvc: event.cvc,
       );
       final response = await _repo.getPlayerInvitations();
       final confirmed = await _repo.getConfirmedAgenda();
@@ -207,8 +213,10 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     }
   }
 
-  Future<void> _handleCancelJoinRequest(CancelJoinRequest event,
-      Emitter<AgendaState> emit,) async {
+  Future<void> _handleCancelJoinRequest(
+    CancelJoinRequest event,
+    Emitter<AgendaState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: AgendaStateStatus.updating));
       await _repo.cancelMatchRequest(event.matchId);

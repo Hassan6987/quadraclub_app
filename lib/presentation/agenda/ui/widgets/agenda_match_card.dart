@@ -96,7 +96,8 @@ class AgendaMatchCard extends StatelessWidget {
                 buttonText: AppLocalizations.of(context)!.cancelRequest,
                 onTap: () {
                   context.read<AgendaBloc>().add(
-                      CancelJoinRequest(matchId: item.id));
+                    CancelJoinRequest(matchId: item.id),
+                  );
                 },
               ).withPaddingSymmetric(24, 12),
             if (item.tab == 'confirmed')
@@ -108,10 +109,11 @@ class AgendaMatchCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          AgendaChatScreen(chatId: item.chatId ?? '',
-                              label: item.courtName,
-                              userCount: item.players?.length ?? 1),
+                      builder: (_) => AgendaChatScreen(
+                        chatId: item.chatId ?? '',
+                        label: item.courtName,
+                        userCount: item.players?.length ?? 1,
+                      ),
                     ),
                   );
                 },

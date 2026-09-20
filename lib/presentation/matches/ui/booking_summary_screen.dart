@@ -98,7 +98,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
           _cvvController.text,
           cardNumber: _cardNumberController.text,
         ) ==
-            null;
+        null;
 
     final isValid =
         cardholderValid && cardNumberValid && expiryValid && cvvValid;
@@ -240,12 +240,11 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                                 CardValidators.validateCardNumber(v, l10n),
                             expiryValidator: (v) =>
                                 CardValidators.validateExpiry(v, l10n),
-                            cvvValidator: (v) =>
-                                CardValidators.validateCVV(
-                                  v,
-                                  cardNumber: _cardNumberController.text,
-                                  l10n: l10n,
-                                ),
+                            cvvValidator: (v) => CardValidators.validateCVV(
+                              v,
+                              cardNumber: _cardNumberController.text,
+                              l10n: l10n,
+                            ),
                           ),
                         ).withPaddingSymmetric(20, 0),
                       ],
@@ -286,14 +285,14 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
               if (state.status == MatchesStateStatus.booking)
                 Center(child: CustomLoadingView())
               else
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: CustomActionButton(
-                  buttonText: l10n.payNow,
-                  onTap: _canConfirm ? _processPayment : null,
-                  isEnabled: _canConfirm,
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: CustomActionButton(
+                    buttonText: l10n.payNow,
+                    onTap: _canConfirm ? _processPayment : null,
+                    isEnabled: _canConfirm,
+                  ),
                 ),
-              ),
             ],
           );
         },
@@ -348,11 +347,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       ),
                     ),
                     Text(
-                      "${match.club?.city} • ${formatDistanceKm(
-                          widget.distanceKm, AppLocalizations.of(
-                          context)!)} • ${getFormatDateMonth(
-                          match.bookingDate,
-                          locale: AppLocalizations.of(context)!.localeName)}",
+                      "${match.club?.city} • ${formatDistanceKm(widget.distanceKm, AppLocalizations.of(context)!)} • ${getFormatDateMonth(match.bookingDate, locale: AppLocalizations.of(context)!.localeName)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),
@@ -442,15 +437,17 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
   void _processPayment() {
     if (!_canConfirm) return;
-    context.read<MatchesBloc>().add(JoinMatchBooking(
-      bookingId: widget.match.id ?? '',
-      isPortfolio: _usePortfolio,
-      cvc: _cvvController.text,
-      cardName: _cardholderController.text,
-      cardNumber: _cardNumberController.text,
-      expiry: _expiryController.text,
-      message: widget.message,
-        amount: _matchFee
-    ));
+    context.read<MatchesBloc>().add(
+      JoinMatchBooking(
+        bookingId: widget.match.id ?? '',
+        isPortfolio: _usePortfolio,
+        cvc: _cvvController.text,
+        cardName: _cardholderController.text,
+        cardNumber: _cardNumberController.text,
+        expiry: _expiryController.text,
+        message: widget.message,
+        amount: _matchFee,
+      ),
+    );
   }
 }

@@ -11,11 +11,17 @@ class MatchJoinBottomSheet extends StatefulWidget {
   final Booking match;
   final double distanceKm;
 
-  const MatchJoinBottomSheet(
-      {super.key, required this.match, required this.distanceKm});
+  const MatchJoinBottomSheet({
+    super.key,
+    required this.match,
+    required this.distanceKm,
+  });
 
-  static Future<void> show(BuildContext context, Booking match,
-      double distanceKm) {
+  static Future<void> show(
+    BuildContext context,
+    Booking match,
+    double distanceKm,
+  ) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -24,7 +30,7 @@ class MatchJoinBottomSheet extends StatefulWidget {
       ),
       backgroundColor: Colors.transparent,
       builder: (_) =>
-          MatchJoinBottomSheet(match: match, distanceKm: distanceKm,),
+          MatchJoinBottomSheet(match: match, distanceKm: distanceKm),
     );
   }
 
@@ -122,11 +128,11 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        BookingSummaryScreen(
-                          match: widget.match,
-                          distanceKm: widget.distanceKm,
-                          message: _messageController.text.trim(),),
+                    builder: (_) => BookingSummaryScreen(
+                      match: widget.match,
+                      distanceKm: widget.distanceKm,
+                      message: _messageController.text.trim(),
+                    ),
                   ),
                 );
               },
@@ -174,11 +180,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                       ),
                     ),
                     Text(
-                      "${match.club?.city} • ${formatDistanceKm(
-                          widget.distanceKm, AppLocalizations.of(
-                          context)!)} • ${getFormatDateMonth(
-                          match.bookingDate,
-                          locale: AppLocalizations.of(context)!.localeName)}",
+                      "${match.club?.city} • ${formatDistanceKm(widget.distanceKm, AppLocalizations.of(context)!)} • ${getFormatDateMonth(match.bookingDate, locale: AppLocalizations.of(context)!.localeName)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

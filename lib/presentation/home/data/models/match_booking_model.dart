@@ -32,6 +32,6 @@ class MatchBookingModel {
     required this.totalPrice,
     required this.serviceFee,
     required this.invitedPlayers,
-    required this.isPortfolio
+    required this.isPortfolio,
   });
 }

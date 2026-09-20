@@ -72,7 +72,7 @@ class AgendaRepo {
       return playersJson
           .map(
             (json) => AgendaInvitation.fromJson(json as Map<String, dynamic>),
-      )
+          )
           .toList();
     } catch (e) {
       rethrow;
@@ -149,9 +149,11 @@ class AgendaRepo {
     }
   }
 
-  Future<void> respondToMatchRequest(String matchId,
-      String playerId,
-      String action,) async {
+  Future<void> respondToMatchRequest(
+    String matchId,
+    String playerId,
+    String action,
+  ) async {
     try {
       await _services.respondToMatchRequest(matchId, playerId, action);
     } catch (e) {
@@ -183,7 +185,11 @@ class AgendaRepo {
       } else {
         if (usePortfolio) {
           await _services.respondToInvitationPaid(
-              matchId, usePortfolio, '', '');
+            matchId,
+            usePortfolio,
+            '',
+            '',
+          );
         } else {
           // Example:
           // "08/28" -> ["08", "28"]
@@ -212,7 +218,11 @@ class AgendaRepo {
           }
           log('Payment Method ID: $paymentMethodId');
           await _services.respondToInvitationPaid(
-              matchId, usePortfolio, paymentMethodId, name);
+            matchId,
+            usePortfolio,
+            paymentMethodId,
+            name,
+          );
         }
       }
     } catch (e) {

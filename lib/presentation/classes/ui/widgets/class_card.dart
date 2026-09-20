@@ -13,7 +13,9 @@ class ClassCard extends StatelessWidget {
     required this.classModel,
     required this.onTap,
     required this.distanceKm,
-  })@override
+  });
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
@@ -52,9 +54,7 @@ class ClassCard extends StatelessWidget {
 
                   4.widthBox,
 
-                  CommonBadge(
-                    label: classModel.statusLabel ?? '',
-                  ),
+                  CommonBadge(label: classModel.statusLabel ?? ''),
 
                   4.widthBox,
 
@@ -81,7 +81,7 @@ class ClassCard extends StatelessWidget {
               Text(
                 '${classModel.startTime}-${classModel.endTime}  •  '
                 '${classModel.locationName}  •  '
-                    '${formatDistanceKm(distanceKm)}',
+                '${formatDistanceKm(distanceKm)}',
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
 

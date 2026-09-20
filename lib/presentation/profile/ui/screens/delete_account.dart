@@ -48,11 +48,7 @@ class ConfirmDeleteAccount extends StatefulWidget {
 class _ConfirmDeleteAccountState extends State<ConfirmDeleteAccount> {
   String? selectedReason;
 
-  static const _reasonKeys = [
-    'no_longer_need',
-    'create_new',
-    'trouble',
-  ];
+  static const _reasonKeys = ['no_longer_need', 'create_new', 'trouble'];
 
   String _reasonLabel(AppLocalizations l10n, String key) {
     switch (key) {

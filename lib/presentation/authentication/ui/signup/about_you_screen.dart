@@ -56,8 +56,11 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!
-                  .locationPermissionIsRequiredToUseThis),
+              content: Text(
+                AppLocalizations.of(
+                  context,
+                )!.locationPermissionIsRequiredToUseThis,
+              ),
             ),
           );
         }
@@ -68,8 +71,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
       if (!serviceEnabled) {
         if (mounted) {
           context.showToast(
-              AppLocalizations.of(context)!.pleaseEnableLocationServices,
-              isError: true);
+            AppLocalizations.of(context)!.pleaseEnableLocationServices,
+            isError: true,
+          );
         }
         return;
       }
@@ -90,8 +94,9 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!
-                  .couldNotDetermineYourCityPleaseSearchManually,
+              AppLocalizations.of(
+                context,
+              )!.couldNotDetermineYourCityPleaseSearchManually,
             ),
           ),
         );
@@ -100,8 +105,11 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!
-                .somethingWentWrongGettingYourLocation),
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.somethingWentWrongGettingYourLocation,
+            ),
           ),
         );
       }
@@ -228,31 +236,26 @@ class _AboutYouScreenState extends State<AboutYouScreen> {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: [
-                _GenderOption(
-                  value: 'Masculine',
-                  label: l10n.masculine,
-                ),
-                _GenderOption(
-                  value: 'Feminine',
-                  label: l10n.feminine,
-                ),
-                _GenderOption(
-                  value: 'Prefer not to say',
-                  label: l10n.preferNotToSay,
-                ),
-              ].map((option) {
-                return _choiceChip(
-                  label: option.label,
-                  selected: _gender == option.value,
-                  onTap: () {
-                    setState(() {
-                      // English value is stored for the API.
-                      _gender = option.value;
-                    });
-                  },
-                );
-              }).toList(),
+              children:
+                  [
+                    _GenderOption(value: 'Masculine', label: l10n.masculine),
+                    _GenderOption(value: 'Feminine', label: l10n.feminine),
+                    _GenderOption(
+                      value: 'Prefer not to say',
+                      label: l10n.preferNotToSay,
+                    ),
+                  ].map((option) {
+                    return _choiceChip(
+                      label: option.label,
+                      selected: _gender == option.value,
+                      onTap: () {
+                        setState(() {
+                          // English value is stored for the API.
+                          _gender = option.value;
+                        });
+                      },
+                    );
+                  }).toList(),
             ),
             24.heightBox,
             Text(
@@ -302,8 +305,5 @@ class _GenderOption {
   final String value;
   final String label;
 
-  const _GenderOption({
-    required this.value,
-    required this.label,
-  });
+  const _GenderOption({required this.value, required this.label});
 }

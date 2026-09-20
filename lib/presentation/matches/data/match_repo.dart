@@ -47,7 +47,11 @@ class MatchRepo {
     try {
       if (isPortfolio) {
         await _services.joinMatchBooking(
-            id: id, isPortfolio: isPortfolio, message: message, amount: amount);
+          id: id,
+          isPortfolio: isPortfolio,
+          message: message,
+          amount: amount,
+        );
       } else {
         // Example:
         // "08/28" -> ["08", "28"]
@@ -76,19 +80,18 @@ class MatchRepo {
         }
         log('Payment Method ID: $paymentMethodId');
         await _services.joinMatchBooking(
-            id: id,
-            amount: amount,
-            isPortfolio: isPortfolio,
-            paymentId: paymentMethodId,
-            cardHolderName: name,
-            message: message
+          id: id,
+          amount: amount,
+          isPortfolio: isPortfolio,
+          paymentId: paymentMethodId,
+          cardHolderName: name,
+          message: message,
         );
       }
     } catch (e) {
       rethrow;
     }
   }
-
 
   Future<UserModel> getUserDetails(String id) async {
     try {
@@ -100,6 +103,4 @@ class MatchRepo {
       rethrow;
     }
   }
-
-
 }

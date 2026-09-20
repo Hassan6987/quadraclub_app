@@ -92,7 +92,7 @@ class AgendaItem {
       title: json['title'] ?? '',
       courtName: json['courtName'] ?? '',
       location: json['location'] ?? '',
-        clubImage: json['clubImage'] ?? '',
+      clubImage: json['clubImage'] ?? '',
       sport: json['sport'] ?? '',
       bookingDate: DateTime.parse(json['bookingDate']),
       dateString: json['dateString'] ?? '',
@@ -115,7 +115,7 @@ class AgendaItem {
       classType: json['classType'],
       coachName: json['coachName'],
       coachPhoto: json['coachPhoto'],
-        tab: json['tab'] ?? ''
+      tab: json['tab'] ?? '',
     );
   }
 }

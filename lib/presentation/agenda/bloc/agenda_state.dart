@@ -32,7 +32,7 @@ class AgendaState extends Equatable {
     this.invitations = const [],
     this.matchDetails,
     this.players = const [],
-    this.balance = 0.0
+    this.balance = 0.0,
   });
 
   @override
@@ -45,7 +45,7 @@ class AgendaState extends Equatable {
     invitations,
     matchDetails,
     players,
-    balance
+    balance,
   ];
 
   AgendaState copyWith({
@@ -57,7 +57,7 @@ class AgendaState extends Equatable {
     List<AgendaInvitation>? invitations,
     AgendaMatchDetails? matchDetails,
     List<InvitePlayerModel>? players,
-    double? balance
+    double? balance,
   }) {
     return AgendaState(
       status: status ?? this.status,
@@ -68,7 +68,7 @@ class AgendaState extends Equatable {
       invitations: invitations ?? this.invitations,
       matchDetails: matchDetails ?? this.matchDetails,
       players: players ?? this.players,
-        balance: balance ?? this.balance
+      balance: balance ?? this.balance,
     );
   }
 }

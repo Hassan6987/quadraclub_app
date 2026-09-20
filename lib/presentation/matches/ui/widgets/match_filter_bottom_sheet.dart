@@ -25,11 +25,12 @@ class MatchFilterBottomSheet extends StatefulWidget {
   final MatchFormat? initialFormat;
   final List<String> availableCities;
   final void Function(
-      String? timeOfDay,
-      String? city,
-      double? distance,
-      MatchFormat? format,
-      ) onApply;
+    String? timeOfDay,
+    String? city,
+    double? distance,
+    MatchFormat? format,
+  )
+  onApply;
 
   const MatchFilterBottomSheet({
     super.key,
@@ -41,32 +42,33 @@ class MatchFilterBottomSheet extends StatefulWidget {
     required this.onApply,
   });
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     String? initialTimeOfDay,
     String? initialCity,
     double? initialDistance,
     MatchFormat? initialFormat,
     List<String> availableCities = const [],
     required void Function(
-        String? timeOfDay,
-        String? city,
-        double? distance,
-        MatchFormat? format,
-        ) onApply,
+      String? timeOfDay,
+      String? city,
+      double? distance,
+      MatchFormat? format,
+    )
+    onApply,
   }) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       constraints: BoxConstraints(maxHeight: 680),
-      builder: (_) =>
-          MatchFilterBottomSheet(
-            initialTimeOfDay: initialTimeOfDay,
-            initialCity: initialCity,
-            initialDistance: initialDistance,
-            initialFormat: initialFormat,
-            availableCities: availableCities,
-            onApply: onApply,
-          ),
+      builder: (_) => MatchFilterBottomSheet(
+        initialTimeOfDay: initialTimeOfDay,
+        initialCity: initialCity,
+        initialDistance: initialDistance,
+        initialFormat: initialFormat,
+        availableCities: availableCities,
+        onApply: onApply,
+      ),
     );
   }
 
@@ -76,8 +78,8 @@ class MatchFilterBottomSheet extends StatefulWidget {
 
 class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   String? _timeOfDay;
-  MatchLevelFilter _level = MatchLevelFilter
-      .all; // visual only — see note below
+  MatchLevelFilter _level =
+      MatchLevelFilter.all; // visual only — see note below
   MatchFormat? _format;
   String? _selectedCity;
   double _distance = 25;
@@ -242,9 +244,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                     borderRadius: 999,
                     onChanged: (value) {
                       setState(() {
-                        _selectedCity = value
-                            .trim()
-                            .isEmpty ? null : value.trim();
+                        _selectedCity = value.trim().isEmpty
+                            ? null
+                            : value.trim();
                       });
                     },
                   ),
@@ -255,7 +257,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       children: _quickCities.map((city) {
                         final isSelected =
                             (_selectedCity ?? '').toLowerCase() ==
-                                city.toLowerCase();
+                            city.toLowerCase();
                         return Expanded(
                           child: GestureDetector(
                             onTap: () {
@@ -270,7 +272,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                               });
                             },
                             child: _buildCityCard(
-                                label: city, isSelected: isSelected),
+                              label: city,
+                              isSelected: isSelected,
+                            ),
                           ),
                         );
                       }).toList(),
@@ -286,19 +290,23 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                             setState(() => _enableDistance = !_enableDistance),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: _enableDistance ? kPrimaryColor : kGreyColor,
                             borderRadius: BorderRadius.circular(12),
-                            border: _enableDistance ? null : Border.all(
-                                color: kBorderColor),
+                            border: _enableDistance
+                                ? null
+                                : Border.all(color: kBorderColor),
                           ),
                           child: Text(
                             _enableDistance
                                 ? l10n.withinDistance(_distance.round())
                                 : l10n.anyDistance,
                             style: AppStyles.w500f12inter.copyWith(
-                                color: kDarkTextColor),
+                              color: kDarkTextColor,
+                            ),
                           ),
                         ),
                       ),

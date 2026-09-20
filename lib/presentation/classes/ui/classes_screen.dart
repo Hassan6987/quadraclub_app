@@ -352,7 +352,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
                                 onTap: () => _openDetails(
                                   classModel,
                                   _clubDistance(classModel),
-                                )),
+                                ),
+                              ),
                           ],
                         ],
                       ),
@@ -363,9 +364,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
       ),
     );
   }
-  }
 
-  void _openDetails(Class classModel, double distance) final l10n = AppLocalizations.of(context)!;
+  void _openDetails(Class classModel, double distance) {
+    final l10n = AppLocalizations.of(context)!;
 
     // Gate: show login dialog for unauthenticated users
     final authState = context.read<AuthBloc>().state;
@@ -384,7 +385,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) =>
-            ClassDetailsScreen(classModel: classModel, distanceKm: distance,),
+            ClassDetailsScreen(classModel: classModel, distanceKm: distance),
       ),
     );
   }

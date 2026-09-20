@@ -17,7 +17,8 @@ class RequestsTab extends StatelessWidget {
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
           return Center(
-              child: Text(AppLocalizations.of(context)!.nothingHereYet));
+            child: Text(AppLocalizations.of(context)!.nothingHereYet),
+          );
         }
         return ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -54,17 +55,23 @@ class RequestsTab extends StatelessWidget {
             ),
             8.widthBox,
             _actionButton(Icons.close, kRedColor, () {
-              context.read<AgendaBloc>().add(RespondToMatchRequest(
+              context.read<AgendaBloc>().add(
+                RespondToMatchRequest(
                   matchId: matchId,
                   playerId: request.id ?? '',
-                  action: "reject"));
+                  action: "reject",
+                ),
+              );
             }),
             8.widthBox,
             _actionButton(Icons.check, kGreenColor, () {
-              context.read<AgendaBloc>().add(RespondToMatchRequest(
+              context.read<AgendaBloc>().add(
+                RespondToMatchRequest(
                   matchId: matchId,
                   playerId: request.id ?? '',
-                  action: "accept"));
+                  action: "accept",
+                ),
+              );
             }),
           ],
         ),

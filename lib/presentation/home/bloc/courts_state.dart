@@ -22,7 +22,7 @@ class CourtsState extends Equatable {
     this.error,
     this.courts = const [],
     this.players = const [],
-    this.balance = 0.0
+    this.balance = 0.0,
   });
 
   @override
@@ -33,14 +33,14 @@ class CourtsState extends Equatable {
     String? error,
     List<Club>? courts,
     List<InvitePlayerModel>? players,
-    double? balance
+    double? balance,
   }) {
     return CourtsState(
       status: status ?? this.status,
       error: error ?? this.error,
       courts: courts ?? this.courts,
       players: players ?? this.players,
-        balance: balance ?? this.balance
+      balance: balance ?? this.balance,
     );
   }
 }

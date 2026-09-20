@@ -10,8 +10,11 @@ class CourtDetailScreen extends StatefulWidget {
   final Club club;
   final double distance;
 
-  const CourtDetailScreen(
-      {super.key, required this.club, required this.distance});
+  const CourtDetailScreen({
+    super.key,
+    required this.club,
+    required this.distance,
+  });
 
   @override
   State<CourtDetailScreen> createState() => _CourtDetailScreenState();
@@ -225,7 +228,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
       startTime: slot.startTime ?? '',
       sportName: _selectedSportName,
       court: court,
-        distance: widget.distance
+      distance: widget.distance,
     );
   }
 
@@ -323,8 +326,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                   4.heightBox,
 
                   Text(
-                    "$_locationLabel • ${formatDistanceKm(
-                        widget.distance, AppLocalizations.of(context)!)}",
+                    "$_locationLabel • ${formatDistanceKm(widget.distance, AppLocalizations.of(context)!)}",
                     style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                   ),
 
@@ -440,11 +442,11 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                         final slots = _slotsFor(court);
 
                         // Each court has its own controller,
-                          // but all controllers synchronize their
-                          // horizontal offset.
-                          final scrollController = _getCourtScrollController(
-                            _courtScrollKey(court, courtIndex),
-                          );
+                        // but all controllers synchronize their
+                        // horizontal offset.
+                        final scrollController = _getCourtScrollController(
+                          _courtScrollKey(court, courtIndex),
+                        );
 
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 20),
@@ -492,7 +494,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                                               ),
 
                                               if (i + 1 < slots.length) ...[
-                                                  const SizedBox(height: 10),
+                                                const SizedBox(height: 10),
 
                                                 _buildTimeSlotChip(
                                                   court,

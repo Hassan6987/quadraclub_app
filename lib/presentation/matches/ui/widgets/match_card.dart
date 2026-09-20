@@ -82,9 +82,7 @@ class MatchCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${match.club?.city} • ${formatDistanceKm(
-                            distanceKm, l10n)} • ${getFormatDateMonth(
-                            match.bookingDate, locale: l10n.localeName)}",
+                        "${match.club?.city} • ${formatDistanceKm(distanceKm, l10n)} • ${getFormatDateMonth(match.bookingDate, locale: l10n.localeName)}",
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),
@@ -143,8 +141,11 @@ Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
   );
 }
 
-Widget buildPlayer(BuildContext cxt, PlayersDetail player,
-    VoidCallback? onTap) {
+Widget buildPlayer(
+  BuildContext cxt,
+  PlayersDetail player,
+  VoidCallback? onTap,
+) {
   if (player.user == null) {
     return Expanded(
       child: Column(

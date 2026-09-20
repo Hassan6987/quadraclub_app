@@ -41,11 +41,9 @@ extension MatchFormatExtension on MatchFormat {
         return MatchFormat.singles;
     }
   }
-
 }
 
-extension CourtStatusExtension on CourtStatus{
-
+extension CourtStatusExtension on CourtStatus {
   static CourtStatus fromString(String value) {
     switch (value.trim().toLowerCase()) {
       case 'pending':
@@ -82,7 +80,7 @@ class Booking {
     required this.filledSlots,
     required this.needsPlayers,
     required this.isFull,
-    required this.category
+    required this.category,
   });
 
   final String? id;
@@ -109,7 +107,7 @@ class Booking {
   final bool? isFull;
   final String category;
 
-  factory Booking.fromJson(Map<String, dynamic> json){
+  factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
       id: json["_id"],
       club: json["club"] == null ? null : BookedClub.fromJson(json["club"]),
@@ -124,9 +122,11 @@ class Booking {
       totalPrice: json["totalPrice"],
       serviceFee: json["serviceFee"],
       status: CourtStatusExtension.fromString(json["status"] ?? ''),
-      playersDetail: json["playersDetail"] == null ? [] : List<
-          PlayersDetail>.from(
-          json["playersDetail"]!.map((x) => PlayersDetail.fromJson(x))),
+      playersDetail: json["playersDetail"] == null
+          ? []
+          : List<PlayersDetail>.from(
+              json["playersDetail"]!.map((x) => PlayersDetail.fromJson(x)),
+            ),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       bookingId: json["bookingId"],
@@ -135,10 +135,9 @@ class Booking {
       filledSlots: json["filledSlots"],
       needsPlayers: json["needsPlayers"],
       isFull: json["isFull"],
-        category: json['category'] ?? ''
+      category: json['category'] ?? '',
     );
   }
-
 }
 
 class BookedBy {
@@ -154,7 +153,7 @@ class BookedBy {
   final String? email;
   final String? profilePhoto;
 
-  factory BookedBy.fromJson(Map<String, dynamic> json){
+  factory BookedBy.fromJson(Map<String, dynamic> json) {
     return BookedBy(
       id: json["_id"],
       fullName: json["fullName"],
@@ -162,7 +161,6 @@ class BookedBy {
       profilePhoto: json["profilePhoto"],
     );
   }
-
 }
 
 class BookedClub {
@@ -192,7 +190,7 @@ class BookedClub {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  factory BookedClub.fromJson(Map<String, dynamic> json){
+  factory BookedClub.fromJson(Map<String, dynamic> json) {
     return BookedClub(
       id: json["_id"],
       name: json["name"],
@@ -207,7 +205,6 @@ class BookedClub {
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
   }
-
 }
 
 class PlayersDetail {
@@ -227,7 +224,7 @@ class PlayersDetail {
   final String? payment;
   final String? id;
 
-  factory PlayersDetail.fromJson(Map<String, dynamic> json){
+  factory PlayersDetail.fromJson(Map<String, dynamic> json) {
     return PlayersDetail(
       user: json["user"] == null ? null : BookedBy.fromJson(json["user"]),
       role: json["role"],
@@ -237,6 +234,4 @@ class PlayersDetail {
       id: json["_id"],
     );
   }
-
 }
-

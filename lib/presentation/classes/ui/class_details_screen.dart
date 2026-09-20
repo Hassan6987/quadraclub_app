@@ -11,7 +11,9 @@ class ClassDetailsScreen extends StatelessWidget {
     super.key,
     required this.classModel,
     required this.distanceKm,
-  })@override
+  });
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
@@ -38,7 +40,7 @@ class ClassDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InfoCard(classModel: classModel, distanceKm: distanceKm,),
+            InfoCard(classModel: classModel, distanceKm: distanceKm),
             4.heightBox,
 
             if (registrationDeadline != null)
@@ -91,9 +93,10 @@ class ClassDetailsScreen extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) =>
-                        PaymentForLessonScreen(
-                          classModel: classModel, distanceKm: distanceKm,),
+                    builder: (_) => PaymentForLessonScreen(
+                      classModel: classModel,
+                      distanceKm: distanceKm,
+                    ),
                   ),
                 );
               },

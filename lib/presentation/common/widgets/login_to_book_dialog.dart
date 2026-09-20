@@ -6,17 +6,13 @@ class LoginToBookDialog extends StatelessWidget {
   final String? title;
   final String? subtitle;
 
-  const LoginToBookDialog({
-    super.key,
-    this.title,
-    this.subtitle,
-  });
+  const LoginToBookDialog({super.key, this.title, this.subtitle});
 
   /// Convenience method to show the bottom sheet.
   static Future<void> show(
     BuildContext context, {
-        String? title,
-        String? subtitle,
+    String? title,
+    String? subtitle,
   }) {
     return showModalBottomSheet(
       context: context,

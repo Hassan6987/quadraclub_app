@@ -21,7 +21,8 @@ class DetailsTab extends StatelessWidget {
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
           return Center(
-              child: Text(AppLocalizations.of(context)!.nothingHereYet));
+            child: Text(AppLocalizations.of(context)!.nothingHereYet),
+          );
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +43,8 @@ class DetailsTab extends StatelessWidget {
               onTap: () {
                 context.pop();
                 context.read<AgendaBloc>().add(
-                    LeaveMatchEvent(matchId: match.id ?? ''));
+                  LeaveMatchEvent(matchId: match.id ?? ''),
+                );
               },
               backgroundColor: kLightPinkColor,
             ).withPaddingSymmetric(24, 16),
@@ -200,11 +202,13 @@ class DetailsTab extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      AgendaChatScreen(chatId: chat?.id ?? '',
-                          label: chat?.chatName ??
-                              AppLocalizations.of(context)!.groupChat,
-                          userCount: chat?.users.length ?? 1),
+                  builder: (_) => AgendaChatScreen(
+                    chatId: chat?.id ?? '',
+                    label:
+                        chat?.chatName ??
+                        AppLocalizations.of(context)!.groupChat,
+                    userCount: chat?.users.length ?? 1,
+                  ),
                 ),
               );
             },

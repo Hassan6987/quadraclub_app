@@ -24,7 +24,8 @@ class _InvitedTabState extends State<InvitedTab> {
         final match = state.matchDetails;
         if (state.status != AgendaStateStatus.fetching && match == null) {
           return Center(
-              child: Text(AppLocalizations.of(context)!.nothingHereYet));
+            child: Text(AppLocalizations.of(context)!.nothingHereYet),
+          );
         }
         return Column(
           children: [

@@ -24,6 +24,6 @@ class IndividualBookingModel {
     required this.cardExpiryDate,
     required this.totalPrice,
     required this.serviceFee,
-    required this.isPortfolio
+    required this.isPortfolio,
   });
 }

@@ -24,9 +24,7 @@ class AgendaClassCard extends StatelessWidget {
             SportBadge(sport: SportTypeExtension.fromString(item.sport)),
             if (item.classType != null) ...[
               4.widthBox,
-              CommonBadge(
-                label: _localizedClassType(context, item.classType!),
-              ),
+              CommonBadge(label: _localizedClassType(context, item.classType!)),
             ],
             const Spacer(),
             Text(
@@ -78,10 +76,11 @@ class AgendaClassCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      AgendaChatScreen(chatId: item.chatId ?? '',
-                          label: item.title,
-                          userCount: item.players?.length ?? 1),
+                  builder: (_) => AgendaChatScreen(
+                    chatId: item.chatId ?? '',
+                    label: item.title,
+                    userCount: item.players?.length ?? 1,
+                  ),
                 ),
               );
             },

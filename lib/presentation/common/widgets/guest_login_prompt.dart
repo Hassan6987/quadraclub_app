@@ -115,7 +115,8 @@ class GuestLoginPrompt extends StatelessWidget {
                 child: Text(
                   l10n.language,
                   style: AppStyles.w400f16inter.copyWith(
-                      color: kLightGreenColor),
+                    color: kLightGreenColor,
+                  ),
                 ),
               ),
             ],
@@ -124,7 +125,6 @@ class GuestLoginPrompt extends StatelessWidget {
       ),
     );
   }
-
 
   void _showLanguageDialog(BuildContext context) {
     showDialog(
@@ -140,18 +140,14 @@ class GuestLoginPrompt extends StatelessWidget {
               ),
               title: Text(
                 l10n.language,
-                style: AppStyles.w600f18inter.copyWith(
-                  color: kBlackColor,
-                ),
+                style: AppStyles.w600f18inter.copyWith(color: kBlackColor),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     l10n.chooseLanguage,
-                    style: AppStyles.w500f12inter.copyWith(
-                      color: kTextColor,
-                    ),
+                    style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
                   const SizedBox(height: 16),
 
@@ -164,9 +160,7 @@ class GuestLoginPrompt extends StatelessWidget {
                   onPressed: () => Navigator.pop(dialogContext),
                   child: Text(
                     l10n.close,
-                    style: AppStyles.titleMedium.copyWith(
-                      color: kPrimaryColor,
-                    ),
+                    style: AppStyles.titleMedium.copyWith(color: kPrimaryColor),
                   ),
                 ),
               ],

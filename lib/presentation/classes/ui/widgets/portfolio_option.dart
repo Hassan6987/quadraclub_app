@@ -58,20 +58,23 @@ class PortfolioPaymentOption extends StatelessWidget {
                     Text(
                       l10n.portfolioBalance,
                       style: AppStyles.w500f14inter.copyWith(
-                          color: kDarkTextColor),
+                        color: kDarkTextColor,
+                      ),
                     ),
                     4.heightBox,
                     Text(
                       l10n.balanceAmount(formatPrice(balance)),
                       style: AppStyles.w400f12inter.copyWith(
-                          color: kGreyTextColor),
+                        color: kGreyTextColor,
+                      ),
                     ),
                     if (!isEnabled) ...[
                       4.heightBox,
                       Text(
                         l10n.insufficientBalance,
                         style: AppStyles.w400f12inter.copyWith(
-                            color: Colors.red),
+                          color: Colors.red,
+                        ),
                       ),
                     ],
                   ],
@@ -95,8 +98,11 @@ class CardPaymentOption extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const CardPaymentOption(
-      {super.key, required this.isSelected, required this.onTap});
+  const CardPaymentOption({
+    super.key,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +129,9 @@ class CardPaymentOption extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
-                  Icons.credit_card_outlined, color: kPrimaryColor),
+                Icons.credit_card_outlined,
+                color: kPrimaryColor,
+              ),
             ),
             12.widthBox,
             Expanded(

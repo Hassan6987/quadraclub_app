@@ -12,7 +12,9 @@ class InfoCard extends StatelessWidget {
     super.key,
     required this.classModel,
     required this.distanceKm,
-  })@override
+  });
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dateStr = DateFormat(
@@ -51,9 +53,7 @@ class InfoCard extends StatelessWidget {
                 ),
               ),
               4.widthBox,
-              CommonBadge(
-                label: classModel.statusLabel ?? '',
-              ),
+              CommonBadge(label: classModel.statusLabel ?? ''),
             ],
           ).withPaddingSymmetric(0, 8),
 
@@ -70,8 +70,8 @@ class InfoCard extends StatelessWidget {
           10.heightBox,
           _InfoRow(
             icon: Assets.svg.locationIcon.path,
-            text: '${classModel.locationName} · ${formatDistanceKm(
-                distanceKm)}',
+            text:
+                '${classModel.locationName} · ${formatDistanceKm(distanceKm)}',
           ),
           8.heightBox,
           _InfoRow(

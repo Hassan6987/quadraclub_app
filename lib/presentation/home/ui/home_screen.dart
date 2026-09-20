@@ -15,9 +15,7 @@ import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 /// The 4 sport types the filter row always shows, regardless of what
 /// happens to be present in the currently loaded clubs.
 
-
-String localizedSportName(BuildContext context,
-    String? sportName,) {
+String localizedSportName(BuildContext context, String? sportName) {
   final l10n = AppLocalizations.of(context)!;
 
   switch (sportName?.trim().toLowerCase()) {
@@ -339,10 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           final sport = kAllSportSlugs[index];
                           final isSelected = _selectedSports.contains(sport);
 
-                          final label = localizedSportName(
-                            context,
-                            sport,
-                          );
+                          final label = localizedSportName(context, sport);
 
                           return GestureDetector(
                             onTap: () {
@@ -364,9 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderRadius: BorderRadius.circular(12),
                                 border: isSelected
                                     ? null
-                                    : Border.all(
-                                  color: kBorderColor,
-                                ),
+                                    : Border.all(color: kBorderColor),
                               ),
                               child: Center(
                                 child: Text(
@@ -524,7 +517,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (_filterDistance != null) ...[
                               _buildFilterBadge(
                                 label: l10n.distanceKm(
-                                    _filterDistance!.round().toString()),
+                                  _filterDistance!.round().toString(),
+                                ),
                                 icon: Icons.near_me_outlined,
                                 onClear: () =>
                                     setState(() => _filterDistance = null),
@@ -586,9 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         _filterDistance = null;
                                       });
                                     },
-                                    child: Text(
-                                      l10n.resetFilters,
-                                    ),
+                                    child: Text(l10n.resetFilters),
                                   ),
                                 ],
                               ),
@@ -622,7 +614,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (_) => CourtDetailScreen(
                                           club: clubsList[index],
                                           distance: _clubDistance(
-                                              clubsList[index]),
+                                            clubsList[index],
+                                          ),
                                         ),
                                       ),
                                     );
