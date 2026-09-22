@@ -272,45 +272,10 @@ class _CourtMapViewState extends State<CourtMapView> {
                   4.heightBox,
                   Divider(color: kBorderColor, thickness: 1),
                   4.heightBox,
-                  SizedBox(
-                    height: 38,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: kAllSportSlugs.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final sport = kAllSportSlugs[index];
-                        final isSelected = widget.selectedSports.contains(
-                          sport,
-                        );
-                        final label =
-                            '${sport[0].toUpperCase()}${sport.substring(1).replaceAll('_', ' ')}';
-                        return GestureDetector(
-                          onTap: () => widget.onSportSelected(sport),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected ? kPrimaryColor : kWhiteColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: isSelected
-                                  ? null
-                                  : Border.all(color: kBorderColor),
-                            ),
-                            child: Center(
-                              child: Text(
-                                label,
-                                style: AppStyles.w400f14inter.copyWith(
-                                  color: kDarkTextColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                  SportFilterRow(
+                    horizontalPadding: 0,
+                    selectedSports: widget.selectedSports,
+                    onSportToggled: widget.onSportSelected,
                   ),
                 ],
               ),

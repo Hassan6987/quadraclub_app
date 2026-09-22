@@ -6,7 +6,11 @@ import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
 import 'package:quadraclub_app/presentation/classes/ui/widgets/filter_bottom_sheet.dart';
-import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
+import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
+import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
+import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart'
+    show localizedTimeOfDay;
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 import '/app_exports.dart' hide TimeOfDay;
@@ -19,8 +23,12 @@ class ClassesScreen extends StatefulWidget {
 }
 
 class _ClassesScreenState extends State<ClassesScreen> {
-  final List<SportType> _selectedSports = [];
+  final Set<String> _selectedSports = {};
 
+  bool _isMapView = false;
+  String _currentLocation = 'London, UK';
+
+  late final DateTime _anchorDate;
   DateTime? _selectedDate;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -30,11 +38,19 @@ class _ClassesScreenState extends State<ClassesScreen> {
   LevelFilter _level = LevelFilter.all;
   FormatFilter _format = FormatFilter.all;
 
-  double _distance = 25;
+  static const double _defaultDistance = 25;
+  double _distance = _defaultDistance;
   String _city = '';
 
   List<DateTime> get _dates =>
-      List.generate(7, (i) => DateTime.now().add(Duration(days: i)));
+      List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
+
+  bool get _hasActiveFilters =>
+      _selectedTimes.isNotEmpty ||
+      _level != LevelFilter.all ||
+      _format != FormatFilter.all ||
+      _distance != _defaultDistance ||
+      _city.isNotEmpty;
 
   List<Class> _filtered(List<Class> classes) {
     return classes.where((c) {
@@ -43,10 +59,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
       // -------------------------
       final matchesSport =
           _selectedSports.isEmpty ||
-          (c.sportName != null &&
-              _selectedSports.contains(
-                SportTypeExtension.fromString(c.sportName!),
-              ));
+          _selectedSports.contains(sportSlug(c.sportName));
 
       // -------------------------
       // Search
@@ -187,7 +200,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    final now = DateTime.now();
+    _anchorDate = DateTime(now.year, now.month, now.day);
     _initUserLocation();
     super.initState();
   }
@@ -198,9 +212,112 @@ class _ClassesScreenState extends State<ClassesScreen> {
     super.dispose();
   }
 
+  void _toggleSport(String sport) {
+    setState(() {
+      if (_selectedSports.contains(sport)) {
+        _selectedSports.remove(sport);
+      } else {
+        _selectedSports.add(sport);
+      }
+    });
+  }
+
+  List<Widget> _activeFilterBadges(AppLocalizations l10n) {
+    return [
+      for (final time in _selectedTimes)
+        HeaderFilterBadge(
+          label: localizedTimeOfDay(context, time.name),
+          icon: Icons.access_time,
+          onClear: () => setState(() => _selectedTimes.remove(time)),
+        ),
+      if (_level != LevelFilter.all)
+        HeaderFilterBadge(
+          label: l10n.selectLevels,
+          icon: Icons.bar_chart,
+          onClear: () => setState(() => _level = LevelFilter.all),
+        ),
+      if (_format != FormatFilter.all)
+        HeaderFilterBadge(
+          label: _format == FormatFilter.group ? l10n.group : l10n.individual,
+          icon: Icons.groups_outlined,
+          onClear: () => setState(() => _format = FormatFilter.all),
+        ),
+      if (_city.isNotEmpty)
+        HeaderFilterBadge(
+          label: _city,
+          icon: Icons.location_city,
+          onClear: () => setState(() => _city = ''),
+        ),
+      if (_distance != _defaultDistance)
+        HeaderFilterBadge(
+          label: l10n.distanceKm(_distance.round().toString()),
+          icon: Icons.near_me_outlined,
+          onClear: () => setState(() => _distance = _defaultDistance),
+        ),
+      HeaderClearAllButton(
+        onTap: () => setState(() {
+          _selectedTimes.clear();
+          _level = LevelFilter.all;
+          _format = FormatFilter.all;
+          _distance = _defaultDistance;
+          _city = '';
+        }),
+      ),
+    ];
+  }
+
+  Future<void> _openFilters() async {
+    final result = await FilterBottomSheet.show(
+      context,
+      selectedTimes: _selectedTimes,
+      level: _level,
+      format: _format,
+      distance: _distance,
+      city: _city,
+    );
+
+    if (result == null) return;
+
+    setState(() {
+      _selectedTimes
+        ..clear()
+        ..addAll(result.selectedTimes);
+
+      _level = result.level;
+      _format = result.format;
+      _distance = result.distance;
+      _city = result.city;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    if (_isMapView) {
+      return CourtMapView(
+        courts: context.read<CourtsBloc>().state.courts,
+        currentLocation: _currentLocation,
+        initialCenter: _currentLatLng,
+        onLocationChanged: (LocationResult location) {
+          setState(() {
+            _currentLocation = location.address;
+            _currentLatLng = LatLng(location.latitude, location.longitude);
+          });
+        },
+        onBackToList: () => setState(() => _isMapView = false),
+        filterCity: _city.isEmpty ? null : _city,
+        filterDistance: _distance,
+        onApplyFilters: (timeOfDay, city, dist) {
+          setState(() {
+            _city = city ?? '';
+            _distance = dist ?? _defaultDistance;
+          });
+        },
+        selectedSports: _selectedSports,
+        onSportSelected: _toggleSport,
+      );
+    }
 
     return Scaffold(
       backgroundColor: kCardColor,
@@ -228,107 +345,22 @@ class _ClassesScreenState extends State<ClassesScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: kWhiteColor,
-                  border: Border(bottom: BorderSide(color: kBorderColor)),
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 33,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          for (final sport in SportType.values) ...[
-                            CommonChip(
-                              label: sport.localizedLabel(context),
-                              isSelected: _selectedSports.contains(sport),
-                              onTap: () => setState(() {
-                                if (_selectedSports.contains(sport)) {
-                                  _selectedSports.remove(sport);
-                                } else {
-                                  _selectedSports.add(sport);
-                                }
-                              }),
-                            ).paddingOnly(
-                              right: sport.index == SportType.values.length - 1
-                                  ? 0
-                                  : 6,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ).withPaddingSymmetric(16, 0),
-
-                    12.heightBox,
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _searchController,
-                            hintText: l10n.searchByName,
-                            borderRadius: 100,
-                            onChanged: (value) {
-                              setState(() {
-                                _searchQuery = value.trim();
-                              });
-                            },
-                          ),
-                        ),
-
-                        8.widthBox,
-
-                        GestureDetector(
-                          onTap: () async {
-                            final result = await FilterBottomSheet.show(
-                              context,
-                              selectedTimes: _selectedTimes,
-                              level: _level,
-                              format: _format,
-                              distance: _distance,
-                              city: _city,
-                            );
-
-                            if (result == null) return;
-
-                            setState(() {
-                              _selectedTimes
-                                ..clear()
-                                ..addAll(result.selectedTimes);
-
-                              _level = result.level;
-                              _format = result.format;
-                              _distance = result.distance;
-                              _city = result.city;
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: kWhiteColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: kBorderColor),
-                            ),
-                            child: SvgPicture.asset(
-                              Assets.svg.filterLines.path,
-                            ).withPaddingAll(8),
-                          ),
-                        ),
-                      ],
-                    ).withPaddingSymmetric(16, 0),
-
-                    12.heightBox,
-
-                    CommonDateSelectionRow(
-                      dates: _dates,
-                      selectedDate: _selectedDate,
-                      onDateSelected: (d) => setState(() => _selectedDate = d),
-                    ),
-
-                    16.heightBox,
-                  ],
-                ),
+              DiscoveryHeader(
+                selectedSports: _selectedSports,
+                onSportToggled: _toggleSport,
+                searchController: _searchController,
+                searchHint: l10n.searchByName,
+                onSearchChanged: (value) =>
+                    setState(() => _searchQuery = value.trim()),
+                hasActiveFilters: _hasActiveFilters,
+                activeFilterBadges: _hasActiveFilters
+                    ? _activeFilterBadges(l10n)
+                    : const [],
+                onFilterTap: _openFilters,
+                onMapTap: () => setState(() => _isMapView = true),
+                dates: _dates,
+                selectedDate: _selectedDate,
+                onDateSelected: (d) => setState(() => _selectedDate = d),
               ),
 
               Expanded(

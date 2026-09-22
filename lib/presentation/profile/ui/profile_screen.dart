@@ -56,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // 8.heightBox,
                 AccountSection(),
               ],
-            ).withPaddingSymmetric(20, 16),
+            ).withPaddingSymmetric(20, 8),
           ),
         );
       },

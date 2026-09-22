@@ -77,7 +77,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   List<DateTime> get _dates =>
-      List.generate(7, (i) => _anchorDate.add(Duration(days: i)));
+      List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
 
   double _clubDistance(Booking match) {
     return getDistanceKm(
@@ -114,31 +114,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return false;
   }
 
-  String _sportSlug(SportType sport) {
-    switch (sport) {
-      case SportType.pedal:
-        return 'padel';
-      case SportType.tennis:
-        return 'tennis';
-      case SportType.beachTennis:
-        return 'beach_tennis';
-      case SportType.pickleball:
-        return 'pickleball';
-    }
-  }
-
   List<Booking> _filteredMatches(List<Booking> allBookings) {
     final query = _searchQuery.trim().toLowerCase();
 
     final filtered = allBookings.where((match) {
       if (_selectedSports.isNotEmpty &&
-          !_selectedSports.contains(_sportSlug(match.sport))) {
+          !_selectedSports.contains(sportSlug(match.sport.label))) {
         return false;
       }
 
       if (query.isNotEmpty &&
           !(match.club?.name ?? '').toLowerCase().contains(query) &&
-          !(match.club?.name ?? '').toLowerCase().contains(query)) {
+          !(match.club?.city ?? '').toLowerCase().contains(query)) {
         return false;
       }
 
@@ -187,35 +174,51 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return filtered;
   }
 
-  Widget _buildFilterBadge({
-    required String label,
-    required IconData icon,
-    required VoidCallback onClear,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: kPrimaryColor.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: kPrimaryColor),
+  List<Widget> _activeFilterBadges(AppLocalizations l10n) {
+    return [
+      if (_filterTimeOfDay != null)
+        HeaderFilterBadge(
+          label: localizedTimeOfDay(context, _filterTimeOfDay!),
+          icon: Icons.access_time,
+          onClear: () => setState(() => _filterTimeOfDay = null),
+        ),
+      if (_filterFormat != null)
+        HeaderFilterBadge(
+          label: _filterFormat!.localizedLabel(context),
+          icon: Icons.groups_outlined,
+          onClear: () => setState(() => _filterFormat = null),
+        ),
+      if (_filterCity != null)
+        HeaderFilterBadge(
+          label: _filterCity!,
+          icon: Icons.location_city,
+          onClear: () => setState(() => _filterCity = null),
+        ),
+      if (_filterDistance != null)
+        HeaderFilterBadge(
+          label: l10n.distanceKm(_filterDistance!.round().toString()),
+          icon: Icons.near_me_outlined,
+          onClear: () => setState(() => _filterDistance = null),
+        ),
+      HeaderClearAllButton(
+        onTap: () => setState(() {
+          _filterTimeOfDay = null;
+          _filterCity = null;
+          _filterDistance = null;
+          _filterFormat = null;
+        }),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: kDarkTextColor),
-          4.widthBox,
-          Text(
-            label,
-            style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
-          ),
-          4.widthBox,
-          GestureDetector(
-            onTap: onClear,
-            child: const Icon(Icons.close, size: 14, color: kDarkTextColor),
-          ),
-        ],
-      ),
-    );
+    ];
+  }
+
+  void _toggleSport(String sport) {
+    setState(() {
+      if (_selectedSports.contains(sport)) {
+        _selectedSports.remove(sport);
+      } else {
+        _selectedSports.add(sport);
+      }
+    });
   }
 
   bool _isSameDate(DateTime a, DateTime? b) {
@@ -286,24 +289,21 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       location.latitude,
                       location.longitude,
                     );
+                    _hasUserLocation = true;
                   });
                 },
                 onBackToList: () => setState(() => _isMapView = false),
+                filterTimeOfDay: _filterTimeOfDay,
+                filterCity: _filterCity,
+                filterDistance: _filterDistance,
                 onApplyFilters: (timeOfDay, city, dist) {
                   setState(() {
                     _filterTimeOfDay = timeOfDay;
                     _filterCity = city;
-                    _filterDistance = dist!;
+                    _filterDistance = dist;
                   });
                 },
-                onSportSelected: (sport) => setState(() {
-                  // <-- simple toggle, no null case
-                  if (_selectedSports.contains(sport)) {
-                    _selectedSports.remove(sport);
-                  } else {
-                    _selectedSports.add(sport);
-                  }
-                }),
+                onSportSelected: _toggleSport,
                 selectedSports: _selectedSports,
               );
             }
@@ -323,7 +323,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 .toList();
 
             return Scaffold(
-              backgroundColor: kWhiteFo,
+              backgroundColor: kCardColor,
               appBar: CustomAppBar(
                 title: l10n.openMatches,
                 centerTile: false,
@@ -336,241 +336,38 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: kWhiteColor,
-                            border: Border(
-                              bottom: BorderSide(color: kBorderColor),
-                            ),
+                        DiscoveryHeader(
+                          selectedSports: _selectedSports,
+                          onSportToggled: _toggleSport,
+                          searchController: _searchController,
+                          searchHint: l10n.searchByName,
+                          onSearchChanged: (value) =>
+                              setState(() => _searchQuery = value),
+                          hasActiveFilters: hasActiveFilters,
+                          activeFilterBadges: hasActiveFilters
+                              ? _activeFilterBadges(l10n)
+                              : const [],
+                          onFilterTap: () => MatchFilterBottomSheet.show(
+                            context,
+                            initialTimeOfDay: _filterTimeOfDay,
+                            initialCity: _filterCity,
+                            initialDistance: _filterDistance,
+                            initialFormat: _filterFormat,
+                            availableCities: availableCities,
+                            onApply: (timeOfDay, city, dist, format) {
+                              setState(() {
+                                _filterTimeOfDay = timeOfDay;
+                                _filterCity = city;
+                                _filterDistance = dist;
+                                _filterFormat = format;
+                              });
+                            },
                           ),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 38,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  itemCount: kAllSportSlugs.length,
-                                  separatorBuilder: (_, __) =>
-                                      const SizedBox(width: 8),
-                                  itemBuilder: (context, index) {
-                                    final sport = kAllSportSlugs[index];
-                                    final isSelected = _selectedSports.contains(
-                                      sport,
-                                    );
-                                    final label = localizedSportName(
-                                      context,
-                                      sport,
-                                    );
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          if (isSelected) {
-                                            _selectedSports.remove(sport);
-                                          } else {
-                                            _selectedSports.add(sport);
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? kPrimaryColor
-                                              : kGreyColor,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          border: isSelected
-                                              ? null
-                                              : Border.all(color: kBorderColor),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            label,
-                                            style: AppStyles.w400f14inter
-                                                .copyWith(
-                                                  color: kDarkTextColor,
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ).withPaddingSymmetric(16, 0),
-                              12.heightBox,
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: CustomTextField(
-                                      controller: _searchController,
-                                      hintText: l10n.searchByName,
-                                      borderRadius: 100,
-                                      hintStyle: AppStyles.w400f14inter,
-                                      onChanged: (value) =>
-                                          setState(() => _searchQuery = value),
-                                    ),
-                                  ),
-                                  8.widthBox,
-                                  GestureDetector(
-                                    onTap: () => MatchFilterBottomSheet.show(
-                                      context,
-                                      initialTimeOfDay: _filterTimeOfDay,
-                                      initialCity: _filterCity,
-                                      initialDistance: _filterDistance,
-                                      initialFormat: _filterFormat,
-                                      availableCities: availableCities,
-                                      onApply: (timeOfDay, city, dist, format) {
-                                        setState(() {
-                                          _filterTimeOfDay = timeOfDay;
-                                          _filterCity = city;
-                                          _filterDistance = dist;
-                                          _filterFormat = format;
-                                        });
-                                      },
-                                    ),
-                                    child: Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: hasActiveFilters
-                                            ? kPrimaryColor
-                                            : kWhiteColor,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(color: kBorderColor),
-                                      ),
-                                      child: Center(
-                                        child: SvgPicture.asset(
-                                          Assets.svg.filterLines.path,
-                                          colorFilter: const ColorFilter.mode(
-                                            kDarkTextColor,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  8.widthBox,
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _isMapView = true;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: kWhiteColor,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(color: kBorderColor),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.map_outlined,
-                                          color: kDarkTextColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ).withPaddingSymmetric(16, 0),
-                              if (hasActiveFilters) ...[
-                                8.heightBox,
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      if (_filterTimeOfDay != null) ...[
-                                        _buildFilterBadge(
-                                          label: localizedTimeOfDay(
-                                            context,
-                                            _filterTimeOfDay!,
-                                          ),
-                                          icon: Icons.access_time,
-                                          onClear: () => setState(
-                                            () => _filterTimeOfDay = null,
-                                          ),
-                                        ),
-                                        8.widthBox,
-                                      ],
-                                      if (_filterFormat != null) ...[
-                                        _buildFilterBadge(
-                                          label: _filterFormat!.localizedLabel(
-                                            context,
-                                          ),
-                                          icon: Icons.groups_outlined,
-                                          onClear: () => setState(
-                                            () => _filterFormat = null,
-                                          ),
-                                        ),
-                                        8.widthBox,
-                                      ],
-                                      if (_filterCity != null) ...[
-                                        _buildFilterBadge(
-                                          label: _filterCity!,
-                                          icon: Icons.location_city,
-                                          onClear: () => setState(
-                                            () => _filterCity = null,
-                                          ),
-                                        ),
-                                        8.widthBox,
-                                      ],
-                                      if (_filterDistance != null) ...[
-                                        _buildFilterBadge(
-                                          label: l10n.distanceKm(
-                                            _filterDistance!.round().toString(),
-                                          ),
-                                          icon: Icons.near_me_outlined,
-                                          onClear: () => setState(
-                                            () => _filterDistance = null,
-                                          ),
-                                        ),
-                                        8.widthBox,
-                                      ],
-                                      GestureDetector(
-                                        onTap: () => setState(() {
-                                          _filterTimeOfDay = null;
-                                          _filterCity = null;
-                                          _filterDistance = null;
-                                          _filterFormat = null;
-                                        }),
-                                        child: Text(
-                                          l10n.clearAll,
-                                          style: AppStyles.w500f12inter
-                                              .copyWith(
-                                                color: kDarkTextColor,
-                                                decoration:
-                                                    TextDecoration.underline,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              12.heightBox,
-                              CommonDateSelectionRow(
-                                dates: _dates,
-                                selectedDate: _selectedDate,
-                                onDateSelected: (date) {
-                                  setState(() {
-                                    _selectedDate = date;
-                                  });
-                                },
-                              ),
-                              16.heightBox,
-                            ],
-                          ),
+                          onMapTap: () => setState(() => _isMapView = true),
+                          dates: _dates,
+                          selectedDate: _selectedDate,
+                          onDateSelected: (date) =>
+                              setState(() => _selectedDate = date),
                         ),
                         Expanded(
                           child: grouped.isEmpty

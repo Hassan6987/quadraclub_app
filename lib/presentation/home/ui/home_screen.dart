@@ -9,40 +9,7 @@ import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
-import 'package:quadraclub_app/presentation/home/ui/widgets/search_courts_sheet.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
-
-/// The 4 sport types the filter row always shows, regardless of what
-/// happens to be present in the currently loaded clubs.
-
-String localizedSportName(BuildContext context, String? sportName) {
-  final l10n = AppLocalizations.of(context)!;
-
-  switch (sportName?.trim().toLowerCase()) {
-    case 'padel':
-      return l10n.padel;
-
-    case 'tennis':
-      return l10n.tennis;
-
-    case 'beach tennis':
-    case 'beach_tennis':
-      return l10n.beachTennis;
-
-    case 'pickleball':
-      return l10n.pickleball;
-
-    default:
-      return sportName ?? '';
-  }
-}
-
-const List<String> kAllSportSlugs = [
-  'padel',
-  'tennis',
-  'beach_tennis',
-  'pickleball',
-];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,11 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final Set<String> _selectedSports = {};
 
-  // Anchor is fixed once (today, at load time) so the 7-day strip doesn't
+  // Anchor is fixed once (today, at load time) so the two-week strip doesn't
   // shift underneath the user; _selectedDate moves as they tap a day.
   late final DateTime _anchorDate;
   late DateTime _selectedDate;
 
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   String? _filterTimeOfDay;
@@ -77,6 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _anchorDate = DateTime(now.year, now.month, now.day);
     _selectedDate = _anchorDate;
     _initUserLocation();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _initUserLocation() async {
@@ -106,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<DateTime> get _dates =>
-      List.generate(7, (i) => _anchorDate.add(Duration(days: i)));
+      List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
 
   String _dateKey(DateTime date) {
     final y = date.year.toString().padLeft(4, '0');
@@ -174,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final filtered = clubs.where((club) {
       // Sport filter
       if (_selectedSports.isNotEmpty &&
-          !club.sports.any((s) => _selectedSports.contains(s.toLowerCase()))) {
+          !club.sports.any((s) => _selectedSports.contains(sportSlug(s)))) {
         return false;
       }
 
@@ -222,35 +196,44 @@ class _HomeScreenState extends State<HomeScreen> {
     return filtered;
   }
 
-  Widget _buildFilterBadge({
-    required String label,
-    required IconData icon,
-    required VoidCallback onClear,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: kPrimaryColor.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: kPrimaryColor),
+  List<Widget> _activeFilterBadges(AppLocalizations l10n) {
+    return [
+      if (_filterTimeOfDay != null)
+        HeaderFilterBadge(
+          label: _filterTimeOfDay!,
+          icon: Icons.access_time,
+          onClear: () => setState(() => _filterTimeOfDay = null),
+        ),
+      if (_filterCity != null)
+        HeaderFilterBadge(
+          label: _filterCity!,
+          icon: Icons.location_city,
+          onClear: () => setState(() => _filterCity = null),
+        ),
+      if (_filterDistance != null)
+        HeaderFilterBadge(
+          label: l10n.distanceKm(_filterDistance!.round().toString()),
+          icon: Icons.near_me_outlined,
+          onClear: () => setState(() => _filterDistance = null),
+        ),
+      HeaderClearAllButton(
+        onTap: () => setState(() {
+          _filterTimeOfDay = null;
+          _filterCity = null;
+          _filterDistance = null;
+        }),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: kDarkTextColor),
-          4.widthBox,
-          Text(
-            label,
-            style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
-          ),
-          4.widthBox,
-          GestureDetector(
-            onTap: onClear,
-            child: const Icon(Icons.close, size: 14, color: kDarkTextColor),
-          ),
-        ],
-      ),
-    );
+    ];
+  }
+
+  void _toggleSport(String sport) {
+    setState(() {
+      if (_selectedSports.contains(sport)) {
+        _selectedSports.remove(sport);
+      } else {
+        _selectedSports.add(sport);
+      }
+    });
   }
 
   @override
@@ -305,17 +288,12 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             selectedSports: _selectedSports,
-            onSportSelected: (sport) => setState(() {
-              if (_selectedSports.contains(sport)) {
-                _selectedSports.remove(sport);
-              } else {
-                _selectedSports.add(sport);
-              }
-            }),
+            onSportSelected: _toggleSport,
           );
         }
 
         return Scaffold(
+          backgroundColor: kCardColor,
           appBar: CustomAppBar(
             title: l10n.findCourtsNearYou,
             centerTile: false,
@@ -326,231 +304,44 @@ class _HomeScreenState extends State<HomeScreen> {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: 38,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: kAllSportSlugs.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
-                        itemBuilder: (context, index) {
-                          final sport = kAllSportSlugs[index];
-                          final isSelected = _selectedSports.contains(sport);
-
-                          final label = localizedSportName(context, sport);
-
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (isSelected) {
-                                  _selectedSports.remove(sport);
-                                } else {
-                                  _selectedSports.add(sport);
-                                }
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected ? kPrimaryColor : kGreyColor,
-                                borderRadius: BorderRadius.circular(12),
-                                border: isSelected
-                                    ? null
-                                    : Border.all(color: kBorderColor),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  label,
-                                  style: AppStyles.w400f14inter.copyWith(
-                                    color: kDarkTextColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    12.heightBox,
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                SearchCourtsSheet.show(
-                                  context,
-                                  courts: state.courts,
-                                  onCourtSelected: (club) {
-                                    setState(() {
-                                      _searchQuery = club.name ?? '';
-                                    });
-                                  },
-                                );
-                              },
-                              child: Container(
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: kWhiteColor,
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(color: kBorderColor),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.search,
-                                      color: kDarkTextColor,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      _searchQuery.isNotEmpty
-                                          ? _searchQuery
-                                          : l10n.searchByName,
-                                      style: AppStyles.w400f14inter.copyWith(
-                                        color: kDarkTextColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          8.widthBox,
-                          GestureDetector(
-                            onTap: () {
-                              CourtFilterBottomSheet.show(
-                                context,
-                                initialTimeOfDay: _filterTimeOfDay,
-                                initialCity: _filterCity,
-                                initialDistance: _filterDistance,
-                                availableCities: state.courts
-                                    .map((c) => c.city)
-                                    .whereType<String>()
-                                    .where((s) => s.trim().isNotEmpty)
-                                    .toSet()
-                                    .toList(),
-                                onApply: (timeOfDay, city, dist) {
-                                  setState(() {
-                                    _filterTimeOfDay = timeOfDay;
-                                    _filterCity = city;
-                                    _filterDistance = dist;
-                                  });
-                                },
-                              );
-                            },
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: hasActiveFilters
-                                    ? kPrimaryColor
-                                    : kWhiteColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: kBorderColor),
-                              ),
-                              child: Center(
-                                child: SvgPicture.asset(
-                                  Assets.svg.filterLines.path,
-                                  colorFilter: const ColorFilter.mode(
-                                    kDarkTextColor,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          8.widthBox,
-                          GestureDetector(
-                            onTap: () => setState(() => _isMapView = true),
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: kWhiteColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: kBorderColor),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.map_outlined,
-                                  color: kDarkTextColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (hasActiveFilters) ...[
-                      8.heightBox,
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            if (_filterTimeOfDay != null) ...[
-                              _buildFilterBadge(
-                                label: _filterTimeOfDay!,
-                                icon: Icons.access_time,
-                                onClear: () =>
-                                    setState(() => _filterTimeOfDay = null),
-                              ),
-                              8.widthBox,
-                            ],
-                            if (_filterCity != null) ...[
-                              _buildFilterBadge(
-                                label: _filterCity!,
-                                icon: Icons.location_city,
-                                onClear: () =>
-                                    setState(() => _filterCity = null),
-                              ),
-                              8.widthBox,
-                            ],
-                            if (_filterDistance != null) ...[
-                              _buildFilterBadge(
-                                label: l10n.distanceKm(
-                                  _filterDistance!.round().toString(),
-                                ),
-                                icon: Icons.near_me_outlined,
-                                onClear: () =>
-                                    setState(() => _filterDistance = null),
-                              ),
-                              8.widthBox,
-                            ],
-                            GestureDetector(
-                              onTap: () => setState(() {
-                                _filterTimeOfDay = null;
-                                _filterCity = null;
-                                _filterDistance = null;
-                              }),
-                              child: Text(
-                                l10n.clearAll,
-                                style: AppStyles.w500f12inter.copyWith(
-                                  color: kDarkTextColor,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    12.heightBox,
-                    CommonDateSelectionRow(
+                    DiscoveryHeader(
+                      selectedSports: _selectedSports,
+                      onSportToggled: _toggleSport,
+                      searchController: _searchController,
+                      searchHint: l10n.searchByName,
+                      onSearchChanged: (value) =>
+                          setState(() => _searchQuery = value),
+                      hasActiveFilters: hasActiveFilters,
+                      activeFilterBadges: hasActiveFilters
+                          ? _activeFilterBadges(l10n)
+                          : const [],
+                      onFilterTap: () {
+                        CourtFilterBottomSheet.show(
+                          context,
+                          initialTimeOfDay: _filterTimeOfDay,
+                          initialCity: _filterCity,
+                          initialDistance: _filterDistance,
+                          availableCities: state.courts
+                              .map((c) => c.city)
+                              .whereType<String>()
+                              .where((s) => s.trim().isNotEmpty)
+                              .toSet()
+                              .toList(),
+                          onApply: (timeOfDay, city, dist) {
+                            setState(() {
+                              _filterTimeOfDay = timeOfDay;
+                              _filterCity = city;
+                              _filterDistance = dist;
+                            });
+                          },
+                        );
+                      },
+                      onMapTap: () => setState(() => _isMapView = true),
                       dates: _dates,
                       selectedDate: _selectedDate,
                       onDateSelected: (date) =>
                           setState(() => _selectedDate = date),
                     ),
-                    12.heightBox,
                     Expanded(
                       child: clubsList.isEmpty
                           ? Center(
@@ -573,6 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   TextButton(
                                     onPressed: () {
                                       setState(() {
+                                        _searchController.clear();
                                         _searchQuery = '';
                                         _selectedSports.clear();
                                         _filterTimeOfDay = null;
@@ -587,12 +379,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             )
                           : ListView.builder(
                               itemCount: clubsList.length,
-                              padding: const EdgeInsets.only(bottom: 24),
+                              padding: const EdgeInsets.only(
+                                top: 8,
+                                bottom: 24,
+                              ),
                               itemBuilder: (context, index) {
                                 final dist = _clubDistance(clubsList[index]);
                                 return CourtCardWidget(
                                   club: clubsList[index],
                                   selectedDate: _selectedDate,
+                                  selectedSports: _selectedSports,
                                   distanceKm: dist.isInfinite ? null : dist,
                                   onTap: () {
                                     // Gate: show login dialog for unauthenticated users

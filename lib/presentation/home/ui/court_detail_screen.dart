@@ -21,7 +21,7 @@ class CourtDetailScreen extends StatefulWidget {
 }
 
 class _CourtDetailScreenState extends State<CourtDetailScreen> {
-  String? _selectedSportName;
+  String? _selectedSportSlug;
   late final DateTime _anchorDate;
   late DateTime _selectedDate;
   late List<DateTime> _dates;
@@ -38,30 +38,29 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   // Sports
   // ------------------------------------------------------------
 
-  /// Unique sport names across every court in the club, in the casing
-  /// the API sends them ("Tennis", "Padel", ...) so tab labels and
-  /// weeklySlots look up without extra normalization.
-  List<String> get _sportNames {
-    final names = <String>{};
+  /// Unique sport slugs across every court in the club, so tab labels and
+  /// weeklySlots lookups agree whatever casing the API sends.
+  List<String> get _sportSlugs {
+    final slugs = <String>{};
 
     for (final court in widget.club.courts) {
       for (final sport in court.sports) {
         if ((sport.sportName ?? '').isNotEmpty) {
-          names.add(sport.sportName!);
+          slugs.add(sportSlug(sport.sportName));
         }
       }
     }
 
-    return names.toList();
+    return slugs.toList();
   }
 
   @override
   void initState() {
     super.initState();
 
-    final names = _sportNames;
+    final slugs = _sportSlugs;
 
-    _selectedSportName = names.isNotEmpty ? names.first : null;
+    _selectedSportSlug = slugs.isNotEmpty ? slugs.first : null;
 
     final now = DateTime.now();
 
@@ -69,7 +68,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
     _selectedDate = _anchorDate;
 
-    _dates = List.generate(7, (i) => _anchorDate.add(Duration(days: i)));
+    _dates = List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
 
     context.read<CourtsBloc>().add(FetchAllUsers());
   }
@@ -169,14 +168,12 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   /// Every physical court in the club that offers the currently
   /// selected sport — usually one, but the UI supports several.
   List<Court> get _matchingCourts {
-    final sport = _selectedSportName;
+    final sport = _selectedSportSlug;
 
     if (sport == null) return const [];
 
     return widget.club.courts.where((court) {
-      return court.sports.any(
-        (s) => (s.sportName ?? '').toLowerCase() == sport.toLowerCase(),
-      );
+      return court.sports.any((s) => sportSlug(s.sportName) == sport);
     }).toList();
   }
 
@@ -192,9 +189,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
     if (daySlots == null) return const [];
 
-    final sport = (_selectedSportName ?? '').toLowerCase();
-
-    switch (sport) {
+    switch (_selectedSportSlug) {
       case 'tennis':
         return daySlots.tennis;
 
@@ -204,7 +199,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
       case 'pickleball':
         return daySlots.pickleball;
 
-      case 'beach tennis':
       case 'beach_tennis':
         return daySlots.beachTennis;
 
@@ -226,7 +220,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
       club: widget.club,
       date: _selectedDate,
       startTime: slot.startTime ?? '',
-      sportName: _selectedSportName,
+      sportName: _selectedSportSlug,
       court: court,
       distance: widget.distance,
     );
@@ -254,7 +248,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final sportNames = _sportNames;
+    final sportSlugs = _sportSlugs;
     final matchingCourts = _matchingCourts;
 
     return Scaffold(
@@ -354,7 +348,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
                   12.heightBox,
 
-                  if (sportNames.isEmpty)
+                  if (sportSlugs.isEmpty)
                     Text(
                       l10n.noSportsInformationAvailable,
                       style: AppStyles.w400f14inter.copyWith(color: kTextColor),
@@ -363,46 +357,12 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                     // ------------------------------------------------
                     // Sport tabs
                     // ------------------------------------------------
-                    SizedBox(
-                      height: 38,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: sportNames.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
-                        itemBuilder: (context, index) {
-                          final name = sportNames[index];
-
-                          final isSelected = _selectedSportName == name;
-
-                          final localizedName = localizedSportName(
-                            context,
-                            name,
-                          );
-
-                          return GestureDetector(
-                            onTap: () =>
-                                setState(() => _selectedSportName = name),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected ? kPrimaryColor : kGreyColor,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  localizedName,
-                                  style: AppStyles.w400f14inter.copyWith(
-                                    color: kDarkTextColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    SportFilterRow(
+                      sports: sportSlugs,
+                      horizontalPadding: 0,
+                      selectedSports: {?_selectedSportSlug},
+                      onSportToggled: (slug) =>
+                          setState(() => _selectedSportSlug = slug),
                     ),
 
                     12.heightBox,
@@ -413,6 +373,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                     CommonDateSelectionRow(
                       dates: _dates,
                       selectedDate: _selectedDate,
+                      horizontalPadding: 0,
                       onDateSelected: (date) =>
                           setState(() => _selectedDate = date),
                     ),

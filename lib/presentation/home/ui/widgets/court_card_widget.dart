@@ -7,6 +7,10 @@ class CourtCardWidget extends StatefulWidget {
   final Club club;
   final DateTime selectedDate;
   final double? distanceKm;
+
+  /// Sport slugs selected in the header. Empty means "no filter", so every
+  /// sport row is shown; otherwise only the selected sports get a row.
+  final Set<String> selectedSports;
   final VoidCallback? onTap;
   final Function(Court, Sport, String)? onTimeSlotTap;
 
@@ -14,6 +18,7 @@ class CourtCardWidget extends StatefulWidget {
     super.key,
     required this.club,
     required this.selectedDate,
+    this.selectedSports = const {},
     this.distanceKm,
     this.onTap,
     this.onTimeSlotTap,
@@ -327,7 +332,13 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   // ---------------------------------------------------------------------------
 
   Widget _buildCourtSection(Court court) {
-    final sports = court.sports;
+    final sports = widget.selectedSports.isEmpty
+        ? court.sports
+        : court.sports
+              .where(
+                (s) => widget.selectedSports.contains(sportSlug(s.sportName)),
+              )
+              .toList();
 
     if (sports.isEmpty) {
       return const SizedBox.shrink();
@@ -364,7 +375,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   Widget _buildSportSlots(Court court, Sport sport, WeeklySlot? daySlots) {
     final l10n = AppLocalizations.of(context)!;
 
-    final sportKey = (sport.sportName ?? '').toLowerCase();
+    final sportKey = sportSlug(sport.sportName);
 
     List<Padel> slots;
 
@@ -400,7 +411,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
         children: [
           // Sport name
           Text(
-            sport.sportName ?? '',
+            localizedSportName(context, sport.sportName),
             style: AppStyles.w400f12inter.copyWith(color: kTextPrimaryColor),
           ),
 
@@ -470,7 +481,13 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   // ---------------------------------------------------------------------------
 
   Widget _buildNoCourtsFallback() {
-    if (widget.club.sports.isEmpty) {
+    final sports = widget.selectedSports.isEmpty
+        ? widget.club.sports
+        : widget.club.sports
+              .where((s) => widget.selectedSports.contains(sportSlug(s)))
+              .toList();
+
+    if (sports.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -479,10 +496,8 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
       child: Wrap(
         spacing: 6,
         runSpacing: 6,
-        children: widget.club.sports.map((sport) {
-          final label = sport.isNotEmpty
-              ? '${sport[0].toUpperCase()}${sport.substring(1).replaceAll('_', ' ')}'
-              : sport;
+        children: sports.map((sport) {
+          final label = localizedSportName(context, sport);
 
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

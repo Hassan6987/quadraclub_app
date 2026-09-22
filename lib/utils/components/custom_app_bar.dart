@@ -49,6 +49,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       backgroundColor: backgroundColor,
       centerTitle: centerTile,
+      toolbarHeight: preferredSize.height,
       actionsPadding: EdgeInsets.symmetric(
         horizontal: getProportionateScreenWidth(16),
       ),
@@ -130,6 +131,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize =>
-      Size.fromHeight(getProportionateScreenHeight(height ?? 68));
+  Size get preferredSize => Size.fromHeight(
+    getProportionateScreenHeight(height ?? (subtitle != null ? 68 : 54)),
+  );
 }
