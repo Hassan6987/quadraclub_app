@@ -271,15 +271,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, authState) {
-        if (authState.user == null) {
-          return GuestLoginPrompt(
-            title: l10n.openMatches,
-            subtitle: l10n.signInToViewJoinOpenMatches,
-          );
-        }
-        return BlocBuilder<MatchesBloc, MatchesState>(
+    return BlocBuilder<MatchesBloc, MatchesState>(
           builder: (context, state) {
             if (_isMapView) {
               return CourtMapView(
@@ -439,11 +431,21 @@ class _MatchesScreenState extends State<MatchesScreen> {
             );
           },
         );
-      },
-    );
   }
 
   void _openJoinMatch(Booking match, double distanceKm) {
+    final l10n = AppLocalizations.of(context)!;
+        // Gate: show login dialog for unauthenticated users
+    final authState = context.read<AuthBloc>().state;
+
+    if (authState.user == null) {
+      LoginToBookDialog.show(
+        context,
+        title: l10n.signInToJoinThismatch,
+        subtitle: l10n.signInToJoinOpenMatch,
+      );
+      return;
+    }
     MatchJoinBottomSheet.show(context, match, distanceKm);
   }
 

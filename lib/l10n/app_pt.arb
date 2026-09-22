@@ -123,6 +123,8 @@
   "tomorrowWithDate": "Amanhã, {date}",
   "signInToBookThisClass": "Entre para reservar esta aula",
   "loginToReserveYourSpot": "Entre ou crie uma conta para reservar sua vaga.",
+  "signInToJoinThismatch": "Faça login para participar desta partida.",
+  "signInToJoinOpenMatch" : "Faça login ou crie uma conta para participar de partidas abertas.",
   "paymentForLesson": "Pagamento da aula",
   "afterPaymentCoachApproval": "Após o pagamento, sua solicitação será enviada ao professor para aprovação.",
   "paymentMethod": "MÉTODO DE PAGAMENTO",

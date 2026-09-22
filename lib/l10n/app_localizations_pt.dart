@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -409,6 +408,14 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get loginToReserveYourSpot =>
       'Entre ou crie uma conta para reservar sua vaga.';
+
+  @override
+  String get signInToJoinThismatch =>
+      'Faça login para participar desta partida.';
+
+  @override
+  String get signInToJoinOpenMatch =>
+      'Faça login ou crie uma conta para participar de partidas abertas.';
 
   @override
   String get paymentForLesson => 'Pagamento da aula';

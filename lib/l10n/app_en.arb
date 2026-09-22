@@ -163,6 +163,8 @@
   },
   "signInToBookThisClass": "Sign in to book this class",
   "loginToReserveYourSpot": "Please log in or create an account to reserve your spot.",
+  "signInToJoinThismatch": "Sign in to join this match",
+  "signInToJoinOpenMatch" : "Please log in or create an account to join open matches.",
   "paymentForLesson": "Payment For Lesson",
   "afterPaymentCoachApproval": "After payment, your request will be sent to the Coach for approval.",
   "paymentMethod": "PAYMENT METHOD",

@@ -76,7 +76,7 @@ class AgendaServices extends BaseApiProvider {
     try {
       final response = await request(
         method: HttpMethod.get,
-        endpoint: '/api/users/players',
+        endpoint: '/api/users/players-list',
       );
       return response;
     } on DioException catch (e) {

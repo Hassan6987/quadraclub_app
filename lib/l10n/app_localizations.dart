@@ -836,6 +836,18 @@ abstract class AppLocalizations {
   /// **'Please log in or create an account to reserve your spot.'**
   String get loginToReserveYourSpot;
 
+  /// No description provided for @signInToJoinThismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to join this match'**
+  String get signInToJoinThismatch;
+
+  /// No description provided for @signInToJoinOpenMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in or create an account to join open matches.'**
+  String get signInToJoinOpenMatch;
+
   /// No description provided for @paymentForLesson.
   ///
   /// In en, this message translates to:
