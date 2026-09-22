@@ -10,78 +10,119 @@ part 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final NotificationRepo _repo = locator.get<NotificationRepo>();
-  NotificationBloc() : super(NotificationState()) {
+
+  NotificationBloc() : super(const NotificationState()) {
     on<GetAllNotifications>(_handleFetchNotifications);
     on<MarkNotificationAsRead>(_handleMarkAsRead);
     on<DeleteNotification>(_handleDeleteNotification);
   }
 
-
   Future<void> _handleFetchNotifications(
-      GetAllNotifications event,
-      Emitter<NotificationState> emit,
-      ) async {
+    GetAllNotifications event,
+    Emitter<NotificationState> emit,
+  ) async {
     try {
-      emit(state.copyWith(status: NotificationStateStatus.loading));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.loading,
+          clearError: true,
+          clearProcessingId: true,
+        ),
+      );
       final notifications = await _repo.getAllNotification();
-      emit(state.copyWith(status: NotificationStateStatus.success, notifications: notifications));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.success,
+          notifications: notifications,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(status: NotificationStateStatus.failure, error: e.toString()));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
   }
-
-
 
   Future<void> _handleMarkAsRead(
-      MarkNotificationAsRead event,
-      Emitter<NotificationState> emit,
-      ) async {
+    MarkNotificationAsRead event,
+    Emitter<NotificationState> emit,
+  ) async {
+    final alreadyRead = state.notifications.any(
+      (n) => n.id == event.id && n.isRead,
+    );
+    if (alreadyRead) return;
+
+    final previous = state.notifications;
+
+    // Optimistic: flip isRead immediately so the highlight clears on tap.
+    emit(
+      state.copyWith(
+        status: NotificationStateStatus.updating,
+        processingId: event.id,
+        clearError: true,
+        notifications: previous
+            .map((n) => n.id == event.id ? n.copyWith(isRead: true) : n)
+            .toList(),
+      ),
+    );
+
     try {
-      emit(state.copyWith(status: NotificationStateStatus.updating));
       await _repo.markNotificationAsRead(event.id);
-
-      final newNotifications = state.notifications.map((notif) {
-        return notif.id == event.id
-            ? notif.copyWith(isRead: true)
-            : notif;
-      }).toList();
-
-      emit(state.copyWith(
-        status: NotificationStateStatus.success,
-        notifications: newNotifications,
-      ));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.success,
+          clearProcessingId: true,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: NotificationStateStatus.failure,
-        error: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.failure,
+          notifications: previous,
+          error: e.toString(),
+          clearProcessingId: true,
+        ),
+      );
     }
   }
-
 
   Future<void> _handleDeleteNotification(
-      DeleteNotification event,
-      Emitter<NotificationState> emit,
-      ) async {
+    DeleteNotification event,
+    Emitter<NotificationState> emit,
+  ) async {
+    final previous = state.notifications;
+    final removed = previous.where((n) => n.id != event.id).toList();
+
+    // Optimistic: drop the row as soon as the swipe finishes.
+    emit(
+      state.copyWith(
+        status: NotificationStateStatus.deleting,
+        processingId: event.id,
+        clearError: true,
+        notifications: removed,
+      ),
+    );
+
     try {
-      emit(state.copyWith(status: NotificationStateStatus.deleting));
       await _repo.deleteNotification(event.id);
-
-      final newNotifications = state.notifications
-          .where((notif) => notif.id != event.id)
-          .toList();
-
-      emit(state.copyWith(
-        status: NotificationStateStatus.success,
-        notifications: newNotifications,
-      ));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.success,
+          clearProcessingId: true,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: NotificationStateStatus.failure,
-        error: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: NotificationStateStatus.failure,
+          notifications: previous,
+          error: e.toString(),
+          clearProcessingId: true,
+        ),
+      );
     }
   }
-
-
 }

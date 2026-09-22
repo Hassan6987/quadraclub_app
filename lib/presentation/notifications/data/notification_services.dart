@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:quadraclub_app/data/base_api_service.dart';
 
-class NotificationServices extends BaseApiProvider{
+class NotificationServices extends BaseApiProvider {
   Future<Response> getAllNotifications() async {
     try {
       final response = await request(

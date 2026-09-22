@@ -7,14 +7,25 @@ import 'package:quadraclub_app/presentation/agenda/ui/widgets/requests_tab.dart'
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class MatchDetailsScreen extends StatefulWidget {
-  const MatchDetailsScreen({super.key});
+  final MatchDetailsTab initialTab;
+
+  const MatchDetailsScreen({
+    super.key,
+    this.initialTab = MatchDetailsTab.details,
+  });
 
   @override
   State<MatchDetailsScreen> createState() => _MatchDetailsScreenState();
 }
 
 class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
-  MatchDetailsTab _selectedTab = MatchDetailsTab.details;
+  late MatchDetailsTab _selectedTab;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTab = widget.initialTab;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +66,15 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
 
   Widget _buildTabs(bool isOwner) {
     final tabs = isOwner ? MatchDetailsTab.values : [MatchDetailsTab.details];
+
+    // Join-request deep links open on Requests; if this viewer isn't the
+    // owner that tab isn't available, so fall back to Details.
+    if (!tabs.contains(_selectedTab)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _selectedTab = MatchDetailsTab.details);
+      });
+    }
+
     return Container(
       color: kWhiteColor,
       child: Row(
