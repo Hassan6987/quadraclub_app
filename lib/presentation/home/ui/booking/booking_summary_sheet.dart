@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/match_config_screen.dart';
@@ -191,6 +192,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     _selectedEndTime =
         widget.endTime ??
         _endTimeForDuration(_selectedStartTime, _selectedDurationSlots);
+        if (context.read<CourtsBloc>().state.players.isEmpty){
+          context.read<CourtsBloc>().add(FetchAllUsers());
+        }
   }
 
   void _onCourtSelected(Court court) {

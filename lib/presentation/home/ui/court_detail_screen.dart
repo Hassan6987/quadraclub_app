@@ -75,8 +75,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
     _selectedDate = _anchorDate;
 
     _dates = List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
-
-    context.read<CourtsBloc>().add(FetchAllUsers());
   }
 
   @override

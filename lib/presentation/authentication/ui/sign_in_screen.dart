@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/otp_verifictaion.dart';
+import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/components/language_toggle_button.dart'
@@ -74,6 +75,7 @@ class _SignInScreenState extends State<SignInScreen> {
           );
           context.read<AgendaBloc>().add(GetAllAgenda());
           context.read<MatchesBloc>().add(GetAllBookings());
+          context.read<ClassesBloc>().add(FetchAllClasses());
         } else if (state.status == AuthStateStatus.unVerified) {
           context.showToast(
             state.error ?? l10n.somethingWentWrong,

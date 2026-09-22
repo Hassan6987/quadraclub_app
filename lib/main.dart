@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
         return SafeAreaWrapper(
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'QuadraClub',
+            title: 'Quadraclub',
             theme: AppTheme.lightTheme,
             navigatorKey: navigatorKey,
             locale: languageProvider.currentLocale,

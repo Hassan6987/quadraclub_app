@@ -1,4 +1,4 @@
-import 'package:quadraclub_app/presentation/notifications/data/notification_model.dart';
+import 'package:quadraclub_app/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:quadraclub_app/presentation/notifications/ui/widgets/notification_tile.dart';
 
 import '/app_exports.dart';
@@ -16,11 +16,17 @@ class NotificationsScreen extends StatelessWidget {
         showActions: false,
         titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
       ),
-      body: ListView.builder(
-        itemCount: dummyNotifications.length,
+      body: BlocConsumer<NotificationBloc, NotificationState>(
+        listener: (context, state) {
+        },
+        builder: (context, state) {
 
-        itemBuilder: (context, index) {
-          return NotificationTile(notification: dummyNotifications[index]);
+          return ListView.builder(
+            itemCount: state.notifications.length,
+            itemBuilder: (context, index) {
+              return NotificationTile(notification: state.notifications[index]);
+            },
+          );
         },
       ),
     );

@@ -8,7 +8,7 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool highlighted = notification.isUnread;
+    final bool highlighted = !notification.isRead;
 
     return Column(
       children: [
