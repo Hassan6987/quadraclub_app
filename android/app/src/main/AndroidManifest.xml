@@ -5,7 +5,7 @@
 
 
     <application
-        android:label="QuadraClub"
+        android:label="Quadraclub"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
