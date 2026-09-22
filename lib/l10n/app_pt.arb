@@ -133,12 +133,36 @@
   "morning": "Manhã",
   "afternoon": "Tarde",
   "night": "Noite",
-  "morningTime": "6h - 12h",
-  "afternoonTime": "12h - 18h",
-  "nightTime": "18h - 00h",
+  "morningTime": "6 AM - 12 PM",
+  "afternoonTime": "12 PM - 6 PM",
+  "nightTime": "6 PM - 12 AM",
   "level": "Nível",
   "allLevels": "Todos os níveis",
   "selectLevels": "Selecionar níveis",
+  "amenities": "Comodidades",
+  "levelOpen": "Open",
+  "levelBeginner": "Iniciante",
+  "levelIntermediate": "Intermediário",
+  "levelAdvanced": "Avançado",
+  "levelCategoryNumber": "{number}ª Categoria",
+  "@levelCategoryNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "levelCategoryLetter": "Categoria {letter}",
+  "@levelCategoryLetter": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    }
+  },
+  "genderMen": "Homem",
+  "genderWomen": "Mulher",
+  "genderMixed": "Misto",
   "format": "Formato",
   "city": "Cidade",
   "search": "Pesquisar..",

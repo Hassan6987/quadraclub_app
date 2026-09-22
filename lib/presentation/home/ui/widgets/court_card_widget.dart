@@ -1,7 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:shimmer/shimmer.dart';
+
+/// One available slot, together with the court it belongs to, so tapping it
+/// can open the booking sheet for the right court.
+class _SportSlot {
+  final Court court;
+  final Sport sport;
+  final Padel slot;
+
+  const _SportSlot(this.court, this.sport, this.slot);
+
+  String get time => slot.startTime ?? '';
+}
 
 class CourtCardWidget extends StatefulWidget {
   final Club club;
@@ -11,13 +24,18 @@ class CourtCardWidget extends StatefulWidget {
   /// Sport slugs selected in the header. Empty means "no filter", so every
   /// sport row is shown; otherwise only the selected sports get a row.
   final Set<String> selectedSports;
+
+  /// Shared by every card on the screen so all slot rows scroll together.
+  final SlotScrollSync scrollSync;
+
   final VoidCallback? onTap;
-  final Function(Court, Sport, String)? onTimeSlotTap;
+  final void Function(Court court, Sport sport, String time)? onTimeSlotTap;
 
   const CourtCardWidget({
     super.key,
     required this.club,
     required this.selectedDate,
+    required this.scrollSync,
     this.selectedSports = const {},
     this.distanceKm,
     this.onTap,
@@ -29,75 +47,17 @@ class CourtCardWidget extends StatefulWidget {
 }
 
 class _CourtCardWidgetState extends State<CourtCardWidget> {
-  /// Each sport/time-slot row has its own controller.
+  /// One controller per sport row, all registered with the shared group.
   final Map<String, ScrollController> _scrollControllers = {};
 
-  bool _isSyncingScroll = false;
-
-  // ---------------------------------------------------------------------------
-  // GET / CREATE CONTROLLER
-  // ---------------------------------------------------------------------------
-
-  ScrollController _getScrollController(String key) {
-    final existingController = _scrollControllers[key];
-
-    if (existingController != null) {
-      return existingController;
-    }
-
-    final controller = ScrollController();
-
-    controller.addListener(() {
-      _syncScroll(controller);
-    });
-
-    _scrollControllers[key] = controller;
-
-    return controller;
+  ScrollController _controllerFor(String sportSlug) {
+    return _scrollControllers[sportSlug] ??= widget.scrollSync.create();
   }
-
-  // ---------------------------------------------------------------------------
-  // SYNCHRONIZE ALL HORIZONTAL LISTS
-  // ---------------------------------------------------------------------------
-
-  void _syncScroll(ScrollController sourceController) {
-    if (_isSyncingScroll || !sourceController.hasClients) {
-      return;
-    }
-
-    _isSyncingScroll = true;
-
-    final sourceOffset = sourceController.offset;
-
-    for (final controller in _scrollControllers.values) {
-      if (controller == sourceController) {
-        continue;
-      }
-
-      if (!controller.hasClients) {
-        continue;
-      }
-
-      final maxScrollExtent = controller.position.maxScrollExtent;
-
-      final targetOffset = sourceOffset.clamp(0.0, maxScrollExtent);
-
-      if ((controller.offset - targetOffset).abs() > 0.5) {
-        controller.jumpTo(targetOffset);
-      }
-    }
-
-    _isSyncingScroll = false;
-  }
-
-  // ---------------------------------------------------------------------------
-  // DISPOSE
-  // ---------------------------------------------------------------------------
 
   @override
   void dispose() {
     for (final controller in _scrollControllers.values) {
-      controller.dispose();
+      widget.scrollSync.release(controller);
     }
 
     _scrollControllers.clear();
@@ -149,305 +109,308 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   }
 
   // ---------------------------------------------------------------------------
+  // SPORT ROWS
+  // ---------------------------------------------------------------------------
+
+  List<Padel> _slotsOfSport(WeeklySlot daySlots, String sportSlug) {
+    switch (sportSlug) {
+      case 'tennis':
+        return daySlots.tennis;
+
+      case 'padel':
+        return daySlots.padel;
+
+      case 'pickleball':
+        return daySlots.pickleball;
+
+      case 'beach_tennis':
+        return daySlots.beachTennis;
+
+      default:
+        return const [];
+    }
+  }
+
+  /// One entry per sport, pooling the available slots of every court that
+  /// offers it — the card shows a single row per sport, not per court.
+  /// Slots are de-duplicated by start time and sorted chronologically.
+  Map<String, List<_SportSlot>> get _slotsBySport {
+    final dateKey = _dateKey(widget.selectedDate);
+
+    final bySport = <String, List<_SportSlot>>{};
+    final seenTimes = <String, Set<String>>{};
+
+    for (final court in widget.club.courts) {
+      final daySlots = court.weeklySlots[dateKey];
+
+      for (final sport in court.sports) {
+        final slug = sportSlug(sport.sportName);
+
+        if (slug.isEmpty) continue;
+
+        if (widget.selectedSports.isNotEmpty &&
+            !widget.selectedSports.contains(slug)) {
+          continue;
+        }
+
+        final pooled = bySport.putIfAbsent(slug, () => []);
+        final seen = seenTimes.putIfAbsent(slug, () => {});
+
+        if (daySlots == null) continue;
+
+        for (final slot in _slotsOfSport(daySlots, slug)) {
+          if (slot.status != 'Available') continue;
+
+          final time = slot.startTime ?? '';
+
+          if (time.isEmpty || !seen.add(time)) continue;
+
+          pooled.add(_SportSlot(court, sport, slot));
+        }
+      }
+    }
+
+    for (final slots in bySport.values) {
+      slots.sort((a, b) => a.time.compareTo(b.time));
+    }
+
+    return bySport;
+  }
+
+  // ---------------------------------------------------------------------------
   // BUILD
   // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final courts = widget.club.courts;
+    final slotsBySport = _slotsBySport;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: kWhiteColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // -------------------------------------------------------------------
-          // HEADER IMAGE
-          // -------------------------------------------------------------------
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Stack(
-              children: [
-                CachedNetworkImage(
-                  imageUrl: widget.club.photo ?? '',
-                  height: 100,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade100,
-                      child: Container(
-                        height: 100,
-                        width: double.infinity,
-                        decoration: const BoxDecoration(color: Colors.white),
-                      ),
-                    );
-                  },
-                  errorWidget: (context, url, error) {
-                    return Image.asset(
-                      Assets.png.clubLogo.path,
-                      height: 100,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    );
-                  },
-                ),
+    return GestureDetector(
+      onTap: widget.onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: kWhiteColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeaderImage(),
 
-                // Gradient
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.8),
-                        ],
-                      ),
+            12.heightBox,
+
+            // -----------------------------------------------------------------
+            // SPORT ROWS + VIEW DETAILS
+            // -----------------------------------------------------------------
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: slotsBySport.isEmpty
+                          ? _buildNoCourtsFallback()
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (final entry in slotsBySport.entries)
+                                  _buildSportRow(entry.key, entry.value),
+                              ],
+                            ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            Divider(color: kBorderColor),
+            Align(
+                alignment: Alignment.centerRight,
+                child: _buildViewDetails()
+            ),
+
+            12.heightBox,
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // HEADER IMAGE
+  // ---------------------------------------------------------------------------
+
+  Widget _buildHeaderImage() {
+    const imageHeight = 72.0;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      child: Stack(
+        children: [
+          CachedNetworkImage(
+            imageUrl: widget.club.photo ?? '',
+            height: imageHeight,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            placeholder: (context, url) {
+              return Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  height: imageHeight,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(color: Colors.white),
+                ),
+              );
+            },
+            errorWidget: (context, url, error) {
+              return Image.asset(
+                Assets.png.clubLogo.path,
+                height: imageHeight,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              );
+            },
+          ),
+
+          // Gradient
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: kBlackColor.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+
+          // Club name + location
+          Positioned(
+            bottom: 13,
+            top: 13,
+            left: 16,
+            right: 8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.club.name ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppStyles.w600f18inter.copyWith(
+                    color: kWhiteColor,
+                    fontSize: 16,
+                  ),
                 ),
 
-                // Club name + location
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  right: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.club.name ?? '',
-                        style: AppStyles.w600f18inter.copyWith(
+                2.heightBox,
+
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      color: kWhiteColor,
+                      size: 14,
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    Expanded(
+                      child: Text(
+                        _locationLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppStyles.w400f14inter.copyWith(
                           color: kWhiteColor,
-                          fontSize: 20,
                         ),
                       ),
-
-                      const SizedBox(height: 4),
-
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: kWhiteColor.withValues(alpha: 0.8),
-                            size: 14,
-                          ),
-
-                          const SizedBox(width: 4),
-
-                          Expanded(
-                            child: Text(
-                              _locationLabel,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppStyles.w400f12inter.copyWith(
-                                color: kWhiteColor.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-
-          12.heightBox,
-
-          // -------------------------------------------------------------------
-          // COURTS
-          // -------------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: courts.isEmpty
-                ? _buildNoCourtsFallback()
-                : Column(
-                    children: courts
-                        .map((court) => _buildCourtSection(court))
-                        .toList(),
-                  ),
-          ),
-
-          Divider(color: kBorderColor),
-
-          // -------------------------------------------------------------------
-          // VIEW DETAILS
-          // -------------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.only(right: 12, bottom: 12, top: 8),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: widget.onTap,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.viewDetails,
-                      style: AppStyles.w500f12inter.copyWith(
-                        color: kDarkTextColor,
-                      ),
-                    ),
-
-                    const SizedBox(width: 2),
-
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 14,
-                      color: kTextColor,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
   // ---------------------------------------------------------------------------
-  // COURT SECTION
+  // VIEW DETAILS
   // ---------------------------------------------------------------------------
 
-  Widget _buildCourtSection(Court court) {
-    final sports = widget.selectedSports.isEmpty
-        ? court.sports
-        : court.sports
-              .where(
-                (s) => widget.selectedSports.contains(sportSlug(s.sportName)),
-              )
-              .toList();
-
-    if (sports.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final daySlots = court.weeklySlots[_dateKey(widget.selectedDate)];
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Court name
-          if ((court.courtName ?? '').isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                court.courtName!,
-                style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
-              ),
-            ),
-
-          // Sports
-          ...sports.map((sport) => _buildSportSlots(court, sport, daySlots)),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // SPORT SLOTS
-  // ---------------------------------------------------------------------------
-
-  Widget _buildSportSlots(Court court, Sport sport, WeeklySlot? daySlots) {
+  Widget _buildViewDetails() {
     final l10n = AppLocalizations.of(context)!;
 
-    final sportKey = sportSlug(sport.sportName);
+    return Padding(
+      padding: const EdgeInsets.only(right: 12, bottom: 12, top: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            l10n.viewDetails,
+            style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
+          ),
 
-    List<Padel> slots;
+          const SizedBox(width: 2),
 
-    if (daySlots == null) {
-      slots = const [];
-    } else if (sportKey == 'tennis') {
-      slots = daySlots.tennis;
-    } else if (sportKey == 'padel') {
-      slots = daySlots.padel;
-    } else if (sportKey == 'pickleball') {
-      slots = daySlots.pickleball;
-    } else if (sportKey == 'beach_tennis') {
-      slots = daySlots.beachTennis;
-    } else {
-      slots = const [];
-    }
+          const Icon(Icons.chevron_right, size: 14, color: kTextColor),
+        ],
+      ),
+    );
+  }
 
-    final availableSlots = slots.where((s) => s.status == 'Available').toList();
+  // ---------------------------------------------------------------------------
+  // SPORT ROW
+  // ---------------------------------------------------------------------------
 
-    // -------------------------------------------------------------------------
-    // UNIQUE KEY
-    // -------------------------------------------------------------------------
-
-    final controllerKey =
-        '${court.courtName ?? 'court'}_${sport.sportName ?? 'sport'}';
-
-    final scrollController = _getScrollController(controllerKey);
+  Widget _buildSportRow(String slug, List<_SportSlot> slots) {
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Sport name
           Text(
-            localizedSportName(context, sport.sportName),
+            localizedSportName(context, slug),
             style: AppStyles.w400f12inter.copyWith(color: kTextPrimaryColor),
           ),
 
           2.heightBox,
 
-          // -------------------------------------------------------------------
-          // NO SLOTS
-          // -------------------------------------------------------------------
-          if (availableSlots.isEmpty)
+          if (slots.isEmpty)
             Text(
               l10n.noAvailableSlotsForDay,
               style: AppStyles.w400f12inter.copyWith(color: kTextColor),
             )
-          // -------------------------------------------------------------------
-          // TIME SLOTS
-          // -------------------------------------------------------------------
           else
             SizedBox(
               height: 32,
               child: ListView.separated(
-                controller: scrollController,
+                controller: _controllerFor(slug),
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                itemCount: availableSlots.length,
-                separatorBuilder: (_, __) {
-                  return const SizedBox(width: 4);
-                },
+                itemCount: slots.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 4),
                 itemBuilder: (context, index) {
-                  final slot = availableSlots[index];
-
-                  final time = slot.startTime ?? '';
+                  final entry = slots[index];
 
                   return GestureDetector(
-                    onTap: () {
-                      widget.onTimeSlotTap?.call(court, sport, time);
-                    },
+                    // Absorbs the tap so it doesn't fall through to the
+                    // card's "open club page" gesture.
+                    onTap: () => widget.onTimeSlotTap?.call(
+                      entry.court,
+                      entry.sport,
+                      entry.time,
+                    ),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -460,7 +423,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                       ),
                       child: Center(
                         child: Text(
-                          time,
+                          entry.time,
                           style: AppStyles.w400f12inter.copyWith(
                             color: kDarkTextColor,
                           ),
@@ -492,7 +455,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 4),
       child: Wrap(
         spacing: 6,
         runSpacing: 6,

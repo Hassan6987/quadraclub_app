@@ -16,9 +16,9 @@ class CourtMapView extends StatefulWidget {
   final LatLng initialCenter;
   final Function(LocationResult) onLocationChanged;
   final VoidCallback onBackToList;
-  final Function(String? timeOfDay, String? city, double? distance)
+  final Function(Set<TimeOfDayFilter> times, String? city, double? distance)
   onApplyFilters;
-  final String? filterTimeOfDay;
+  final Set<TimeOfDayFilter> filterTimes;
   final String? filterCity;
   final double? filterDistance;
   final Set<String> selectedSports; // <-- was: final String? selectedSport;
@@ -33,7 +33,7 @@ class CourtMapView extends StatefulWidget {
     required this.onLocationChanged,
     required this.onBackToList,
     required this.onApplyFilters,
-    this.filterTimeOfDay,
+    this.filterTimes = const {},
     this.filterCity,
     this.filterDistance,
     required this.selectedSports,
@@ -231,7 +231,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                         onTap: () {
                           CourtFilterBottomSheet.show(
                             context,
-                            initialTimeOfDay: widget.filterTimeOfDay,
+                            initialTimes: widget.filterTimes,
                             initialCity: widget.filterCity,
                             initialDistance: widget.filterDistance,
                             availableCities: widget.courts
@@ -248,7 +248,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                           height: 40,
                           decoration: BoxDecoration(
                             color:
-                                (widget.filterTimeOfDay != null ||
+                                (widget.filterTimes.isNotEmpty ||
                                     widget.filterCity != null ||
                                     widget.filterDistance != null)
                                 ? kPrimaryColor

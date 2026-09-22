@@ -9,11 +9,9 @@ import 'package:quadraclub_app/presentation/classes/ui/widgets/filter_bottom_she
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
-import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart'
-    show localizedTimeOfDay;
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
-import '/app_exports.dart' hide TimeOfDay;
+import '/app_exports.dart';
 
 class ClassesScreen extends StatefulWidget {
   const ClassesScreen({super.key});
@@ -34,9 +32,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
   String _searchQuery = '';
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
 
-  final Set<TimeOfDay> _selectedTimes = {};
-  LevelFilter _level = LevelFilter.all;
+  final Set<TimeOfDayFilter> _selectedTimes = {};
+  GenderFilter _gender = GenderFilter.misto;
+  Set<SportLevel> _levels = {};
   FormatFilter _format = FormatFilter.all;
+
+  /// Level sections follow the header's sport selection; with nothing
+  /// selected every sport is on the table.
+  List<String> get _levelSports =>
+      _selectedSports.isEmpty ? kAllSportSlugs : _selectedSports.toList();
 
   static const double _defaultDistance = 25;
   double _distance = _defaultDistance;
@@ -47,7 +51,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   bool get _hasActiveFilters =>
       _selectedTimes.isNotEmpty ||
-      _level != LevelFilter.all ||
+      _gender != GenderFilter.misto ||
+      _levels.isNotEmpty ||
       _format != FormatFilter.all ||
       _distance != _defaultDistance ||
       _city.isNotEmpty;
@@ -87,7 +92,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
       // -------------------------
       // Level
       // -------------------------
-      final matchesLevel = _level == LevelFilter.all || _matchesLevel(c.level);
+      final matchesLevel = matchesSelectedLevels(
+        _levels,
+        sport: c.sportName,
+        level: c.level,
+      );
 
       // -------------------------
       // Format
@@ -226,15 +235,21 @@ class _ClassesScreenState extends State<ClassesScreen> {
     return [
       for (final time in _selectedTimes)
         HeaderFilterBadge(
-          label: localizedTimeOfDay(context, time.name),
+          label: time.label(context),
           icon: Icons.access_time,
           onClear: () => setState(() => _selectedTimes.remove(time)),
         ),
-      if (_level != LevelFilter.all)
+      if (_gender != GenderFilter.misto)
         HeaderFilterBadge(
-          label: l10n.selectLevels,
+          label: _gender.label(context),
+          icon: Icons.people_outline,
+          onClear: () => setState(() => _gender = GenderFilter.misto),
+        ),
+      for (final level in _levels)
+        HeaderFilterBadge(
+          label: localizedLevelName(context, level.level),
           icon: Icons.bar_chart,
-          onClear: () => setState(() => _level = LevelFilter.all),
+          onClear: () => setState(() => _levels = {..._levels}..remove(level)),
         ),
       if (_format != FormatFilter.all)
         HeaderFilterBadge(
@@ -257,7 +272,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
       HeaderClearAllButton(
         onTap: () => setState(() {
           _selectedTimes.clear();
-          _level = LevelFilter.all;
+          _gender = GenderFilter.misto;
+          _levels = {};
           _format = FormatFilter.all;
           _distance = _defaultDistance;
           _city = '';
@@ -270,7 +286,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
     final result = await FilterBottomSheet.show(
       context,
       selectedTimes: _selectedTimes,
-      level: _level,
+      gender: _gender,
+      levels: _levels,
+      sports: _levelSports,
       format: _format,
       distance: _distance,
       city: _city,
@@ -283,7 +301,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
         ..clear()
         ..addAll(result.selectedTimes);
 
-      _level = result.level;
+      _gender = result.gender;
+      _levels = result.levels;
       _format = result.format;
       _distance = result.distance;
       _city = result.city;
@@ -306,10 +325,14 @@ class _ClassesScreenState extends State<ClassesScreen> {
           });
         },
         onBackToList: () => setState(() => _isMapView = false),
+        filterTimes: _selectedTimes,
         filterCity: _city.isEmpty ? null : _city,
         filterDistance: _distance,
-        onApplyFilters: (timeOfDay, city, dist) {
+        onApplyFilters: (times, city, dist) {
           setState(() {
+            _selectedTimes
+              ..clear()
+              ..addAll(times);
             _city = city ?? '';
             _distance = dist ?? _defaultDistance;
           });
@@ -449,31 +472,16 @@ class _ClassesScreenState extends State<ClassesScreen> {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  TimeOfDay _timeOfDayFromClass(Class c) {
-    switch (c.timeOfDay?.trim().toLowerCase()) {
-      case 'morning':
-        return TimeOfDay.morning;
+  /// Prefers the explicit `timeOfDay` the API sends, falling back to the
+  /// bucket the class's start time lands in.
+  TimeOfDayFilter? _timeOfDayFromClass(Class c) {
+    final explicit = timeOfDayFilterFrom(c.timeOfDay);
+    if (explicit != null) return explicit;
 
-      case 'afternoon':
-        return TimeOfDay.afternoon;
+    final hour = parseHour(c.startTime);
+    if (hour == null) return null;
 
-      case 'night':
-      case 'evening':
-        return TimeOfDay.night;
-
-      default:
-        return TimeOfDay.morning;
-    }
-  }
-
-  bool _matchesLevel(String? level) {
-    if (_level == LevelFilter.all) {
-      return true;
-    }
-
-    // TODO: Replace with actual selected levels
-    // once you add the level-selection UI.
-    return true;
+    return TimeOfDayFilter.values.firstWhere((t) => t.containsHour(hour));
   }
 
   bool _matchesFormat(String? format) {

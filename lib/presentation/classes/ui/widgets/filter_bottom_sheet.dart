@@ -1,15 +1,15 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_filters.dart';
 
-enum TimeOfDay { morning, afternoon, night }
-
-enum LevelFilter { all, select }
-
 enum FormatFilter { all, group, individual }
 
 class FilterBottomSheet extends StatefulWidget {
-  final Set<TimeOfDay> selectedTimes;
-  final LevelFilter level;
+  final Set<TimeOfDayFilter> selectedTimes;
+  final GenderFilter gender;
+  final Set<SportLevel> levels;
+
+  /// Sports to offer level sections for — the header's selection.
+  final List<String> sports;
   final FormatFilter format;
   final double distance;
   final String city;
@@ -17,7 +17,9 @@ class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({
     super.key,
     this.selectedTimes = const {},
-    this.level = LevelFilter.all,
+    this.gender = GenderFilter.misto,
+    this.levels = const {},
+    this.sports = kAllSportSlugs,
     this.format = FormatFilter.group,
     this.distance = 25,
     this.city = '',
@@ -25,8 +27,10 @@ class FilterBottomSheet extends StatefulWidget {
 
   static Future<ClassFilterResult?> show(
     BuildContext context, {
-    Set<TimeOfDay> selectedTimes = const {},
-    LevelFilter level = LevelFilter.all,
+    Set<TimeOfDayFilter> selectedTimes = const {},
+    GenderFilter gender = GenderFilter.misto,
+    Set<SportLevel> levels = const {},
+    List<String> sports = kAllSportSlugs,
     FormatFilter format = FormatFilter.group,
     double distance = 25,
     String city = '',
@@ -37,7 +41,9 @@ class FilterBottomSheet extends StatefulWidget {
       constraints: const BoxConstraints(maxHeight: 680),
       builder: (_) => FilterBottomSheet(
         selectedTimes: selectedTimes,
-        level: level,
+        gender: gender,
+        levels: levels,
+        sports: sports,
         format: format,
         distance: distance,
         city: city,
@@ -50,8 +56,9 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  late Set<TimeOfDay> _selectedTimes;
-  late LevelFilter _level;
+  late Set<TimeOfDayFilter> _selectedTimes;
+  late GenderFilter _gender;
+  late Set<SportLevel> _levels;
   late FormatFilter _format;
   late double _distance;
 
@@ -62,7 +69,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     super.initState();
 
     _selectedTimes = {...widget.selectedTimes};
-    _level = widget.level;
+    _gender = widget.gender;
+    _levels = {...widget.levels};
     _format = widget.format;
     _distance = widget.distance;
 
@@ -111,60 +119,21 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionLabel(label: l10n.timeOfDay),
-
-                  6.heightBox,
-
-                  Row(
-                    spacing: getProportionateScreenWidth(6),
-                    children: [
-                      TimeChip(
-                        label: l10n.morning,
-                        subtitle: l10n.morningTime,
-                        isSelected: _selectedTimes.contains(TimeOfDay.morning),
-                        onTap: () => _toggleTime(TimeOfDay.morning),
-                      ),
-
-                      TimeChip(
-                        label: l10n.afternoon,
-                        subtitle: l10n.afternoonTime,
-                        isSelected: _selectedTimes.contains(
-                          TimeOfDay.afternoon,
-                        ),
-                        onTap: () => _toggleTime(TimeOfDay.afternoon),
-                      ),
-
-                      TimeChip(
-                        label: l10n.night,
-                        subtitle: l10n.nightTime,
-                        isSelected: _selectedTimes.contains(TimeOfDay.night),
-                        onTap: () => _toggleTime(TimeOfDay.night),
-                      ),
-                    ],
+                  TimeOfDayFilterSection(
+                    selected: _selectedTimes,
+                    onToggled: _toggleTime,
                   ),
 
                   24.heightBox,
 
-                  _sectionLabel(label: l10n.level),
-
-                  6.heightBox,
-
-                  Row(
-                    spacing: getProportionateScreenWidth(6),
-                    children: [
-                      ToggleChip(
-                        label: l10n.allLevels,
-                        isSelected: _level == LevelFilter.all,
-                        onTap: () => setState(() => _level = LevelFilter.all),
-                      ),
-
-                      ToggleChip(
-                        label: l10n.selectLevels,
-                        isSelected: _level == LevelFilter.select,
-                        onTap: () =>
-                            setState(() => _level = LevelFilter.select),
-                      ),
-                    ],
+                  LevelFilterSection(
+                    sports: widget.sports,
+                    gender: _gender,
+                    selected: _levels,
+                    onChanged: (gender, levels) => setState(() {
+                      _gender = gender;
+                      _levels = levels;
+                    }),
                   ),
 
                   24.heightBox,
@@ -289,7 +258,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       context,
                       ClassFilterResult(
                         selectedTimes: {..._selectedTimes},
-                        level: _level,
+                        gender: _gender,
+                        levels: {..._levels},
                         format: _format,
                         distance: _distance,
                         city: _searchController.text.trim(),
@@ -305,7 +275,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-  void _toggleTime(TimeOfDay t) {
+  void _toggleTime(TimeOfDayFilter t) {
     setState(() {
       if (_selectedTimes.contains(t)) {
         _selectedTimes.remove(t);
@@ -318,7 +288,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void _clearFilters() {
     setState(() {
       _selectedTimes.clear();
-      _level = LevelFilter.all;
+      _gender = GenderFilter.misto;
+      _levels = {};
       _format = FormatFilter.all;
       _distance = 25;
       _searchController.clear();

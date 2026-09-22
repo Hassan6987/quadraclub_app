@@ -32,12 +32,19 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   final Set<String> _selectedSports = {};
 
+  /// Level sections follow the header's sport selection; with nothing
+  /// selected every sport is on the table.
+  List<String> get _levelSports =>
+      _selectedSports.isEmpty ? kAllSportSlugs : _selectedSports.toList();
+
   late final DateTime _anchorDate;
   DateTime? _selectedDate;
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  String? _filterTimeOfDay;
+  final Set<TimeOfDayFilter> _filterTimes = {};
+  GenderFilter _filterGender = GenderFilter.misto;
+  Set<SportLevel> _filterLevels = {};
   String? _filterCity;
   double? _filterDistance;
   MatchFormat? _filterFormat;
@@ -88,32 +95,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  int? _parseHour(String? time) {
-    if (time == null || time.isEmpty) return null;
-    final parts = time.split(':');
-    if (parts.isEmpty) return null;
-    return int.tryParse(parts[0]);
-  }
-
-  bool _hasMatchingSlot(Booking match) {
-    final startHour = _parseHour(match.startTime);
-    final endHour = _parseHour(match.endTime);
-
-    if (startHour == null || endHour == null) return false;
-
-    final timeOfDay = _filterTimeOfDay?.toLowerCase();
-    if (timeOfDay == 'morning' && startHour >= 6 && endHour < 12) {
-      return true;
-    }
-    if (timeOfDay == 'afternoon' && startHour >= 12 && endHour < 18) {
-      return true;
-    }
-    if (timeOfDay == 'night' && (startHour >= 18 || endHour < 6)) {
-      return true;
-    }
-    return false;
-  }
-
   List<Booking> _filteredMatches(List<Booking> allBookings) {
     final query = _searchQuery.trim().toLowerCase();
 
@@ -151,7 +132,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
         }
       }
 
-      if (_filterTimeOfDay != null && !_hasMatchingSlot(match)) {
+      if (!matchesSelectedTimes(_filterTimes, parseHour(match.startTime))) {
+        return false;
+      }
+
+      if (!matchesSelectedLevels(
+        _filterLevels,
+        sport: match.sport.label,
+        level: match.category,
+      )) {
         return false;
       }
 
@@ -176,11 +165,25 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   List<Widget> _activeFilterBadges(AppLocalizations l10n) {
     return [
-      if (_filterTimeOfDay != null)
+      for (final time in _filterTimes)
         HeaderFilterBadge(
-          label: localizedTimeOfDay(context, _filterTimeOfDay!),
+          label: time.label(context),
           icon: Icons.access_time,
-          onClear: () => setState(() => _filterTimeOfDay = null),
+          onClear: () => setState(() => _filterTimes.remove(time)),
+        ),
+      if (_filterGender != GenderFilter.misto)
+        HeaderFilterBadge(
+          label: _filterGender.label(context),
+          icon: Icons.people_outline,
+          onClear: () => setState(() => _filterGender = GenderFilter.misto),
+        ),
+      for (final level in _filterLevels)
+        HeaderFilterBadge(
+          label: localizedLevelName(context, level.level),
+          icon: Icons.bar_chart,
+          onClear: () => setState(
+            () => _filterLevels = {..._filterLevels}..remove(level),
+          ),
         ),
       if (_filterFormat != null)
         HeaderFilterBadge(
@@ -202,7 +205,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
         ),
       HeaderClearAllButton(
         onTap: () => setState(() {
-          _filterTimeOfDay = null;
+          _filterTimes.clear();
+          _filterGender = GenderFilter.misto;
+          _filterLevels = {};
           _filterCity = null;
           _filterDistance = null;
           _filterFormat = null;
@@ -293,12 +298,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   });
                 },
                 onBackToList: () => setState(() => _isMapView = false),
-                filterTimeOfDay: _filterTimeOfDay,
+                filterTimes: _filterTimes,
                 filterCity: _filterCity,
                 filterDistance: _filterDistance,
-                onApplyFilters: (timeOfDay, city, dist) {
+                onApplyFilters: (times, city, dist) {
                   setState(() {
-                    _filterTimeOfDay = timeOfDay;
+                    _filterTimes
+                      ..clear()
+                      ..addAll(times);
                     _filterCity = city;
                     _filterDistance = dist;
                   });
@@ -309,7 +316,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
             }
             final grouped = _groupedBookings(state.bookings);
             final hasActiveFilters =
-                _filterTimeOfDay != null ||
+                _filterTimes.isNotEmpty ||
+                _filterGender != GenderFilter.misto ||
+                _filterLevels.isNotEmpty ||
                 _filterCity != null ||
                 _filterDistance != null ||
                 _filterFormat != null;
@@ -349,14 +358,21 @@ class _MatchesScreenState extends State<MatchesScreen> {
                               : const [],
                           onFilterTap: () => MatchFilterBottomSheet.show(
                             context,
-                            initialTimeOfDay: _filterTimeOfDay,
+                            initialTimes: _filterTimes,
+                            initialGender: _filterGender,
+                            initialLevels: _filterLevels,
+                            sports: _levelSports,
                             initialCity: _filterCity,
                             initialDistance: _filterDistance,
                             initialFormat: _filterFormat,
                             availableCities: availableCities,
-                            onApply: (timeOfDay, city, dist, format) {
+                            onApply: (times, gender, levels, city, dist, format) {
                               setState(() {
-                                _filterTimeOfDay = timeOfDay;
+                                _filterTimes
+                                  ..clear()
+                                  ..addAll(times);
+                                _filterGender = gender;
+                                _filterLevels = levels;
                                 _filterCity = city;
                                 _filterDistance = dist;
                                 _filterFormat = format;
@@ -399,11 +415,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       ],
                     ),
               floatingActionButton: Container(
-                margin: EdgeInsets.only(bottom: 5),
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: kBlackColor,
-                  shape: BoxShape.circle,
+                  color: kPrimaryColor,
+                  shape: BoxShape.rectangle,borderRadius: BorderRadius.circular(8),
+
                 ),
                 child: GestureDetector(
                   onTap: () {
@@ -413,7 +429,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       builder: (context) => CreateMatchDialog(),
                     );
                   },
-                  child: Icon(Icons.add, color: kWhiteColor, size: 26),
+                  child: Text("+ Create Match", style: AppStyles.w600f16inter.copyWith(color: kWhiteColor)),
                 ),
               ),
             );

@@ -4,16 +4,17 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/data/places_service.dart';
 
 class CourtFilterBottomSheet extends StatefulWidget {
-  final String? initialTimeOfDay;
+  final Set<TimeOfDayFilter> initialTimes;
   final String? initialCity;
   final double? initialDistance;
   final List<String> availableCities;
 
-  final Function(String? timeOfDay, String? city, double? distance) onApply;
+  final Function(Set<TimeOfDayFilter> times, String? city, double? distance)
+  onApply;
 
   const CourtFilterBottomSheet({
     super.key,
-    this.initialTimeOfDay,
+    this.initialTimes = const {},
     this.initialCity,
     this.initialDistance,
     this.availableCities = const [],
@@ -22,11 +23,11 @@ class CourtFilterBottomSheet extends StatefulWidget {
 
   static Future<void> show(
     BuildContext context, {
-    String? initialTimeOfDay,
+    Set<TimeOfDayFilter> initialTimes = const {},
     String? initialCity,
     double? initialDistance,
     List<String> availableCities = const [],
-    required Function(String? timeOfDay, String? city, double? distance)
+    required Function(Set<TimeOfDayFilter> times, String? city, double? distance)
     onApply,
   }) {
     return showModalBottomSheet(
@@ -41,7 +42,7 @@ class CourtFilterBottomSheet extends StatefulWidget {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: CourtFilterBottomSheet(
-          initialTimeOfDay: initialTimeOfDay,
+          initialTimes: initialTimes,
           initialCity: initialCity,
           initialDistance: initialDistance,
           availableCities: availableCities,
@@ -56,7 +57,7 @@ class CourtFilterBottomSheet extends StatefulWidget {
 }
 
 class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
-  String? _selectedTimeOfDay;
+  final Set<TimeOfDayFilter> _selectedTimes = {};
   String? _selectedCity;
 
   double _distance = 25.0;
@@ -71,14 +72,6 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
 
   Timer? _cityDebounce;
 
-  // Keep these as stable internal values.
-  // Only the displayed labels are localized.
-  final List<Map<String, String>> _timeSlots = [
-    {'key': 'morning', 'time': '6h - 12h'},
-    {'key': 'afternoon', 'time': '12h - 18h'},
-    {'key': 'night', 'time': '6 PM - 12 AM'},
-  ];
-
   List<String> get _quickCities {
     if (widget.availableCities.isNotEmpty) {
       return widget.availableCities;
@@ -87,29 +80,11 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
     return const ['Balneário Camboriú', 'Florianópolis', 'Itajaí'];
   }
 
-  String _localizedTimeLabel(BuildContext context, String key) {
-    final l10n = AppLocalizations.of(context)!;
-
-    switch (key) {
-      case 'morning':
-        return l10n.morning;
-
-      case 'afternoon':
-        return l10n.afternoon;
-
-      case 'night':
-        return l10n.night;
-
-      default:
-        return key;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
 
-    _selectedTimeOfDay = widget.initialTimeOfDay;
+    _selectedTimes.addAll(widget.initialTimes);
 
     _selectedCity = widget.initialCity;
 
@@ -232,59 +207,11 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
             // ===============================================================
             // TIME OF DAY
             // ===============================================================
-            Text(
-              l10n.timeOfDay,
-              style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
-            ).withPaddingSymmetric(16, 0),
-
-            6.heightBox,
-
-            Row(
-              children: _timeSlots.map((slot) {
-                final key = slot['key']!;
-
-                final isSelected = _selectedTimeOfDay == key;
-
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedTimeOfDay = isSelected ? null : key;
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSelected ? kPrimaryColor : kGreyColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: isSelected
-                            ? null
-                            : Border.all(color: kBorderColor),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            _localizedTimeLabel(context, key),
-                            style: AppStyles.w500f12inter.copyWith(
-                              color: kDarkTextColor,
-                            ),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          Text(
-                            slot['time']!,
-                            style: AppStyles.w400f12inter.copyWith(
-                              color: kTextColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+            TimeOfDayFilterSection(
+              selected: _selectedTimes,
+              onToggled: (time) => setState(() {
+                if (!_selectedTimes.remove(time)) _selectedTimes.add(time);
+              }),
             ).withPaddingSymmetric(16, 0),
 
             24.heightBox,
@@ -572,7 +499,7 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _selectedTimeOfDay = null;
+                        _selectedTimes.clear();
                         _selectedCity = null;
                         _enableDistance = false;
                         _distance = 25.0;
@@ -605,7 +532,7 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                   child: GestureDetector(
                     onTap: () {
                       widget.onApply(
-                        _selectedTimeOfDay,
+                        {..._selectedTimes},
                         _selectedCity,
                         _enableDistance ? _distance : null,
                       );

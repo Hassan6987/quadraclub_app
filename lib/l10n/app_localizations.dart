@@ -899,13 +899,13 @@ abstract class AppLocalizations {
   /// No description provided for @morningTime.
   ///
   /// In en, this message translates to:
-  /// **'6h - 12h'**
+  /// **'6 AM - 12 PM'**
   String get morningTime;
 
   /// No description provided for @afternoonTime.
   ///
   /// In en, this message translates to:
-  /// **'12h - 18h'**
+  /// **'12 PM - 6 PM'**
   String get afternoonTime;
 
   /// No description provided for @nightTime.
@@ -931,6 +931,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Levels'**
   String get selectLevels;
+
+  /// No description provided for @amenities.
+  ///
+  /// In en, this message translates to:
+  /// **'Amenities'**
+  String get amenities;
+
+  /// No description provided for @levelOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get levelOpen;
+
+  /// No description provided for @levelBeginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get levelBeginner;
+
+  /// No description provided for @levelIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get levelIntermediate;
+
+  /// No description provided for @levelAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get levelAdvanced;
+
+  /// No description provided for @levelCategoryNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Category {number}'**
+  String levelCategoryNumber(String number);
+
+  /// No description provided for @levelCategoryLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Category {letter}'**
+  String levelCategoryLetter(String letter);
+
+  /// No description provided for @genderMen.
+  ///
+  /// In en, this message translates to:
+  /// **'Men'**
+  String get genderMen;
+
+  /// No description provided for @genderWomen.
+  ///
+  /// In en, this message translates to:
+  /// **'Women'**
+  String get genderWomen;
+
+  /// No description provided for @genderMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get genderMixed;
 
   /// No description provided for @format.
   ///

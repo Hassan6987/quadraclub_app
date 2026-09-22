@@ -2,9 +2,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
+import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
@@ -34,9 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  String? _filterTimeOfDay;
+  final Set<TimeOfDayFilter> _filterTimes = {};
   String? _filterCity;
   double? _filterDistance;
+
+  /// Every slot row on this screen shares one group, so dragging any club's
+  /// slots scrolls all of them.
+  final SlotScrollSync _slotScrollSync = SlotScrollSync();
 
   @override
   void initState() {
@@ -50,7 +56,46 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _slotScrollSync.dispose();
     super.dispose();
+  }
+
+  /// Unauthenticated users get the sign-in prompt instead of the booking or
+  /// detail flow. Returns true when the caller may continue.
+  bool _requireSignIn(AppLocalizations l10n) {
+    if (context.read<AuthBloc>().state.user != null) return true;
+
+    LoginToBookDialog.show(
+      context,
+      title: l10n.signInToBookThisCourt,
+      subtitle: l10n.pleaseLogInCreateAccountToReserveYourSpot,
+    );
+
+    return false;
+  }
+
+  void _openClubDetail(Club club) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            CourtDetailScreen(club: club, distance: _clubDistance(club)),
+      ),
+    );
+  }
+
+  void _openBookingSummary(Club club, Court court, Sport sport, String time) {
+    context.read<CourtsBloc>().add(LoadPortfolio());
+
+    BookingSummarySheet.show(
+      context,
+      club: club,
+      court: court,
+      sportName: sportSlug(sport.sportName),
+      date: _selectedDate,
+      startTime: time,
+      distance: _clubDistance(club),
+    );
   }
 
   Future<void> _initUserLocation() async {
@@ -125,18 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
       for (final slot in slots) {
         if ((slot.status ?? '').toLowerCase() != 'available') continue;
-        final hour = int.tryParse((slot.startTime ?? '').split(':').first);
+        final hour = parseHour(slot.startTime);
         if (hour == null) continue;
 
-        if (_filterTimeOfDay == 'Morning' && hour >= 6 && hour < 12) {
-          return true;
-        }
-        if (_filterTimeOfDay == 'Afternoon' && hour >= 12 && hour < 18) {
-          return true;
-        }
-        if (_filterTimeOfDay == 'Night' && (hour >= 18 || hour < 6)) {
-          return true;
-        }
+        if (_filterTimes.any((t) => t.containsHour(hour))) return true;
       }
     }
     return false;
@@ -171,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       // Time of Day filter
-      if (_filterTimeOfDay != null && !_hasMatchingSlot(club)) {
+      if (_filterTimes.isNotEmpty && !_hasMatchingSlot(club)) {
         return false;
       }
 
@@ -198,11 +235,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _activeFilterBadges(AppLocalizations l10n) {
     return [
-      if (_filterTimeOfDay != null)
+      for (final time in _filterTimes)
         HeaderFilterBadge(
-          label: _filterTimeOfDay!,
+          label: time.label(context),
           icon: Icons.access_time,
-          onClear: () => setState(() => _filterTimeOfDay = null),
+          onClear: () => setState(() => _filterTimes.remove(time)),
         ),
       if (_filterCity != null)
         HeaderFilterBadge(
@@ -218,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       HeaderClearAllButton(
         onTap: () => setState(() {
-          _filterTimeOfDay = null;
+          _filterTimes.clear();
           _filterCity = null;
           _filterDistance = null;
         }),
@@ -260,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final clubsList = _filteredClubs(state.courts);
         final hasActiveFilters =
-            _filterTimeOfDay != null ||
+            _filterTimes.isNotEmpty ||
             _filterCity != null ||
             _filterDistance != null;
 
@@ -277,12 +314,14 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             onBackToList: () => setState(() => _isMapView = false),
-            filterTimeOfDay: _filterTimeOfDay,
+            filterTimes: _filterTimes,
             filterCity: _filterCity,
             filterDistance: _filterDistance,
-            onApplyFilters: (timeOfDay, city, dist) {
+            onApplyFilters: (times, city, dist) {
               setState(() {
-                _filterTimeOfDay = timeOfDay;
+                _filterTimes
+                  ..clear()
+                  ..addAll(times);
                 _filterCity = city;
                 _filterDistance = dist;
               });
@@ -318,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onFilterTap: () {
                         CourtFilterBottomSheet.show(
                           context,
-                          initialTimeOfDay: _filterTimeOfDay,
+                          initialTimes: _filterTimes,
                           initialCity: _filterCity,
                           initialDistance: _filterDistance,
                           availableCities: state.courts
@@ -327,9 +366,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               .where((s) => s.trim().isNotEmpty)
                               .toSet()
                               .toList(),
-                          onApply: (timeOfDay, city, dist) {
+                          onApply: (times, city, dist) {
                             setState(() {
-                              _filterTimeOfDay = timeOfDay;
+                              _filterTimes
+                                ..clear()
+                                ..addAll(times);
                               _filterCity = city;
                               _filterDistance = dist;
                             });
@@ -367,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         _searchController.clear();
                                         _searchQuery = '';
                                         _selectedSports.clear();
-                                        _filterTimeOfDay = null;
+                                        _filterTimes.clear();
                                         _filterCity = null;
                                         _filterDistance = null;
                                       });
@@ -384,36 +425,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                 bottom: 24,
                               ),
                               itemBuilder: (context, index) {
-                                final dist = _clubDistance(clubsList[index]);
+                                final club = clubsList[index];
+                                final dist = _clubDistance(club);
+
                                 return CourtCardWidget(
-                                  club: clubsList[index],
+                                  club: club,
                                   selectedDate: _selectedDate,
                                   selectedSports: _selectedSports,
+                                  scrollSync: _slotScrollSync,
                                   distanceKm: dist.isInfinite ? null : dist,
                                   onTap: () {
-                                    // Gate: show login dialog for unauthenticated users
-                                    final authState = context
-                                        .read<AuthBloc>()
-                                        .state;
-                                    if (authState.user == null) {
-                                      LoginToBookDialog.show(
-                                        context,
-                                        title: l10n.signInToBookThisCourt,
-                                        subtitle: l10n
-                                            .pleaseLogInCreateAccountToReserveYourSpot,
-                                      );
-                                      return;
-                                    }
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => CourtDetailScreen(
-                                          club: clubsList[index],
-                                          distance: _clubDistance(
-                                            clubsList[index],
-                                          ),
-                                        ),
-                                      ),
+                                    if (!_requireSignIn(l10n)) return;
+                                    _openClubDetail(club);
+                                  },
+                                  onTimeSlotTap: (court, sport, time) {
+                                    if (!_requireSignIn(l10n)) return;
+                                    _openBookingSummary(
+                                      club,
+                                      court,
+                                      sport,
+                                      time,
                                     );
                                   },
                                 );

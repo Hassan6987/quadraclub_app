@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -438,10 +439,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get night => 'Night';
 
   @override
-  String get morningTime => '6h - 12h';
+  String get morningTime => '6 AM - 12 PM';
 
   @override
-  String get afternoonTime => '12h - 18h';
+  String get afternoonTime => '12 PM - 6 PM';
 
   @override
   String get nightTime => '6 PM - 12 AM';
@@ -454,6 +455,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectLevels => 'Select Levels';
+
+  @override
+  String get amenities => 'Amenities';
+
+  @override
+  String get levelOpen => 'Open';
+
+  @override
+  String get levelBeginner => 'Beginner';
+
+  @override
+  String get levelIntermediate => 'Intermediate';
+
+  @override
+  String get levelAdvanced => 'Advanced';
+
+  @override
+  String levelCategoryNumber(String number) {
+    return 'Category $number';
+  }
+
+  @override
+  String levelCategoryLetter(String letter) {
+    return 'Category $letter';
+  }
+
+  @override
+  String get genderMen => 'Men';
+
+  @override
+  String get genderWomen => 'Women';
+
+  @override
+  String get genderMixed => 'Mixed';
 
   @override
   String get format => 'Format';

@@ -2,30 +2,21 @@ import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 
 import '/app_exports.dart';
 
-String localizedTimeOfDay(BuildContext context, String key) {
-  final l10n = AppLocalizations.of(context)!;
-  switch (key.toLowerCase()) {
-    case 'morning':
-      return l10n.morning;
-    case 'afternoon':
-      return l10n.afternoon;
-    case 'night':
-      return l10n.night;
-    default:
-      return key;
-  }
-}
-
-enum MatchLevelFilter { all, select }
-
 class MatchFilterBottomSheet extends StatefulWidget {
-  final String? initialTimeOfDay;
+  final Set<TimeOfDayFilter> initialTimes;
+  final GenderFilter initialGender;
+  final Set<SportLevel> initialLevels;
+
+  /// Sports to offer level sections for — the header's selection.
+  final List<String> sports;
   final String? initialCity;
   final double? initialDistance;
   final MatchFormat? initialFormat;
   final List<String> availableCities;
   final void Function(
-    String? timeOfDay,
+    Set<TimeOfDayFilter> times,
+    GenderFilter gender,
+    Set<SportLevel> levels,
     String? city,
     double? distance,
     MatchFormat? format,
@@ -34,7 +25,10 @@ class MatchFilterBottomSheet extends StatefulWidget {
 
   const MatchFilterBottomSheet({
     super.key,
-    this.initialTimeOfDay,
+    this.initialTimes = const {},
+    this.initialGender = GenderFilter.misto,
+    this.initialLevels = const {},
+    this.sports = kAllSportSlugs,
     this.initialCity,
     this.initialDistance,
     this.initialFormat,
@@ -44,13 +38,18 @@ class MatchFilterBottomSheet extends StatefulWidget {
 
   static Future<void> show(
     BuildContext context, {
-    String? initialTimeOfDay,
+    Set<TimeOfDayFilter> initialTimes = const {},
+    GenderFilter initialGender = GenderFilter.misto,
+    Set<SportLevel> initialLevels = const {},
+    List<String> sports = kAllSportSlugs,
     String? initialCity,
     double? initialDistance,
     MatchFormat? initialFormat,
     List<String> availableCities = const [],
     required void Function(
-      String? timeOfDay,
+      Set<TimeOfDayFilter> times,
+      GenderFilter gender,
+      Set<SportLevel> levels,
       String? city,
       double? distance,
       MatchFormat? format,
@@ -62,7 +61,10 @@ class MatchFilterBottomSheet extends StatefulWidget {
       isScrollControlled: true,
       constraints: BoxConstraints(maxHeight: 680),
       builder: (_) => MatchFilterBottomSheet(
-        initialTimeOfDay: initialTimeOfDay,
+        initialTimes: initialTimes,
+        initialGender: initialGender,
+        initialLevels: initialLevels,
+        sports: sports,
         initialCity: initialCity,
         initialDistance: initialDistance,
         initialFormat: initialFormat,
@@ -77,9 +79,9 @@ class MatchFilterBottomSheet extends StatefulWidget {
 }
 
 class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
-  String? _timeOfDay;
-  MatchLevelFilter _level =
-      MatchLevelFilter.all; // visual only — see note below
+  final Set<TimeOfDayFilter> _times = {};
+  GenderFilter _gender = GenderFilter.misto;
+  Set<SportLevel> _levels = {};
   MatchFormat? _format;
   String? _selectedCity;
   double _distance = 25;
@@ -95,7 +97,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _timeOfDay = widget.initialTimeOfDay;
+    _times.addAll(widget.initialTimes);
+    _gender = widget.initialGender;
+    _levels = {...widget.initialLevels};
     _format = widget.initialFormat;
     _selectedCity = widget.initialCity;
     if (widget.initialDistance != null) {
@@ -113,16 +117,11 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
     super.dispose();
   }
 
-  void _selectTime(String label) {
-    setState(() {
-      _timeOfDay = _timeOfDay == label ? null : label;
-    });
-  }
-
   void _clearFilters() {
     setState(() {
-      _timeOfDay = null;
-      _level = MatchLevelFilter.all;
+      _times.clear();
+      _gender = GenderFilter.misto;
+      _levels = {};
       _format = null;
       _selectedCity = null;
       _distance = 25;
@@ -165,50 +164,21 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionLabel(label: l10n.timeOfDay),
-                  8.heightBox,
-                  Row(
-                    spacing: getProportionateScreenWidth(6),
-                    children: [
-                      TimeChip(
-                        label: l10n.morning,
-                        subtitle: l10n.morningTime,
-                        isSelected: _timeOfDay == 'Morning',
-                        onTap: () => _selectTime('Morning'),
-                      ),
-                      TimeChip(
-                        label: l10n.afternoon,
-                        subtitle: l10n.afternoonTime,
-                        isSelected: _timeOfDay == 'Afternoon',
-                        onTap: () => _selectTime('Afternoon'),
-                      ),
-                      TimeChip(
-                        label: l10n.night,
-                        subtitle: l10n.nightTime,
-                        isSelected: _timeOfDay == 'Night',
-                        onTap: () => _selectTime('Night'),
-                      ),
-                    ],
+                  TimeOfDayFilterSection(
+                    selected: _times,
+                    onToggled: (time) => setState(() {
+                      if (!_times.remove(time)) _times.add(time);
+                    }),
                   ),
                   16.heightBox,
-                  _sectionLabel(label: l10n.level),
-                  8.heightBox,
-                  Row(
-                    spacing: getProportionateScreenWidth(6),
-                    children: [
-                      ToggleChip(
-                        label: l10n.allLevels,
-                        isSelected: _level == MatchLevelFilter.all,
-                        onTap: () =>
-                            setState(() => _level = MatchLevelFilter.all),
-                      ),
-                      ToggleChip(
-                        label: l10n.selectLevels,
-                        isSelected: _level == MatchLevelFilter.select,
-                        onTap: () =>
-                            setState(() => _level = MatchLevelFilter.select),
-                      ),
-                    ],
+                  LevelFilterSection(
+                    sports: widget.sports,
+                    gender: _gender,
+                    selected: _levels,
+                    onChanged: (gender, levels) => setState(() {
+                      _gender = gender;
+                      _levels = levels;
+                    }),
                   ),
                   16.heightBox,
                   _sectionLabel(label: l10n.format),
@@ -346,7 +316,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                   buttonText: l10n.showResults,
                   onTap: () {
                     widget.onApply(
-                      _timeOfDay,
+                      {..._times},
+                      _gender,
+                      {..._levels},
                       _selectedCity,
                       _enableDistance ? _distance : null,
                       _format,
@@ -363,12 +335,8 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   }
 }
 
-Widget _sectionLabel({required String label}) {
-  return Text(
-    label,
-    style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
-  );
-}
+Widget _sectionLabel({required String label}) =>
+    FilterSectionLabel(label: label);
 
 Widget _buildCityCard({required String label, required bool isSelected}) {
   return Container(

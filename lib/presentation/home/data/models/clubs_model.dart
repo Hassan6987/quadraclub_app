@@ -10,6 +10,7 @@ class Club {
     required this.state,
     required this.coordinates,
     required this.sports,
+    required this.amenities,
     required this.courts,
   });
 
@@ -21,6 +22,7 @@ class Club {
   final String? state;
   final Coordinates? coordinates;
   final List<String> sports;
+  final List<String> amenities;
   final List<Court> courts;
 
   Club copyWith({
@@ -32,6 +34,7 @@ class Club {
     String? state,
     Coordinates? coordinates,
     List<String>? sports,
+    List<String>? amenities,
     List<Court>? courts,
   }) {
     return Club(
@@ -43,6 +46,7 @@ class Club {
       state: state ?? this.state,
       coordinates: coordinates ?? this.coordinates,
       sports: sports ?? this.sports,
+      amenities: amenities ?? this.amenities,
       courts: courts ?? this.courts,
     );
   }
@@ -61,6 +65,9 @@ class Club {
       sports: json["sports"] == null
           ? []
           : List<String>.from(json["sports"]!.map((x) => x)),
+      amenities: json["amenities"] == null
+          ? []
+          : List<String>.from(json["amenities"]!.map((x) => x)),
       courts: json["courts"] == null
           ? []
           : List<Court>.from(json["courts"]!.map((x) => Court.fromJson(x))),
