@@ -304,22 +304,148 @@ String? levelKeyFrom(String? value) {
 
   // What's left should be a categoria: drop the word and any ordinal
   // marker, leaving just the digit or letter that identifies it.
+  // "1ª Categoria" normalises to "1a" after stripping "categoria".
   final identifier = normalized
       .replaceAll(RegExp(r'categorias?|category|cat'), '')
       .replaceAll(RegExp(r'[^a-z0-9]'), '');
 
-  if (RegExp(r'^[1-8]$').hasMatch(identifier)) return 'cat_$identifier';
+  final padelOrdinal = RegExp(r'^([1-8])a?$').firstMatch(identifier);
+  if (padelOrdinal != null) return 'cat_${padelOrdinal.group(1)}';
 
   if (RegExp(r'^[a-e]$').hasMatch(identifier)) return 'cat_$identifier';
 
   return null;
 }
 
+/// En/em dashes and a plain hyphen used as a range separator in class
+/// level strings ("Categoria A – Categoria C").
+final _levelRangeSeparator = RegExp(r'\s*[–—−-]\s*');
+
+/// True when [level] looks like the structured Homem/Mulher payload the
+/// classes API sends, rather than a free-text description or a bare key.
+bool isStructuredClassLevel(String? level) {
+  final normalized = _withoutDiacritics((level ?? '').toLowerCase());
+
+  return RegExp(
+    r'\b(homem|mulher|men|women|male|female)\s*:',
+  ).hasMatch(normalized);
+}
+
+/// Expands every level named in [spec] along [sport]'s ladder.
+///
+/// Handles comma-separated lists and inclusive ranges:
+/// `"Categoria A – Categoria C"` → `{cat_a, cat_b, cat_c}`,
+/// `"Categoria B, Categoria D, Iniciante"` → those three keys.
+Set<String> expandLevelSpec(String? spec, String sport) {
+  if (spec == null || spec.trim().isEmpty) return const {};
+
+  final keys = <String>{};
+
+  for (final part in spec.split(',')) {
+    final trimmed = part.trim();
+    if (trimmed.isEmpty) continue;
+
+    final rangeParts = trimmed.split(_levelRangeSeparator);
+
+    if (rangeParts.length >= 2) {
+      final start = levelKeyFrom(rangeParts.first);
+      final end = levelKeyFrom(rangeParts.last);
+
+      if (start == null && end == null) continue;
+
+      keys.addAll(_levelsBetween(start, end, sport));
+      continue;
+    }
+
+    final key = levelKeyFrom(trimmed);
+    if (key != null) keys.add(key);
+  }
+
+  return keys;
+}
+
+Set<String> _levelsBetween(String? start, String? end, String sport) {
+  final ladder = levelsForSport(sport);
+
+  if (ladder.isEmpty) {
+    return {if (start != null) start, if (end != null) end};
+  }
+
+  final i = start == null ? -1 : ladder.indexOf(start);
+  final j = end == null ? -1 : ladder.indexOf(end);
+
+  if (i < 0 && j < 0) return const {};
+  if (i < 0) return {ladder[j]};
+  if (j < 0) return {ladder[i]};
+
+  final from = i < j ? i : j;
+  final to = i < j ? j : i;
+
+  return ladder.sublist(from, to + 1).toSet();
+}
+
+/// Parses the classes API `level` field into Homem / Mulher sets of ladder
+/// keys for [sport].
+///
+/// Example:
+/// `"Homem: Categoria A – Categoria C · Mulher: Categoria D – Iniciante"`
+/// → `{homem: {cat_a, cat_b, cat_c}, mulher: {cat_d, cat_e, iniciante}}`.
+///
+/// Returns null when the string is free text or otherwise unstructured.
+Map<LevelGroup, Set<String>>? parseClassLevelGroups(
+  String? level, {
+  required String sport,
+}) {
+  if (!isStructuredClassLevel(level)) return null;
+
+  final slug = sportSlug(sport);
+  final result = <LevelGroup, Set<String>>{
+    LevelGroup.homem: {},
+    LevelGroup.mulher: {},
+  };
+
+  // Split on the middle-dot (and a few fallbacks) that separates the two
+  // gender clauses.
+  final clauses = level!
+      .split(RegExp(r'\s*[·•|]\s*'))
+      .map((c) => c.trim())
+      .where((c) => c.isNotEmpty);
+
+  for (final clause in clauses) {
+    final match = RegExp(
+      r'^(homem|mulher|men|women|male|female)\s*:\s*(.+)$',
+      caseSensitive: false,
+    ).firstMatch(_withoutDiacritics(clause));
+
+    if (match == null) continue;
+
+    final groupLabel = match.group(1)!.toLowerCase();
+    final group =
+        (groupLabel == 'homem' || groupLabel == 'men' || groupLabel == 'male')
+        ? LevelGroup.homem
+        : LevelGroup.mulher;
+
+    // Pull the original (accented) value portion from the clause so
+    // levelKeyFrom still sees "Categoria" / "Iniciante" correctly.
+    final valueStart = clause.indexOf(':');
+    final value = valueStart >= 0
+        ? clause.substring(valueStart + 1).trim()
+        : match.group(2)!;
+
+    result[group] = {...result[group]!, ...expandLevelSpec(value, slug)};
+  }
+
+  final hasAny = result.values.any((s) => s.isNotEmpty);
+
+  return hasAny ? result : null;
+}
+
 /// True when the item's sport and level resolve to one of [selected]; an
 /// empty selection means "all levels" and matches everything.
 ///
-/// The group is not compared: matches and classes carry no gender today, so
-/// the toggle narrows which levels can be picked rather than the results.
+/// Classes send a structured Homem/Mulher string — those are matched
+/// against the selected [SportLevel.group]. Bare keys (matches) still
+/// match on the level alone.
 bool matchesSelectedLevels(
   Set<SportLevel> selected, {
   String? sport,
@@ -327,11 +453,20 @@ bool matchesSelectedLevels(
 }) {
   if (selected.isEmpty) return true;
 
+  final slug = sportSlug(sport);
+  final groups = parseClassLevelGroups(level, sport: slug);
+
+  if (groups != null) {
+    return selected.any((s) {
+      if (slug.isNotEmpty && s.sport != slug) return false;
+
+      return groups[s.group]?.contains(s.level) ?? false;
+    });
+  }
+
   final key = levelKeyFrom(level);
 
   if (key == null) return false;
-
-  final slug = sportSlug(sport);
 
   return selected.any(
     (s) => s.level == key && (slug.isEmpty || s.sport == slug),

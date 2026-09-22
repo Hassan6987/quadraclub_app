@@ -228,7 +228,7 @@ class Class {
       id: json["_id"],
       className: json["className"] ?? '',
       sportName: json["sportName"],
-      level: json["level"],
+      level: json["level"] ?? '',
       format: json["format"],
       price: json["price"],
       convenienceFee: json["convenienceFee"],
