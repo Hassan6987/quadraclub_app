@@ -351,20 +351,12 @@ class _ClassesScreenState extends State<ClassesScreen> {
       ),
       body: BlocBuilder<ClassesBloc, ClassesState>(
         builder: (context, state) {
-          if (state.status == ClassStats.loading) {
-            return Center(child: CustomLoadingView());
-          } else if (state.status != ClassStats.loading &&
-              state.classes.isEmpty) {
-            return Center(
-              child: Text(
-                l10n.noClassesFound,
-                style: AppStyles.w600f18inter.copyWith(color: kDarkTextColor),
-              ),
-            );
-          }
+          final isLoading = state.status == ClassStats.loading;
 
           final grouped = _groupedClasses(state.classes);
 
+          // The header stays mounted while loading and when nothing comes
+          // back, so the sports, search, filters and dates are always there.
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -387,7 +379,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
               ),
 
               Expanded(
-                child: grouped.isEmpty
+                child: isLoading
+                    ? Center(child: CustomLoadingView())
+                    : grouped.isEmpty
                     ? Center(
                         child: Text(
                           l10n.noClassesFound,

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_sheet.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
@@ -11,10 +12,15 @@ class CourtDetailScreen extends StatefulWidget {
   final Club club;
   final double distance;
 
+  /// Carried over from "Create Match" so the Booking Summary opens on the
+  /// right booking type.
+  final BookingType bookingIntent;
+
   const CourtDetailScreen({
     super.key,
     required this.club,
     required this.distance,
+    this.bookingIntent = BookingType.individual,
   });
 
   @override
@@ -169,6 +175,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
       sportName: _selectedSportSlug,
       court: court,
       distance: widget.distance,
+      initialBookingType: widget.bookingIntent,
     );
   }
 

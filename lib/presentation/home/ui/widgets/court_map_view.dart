@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
@@ -25,6 +26,10 @@ class CourtMapView extends StatefulWidget {
   final Function(String)
   onSportSelected; // <-- was: final Function(String?) onSportSelected;
 
+  /// Carried over from "Create Match" so the Booking Summary opens on the
+  /// right booking type when the user picks a club off the map.
+  final BookingType bookingIntent;
+
   const CourtMapView({
     super.key,
     required this.courts,
@@ -38,6 +43,7 @@ class CourtMapView extends StatefulWidget {
     this.filterDistance,
     required this.selectedSports,
     required this.onSportSelected,
+    this.bookingIntent = BookingType.individual,
   });
 
   @override
@@ -406,6 +412,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                                   builder: (_) => CourtDetailScreen(
                                     club: court,
                                     distance: _clubDistance(court),
+                                    bookingIntent: widget.bookingIntent,
                                   ),
                                 ),
                               );

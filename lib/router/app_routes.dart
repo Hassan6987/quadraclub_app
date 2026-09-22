@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/presentation/authentication/ui/forget_password.dart';
 import 'package:quadraclub_app/presentation/authentication/ui/sign_up_screen.dart';
 import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/notifications/ui/notification_screen.dart';
 import 'package:quadraclub_app/presentation/profile/ui/my_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/delete_account.dart';
@@ -19,7 +20,14 @@ class AppGenerateRoute {
       case RouteName.forgetPassword:
         return _navigateScreen(const ForgetPassword());
       case RouteName.customBottomNavbar:
-        return _navigateScreen(CustomBottomNavBar());
+        final args = setting.arguments as Map<String, dynamic>? ?? const {};
+        return _navigateScreen(
+          CustomBottomNavBar(
+            index: args["index"] as int? ?? 2,
+            bookingIntent:
+                args["bookingIntent"] as BookingType? ?? BookingType.individual,
+          ),
+        );
       case RouteName.myAccount:
         return _navigateScreen(const MyAccount());
       case RouteName.notifications:

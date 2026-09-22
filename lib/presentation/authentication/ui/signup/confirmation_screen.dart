@@ -60,34 +60,37 @@ class ConfirmationScreen extends StatelessWidget {
     }
   }
 
-  String _getCategoryLabel(AppLocalizations l10n, String category) {
-    switch (category) {
-      case 'Open':
-        return l10n.categoryOpen;
-      case 'Category 1':
-        return l10n.category1;
-      case 'Category 2':
-        return l10n.category2;
-      case 'Category 3':
-        return l10n.category3;
-      default:
-        return category;
-    }
+  String _getCategoryLabel(BuildContext context, String category) {
+    final key = levelKeyFrom(category);
+
+    return key == null ? category : localizedLevelName(context, key);
   }
 
   Widget _summaryRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
+          Expanded(
+            flex: 4,
+            child: Text(
+              label,
+              textAlign: TextAlign.left,
+              style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
+            ),
           ),
-          Text(
-            value,
-            style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
+          12.widthBox,
+          Expanded(
+            flex: 6,
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
+            ),
           ),
         ],
       ),
@@ -170,6 +173,9 @@ class ConfirmationScreen extends StatelessWidget {
                           children: [
                             Text(
                               sport,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: AppStyles.subHeadingSemibold.copyWith(
                                 color: kBlackColor,
                               ),
@@ -177,8 +183,11 @@ class ConfirmationScreen extends StatelessWidget {
                             4.heightBox,
                             Text(
                               category != null
-                                  ? _getCategoryLabel(l10n, category)
+                                  ? _getCategoryLabel(context, category)
                                   : '-',
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: AppStyles.subtitleRegular.copyWith(
                                 color: kTextColor,
                               ),

@@ -4,6 +4,7 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_sheet.dart';
@@ -14,7 +15,11 @@ import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart'
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  /// Carried over from "Create Match", where the user is sent here to pick a
+  /// court first, so the Booking Summary opens on the right booking type.
+  final BookingType bookingIntent;
+
+  const HomeScreen({super.key, this.bookingIntent = BookingType.individual});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -78,8 +83,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            CourtDetailScreen(club: club, distance: _clubDistance(club)),
+        builder: (_) => CourtDetailScreen(
+          club: club,
+          distance: _clubDistance(club),
+          bookingIntent: widget.bookingIntent,
+        ),
       ),
     );
   }
@@ -95,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
       date: _selectedDate,
       startTime: time,
       distance: _clubDistance(club),
+      initialBookingType: widget.bookingIntent,
     );
   }
 
@@ -304,6 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_isMapView) {
           return CourtMapView(
             courts: clubsList,
+            bookingIntent: widget.bookingIntent,
             currentLocation: _currentLocation,
             initialCenter: _currentLatLng,
             onLocationChanged: (LocationResult location) {
@@ -338,121 +348,114 @@ class _HomeScreenState extends State<HomeScreen> {
             centerTile: false,
             backgroundColor: kWhiteColor,
           ),
-          body: state.status == CourtStateStatus.loading
-              ? const Center(child: CustomLoadingView())
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DiscoveryHeader(
-                      selectedSports: _selectedSports,
-                      onSportToggled: _toggleSport,
-                      searchController: _searchController,
-                      searchHint: l10n.searchByName,
-                      onSearchChanged: (value) =>
-                          setState(() => _searchQuery = value),
-                      hasActiveFilters: hasActiveFilters,
-                      activeFilterBadges: hasActiveFilters
-                          ? _activeFilterBadges(l10n)
-                          : const [],
-                      onFilterTap: () {
-                        CourtFilterBottomSheet.show(
-                          context,
-                          initialTimes: _filterTimes,
-                          initialCity: _filterCity,
-                          initialDistance: _filterDistance,
-                          availableCities: state.courts
-                              .map((c) => c.city)
-                              .whereType<String>()
-                              .where((s) => s.trim().isNotEmpty)
-                              .toSet()
-                              .toList(),
-                          onApply: (times, city, dist) {
-                            setState(() {
-                              _filterTimes
-                                ..clear()
-                                ..addAll(times);
-                              _filterCity = city;
-                              _filterDistance = dist;
-                            });
-                          },
-                        );
-                      },
-                      onMapTap: () => setState(() => _isMapView = true),
-                      dates: _dates,
-                      selectedDate: _selectedDate,
-                      onDateSelected: (date) =>
-                          setState(() => _selectedDate = date),
-                    ),
-                    Expanded(
-                      child: clubsList.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.location_off_outlined,
-                                    size: 64,
-                                    color: Colors.grey[400],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    l10n.noCourtsMatchSearchFilters,
-                                    style: AppStyles.w500f14inter.copyWith(
-                                      color: kTextColor,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _searchController.clear();
-                                        _searchQuery = '';
-                                        _selectedSports.clear();
-                                        _filterTimes.clear();
-                                        _filterCity = null;
-                                        _filterDistance = null;
-                                      });
-                                    },
-                                    child: Text(l10n.resetFilters),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: clubsList.length,
-                              padding: const EdgeInsets.only(
-                                top: 8,
-                                bottom: 24,
-                              ),
-                              itemBuilder: (context, index) {
-                                final club = clubsList[index];
-                                final dist = _clubDistance(club);
-
-                                return CourtCardWidget(
-                                  club: club,
-                                  selectedDate: _selectedDate,
-                                  selectedSports: _selectedSports,
-                                  scrollSync: _slotScrollSync,
-                                  distanceKm: dist.isInfinite ? null : dist,
-                                  onTap: () {
-                                    if (!_requireSignIn(l10n)) return;
-                                    _openClubDetail(club);
-                                  },
-                                  onTimeSlotTap: (court, sport, time) {
-                                    if (!_requireSignIn(l10n)) return;
-                                    _openBookingSummary(
-                                      club,
-                                      court,
-                                      sport,
-                                      time,
-                                    );
-                                  },
-                                );
-                              },
+          // The header stays mounted while loading and when nothing comes
+          // back, so the sports, search, filters and dates are always there.
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DiscoveryHeader(
+                selectedSports: _selectedSports,
+                onSportToggled: _toggleSport,
+                searchController: _searchController,
+                searchHint: l10n.searchByName,
+                onSearchChanged: (value) =>
+                    setState(() => _searchQuery = value),
+                hasActiveFilters: hasActiveFilters,
+                activeFilterBadges: hasActiveFilters
+                    ? _activeFilterBadges(l10n)
+                    : const [],
+                onFilterTap: () {
+                  CourtFilterBottomSheet.show(
+                    context,
+                    initialTimes: _filterTimes,
+                    initialCity: _filterCity,
+                    initialDistance: _filterDistance,
+                    availableCities: state.courts
+                        .map((c) => c.city)
+                        .whereType<String>()
+                        .where((s) => s.trim().isNotEmpty)
+                        .toSet()
+                        .toList(),
+                    onApply: (times, city, dist) {
+                      setState(() {
+                        _filterTimes
+                          ..clear()
+                          ..addAll(times);
+                        _filterCity = city;
+                        _filterDistance = dist;
+                      });
+                    },
+                  );
+                },
+                onMapTap: () => setState(() => _isMapView = true),
+                dates: _dates,
+                selectedDate: _selectedDate,
+                onDateSelected: (date) => setState(() => _selectedDate = date),
+              ),
+              Expanded(
+                child: state.status == CourtStateStatus.loading
+                    ? const Center(child: CustomLoadingView())
+                    : clubsList.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.location_off_outlined,
+                              size: 64,
+                              color: Colors.grey[400],
                             ),
-                    ),
-                  ],
-                ),
+                            const SizedBox(height: 16),
+                            Text(
+                              l10n.noCourtsMatchSearchFilters,
+                              style: AppStyles.w500f14inter.copyWith(
+                                color: kTextColor,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                  _selectedSports.clear();
+                                  _filterTimes.clear();
+                                  _filterCity = null;
+                                  _filterDistance = null;
+                                });
+                              },
+                              child: Text(l10n.resetFilters),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: clubsList.length,
+                        padding: const EdgeInsets.only(top: 8, bottom: 24),
+                        itemBuilder: (context, index) {
+                          final club = clubsList[index];
+                          final dist = _clubDistance(club);
+
+                          return CourtCardWidget(
+                            club: club,
+                            selectedDate: _selectedDate,
+                            selectedSports: _selectedSports,
+                            scrollSync: _slotScrollSync,
+                            distanceKm: dist.isInfinite ? null : dist,
+                            onTap: () {
+                              if (!_requireSignIn(l10n)) return;
+                              _openClubDetail(club);
+                            },
+                            onTimeSlotTap: (court, sport, time) {
+                              if (!_requireSignIn(l10n)) return;
+                              _openBookingSummary(club, court, sport, time);
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         );
       },
     );

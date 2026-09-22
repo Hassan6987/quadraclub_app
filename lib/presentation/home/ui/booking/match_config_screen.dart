@@ -39,9 +39,12 @@ class MatchConfigScreen extends StatefulWidget {
 }
 
 class _MatchConfigScreenState extends State<MatchConfigScreen> {
-  MatchType _matchType = MatchType.private;
+  MatchType _matchType = MatchType.open;
   BookingFormat _format = BookingFormat.single;
-  PaymentSplitOption _paymentOption = PaymentSplitOption.payAllReceiveLater;
+
+  /// Stays null until the user picks one, which keeps the Book button
+  /// disabled and makes it obvious the section needs an answer.
+  PaymentSplitOption? _paymentOption;
 
   List<InvitePlayerModel> _invitedPlayers = [];
 
@@ -155,6 +158,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
   }
 
   void _onBookTap() {
+    if (_paymentOption == null) return;
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -172,7 +177,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           // Keep canonical model/API values.
           matchType: _matchType.label,
           matchFormat: _format.label,
-          paymentType: _paymentOption.type,
+          paymentType: _paymentOption!.type,
           distance: widget.distance,
         ),
       ),
@@ -183,8 +188,11 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    if (!_availablePaymentOptions.contains(_paymentOption)) {
-      _paymentOption = _availablePaymentOptions.first;
+    // Switching to Open removes an option; drop it rather than silently
+    // picking another one for the user.
+    if (_paymentOption != null &&
+        !_availablePaymentOptions.contains(_paymentOption)) {
+      _paymentOption = null;
     }
 
     return Scaffold(
@@ -217,7 +225,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -225,10 +233,10 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     l10n.courtDetails.toUpperCase(),
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
-                  8.heightBox,
+                  6.heightBox,
 
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: kWhiteColor,
                       borderRadius: BorderRadius.circular(24),
@@ -240,15 +248,15 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                           borderRadius: BorderRadius.circular(16),
                           child: CachedNetworkImage(
                             imageUrl: widget.club.photo ?? '',
-                            height: 96,
-                            width: 96,
+                            height: 72,
+                            width: 72,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Shimmer.fromColors(
                               baseColor: Colors.grey.shade300,
                               highlightColor: Colors.grey.shade100,
                               child: Container(
-                                height: 96,
-                                width: 96,
+                                height: 72,
+                                width: 72,
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
                                 ),
@@ -257,8 +265,8 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             errorWidget: (context, url, error) {
                               return Image.asset(
                                 Assets.png.clubLogo.path,
-                                height: 96,
-                                width: 96,
+                                height: 72,
+                                width: 72,
                                 fit: BoxFit.cover,
                               );
                             },
@@ -295,13 +303,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     ),
                   ),
 
-                  20.heightBox,
+                  14.heightBox,
 
                   Text(
                     l10n.matchType.toUpperCase(),
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
-                  8.heightBox,
+                  6.heightBox,
 
                   Row(
                     children: MatchType.values.map((type) {
@@ -316,7 +324,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               if (!_availablePaymentOptions.contains(
                                 _paymentOption,
                               )) {
-                                _paymentOption = _availablePaymentOptions.first;
+                                _paymentOption = null;
                               }
                             });
                           },
@@ -381,13 +389,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     }).toList(),
                   ),
 
-                  20.heightBox,
+                  14.heightBox,
 
                   Text(
                     l10n.format.toUpperCase(),
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
-                  8.heightBox,
+                  6.heightBox,
 
                   Row(
                     children: BookingFormat.values.map((format) {
@@ -446,16 +454,16 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     }).toList(),
                   ),
 
-                  20.heightBox,
+                  14.heightBox,
 
                   Text(
                     l10n.invitePlayers.toUpperCase(),
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
-                  8.heightBox,
+                  6.heightBox,
 
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: kWhiteColor,
                       borderRadius: BorderRadius.circular(24),
@@ -468,7 +476,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                             return GestureDetector(
                               onTap: () => _openInvitePlayers(state.players),
                               child: Container(
-                                height: 44,
+                                height: 40,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
@@ -549,13 +557,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     ),
                   ),
 
-                  20.heightBox,
+                  14.heightBox,
 
                   Text(
                     l10n.payment.toUpperCase(),
                     style: AppStyles.w500f12inter.copyWith(color: kTextColor),
                   ),
-                  8.heightBox,
+                  6.heightBox,
 
                   ..._availablePaymentOptions.map((option) {
                     final isSelected = _paymentOption == option;
@@ -563,7 +571,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                     return GestureDetector(
                       onTap: () => setState(() => _paymentOption = option),
                       child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
+                        margin: const EdgeInsets.only(bottom: 6),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 8,
@@ -573,13 +581,13 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
                               ? kPrimaryColor.withValues(alpha: 0.15)
                               : kWhiteColor,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: kWhiteColor, width: 4),
+                          border: Border.all(color: kWhiteColor, width: 2),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: kWhiteColor,
                                 borderRadius: BorderRadius.circular(100),
@@ -625,9 +633,10 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
 
           // Sticky bottom button
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: CustomActionButton(
               buttonText: '${l10n.book} - ${formatPrice(_displayAmount)}',
+              isEnabled: _paymentOption != null,
               onTap: _onBookTap,
             ),
           ),

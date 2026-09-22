@@ -1,12 +1,22 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/agenda_screen.dart';
 import 'package:quadraclub_app/presentation/classes/ui/classes_screen.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/matches/ui/matches_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   final int index;
 
-  const CustomBottomNavBar({super.key, this.index = 2});
+  /// Set to [BookingType.match] when the user got here from "Create Match"
+  /// and still has to pick a court, so the Booking Summary opens on
+  /// "Create a Match" instead of "Reserve Individual".
+  final BookingType bookingIntent;
+
+  const CustomBottomNavBar({
+    super.key,
+    this.index = 2,
+    this.bookingIntent = BookingType.individual,
+  });
 
   @override
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
@@ -34,7 +44,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     final screens = [
       ClassesScreen(),
       MatchesScreen(),
-      const HomeScreen(),
+      HomeScreen(bookingIntent: widget.bookingIntent),
       AgendaScreen(),
       ProfileScreen(),
     ];

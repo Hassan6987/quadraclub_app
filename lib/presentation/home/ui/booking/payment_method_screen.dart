@@ -436,7 +436,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       8.heightBox,
 
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: kWhiteColor,
                           borderRadius: BorderRadius.circular(24),
@@ -462,7 +465,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                               ],
                             ),
 
-                            8.heightBox,
+                            2.heightBox,
 
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -474,7 +477,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '${_serviceFee.toInt()} %',
+                                  formatPrice(_serviceFee),
                                   style: AppStyles.w500f14inter.copyWith(
                                     color: kDarkTextColor,
                                   ),
@@ -482,7 +485,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                               ],
                             ),
 
-                            const Divider(height: 24, color: kBorderColor),
+                            const Divider(height: 14, color: kBorderColor),
 
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

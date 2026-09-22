@@ -181,9 +181,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
         HeaderFilterBadge(
           label: localizedLevelName(context, level.level),
           icon: Icons.bar_chart,
-          onClear: () => setState(
-            () => _filterLevels = {..._filterLevels}..remove(level),
-          ),
+          onClear: () =>
+              setState(() => _filterLevels = {..._filterLevels}..remove(level)),
         ),
       if (_filterFormat != null)
         HeaderFilterBadge(
@@ -338,88 +337,90 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 centerTile: false,
                 backgroundColor: kWhiteColor,
               ),
-              body:
-                  (state.status == MatchesStateStatus.loading &&
-                      state.bookings.isEmpty)
-                  ? const Center(child: CustomLoadingView())
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DiscoveryHeader(
-                          selectedSports: _selectedSports,
-                          onSportToggled: _toggleSport,
-                          searchController: _searchController,
-                          searchHint: l10n.searchByName,
-                          onSearchChanged: (value) =>
-                              setState(() => _searchQuery = value),
-                          hasActiveFilters: hasActiveFilters,
-                          activeFilterBadges: hasActiveFilters
-                              ? _activeFilterBadges(l10n)
-                              : const [],
-                          onFilterTap: () => MatchFilterBottomSheet.show(
-                            context,
-                            initialTimes: _filterTimes,
-                            initialGender: _filterGender,
-                            initialLevels: _filterLevels,
-                            sports: _levelSports,
-                            initialCity: _filterCity,
-                            initialDistance: _filterDistance,
-                            initialFormat: _filterFormat,
-                            availableCities: availableCities,
-                            onApply: (times, gender, levels, city, dist, format) {
-                              setState(() {
-                                _filterTimes
-                                  ..clear()
-                                  ..addAll(times);
-                                _filterGender = gender;
-                                _filterLevels = levels;
-                                _filterCity = city;
-                                _filterDistance = dist;
-                                _filterFormat = format;
-                              });
-                            },
-                          ),
-                          onMapTap: () => setState(() => _isMapView = true),
-                          dates: _dates,
-                          selectedDate: _selectedDate,
-                          onDateSelected: (date) =>
-                              setState(() => _selectedDate = date),
-                        ),
-                        Expanded(
-                          child: grouped.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    l10n.noMatchesFound,
-                                    style: AppStyles.w600f18inter.copyWith(
-                                      color: kDarkTextColor,
+              // The header stays mounted while loading and when nothing comes
+              // back, so the sports, search, filters and dates are always there.
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DiscoveryHeader(
+                    selectedSports: _selectedSports,
+                    onSportToggled: _toggleSport,
+                    searchController: _searchController,
+                    searchHint: l10n.searchByName,
+                    onSearchChanged: (value) =>
+                        setState(() => _searchQuery = value),
+                    hasActiveFilters: hasActiveFilters,
+                    activeFilterBadges: hasActiveFilters
+                        ? _activeFilterBadges(l10n)
+                        : const [],
+                    onFilterTap: () => MatchFilterBottomSheet.show(
+                      context,
+                      initialTimes: _filterTimes,
+                      initialGender: _filterGender,
+                      initialLevels: _filterLevels,
+                      sports: _levelSports,
+                      initialCity: _filterCity,
+                      initialDistance: _filterDistance,
+                      initialFormat: _filterFormat,
+                      availableCities: availableCities,
+                      onApply: (times, gender, levels, city, dist, format) {
+                        setState(() {
+                          _filterTimes
+                            ..clear()
+                            ..addAll(times);
+                          _filterGender = gender;
+                          _filterLevels = levels;
+                          _filterCity = city;
+                          _filterDistance = dist;
+                          _filterFormat = format;
+                        });
+                      },
+                    ),
+                    onMapTap: () => setState(() => _isMapView = true),
+                    dates: _dates,
+                    selectedDate: _selectedDate,
+                    onDateSelected: (date) =>
+                        setState(() => _selectedDate = date),
+                  ),
+                  Expanded(
+                    child:
+                        (state.status == MatchesStateStatus.loading &&
+                            state.bookings.isEmpty)
+                        ? const Center(child: CustomLoadingView())
+                        : grouped.isEmpty
+                        ? Center(
+                            child: Text(
+                              l10n.noMatchesFound,
+                              style: AppStyles.w600f18inter.copyWith(
+                                color: kDarkTextColor,
+                              ),
+                            ),
+                          )
+                        : ListView(
+                            children: [
+                              for (final entry in grouped.entries) ...[
+                                _dateGroupHeader(label: entry.key),
+                                for (final match in entry.value)
+                                  MatchCard(
+                                    match: match,
+                                    distanceKm: _clubDistance(match),
+                                    onTap: () => _openJoinMatch(
+                                      match,
+                                      _clubDistance(match),
                                     ),
                                   ),
-                                )
-                              : ListView(
-                                  children: [
-                                    for (final entry in grouped.entries) ...[
-                                      _dateGroupHeader(label: entry.key),
-                                      for (final match in entry.value)
-                                        MatchCard(
-                                          match: match,
-                                          distanceKm: _clubDistance(match),
-                                          onTap: () => _openJoinMatch(
-                                            match,
-                                            _clubDistance(match),
-                                          ),
-                                        ),
-                                    ],
-                                  ],
-                                ),
-                        ),
-                      ],
-                    ),
+                              ],
+                            ],
+                          ),
+                  ),
+                ],
+              ),
               floatingActionButton: Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: kPrimaryColor,
-                  shape: BoxShape.rectangle,borderRadius: BorderRadius.circular(8),
-
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: GestureDetector(
                   onTap: () {
@@ -429,7 +430,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       builder: (context) => CreateMatchDialog(),
                     );
                   },
-                  child: Text("+ Create Match", style: AppStyles.w600f16inter.copyWith(color: kWhiteColor)),
+                  child: Text(
+                    "+ Create Match",
+                    style: AppStyles.w600f16inter.copyWith(color: kWhiteColor),
+                  ),
                 ),
               ),
             );

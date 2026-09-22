@@ -16,6 +16,11 @@ class BookingSummarySheet extends StatefulWidget {
   final String? endTime;
   final double distance;
 
+  /// Which booking type the sheet opens on. Coming from the "create a
+  /// match" flow this is [BookingType.match]; booking straight off the
+  /// Courts page it stays [BookingType.individual].
+  final BookingType initialBookingType;
+
   const BookingSummarySheet({
     super.key,
     required this.club,
@@ -25,6 +30,7 @@ class BookingSummarySheet extends StatefulWidget {
     required this.startTime,
     required this.distance,
     this.endTime,
+    this.initialBookingType = BookingType.individual,
   });
 
   static Future<void> show(
@@ -36,6 +42,7 @@ class BookingSummarySheet extends StatefulWidget {
     required String startTime,
     String? endTime,
     required double distance,
+    BookingType initialBookingType = BookingType.individual,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -52,6 +59,7 @@ class BookingSummarySheet extends StatefulWidget {
         startTime: startTime,
         endTime: endTime,
         distance: distance,
+        initialBookingType: initialBookingType,
       ),
     );
   }
@@ -67,7 +75,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
   int _selectedDurationSlots = 1;
 
-  BookingType _bookingType = BookingType.individual;
+  late BookingType _bookingType;
 
   String _dateKey(DateTime d) {
     final y = d.year.toString().padLeft(4, '0');
@@ -178,6 +186,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
     _selectedCourt = widget.court;
     _selectedStartTime = widget.startTime;
+    _bookingType = widget.initialBookingType;
 
     _selectedEndTime =
         widget.endTime ??
@@ -305,7 +314,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +340,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               ],
             ).withPaddingSymmetric(16, 0),
 
-            30.heightBox,
+            16.heightBox,
 
             Text(
               l10n.courtDetails,
@@ -355,22 +364,22 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                     borderRadius: BorderRadius.circular(16),
                     child: CachedNetworkImage(
                       imageUrl: widget.club.photo ?? '',
-                      height: 96,
-                      width: 96,
+                      height: 72,
+                      width: 72,
                       placeholder: (context, url) => Shimmer.fromColors(
                         baseColor: Colors.grey.shade300,
                         highlightColor: Colors.grey.shade100,
                         child: Container(
-                          height: 96,
-                          width: 96,
+                          height: 72,
+                          width: 72,
                           decoration: const BoxDecoration(color: Colors.white),
                         ),
                       ),
                       errorWidget: (context, url, error) {
                         return Image.asset(
                           Assets.png.clubLogo.path,
-                          height: 96,
-                          width: 96,
+                          height: 72,
+                          width: 72,
                           fit: BoxFit.cover,
                         );
                       },
@@ -409,7 +418,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               ),
             ).withPaddingSymmetric(16, 0),
 
-            20.heightBox,
+            14.heightBox,
 
             Text(
               l10n.court,
@@ -449,11 +458,11 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               }).toList(),
             ).withPaddingSymmetric(16, 0),
 
-            20.heightBox,
+            14.heightBox,
 
             if (startableSlots.isNotEmpty) ...[
               Text(
-                l10n.time,
+                '${l10n.time} • ${_selectedDurationSlots}h',
                 style: AppStyles.w500f12inter.copyWith(
                   color: kDarkTextColor.withValues(alpha: 0.7),
                 ),
@@ -502,7 +511,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
                 }).toList(),
               ).withPaddingSymmetric(16, 0),
 
-              20.heightBox,
+              14.heightBox,
             ],
 
             Text(
@@ -591,7 +600,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               ],
             ).withPaddingSymmetric(16, 0),
 
-            24.heightBox,
+            16.heightBox,
 
             GestureDetector(
               onTap: canBook ? _onPrimaryTap : null,

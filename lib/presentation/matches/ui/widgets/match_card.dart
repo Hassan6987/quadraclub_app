@@ -6,19 +6,9 @@ import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import '/app_exports.dart';
 
 String localizedMatchCategory(BuildContext context, String category) {
-  final l10n = AppLocalizations.of(context)!;
-  switch (category) {
-    case 'Open':
-      return l10n.categoryOpen;
-    case 'Category 1':
-      return l10n.category1;
-    case 'Category 2':
-      return l10n.category2;
-    case 'Category 3':
-      return l10n.category3;
-    default:
-      return category;
-  }
+  final key = levelKeyFrom(category);
+
+  return key == null ? category : localizedLevelName(context, key);
 }
 
 class MatchCard extends StatelessWidget {
@@ -38,76 +28,82 @@ class MatchCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Opacity(
       opacity: match.isFull == true ? 0.7 : 1,
-      child: Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(20),
-          vertical: getProportionateScreenHeight(12),
-        ),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: kWhiteColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: kWhiteFo),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top row: Sport badge, seats, court status
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: AppCachedImage(
-                    imageUrl: match.club?.photo ?? '',
-                    width: 64,
-                    height: 64,
+      child: GestureDetector(
+        // The player avatars have their own detectors and win the gesture
+        // arena, so tapping one still opens that player's profile.
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(20),
+            vertical: getProportionateScreenHeight(12),
+          ),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: kWhiteColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: kWhiteFo),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top row: Sport badge, seats, court status
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: AppCachedImage(
+                      imageUrl: match.club?.photo ?? '',
+                      width: 64,
+                      height: 64,
+                    ),
                   ),
-                ),
-                8.widthBox,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SportBadge(sport: match.sport),
-                          buildSeatsBadge(context, match),
-                        ],
-                      ),
-                      Text(
-                        match.club?.name ?? '',
-                        style: AppStyles.w500f14inter.copyWith(
-                          color: kDarkTextColor,
+                  8.widthBox,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SportBadge(sport: match.sport),
+                            buildSeatsBadge(context, match),
+                          ],
                         ),
-                      ),
-                      Text(
-                        "${match.club?.city} • ${formatDistanceKm(distanceKm, l10n)} • ${getFormatDateMonth(match.bookingDate, locale: l10n.localeName)}",
-                        style: AppStyles.w400f14inter.copyWith(
-                          color: kGreyTextColor,
+                        Text(
+                          match.club?.name ?? '',
+                          style: AppStyles.w500f14inter.copyWith(
+                            color: kDarkTextColor,
+                          ),
                         ),
-                      ),
-                    ],
+                        Text(
+                          "${match.club?.city} • ${formatDistanceKm(distanceKm, l10n)} • ${getFormatDateMonth(match.bookingDate, locale: l10n.localeName)}",
+                          style: AppStyles.w400f14inter.copyWith(
+                            color: kGreyTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            8.heightBox,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CommonBadge(label: '${match.startTime}-${match.endTime}'),
-                CommonBadge(
-                  label: localizedMatchCategory(context, match.category),
-                ),
-                CommonBadge(label: l10n.ranking),
-                buildCourtStatusBadge(context, match),
-              ],
-            ),
-            // Players row
-            buildPlayersRow(context, match, onTap),
-          ],
-        ).withPaddingAll(12),
+                ],
+              ),
+              8.heightBox,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CommonBadge(label: '${match.startTime}-${match.endTime}'),
+                  CommonBadge(
+                    label: localizedMatchCategory(context, match.category),
+                  ),
+                  CommonBadge(label: l10n.ranking),
+                  buildCourtStatusBadge(context, match),
+                ],
+              ),
+              // Players row
+              buildPlayersRow(context, match, onTap),
+            ],
+          ).withPaddingAll(12),
+        ),
       ),
     );
   }

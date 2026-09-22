@@ -203,6 +203,28 @@ String localizedLevelName(BuildContext context, String levelKey) {
       : l10n.levelCategoryLetter(suffix.toUpperCase());
 }
 
+/// Canonical English value stored on the profile and sent to the API.
+/// Round-trips back through [levelKeyFrom].
+String levelApiValue(String levelKey) {
+  switch (levelKey) {
+    case kLevelOpen:
+      return 'Open';
+
+    case kLevelIniciante:
+      return 'Beginner';
+
+    case kLevelIntermediario:
+      return 'Intermediate';
+
+    case kLevelAvancado:
+      return 'Advanced';
+  }
+
+  if (!levelKey.startsWith('cat_')) return levelKey;
+
+  return 'Category ${levelKey.substring(4).toUpperCase()}';
+}
+
 /// One level the user picked, inside one sport and one group.
 class SportLevel {
   final String sport;
@@ -317,10 +339,7 @@ bool matchesSelectedLevels(
 }
 
 /// Drops selections that the gender toggle no longer shows.
-Set<SportLevel> levelsAllowedBy(
-  Set<SportLevel> selected,
-  GenderFilter gender,
-) {
+Set<SportLevel> levelsAllowedBy(Set<SportLevel> selected, GenderFilter gender) {
   final groups = gender.visibleGroups;
 
   return selected.where((s) => groups.contains(s.group)).toSet();

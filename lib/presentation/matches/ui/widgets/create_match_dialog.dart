@@ -1,3 +1,5 @@
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
+
 import '/app_exports.dart';
 
 class CreateMatchDialog extends StatelessWidget {
@@ -68,7 +70,7 @@ class CreateMatchDialog extends StatelessWidget {
                   context,
                   RouteName.customBottomNavbar,
                   (_) => false,
-                  arguments: {"index": 2},
+                  arguments: {"index": 2, "bookingIntent": BookingType.match},
                 );
               },
             ).withPaddingSymmetric(20, 0),

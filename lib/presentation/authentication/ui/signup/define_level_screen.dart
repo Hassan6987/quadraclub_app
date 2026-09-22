@@ -17,24 +17,7 @@ class DefineLevelScreen extends StatefulWidget {
   State<DefineLevelScreen> createState() => _DefineLevelScreenState();
 }
 
-class _CategoryOption {
-  /// English value used internally and sent to the API.
-  final String value;
-
-  /// English description used internally.
-  final String description;
-
-  const _CategoryOption(this.value, this.description);
-}
-
 class _DefineLevelScreenState extends State<DefineLevelScreen> {
-  static const _categoryOptions = <_CategoryOption>[
-    _CategoryOption('Open', 'For advanced/competitive players'),
-    _CategoryOption('Category 1', 'Beginner level players'),
-    _CategoryOption('Category 2', 'Intermediate level players'),
-    _CategoryOption('Category 3', 'Advanced level players'),
-  ];
-
   static const _sportIcons = {
     'Padel': Icons.sports_tennis_outlined,
     'Tennis': Icons.sports_tennis,
@@ -68,42 +51,12 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
     context.read<AuthBloc>().add(SetupProfile(data: widget.data));
   }
 
-  String _getCategoryLabel(AppLocalizations l10n, String category) {
-    switch (category) {
-      case 'Open':
-        return l10n.categoryOpen;
+  /// The stored value is the canonical English one; the label follows the
+  /// sport's own ladder in the user's language.
+  String _categoryLabel(String category) {
+    final key = levelKeyFrom(category);
 
-      case 'Category 1':
-        return l10n.category1;
-
-      case 'Category 2':
-        return l10n.category2;
-
-      case 'Category 3':
-        return l10n.category3;
-
-      default:
-        return category;
-    }
-  }
-
-  String _getCategoryDescription(AppLocalizations l10n, String category) {
-    switch (category) {
-      case 'Open':
-        return l10n.categoryOpenDescription;
-
-      case 'Category 1':
-        return l10n.category1Description;
-
-      case 'Category 2':
-        return l10n.category2Description;
-
-      case 'Category 3':
-        return l10n.category3Description;
-
-      default:
-        return category;
-    }
+    return key == null ? category : localizedLevelName(context, key);
   }
 
   String _getPreferredSideLabel(AppLocalizations l10n, String side) {
@@ -143,16 +96,6 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
                 sport,
                 style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
               ),
-              4.widthBox,
-              Tooltip(
-                message: l10n.youCanChangeThisLater,
-                triggerMode: TooltipTriggerMode.tap,
-                child: const Icon(
-                  Icons.info_outline,
-                  size: 14,
-                  color: kTextColor,
-                ),
-              ),
             ],
           ),
           8.heightBox,
@@ -174,7 +117,7 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
                   Text(
                     selected == null
                         ? l10n.selectYourCategory
-                        : _getCategoryLabel(l10n, selected),
+                        : _categoryLabel(selected),
                     style: AppStyles.subtitleRegular.copyWith(
                       color: selected == null ? kTextColor : kBlackColor,
                     ),
@@ -191,55 +134,45 @@ class _DefineLevelScreenState extends State<DefineLevelScreen> {
           if (isOpen)
             Container(
               margin: const EdgeInsets.only(top: 4),
+              // The padel ladder is ten entries long, so cap the sheet and
+              // let it scroll instead of pushing the button off screen.
+              constraints: const BoxConstraints(maxHeight: 260),
               decoration: BoxDecoration(
                 border: Border.all(color: kBorderColor),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                children: _categoryOptions.map((option) {
-                  final isSelected = selected == option.value;
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Column(
+                  children: levelsForSport(sportSlug(sport)).map((levelKey) {
+                    final value = levelApiValue(levelKey);
+                    final isSelected = selected == value;
 
-                  return InkWell(
-                    onTap: () => _selectCategory(sport, option.value),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFFC5E028)
-                            : kWhiteColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            _getCategoryLabel(l10n, option.value),
-                            style: AppStyles.subtitleRegular.copyWith(
-                              color: kBlackColor,
-                            ),
+                    return InkWell(
+                      onTap: () => _selectCategory(sport, value),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFFC5E028)
+                              : kWhiteColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Text(
+                          localizedLevelName(context, levelKey),
+                          style: AppStyles.subtitleRegular.copyWith(
+                            color: kBlackColor,
                           ),
-                          4.widthBox,
-                          Tooltip(
-                            message: _getCategoryDescription(
-                              l10n,
-                              option.value,
-                            ),
-                            triggerMode: TooltipTriggerMode.tap,
-                            child: const Icon(
-                              Icons.info_outline,
-                              size: 14,
-                              color: kTextColor,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
         ],
