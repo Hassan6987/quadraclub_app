@@ -232,10 +232,10 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
                 ],
               ),
             ),
-            Divider(color: kBorderColor),
+            Divider(color: kBorderColor).withPaddingSymmetric(16, 0),
             Align(
-                alignment: Alignment.centerRight,
-                child: _buildViewDetails()
+              alignment: Alignment.centerRight,
+              child: _buildViewDetails(),
             ),
 
             12.heightBox,

@@ -22,6 +22,7 @@ class InfoCard extends StatelessWidget {
       'EEE, MMM d',
       l10n.localeName,
     ).format(classModel.date!);
+    final levelLabel = localizedClassLevelLabel(context, classModel.level);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -53,8 +54,10 @@ class InfoCard extends StatelessWidget {
                   classModel.sportName ?? '',
                 ),
               ),
-              4.widthBox,
-              CommonBadge(label: classModel.statusLabel ?? ''),
+              if (levelLabel.isNotEmpty) ...[
+                4.widthBox,
+                CommonBadge(label: levelLabel),
+              ],
             ],
           ).withPaddingSymmetric(0, 8),
 

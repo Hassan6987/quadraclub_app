@@ -331,6 +331,62 @@ bool isStructuredClassLevel(String? level) {
   ).hasMatch(normalized);
 }
 
+/// Compact badge label for a class [level] string.
+///
+/// Examples:
+/// - `"Category B"` → localized single level
+/// - `"Category B - Category D"` / `"Categoria B – Categoria D"` → `"Category B - D"`
+/// - structured Homem/Mulher payloads → first clause's range, compacted
+String localizedClassLevelLabel(BuildContext context, String? level) {
+  if (level == null || level.trim().isEmpty) return '';
+
+  var spec = level.trim();
+
+  if (isStructuredClassLevel(spec)) {
+    final firstClause = spec.split(RegExp(r'\s*[·•|]\s*')).first.trim();
+    final colon = firstClause.indexOf(':');
+    if (colon >= 0) {
+      spec = firstClause.substring(colon + 1).trim();
+    }
+  }
+
+  // Prefer the first range/list segment when the API joins several with commas.
+  final primary = spec.split(',').first.trim();
+  final rangeParts = primary.split(_levelRangeSeparator);
+
+  if (rangeParts.length == 2) {
+    final startKey = levelKeyFrom(rangeParts[0]);
+    final endKey = levelKeyFrom(rangeParts[1]);
+    if (startKey != null && endKey != null) {
+      return _compactLevelRange(context, startKey, endKey);
+    }
+  }
+
+  final key = levelKeyFrom(primary);
+  if (key != null) return localizedLevelName(context, key);
+
+  return primary;
+}
+
+/// `"Category B" + "Category D"` → `"Category B - D"` (same idea in PT).
+String _compactLevelRange(
+  BuildContext context,
+  String startKey,
+  String endKey,
+) {
+  final start = localizedLevelName(context, startKey);
+
+  if (startKey.startsWith('cat_') && endKey.startsWith('cat_')) {
+    final endSuffix = endKey.substring(4);
+    final endLabel = int.tryParse(endSuffix) != null
+        ? endSuffix
+        : endSuffix.toUpperCase();
+    return '$start - $endLabel';
+  }
+
+  return '$start - ${localizedLevelName(context, endKey)}';
+}
+
 /// Expands every level named in [spec] along [sport]'s ladder.
 ///
 /// Handles comma-separated lists and inclusive ranges:
