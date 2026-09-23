@@ -473,6 +473,52 @@ bool matchesSelectedLevels(
   );
 }
 
+/// True when any joined player's [sportsInfo] for the match sport resolves
+/// to one of [selected]. Gender group is ignored here — players don't carry
+/// Homem/Mulher on sportsInfo; the toggle only narrows which chips can be
+/// picked in the filter sheet.
+///
+/// Falls back to the booking's own [fallbackLevel] (e.g. `category`) when no
+/// joined player has usable sportsInfo, so older payloads still filter.
+bool matchesSelectedLevelsAgainstPlayers(
+  Set<SportLevel> selected, {
+  required String? matchSport,
+  required Iterable<({String sport, String category})> playerSports,
+  String? fallbackLevel,
+}) {
+  if (selected.isEmpty) return true;
+
+  final matchSlug = sportSlug(matchSport);
+
+  final relevant = selected
+      .where((s) => matchSlug.isEmpty || s.sport == matchSlug)
+      .toList();
+
+  if (relevant.isEmpty) return false;
+
+  final wanted = relevant.map((s) => s.level).toSet();
+  var sawAnySportsInfo = false;
+
+  for (final info in playerSports) {
+    final infoSlug = sportSlug(info.sport);
+    if (matchSlug.isNotEmpty && infoSlug != matchSlug) continue;
+
+    final key = levelKeyFrom(info.category);
+    if (key == null) continue;
+
+    sawAnySportsInfo = true;
+    if (wanted.contains(key)) return true;
+  }
+
+  if (sawAnySportsInfo) return false;
+
+  return matchesSelectedLevels(
+    selected,
+    sport: matchSport,
+    level: fallbackLevel,
+  );
+}
+
 /// Drops selections that the gender toggle no longer shows.
 Set<SportLevel> levelsAllowedBy(Set<SportLevel> selected, GenderFilter gender) {
   final groups = gender.visibleGroups;

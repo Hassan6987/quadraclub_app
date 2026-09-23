@@ -107,6 +107,17 @@ class Booking {
   final bool? isFull;
   final String category;
 
+  /// Joined players' sport/category pairs used by the level filter.
+  Iterable<({String sport, String category})> get joinedPlayerSports sync* {
+    for (final detail in playersDetail) {
+      final infos = detail.user?.sportsInfo;
+      if (infos == null) continue;
+      for (final info in infos) {
+        yield (sport: info.sport, category: info.category);
+      }
+    }
+  }
+
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
       id: json["_id"],
@@ -146,12 +157,14 @@ class BookedBy {
     required this.fullName,
     required this.email,
     required this.profilePhoto,
+    required this.sportsInfo,
   });
 
   final String? id;
   final String? fullName;
   final String? email;
   final String? profilePhoto;
+  final List<SportsInfoModel>? sportsInfo;
 
   factory BookedBy.fromJson(Map<String, dynamic> json) {
     return BookedBy(
@@ -159,6 +172,31 @@ class BookedBy {
       fullName: json["fullName"],
       email: json["email"],
       profilePhoto: json["profilePhoto"],
+      sportsInfo: json["sportsInfo"] == null
+          ? []
+          : List<SportsInfoModel>.from(
+              json["sportsInfo"].map((x) => SportsInfoModel.fromJson(x)),
+            ),
+    );
+  }
+}
+
+class SportsInfoModel {
+  SportsInfoModel({
+    required this.sport,
+    required this.category,
+    required this.preferredSide,
+  });
+
+  final String sport;
+  final String category;
+  final String preferredSide;
+
+  factory SportsInfoModel.fromJson(Map<String, dynamic> json) {
+    return SportsInfoModel(
+      sport: json["sport"] ?? "",
+      category: json["category"] ?? "",
+      preferredSide: json["preferredSide"] ?? "",
     );
   }
 }

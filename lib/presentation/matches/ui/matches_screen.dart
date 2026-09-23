@@ -136,10 +136,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
         return false;
       }
 
-      if (!matchesSelectedLevels(
+      if (!matchesSelectedLevelsAgainstPlayers(
         _filterLevels,
-        sport: match.sport.label,
-        level: match.category,
+        matchSport: match.sport.label,
+        playerSports: match.joinedPlayerSports,
+        fallbackLevel: match.category,
       )) {
         return false;
       }
@@ -272,170 +273,164 @@ class _MatchesScreenState extends State<MatchesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<MatchesBloc, MatchesState>(
-          builder: (context, state) {
-            if (_isMapView) {
-              return CourtMapView(
-                courts: context.read<CourtsBloc>().state.courts,
-                currentLocation: _currentLocation,
-                initialCenter: _currentLatLng,
-                onLocationChanged: (LocationResult location) {
-                  setState(() {
-                    _currentLocation = location.address;
-                    _currentLatLng = LatLng(
-                      location.latitude,
-                      location.longitude,
-                    );
-                    _hasUserLocation = true;
-                  });
-                },
-                onBackToList: () => setState(() => _isMapView = false),
-                filterTimes: _filterTimes,
-                filterCity: _filterCity,
-                filterDistance: _filterDistance,
-                onApplyFilters: (times, city, dist) {
-                  setState(() {
-                    _filterTimes
-                      ..clear()
-                      ..addAll(times);
-                    _filterCity = city;
-                    _filterDistance = dist;
-                  });
-                },
-                onSportSelected: _toggleSport,
+      builder: (context, state) {
+        if (_isMapView) {
+          return CourtMapView(
+            courts: context.read<CourtsBloc>().state.courts,
+            currentLocation: _currentLocation,
+            initialCenter: _currentLatLng,
+            onLocationChanged: (LocationResult location) {
+              setState(() {
+                _currentLocation = location.address;
+                _currentLatLng = LatLng(location.latitude, location.longitude);
+                _hasUserLocation = true;
+              });
+            },
+            onBackToList: () => setState(() => _isMapView = false),
+            filterTimes: _filterTimes,
+            filterCity: _filterCity,
+            filterDistance: _filterDistance,
+            onApplyFilters: (times, city, dist) {
+              setState(() {
+                _filterTimes
+                  ..clear()
+                  ..addAll(times);
+                _filterCity = city;
+                _filterDistance = dist;
+              });
+            },
+            onSportSelected: _toggleSport,
+            selectedSports: _selectedSports,
+          );
+        }
+        final grouped = _groupedBookings(state.bookings);
+        final hasActiveFilters =
+            _filterTimes.isNotEmpty ||
+            _filterGender != GenderFilter.misto ||
+            _filterLevels.isNotEmpty ||
+            _filterCity != null ||
+            _filterDistance != null ||
+            _filterFormat != null;
+
+        // available cities for quick-select chips, same pattern as HomeScreen
+        final availableCities = state.bookings
+            .map((b) => b.club?.city)
+            .whereType<String>()
+            .where((s) => s.trim().isNotEmpty)
+            .toSet()
+            .toList();
+
+        return Scaffold(
+          backgroundColor: kCardColor,
+          appBar: CustomAppBar(
+            title: l10n.openMatches,
+            centerTile: false,
+            backgroundColor: kWhiteColor,
+          ),
+          // The header stays mounted while loading and when nothing comes
+          // back, so the sports, search, filters and dates are always there.
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DiscoveryHeader(
                 selectedSports: _selectedSports,
-              );
-            }
-            final grouped = _groupedBookings(state.bookings);
-            final hasActiveFilters =
-                _filterTimes.isNotEmpty ||
-                _filterGender != GenderFilter.misto ||
-                _filterLevels.isNotEmpty ||
-                _filterCity != null ||
-                _filterDistance != null ||
-                _filterFormat != null;
-
-            // available cities for quick-select chips, same pattern as HomeScreen
-            final availableCities = state.bookings
-                .map((b) => b.club?.city)
-                .whereType<String>()
-                .where((s) => s.trim().isNotEmpty)
-                .toSet()
-                .toList();
-
-            return Scaffold(
-              backgroundColor: kCardColor,
-              appBar: CustomAppBar(
-                title: l10n.openMatches,
-                centerTile: false,
-                backgroundColor: kWhiteColor,
-              ),
-              // The header stays mounted while loading and when nothing comes
-              // back, so the sports, search, filters and dates are always there.
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DiscoveryHeader(
-                    selectedSports: _selectedSports,
-                    onSportToggled: _toggleSport,
-                    searchController: _searchController,
-                    searchHint: l10n.searchByName,
-                    onSearchChanged: (value) =>
-                        setState(() => _searchQuery = value),
-                    hasActiveFilters: hasActiveFilters,
-                    activeFilterBadges: hasActiveFilters
-                        ? _activeFilterBadges(l10n)
-                        : const [],
-                    onFilterTap: () => MatchFilterBottomSheet.show(
-                      context,
-                      initialTimes: _filterTimes,
-                      initialGender: _filterGender,
-                      initialLevels: _filterLevels,
-                      sports: _levelSports,
-                      initialCity: _filterCity,
-                      initialDistance: _filterDistance,
-                      initialFormat: _filterFormat,
-                      availableCities: availableCities,
-                      onApply: (times, gender, levels, city, dist, format) {
-                        setState(() {
-                          _filterTimes
-                            ..clear()
-                            ..addAll(times);
-                          _filterGender = gender;
-                          _filterLevels = levels;
-                          _filterCity = city;
-                          _filterDistance = dist;
-                          _filterFormat = format;
-                        });
-                      },
-                    ),
-                    onMapTap: () => setState(() => _isMapView = true),
-                    dates: _dates,
-                    selectedDate: _selectedDate,
-                    onDateSelected: (date) =>
-                        setState(() => _selectedDate = date),
-                  ),
-                  Expanded(
-                    child:
-                        (state.status == MatchesStateStatus.loading &&
-                            state.bookings.isEmpty)
-                        ? const Center(child: CustomLoadingView())
-                        : grouped.isEmpty
-                        ? Center(
-                            child: Text(
-                              l10n.noMatchesFound,
-                              style: AppStyles.w600f18inter.copyWith(
-                                color: kDarkTextColor,
-                              ),
-                            ),
-                          )
-                        : ListView(
-                            children: [
-                              for (final entry in grouped.entries) ...[
-                                _dateGroupHeader(label: entry.key),
-                                for (final match in entry.value)
-                                  MatchCard(
-                                    match: match,
-                                    distanceKm: _clubDistance(match),
-                                    onTap: () => _openJoinMatch(
-                                      match,
-                                      _clubDistance(match),
-                                    ),
-                                  ),
-                              ],
-                            ],
-                          ),
-                  ),
-                ],
-              ),
-              floatingActionButton: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: kPrimaryColor,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => CreateMatchDialog(),
-                    );
+                onSportToggled: _toggleSport,
+                searchController: _searchController,
+                searchHint: l10n.searchByName,
+                onSearchChanged: (value) =>
+                    setState(() => _searchQuery = value),
+                hasActiveFilters: hasActiveFilters,
+                activeFilterBadges: hasActiveFilters
+                    ? _activeFilterBadges(l10n)
+                    : const [],
+                onFilterTap: () => MatchFilterBottomSheet.show(
+                  context,
+                  initialTimes: _filterTimes,
+                  initialGender: _filterGender,
+                  initialLevels: _filterLevels,
+                  sports: _levelSports,
+                  initialCity: _filterCity,
+                  initialDistance: _filterDistance,
+                  initialFormat: _filterFormat,
+                  availableCities: availableCities,
+                  onApply: (times, gender, levels, city, dist, format) {
+                    setState(() {
+                      _filterTimes
+                        ..clear()
+                        ..addAll(times);
+                      _filterGender = gender;
+                      _filterLevels = levels;
+                      _filterCity = city;
+                      _filterDistance = dist;
+                      _filterFormat = format;
+                    });
                   },
-                  child: Text(
-                    "+ Create Match",
-                    style: AppStyles.w600f16inter.copyWith(color: kWhiteColor),
-                  ),
                 ),
+                onMapTap: () => setState(() => _isMapView = true),
+                dates: _dates,
+                selectedDate: _selectedDate,
+                onDateSelected: (date) => setState(() => _selectedDate = date),
               ),
-            );
-          },
+              Expanded(
+                child:
+                    (state.status == MatchesStateStatus.loading &&
+                        state.bookings.isEmpty)
+                    ? const Center(child: CustomLoadingView())
+                    : grouped.isEmpty
+                    ? Center(
+                        child: Text(
+                          l10n.noMatchesFound,
+                          style: AppStyles.w600f18inter.copyWith(
+                            color: kDarkTextColor,
+                          ),
+                        ),
+                      )
+                    : ListView(
+                        children: [
+                          for (final entry in grouped.entries) ...[
+                            _dateGroupHeader(label: entry.key),
+                            for (final match in entry.value)
+                              MatchCard(
+                                match: match,
+                                distanceKm: _clubDistance(match),
+                                onTap: () =>
+                                    _openJoinMatch(match, _clubDistance(match)),
+                              ),
+                          ],
+                        ],
+                      ),
+              ),
+            ],
+          ),
+          floatingActionButton: Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: kPrimaryColor,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => CreateMatchDialog(),
+                );
+              },
+              child: Text(
+                "+ Create Match",
+                style: AppStyles.w600f16inter.copyWith(color: kWhiteColor),
+              ),
+            ),
+          ),
         );
+      },
+    );
   }
 
   void _openJoinMatch(Booking match, double distanceKm) {
     final l10n = AppLocalizations.of(context)!;
-        // Gate: show login dialog for unauthenticated users
+    // Gate: show login dialog for unauthenticated users
     final authState = context.read<AuthBloc>().state;
 
     if (authState.user == null) {
