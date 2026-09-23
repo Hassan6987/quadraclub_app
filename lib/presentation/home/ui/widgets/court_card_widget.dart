@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
+import 'package:quadraclub_app/utils/helper/time_slot_helper.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// One available slot, together with the court it belongs to, so tapping it
@@ -160,6 +161,12 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
 
         for (final slot in _slotsOfSport(daySlots, slug)) {
           if (slot.status != 'Available') continue;
+          if (TimeSlotHelper.isSlotInPast(
+            widget.selectedDate,
+            slot.startTime,
+          )) {
+            continue;
+          }
 
           final time = slot.startTime ?? '';
 
@@ -233,10 +240,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
               ),
             ),
             Divider(color: kBorderColor).withPaddingSymmetric(16, 0),
-            Align(
-              alignment: Alignment.centerRight,
-              child: _buildViewDetails(),
-            ),
+            Align(alignment: Alignment.centerRight, child: _buildViewDetails()),
 
             12.heightBox,
           ],

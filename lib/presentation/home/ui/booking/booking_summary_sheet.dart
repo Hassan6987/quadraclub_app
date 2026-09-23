@@ -6,6 +6,7 @@ import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/match_config_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/payment_method_screen.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
+import 'package:quadraclub_app/utils/helper/time_slot_helper.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingSummarySheet extends StatefulWidget {
@@ -128,8 +129,13 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     }
   }
 
+  bool _isBookable(Padel slot) {
+    if (slot.status != 'Available') return false;
+    return !TimeSlotHelper.isSlotInPast(widget.date, slot.startTime);
+  }
+
   List<Padel> get _startableSlots =>
-      _daySlotsForSport.where((s) => s.status == 'Available').toList();
+      _daySlotsForSport.where(_isBookable).toList();
 
   int _maxContiguousFrom(String startTime) {
     final all = _daySlotsForSport;
@@ -143,7 +149,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     var count = 0;
 
     for (var i = startIndex; i < all.length; i++) {
-      if (all[i].status != 'Available') {
+      if (!_isBookable(all[i])) {
         break;
       }
 
@@ -192,9 +198,9 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     _selectedEndTime =
         widget.endTime ??
         _endTimeForDuration(_selectedStartTime, _selectedDurationSlots);
-        if (context.read<CourtsBloc>().state.players.isEmpty){
-          context.read<CourtsBloc>().add(FetchAllUsers());
-        }
+    if (context.read<CourtsBloc>().state.players.isEmpty) {
+      context.read<CourtsBloc>().add(FetchAllUsers());
+    }
   }
 
   void _onCourtSelected(Court court) {

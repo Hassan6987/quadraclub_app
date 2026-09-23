@@ -37,17 +37,19 @@ class DetailsTab extends StatelessWidget {
             16.heightBox,
             _groupChatSection(context, match.chat),
             Spacer(),
-            CommonDivider(),
-            CustomActionButton(
-              buttonText: AppLocalizations.of(context)!.leaveThisMatch,
-              onTap: () {
-                context.pop();
-                context.read<AgendaBloc>().add(
-                  LeaveMatchEvent(matchId: match.id ?? ''),
-                );
-              },
-              backgroundColor: kLightPinkColor,
-            ).withPaddingSymmetric(24, 16),
+            if (match.isOwner != true) ...[
+              CommonDivider(),
+              CustomActionButton(
+                buttonText: AppLocalizations.of(context)!.leaveThisMatch,
+                onTap: () {
+                  context.pop();
+                  context.read<AgendaBloc>().add(
+                    LeaveMatchEvent(matchId: match.id ?? ''),
+                  );
+                },
+                backgroundColor: kLightPinkColor,
+              ).withPaddingSymmetric(24, 16),
+            ],
           ],
         );
       },
@@ -100,7 +102,7 @@ class DetailsTab extends StatelessWidget {
           label: localizedMatchCategory(context, match.categoryTag ?? 'D'),
         ),
         CommonBadge(label: AppLocalizations.of(context)!.ranking),
-        CourtConfirmationBadge(label: match.courtStatus ?? 'Court Confirmed'),
+        CourtConfirmationBadge(label: match.status ?? 'Court Confirmed'),
       ],
     );
   }

@@ -30,21 +30,12 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return BlocBuilder<AgendaBloc, AgendaState>(
-      builder: (context, state) {
-        if (state.status == AgendaStateStatus.fetching) {
-          return Scaffold(body: Center(child: CustomLoadingView()));
-        }
-        final match = state.matchDetails;
-        if (state.status != AgendaStateStatus.fetching && match == null) {
-          return Center(child: Text(l10n.nothingHereYet));
-        }
-        return Scaffold(
+    return Scaffold(
           appBar: CustomAppBar(
             title: l10n.matchDetails,
             showBackIcon: true,
             showActions: false,
-            showThreeDotActions: state.matchDetails!.isOwner ?? false,
+            showThreeDotActions: false,
             onThreeDotTap: () {
               showModalBottomSheet(
                 context: context,
@@ -53,15 +44,25 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
               );
             },
           ),
-          body: Column(
-            children: [
-              _buildTabs(state.matchDetails!.isOwner ?? false),
-              Expanded(child: _buildTabContent()),
-            ],
+          body: BlocBuilder<AgendaBloc, AgendaState>(
+            builder: (context, state) {
+              if (state.status == AgendaStateStatus.fetching) {
+                return  Center(child: CustomLoadingView());
+              }
+              final match = state.matchDetails;
+              if (state.status != AgendaStateStatus.fetching && match == null) {
+                return Center(child: Text(l10n.nothingHereYet));
+              }
+              return Column(
+                children: [
+                  _buildTabs(state.matchDetails!.isOwner ?? false),
+                  Expanded(child: _buildTabContent()),
+                ],
+              );
+            },
           ),
         );
-      },
-    );
+
   }
 
   Widget _buildTabs(bool isOwner) {

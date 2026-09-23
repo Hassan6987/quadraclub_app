@@ -13,6 +13,7 @@ import 'package:quadraclub_app/presentation/home/ui/widgets/court_card_widget.da
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/helper/time_slot_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   /// Carried over from "Create Match", where the user is sent here to pick a
@@ -93,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openBookingSummary(Club club, Court court, Sport sport, String time) {
+    if (TimeSlotHelper.isSlotInPast(_selectedDate, time)) return;
+
     context.read<CourtsBloc>().add(LoadPortfolio());
 
     BookingSummarySheet.show(
@@ -179,6 +182,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
       for (final slot in slots) {
         if ((slot.status ?? '').toLowerCase() != 'available') continue;
+        if (TimeSlotHelper.isSlotInPast(_selectedDate, slot.startTime)) {
+          continue;
+        }
         final hour = parseHour(slot.startTime);
         if (hour == null) continue;
 

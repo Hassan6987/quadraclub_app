@@ -21,6 +21,31 @@ class TimeSlotHelper {
     ];
   }
 
+  /// True when [slotStart] ("HH:mm") on [date] is already in the past.
+  ///
+  /// Future calendar days are never past. Today's slots whose start is
+  /// strictly before [now] (default: wall clock) count as past.
+  static bool isSlotInPast(DateTime date, String? slotStart, {DateTime? now}) {
+    if (slotStart == null || slotStart.trim().isEmpty) return true;
+
+    final parts = slotStart.trim().split(':');
+    if (parts.length < 2) return true;
+
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return true;
+
+    final clock = now ?? DateTime.now();
+    final day = DateTime(date.year, date.month, date.day);
+    final today = DateTime(clock.year, clock.month, clock.day);
+
+    if (day.isAfter(today)) return false;
+    if (day.isBefore(today)) return true;
+
+    final slotAt = DateTime(date.year, date.month, date.day, hour, minute);
+    return !slotAt.isAfter(clock);
+  }
+
   static int? _parseHour(String time) {
     final parts = time.split(':');
     if (parts.isEmpty) return null;

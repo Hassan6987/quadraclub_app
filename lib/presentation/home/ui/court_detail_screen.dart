@@ -6,6 +6,7 @@ import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dar
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_summary_sheet.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
+import 'package:quadraclub_app/utils/helper/time_slot_helper.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CourtDetailScreen extends StatefulWidget {
@@ -162,6 +163,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
 
   void _onTimeSlotTap(Court court, Padel slot) {
     if (slot.status != 'Available') return;
+    if (TimeSlotHelper.isSlotInPast(_selectedDate, slot.startTime)) return;
 
     context.read<CourtsBloc>().add(LoadPortfolio());
 
@@ -416,7 +418,9 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   }
 
   Widget _buildTimeSlotChip(Court court, Padel slot) {
-    final available = slot.status == 'Available';
+    final available =
+        slot.status == 'Available' &&
+        !TimeSlotHelper.isSlotInPast(_selectedDate, slot.startTime);
 
     return GestureDetector(
       onTap: available ? () => _onTimeSlotTap(court, slot) : null,
