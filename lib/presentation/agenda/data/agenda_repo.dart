@@ -7,6 +7,7 @@ import 'package:quadraclub_app/presentation/agenda/data/agenda_services.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_model.dart';
+import 'package:quadraclub_app/presentation/agenda/data/model/missing_feedback_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 
 class AgendaRepo {
@@ -225,6 +226,27 @@ class AgendaRepo {
           );
         }
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MissingFeedbackResponse> getMissingFeedback() async {
+    try {
+      final response = await _services.getMissingFeedback();
+      final data = response.data as Map<String, dynamic>;
+      return MissingFeedbackResponse.fromJson(data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> submitMatchFeedback(
+    String matchId,
+    SubmitMatchFeedbackRequest request,
+  ) async {
+    try {
+      await _services.submitMatchFeedback(matchId, request.toJson());
     } catch (e) {
       rethrow;
     }

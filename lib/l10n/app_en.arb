@@ -523,5 +523,42 @@
         "type": "String"
       }
     }
-  }
+  },
+  "missingInformation": "Missing Information",
+  "youHaveMatchesToComplete": "You have {count} match score and feedback to complete",
+  "@youHaveMatchesToComplete": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedbackHelpsMatching": "Your feedback helps with the matching of future games. It takes less than 1min",
+  "giveFeedback": "Give Feedback",
+  "matchFeedback": "Match Feedback",
+  "feedbackIntro": "It helps with the matching of future games. It takes less than 1min.",
+  "setNumber": "Set {number}",
+  "@setNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "addAnotherSet": "+ Add another set",
+  "playersFeedback": "Players Feedback",
+  "didntShowUp": "Didn't show up",
+  "completeMatch": "Complete Match",
+  "clubsFeedback": "Club’s feedback",
+  "tellUsMoreOptional": "Tell us more about your experience (optional)",
+  "complete": "Complete",
+  "pleaseEnterScores": "Please enter at least one set score",
+  "pleaseRateClub": "Please rate the club",
+  "feedbackSubmitted": "Feedback submitted",
+  "tagGoodDefense": "Good Defense",
+  "tagGoodAttack": "Good Attack",
+  "tagOneOff": "One-off",
+  "tagStrategic": "Strategic",
+  "tagArriveEarly": "Arrive Early",
+  "tagGoodEnergy": "Good Energy"
 }

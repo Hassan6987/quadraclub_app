@@ -2353,6 +2353,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{distance} km'**
   String formattedDistanceKm(String distance);
+
+  /// No description provided for @missingInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Information'**
+  String get missingInformation;
+
+  /// No description provided for @youHaveMatchesToComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} match score and feedback to complete'**
+  String youHaveMatchesToComplete(int count);
+
+  /// No description provided for @feedbackHelpsMatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback helps with the matching of future games. It takes less than 1min'**
+  String get feedbackHelpsMatching;
+
+  /// No description provided for @giveFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Give Feedback'**
+  String get giveFeedback;
+
+  /// No description provided for @matchFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Feedback'**
+  String get matchFeedback;
+
+  /// No description provided for @feedbackIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'It helps with the matching of future games. It takes less than 1min.'**
+  String get feedbackIntro;
+
+  /// No description provided for @setNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Set {number}'**
+  String setNumber(int number);
+
+  /// No description provided for @addAnotherSet.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add another set'**
+  String get addAnotherSet;
+
+  /// No description provided for @playersFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Players Feedback'**
+  String get playersFeedback;
+
+  /// No description provided for @didntShowUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t show up'**
+  String get didntShowUp;
+
+  /// No description provided for @completeMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Match'**
+  String get completeMatch;
+
+  /// No description provided for @clubsFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Club’s feedback'**
+  String get clubsFeedback;
+
+  /// No description provided for @tellUsMoreOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more about your experience (optional)'**
+  String get tellUsMoreOptional;
+
+  /// No description provided for @complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get complete;
+
+  /// No description provided for @pleaseEnterScores.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least one set score'**
+  String get pleaseEnterScores;
+
+  /// No description provided for @pleaseRateClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate the club'**
+  String get pleaseRateClub;
+
+  /// No description provided for @feedbackSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submitted'**
+  String get feedbackSubmitted;
+
+  /// No description provided for @tagGoodDefense.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Defense'**
+  String get tagGoodDefense;
+
+  /// No description provided for @tagGoodAttack.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Attack'**
+  String get tagGoodAttack;
+
+  /// No description provided for @tagOneOff.
+  ///
+  /// In en, this message translates to:
+  /// **'One-off'**
+  String get tagOneOff;
+
+  /// No description provided for @tagStrategic.
+  ///
+  /// In en, this message translates to:
+  /// **'Strategic'**
+  String get tagStrategic;
+
+  /// No description provided for @tagArriveEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrive Early'**
+  String get tagArriveEarly;
+
+  /// No description provided for @tagGoodEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Energy'**
+  String get tagGoodEnergy;
 }
 
 class _AppLocalizationsDelegate

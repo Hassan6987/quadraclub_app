@@ -76,3 +76,17 @@ class CancelJoinRequest extends AgendaEvent {
 
   const CancelJoinRequest({required this.matchId});
 }
+
+class CheckMissingFeedback extends AgendaEvent {}
+
+class ClearMissingFeedbackPrompt extends AgendaEvent {}
+
+class SubmitMatchFeedback extends AgendaEvent {
+  final String matchId;
+  final SubmitMatchFeedbackRequest request;
+
+  const SubmitMatchFeedback({required this.matchId, required this.request});
+
+  @override
+  List<Object?> get props => [matchId, request];
+}

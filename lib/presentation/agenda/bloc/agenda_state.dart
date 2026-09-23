@@ -10,6 +10,8 @@ enum AgendaStateStatus {
   fetched,
   updating,
   updated,
+  submittingFeedback,
+  feedbackSubmitted,
 }
 
 class AgendaState extends Equatable {
@@ -22,6 +24,10 @@ class AgendaState extends Equatable {
   final AgendaMatchDetails? matchDetails;
   final List<InvitePlayerModel> players;
   final double balance;
+  final bool hasMissingFeedback;
+  final int missingFeedbackCount;
+  final List<MissingFeedbackMatch> missingFeedbackMatches;
+  final bool showMissingFeedbackPrompt;
 
   const AgendaState({
     this.status = AgendaStateStatus.initial,
@@ -33,6 +39,10 @@ class AgendaState extends Equatable {
     this.matchDetails,
     this.players = const [],
     this.balance = 0.0,
+    this.hasMissingFeedback = false,
+    this.missingFeedbackCount = 0,
+    this.missingFeedbackMatches = const [],
+    this.showMissingFeedbackPrompt = false,
   });
 
   @override
@@ -46,6 +56,10 @@ class AgendaState extends Equatable {
     matchDetails,
     players,
     balance,
+    hasMissingFeedback,
+    missingFeedbackCount,
+    missingFeedbackMatches,
+    showMissingFeedbackPrompt,
   ];
 
   AgendaState copyWith({
@@ -58,6 +72,10 @@ class AgendaState extends Equatable {
     AgendaMatchDetails? matchDetails,
     List<InvitePlayerModel>? players,
     double? balance,
+    bool? hasMissingFeedback,
+    int? missingFeedbackCount,
+    List<MissingFeedbackMatch>? missingFeedbackMatches,
+    bool? showMissingFeedbackPrompt,
   }) {
     return AgendaState(
       status: status ?? this.status,
@@ -69,6 +87,12 @@ class AgendaState extends Equatable {
       matchDetails: matchDetails ?? this.matchDetails,
       players: players ?? this.players,
       balance: balance ?? this.balance,
+      hasMissingFeedback: hasMissingFeedback ?? this.hasMissingFeedback,
+      missingFeedbackCount: missingFeedbackCount ?? this.missingFeedbackCount,
+      missingFeedbackMatches:
+          missingFeedbackMatches ?? this.missingFeedbackMatches,
+      showMissingFeedbackPrompt:
+          showMissingFeedbackPrompt ?? this.showMissingFeedbackPrompt,
     );
   }
 }

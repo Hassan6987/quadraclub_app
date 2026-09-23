@@ -1261,4 +1261,80 @@ class AppLocalizationsEn extends AppLocalizations {
   String formattedDistanceKm(String distance) {
     return '$distance km';
   }
+
+  @override
+  String get missingInformation => 'Missing Information';
+
+  @override
+  String youHaveMatchesToComplete(int count) {
+    return 'You have $count match score and feedback to complete';
+  }
+
+  @override
+  String get feedbackHelpsMatching =>
+      'Your feedback helps with the matching of future games. It takes less than 1min';
+
+  @override
+  String get giveFeedback => 'Give Feedback';
+
+  @override
+  String get matchFeedback => 'Match Feedback';
+
+  @override
+  String get feedbackIntro =>
+      'It helps with the matching of future games. It takes less than 1min.';
+
+  @override
+  String setNumber(int number) {
+    return 'Set $number';
+  }
+
+  @override
+  String get addAnotherSet => '+ Add another set';
+
+  @override
+  String get playersFeedback => 'Players Feedback';
+
+  @override
+  String get didntShowUp => 'Didn\'t show up';
+
+  @override
+  String get completeMatch => 'Complete Match';
+
+  @override
+  String get clubsFeedback => 'Club’s feedback';
+
+  @override
+  String get tellUsMoreOptional =>
+      'Tell us more about your experience (optional)';
+
+  @override
+  String get complete => 'Complete';
+
+  @override
+  String get pleaseEnterScores => 'Please enter at least one set score';
+
+  @override
+  String get pleaseRateClub => 'Please rate the club';
+
+  @override
+  String get feedbackSubmitted => 'Feedback submitted';
+
+  @override
+  String get tagGoodDefense => 'Good Defense';
+
+  @override
+  String get tagGoodAttack => 'Good Attack';
+
+  @override
+  String get tagOneOff => 'One-off';
+
+  @override
+  String get tagStrategic => 'Strategic';
+
+  @override
+  String get tagArriveEarly => 'Arrive Early';
+
+  @override
+  String get tagGoodEnergy => 'Good Energy';
 }

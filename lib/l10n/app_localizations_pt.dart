@@ -1269,4 +1269,80 @@ class AppLocalizationsPt extends AppLocalizations {
   String formattedDistanceKm(String distance) {
     return '$distance km';
   }
+
+  @override
+  String get missingInformation => 'Informação em falta';
+
+  @override
+  String youHaveMatchesToComplete(int count) {
+    return 'Você tem $count placar e feedback de partida para completar';
+  }
+
+  @override
+  String get feedbackHelpsMatching =>
+      'Seu feedback ajuda no matching de futuros jogos. Leva menos de 1 min';
+
+  @override
+  String get giveFeedback => 'Dar Feedback';
+
+  @override
+  String get matchFeedback => 'Feedback da Partida';
+
+  @override
+  String get feedbackIntro =>
+      'Ajuda no matching de futuros jogos. Leva menos de 1 min.';
+
+  @override
+  String setNumber(int number) {
+    return 'Set $number';
+  }
+
+  @override
+  String get addAnotherSet => '+ Adicionar outro set';
+
+  @override
+  String get playersFeedback => 'Feedback dos Jogadores';
+
+  @override
+  String get didntShowUp => 'Não apareceu';
+
+  @override
+  String get completeMatch => 'Completar Partida';
+
+  @override
+  String get clubsFeedback => 'Feedback do clube';
+
+  @override
+  String get tellUsMoreOptional =>
+      'Conte mais sobre sua experiência (opcional)';
+
+  @override
+  String get complete => 'Completar';
+
+  @override
+  String get pleaseEnterScores => 'Informe o placar de pelo menos um set';
+
+  @override
+  String get pleaseRateClub => 'Por favor avalie o clube';
+
+  @override
+  String get feedbackSubmitted => 'Feedback enviado';
+
+  @override
+  String get tagGoodDefense => 'Boa Defesa';
+
+  @override
+  String get tagGoodAttack => 'Bom Ataque';
+
+  @override
+  String get tagOneOff => 'Pontual';
+
+  @override
+  String get tagStrategic => 'Estratégico';
+
+  @override
+  String get tagArriveEarly => 'Chega Cedo';
+
+  @override
+  String get tagGoodEnergy => 'Boa Energia';
 }

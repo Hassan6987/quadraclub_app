@@ -1,9 +1,11 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/match_feedback_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/payment_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_court_card.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_invitation_card.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/missing_feedback_dialog.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
@@ -21,6 +23,8 @@ class _AgendaScreenState extends State<AgendaScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   String _filter = 'All';
+  bool _checkedMissingFeedback = false;
+  bool _showingMissingDialog = false;
 
   @override
   void initState() {
@@ -35,7 +39,6 @@ class _AgendaScreenState extends State<AgendaScreen>
       initialIndex: initialIndex,
     );
     _tabController.addListener(() {
-      // rebuild so the action-label / anything tab-dependent updates
       if (!_tabController.indexIsChanging) setState(() {});
     });
   }
@@ -54,6 +57,39 @@ class _AgendaScreenState extends State<AgendaScreen>
     AgendaStatus.past => null,
   };
 
+  void _maybeCheckMissingFeedback(bool isLoggedIn) {
+    if (!isLoggedIn || _checkedMissingFeedback) return;
+    _checkedMissingFeedback = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AgendaBloc>().add(CheckMissingFeedback());
+    });
+  }
+
+  void _openMissingFeedbackPrompt(AgendaState state) {
+    if (_showingMissingDialog || !state.showMissingFeedbackPrompt) return;
+    if (state.missingFeedbackMatches.isEmpty) return;
+
+    _showingMissingDialog = true;
+    context.read<AgendaBloc>().add(ClearMissingFeedbackPrompt());
+
+    MissingFeedbackDialog.show(
+      context,
+      missingCount: state.missingFeedbackCount,
+      onGiveFeedback: () {
+        final match = state.missingFeedbackMatches.first;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => MatchFeedbackScreen(match: match)),
+        ).then((_) {
+          if (!mounted) return;
+          // Re-check in case more matches still need feedback.
+          context.read<AgendaBloc>().add(CheckMissingFeedback());
+        });
+      },
+    ).whenComplete(() => _showingMissingDialog = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -66,59 +102,66 @@ class _AgendaScreenState extends State<AgendaScreen>
           );
         }
 
-        return Scaffold(
-          backgroundColor: kCardColor,
-          appBar: CustomAppBar(
-            title: l10n.myReservationsGamesAndLessons,
-            centerTile: false,
-            backgroundColor: kWhiteColor,
-          ),
-          body: Column(
-            children: [
-              _statusTabBar(),
-              Container(
-                color: kWhiteColor,
-                child: AgendaFilterChips(
-                  selectedFilter: _filter,
-                  onSelected: (filter) => setState(() => _filter = filter),
-                ),
-              ),
-              Expanded(
-                child: BlocBuilder<AgendaBloc, AgendaState>(
-                  builder: (context, state) {
-                    if (state.status == AgendaStateStatus.loading ||
-                        state.status == AgendaStateStatus.initial) {
-                      return const Center(child: CustomLoadingView());
-                    }
-                    if (state.status == AgendaStateStatus.failure) {
-                      return Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(state.error ?? l10n.somethingWentWrong),
-                            TextButton(
-                              onPressed: () => context.read<AgendaBloc>().add(
-                                GetAllAgenda(),
-                              ),
-                              child: Text(l10n.retry),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+        _maybeCheckMissingFeedback(true);
 
-                    return TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _agendaList(state.confirmedAgenda, []),
-                        _agendaList(state.pendingAgenda, state.invitations),
-                        _agendaList(state.pastAgenda, []),
-                      ],
-                    );
-                  },
+        return BlocListener<AgendaBloc, AgendaState>(
+          listenWhen: (prev, curr) =>
+              curr.showMissingFeedbackPrompt && !prev.showMissingFeedbackPrompt,
+          listener: (context, state) => _openMissingFeedbackPrompt(state),
+          child: Scaffold(
+            backgroundColor: kCardColor,
+            appBar: CustomAppBar(
+              title: l10n.myReservationsGamesAndLessons,
+              centerTile: false,
+              backgroundColor: kWhiteColor,
+            ),
+            body: Column(
+              children: [
+                _statusTabBar(),
+                Container(
+                  color: kWhiteColor,
+                  child: AgendaFilterChips(
+                    selectedFilter: _filter,
+                    onSelected: (filter) => setState(() => _filter = filter),
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: BlocBuilder<AgendaBloc, AgendaState>(
+                    builder: (context, state) {
+                      if (state.status == AgendaStateStatus.loading ||
+                          state.status == AgendaStateStatus.initial) {
+                        return const Center(child: CustomLoadingView());
+                      }
+                      if (state.status == AgendaStateStatus.failure) {
+                        return Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(state.error ?? l10n.somethingWentWrong),
+                              TextButton(
+                                onPressed: () => context.read<AgendaBloc>().add(
+                                  GetAllAgenda(),
+                                ),
+                                child: Text(l10n.retry),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _agendaList(state.confirmedAgenda, []),
+                          _agendaList(state.pendingAgenda, state.invitations),
+                          _agendaList(state.pastAgenda, []),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

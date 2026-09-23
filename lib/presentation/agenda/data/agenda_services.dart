@@ -232,4 +232,36 @@ class AgendaServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+  Future<Response> getMissingFeedback() async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/agenda/missing-feedback',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> submitMatchFeedback(
+    String matchId,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final response = await request(
+        method: HttpMethod.post,
+        endpoint: '/api/agenda/matches/$matchId/feedback',
+        data: body,
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

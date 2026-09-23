@@ -473,5 +473,42 @@
         "type": "String"
       }
     }
-  }
+  },
+  "missingInformation": "Informação em falta",
+  "youHaveMatchesToComplete": "Você tem {count} placar e feedback de partida para completar",
+  "@youHaveMatchesToComplete": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedbackHelpsMatching": "Seu feedback ajuda no matching de futuros jogos. Leva menos de 1 min",
+  "giveFeedback": "Dar Feedback",
+  "matchFeedback": "Feedback da Partida",
+  "feedbackIntro": "Ajuda no matching de futuros jogos. Leva menos de 1 min.",
+  "setNumber": "Set {number}",
+  "@setNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "addAnotherSet": "+ Adicionar outro set",
+  "playersFeedback": "Feedback dos Jogadores",
+  "didntShowUp": "Não apareceu",
+  "completeMatch": "Completar Partida",
+  "clubsFeedback": "Feedback do clube",
+  "tellUsMoreOptional": "Conte mais sobre sua experiência (opcional)",
+  "complete": "Completar",
+  "pleaseEnterScores": "Informe o placar de pelo menos um set",
+  "pleaseRateClub": "Por favor avalie o clube",
+  "feedbackSubmitted": "Feedback enviado",
+  "tagGoodDefense": "Boa Defesa",
+  "tagGoodAttack": "Bom Ataque",
+  "tagOneOff": "Pontual",
+  "tagStrategic": "Estratégico",
+  "tagArriveEarly": "Chega Cedo",
+  "tagGoodEnergy": "Boa Energia"
 }

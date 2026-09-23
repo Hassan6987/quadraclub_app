@@ -4,6 +4,7 @@ import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/data/agenda_repo.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
+import 'package:quadraclub_app/presentation/agenda/data/model/missing_feedback_model.dart';
 import 'package:quadraclub_app/presentation/home/data/models/invite_player_model.dart';
 
 part 'agenda_event.dart';
@@ -12,7 +13,7 @@ part 'agenda_state.dart';
 class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
   final AgendaRepo _repo = locator.get<AgendaRepo>();
 
-  AgendaBloc() : super(AgendaState()) {
+  AgendaBloc() : super(const AgendaState()) {
     on<GetAllAgenda>(_handleLoadAgenda);
     on<GetMatchDetails>(_handleFetchMatchDetails);
     on<InvitePlayers>(_handleInvitePlayers);
@@ -22,6 +23,9 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     on<RespondToInvitation>(_handleRespondToInvitation);
     on<CancelJoinRequest>(_handleCancelJoinRequest);
     on<FetchPortfolio>(_handleFetchPortfolio);
+    on<CheckMissingFeedback>(_handleCheckMissingFeedback);
+    on<ClearMissingFeedbackPrompt>(_handleClearMissingFeedbackPrompt);
+    on<SubmitMatchFeedback>(_handleSubmitMatchFeedback);
   }
 
   Future<void> _handleLoadAgenda(
@@ -227,6 +231,72 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
           pendingAgenda: response,
         ),
       );
+    } catch (e) {
+      emit(
+        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
+  Future<void> _handleCheckMissingFeedback(
+    CheckMissingFeedback event,
+    Emitter<AgendaState> emit,
+  ) async {
+    try {
+      final response = await _repo.getMissingFeedback();
+      emit(
+        state.copyWith(
+          hasMissingFeedback: response.hasMissingFeedback,
+          missingFeedbackCount: response.missingCount,
+          missingFeedbackMatches: response.matches,
+          showMissingFeedbackPrompt:
+              response.hasMissingFeedback && response.matches.isNotEmpty,
+        ),
+      );
+    } catch (_) {
+      // Don't block Agenda if this check fails.
+      emit(
+        state.copyWith(
+          hasMissingFeedback: false,
+          missingFeedbackCount: 0,
+          missingFeedbackMatches: const [],
+          showMissingFeedbackPrompt: false,
+        ),
+      );
+    }
+  }
+
+  void _handleClearMissingFeedbackPrompt(
+    ClearMissingFeedbackPrompt event,
+    Emitter<AgendaState> emit,
+  ) {
+    emit(state.copyWith(showMissingFeedbackPrompt: false));
+  }
+
+  Future<void> _handleSubmitMatchFeedback(
+    SubmitMatchFeedback event,
+    Emitter<AgendaState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: AgendaStateStatus.submittingFeedback));
+      await _repo.submitMatchFeedback(event.matchId, event.request);
+
+      final remaining = state.missingFeedbackMatches
+          .where((m) => m.id != event.matchId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          status: AgendaStateStatus.feedbackSubmitted,
+          missingFeedbackMatches: remaining,
+          missingFeedbackCount: remaining.length,
+          hasMissingFeedback: remaining.isNotEmpty,
+          showMissingFeedbackPrompt: false,
+        ),
+      );
+
+      // Refresh past/confirmed lists in the background.
+      add(GetAllAgenda());
     } catch (e) {
       emit(
         state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
