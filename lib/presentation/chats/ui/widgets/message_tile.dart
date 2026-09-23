@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/single_avatar.dart';
+import 'package:quadraclub_app/presentation/matches/ui/player_profile_screen.dart';
 
 import '/app_exports.dart';
 
@@ -12,6 +13,16 @@ class MessageTile extends StatelessWidget {
     required this.message,
     required this.currentUserId,
   });
+
+  void _openProfile(BuildContext context) {
+    final id = message.sender.id;
+    if (id.isEmpty || id == currentUserId) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PlayerProfileScreen(playerId: id)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +70,7 @@ class MessageTile extends StatelessWidget {
 
                 6.widthBox,
 
-                const SmallAvatar(size: 24, url: ''),
+                SmallAvatar(size: 24, url: message.sender.profilePhoto ?? ''),
               ],
             ),
 
@@ -79,17 +90,26 @@ class MessageTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            message.sender.fullName.toUpperCase(),
-            style: AppStyles.w500f10inter.copyWith(color: kTextColor),
-          ).paddingOnly(left: 32),
+          GestureDetector(
+            onTap: () => _openProfile(context),
+            child: Text(
+              message.sender.fullName.toUpperCase(),
+              style: AppStyles.w500f10inter.copyWith(color: kTextColor),
+            ).paddingOnly(left: 32),
+          ),
 
           4.heightBox,
 
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const SmallAvatar(size: 24, url: ""),
+              GestureDetector(
+                onTap: () => _openProfile(context),
+                child: SmallAvatar(
+                  size: 24,
+                  url: message.sender.profilePhoto ?? '',
+                ),
+              ),
 
               6.widthBox,
 

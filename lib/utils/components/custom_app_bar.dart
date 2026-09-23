@@ -12,6 +12,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBorder;
   final bool showThreeDotActions;
   final VoidCallback? onThreeDotTap;
+  final VoidCallback? onTitleTap;
 
   const CustomAppBar({
     super.key,
@@ -26,6 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBorder = false,
     this.showThreeDotActions = false,
     this.onThreeDotTap,
+    this.onTitleTap,
   });
 
   @override
@@ -56,27 +58,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       shape: RoundedRectangleBorder(
         side: BorderSide(color: showBorder ? kCardColor : Colors.transparent),
       ),
-      title: Column(
-        children: [
-          if (title != null)
-            Text(
-              title!,
-              style:
-                  titleStyle ??
-                  AppStyles.w600f24inter.copyWith(
-                    color: kDarkTextColor,
-                    fontSize: 22,
-                  ),
-            ),
+      title: GestureDetector(
+        onTap: onTitleTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          children: [
+            if (title != null)
+              Text(
+                title!,
+                style:
+                    titleStyle ??
+                    AppStyles.w600f24inter.copyWith(
+                      color: kDarkTextColor,
+                      fontSize: 22,
+                    ),
+              ),
 
-          if (subtitle != null) ...[
-            2.heightBox,
-            Text(
-              subtitle!,
-              style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
-            ),
+            if (subtitle != null) ...[
+              2.heightBox,
+              Text(
+                subtitle!,
+                style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
       actions: showActions
           ? [

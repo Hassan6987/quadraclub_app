@@ -6,11 +6,13 @@ import '../data/model/class_models.dart';
 class ClassDetailsScreen extends StatelessWidget {
   final Class classModel;
   final double distanceKm;
+  final bool isFromClass;
 
   const ClassDetailsScreen({
     super.key,
     required this.classModel,
     required this.distanceKm,
+    this.isFromClass = true,
   });
 
   @override
@@ -82,7 +84,7 @@ class ClassDetailsScreen extends StatelessWidget {
             ParticipantsCard(classModel: classModel),
 
             40.heightBox,
-
+            if(isFromClass)
             CustomActionButton(
               buttonText: isValid
                   ? (classModel.isFull ?? false)

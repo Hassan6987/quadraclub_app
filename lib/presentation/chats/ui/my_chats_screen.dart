@@ -186,6 +186,13 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                 chat: chat,
                 currentUserId: _currentUserId(context),
                 onTap: () {
+                  final userId = _currentUserId(context);
+                  if (userId.isNotEmpty) {
+                    context.read<ChatsBloc>().add(
+                      MarkChatReadLocally(chatId: chat.id, userId: userId),
+                    );
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => ChatScreen(chat: chat)),

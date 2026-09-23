@@ -81,6 +81,7 @@ class AgendaClassCard extends StatelessWidget {
                     chatId: item.chatId ?? '',
                     label: item.title,
                     userCount: item.players?.length ?? 1,
+                    classId: item.id,
                   ),
                 ),
               );

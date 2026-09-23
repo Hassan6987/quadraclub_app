@@ -96,6 +96,30 @@ class ChatMessage {
     this.rawJson = const {},
   });
 
+  ChatMessage copyWith({
+    String? id,
+    ChatUser? sender,
+    String? content,
+    String? chatId,
+    List<dynamic>? attachments,
+    List<String>? seenBy,
+    bool? isSystemMessage,
+    DateTime? createdAt,
+    Map<String, dynamic>? rawJson,
+  }) {
+    return ChatMessage(
+      id: id ?? this.id,
+      sender: sender ?? this.sender,
+      content: content ?? this.content,
+      chatId: chatId ?? this.chatId,
+      attachments: attachments ?? this.attachments,
+      seenBy: seenBy ?? this.seenBy,
+      isSystemMessage: isSystemMessage ?? this.isSystemMessage,
+      createdAt: createdAt ?? this.createdAt,
+      rawJson: rawJson ?? this.rawJson,
+    );
+  }
+
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     final chat = json['chat'] ?? json['chatId'];
 
@@ -145,6 +169,9 @@ class Chat {
   final DateTime updatedAt;
   final ChatMessage? latestMessage;
 
+  /// Linked class / booking / court id when the API provides one.
+  final String? relatedId;
+
   const Chat({
     required this.id,
     required this.chatName,
@@ -154,7 +181,36 @@ class Chat {
     required this.createdAt,
     required this.updatedAt,
     this.latestMessage,
+    this.relatedId,
   });
+
+  bool get isClassroom =>
+      chatType.toLowerCase() == 'classroom' ||
+      chatType.toLowerCase() == 'class';
+
+  Chat copyWith({
+    String? id,
+    String? chatName,
+    bool? isGroupChat,
+    List<ChatUser>? users,
+    String? chatType,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    ChatMessage? latestMessage,
+    String? relatedId,
+  }) {
+    return Chat(
+      id: id ?? this.id,
+      chatName: chatName ?? this.chatName,
+      isGroupChat: isGroupChat ?? this.isGroupChat,
+      users: users ?? this.users,
+      chatType: chatType ?? this.chatType,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      latestMessage: latestMessage ?? this.latestMessage,
+      relatedId: relatedId ?? this.relatedId,
+    );
+  }
 
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
@@ -179,8 +235,46 @@ class Chat {
               (json['latestMessage'] as Map).cast<String, dynamic>(),
             )
           : null,
+      relatedId: _extractRelatedId(json),
     );
   }
+}
+
+String? _extractRelatedId(Map<String, dynamic> json) {
+  for (final key in [
+    'classId',
+    'bookingId',
+    'courtId',
+    'relatedId',
+    'referenceId',
+    'entityId',
+  ]) {
+    final id = _idFrom(json[key]);
+    if (id != null) return id;
+  }
+
+  for (final key in [
+    'class',
+    'classroom',
+    'booking',
+    'court',
+    'relatedTo',
+    'reference',
+  ]) {
+    final id = _idFrom(json[key]);
+    if (id != null) return id;
+  }
+
+  return null;
+}
+
+String? _idFrom(dynamic value) {
+  if (value is String && value.isNotEmpty) return value;
+  if (value is Map) {
+    final id = value['_id'] ?? value['id'];
+    if (id != null && id.toString().isNotEmpty) return id.toString();
+  }
+  return null;
 }
 
 class ChatsResponse {

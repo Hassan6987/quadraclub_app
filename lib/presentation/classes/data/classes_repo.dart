@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:parsing_util/parsing_util.dart';
 import 'package:quadraclub_app/data/stripe-services.dart';
 import 'package:quadraclub_app/presentation/classes/data/classes_services.dart';
@@ -20,6 +21,35 @@ class ClassesRepo {
           .toList();
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<Class> getClassById(String id) async {
+    try {
+      final response = await classesServices.getClassById(id);
+      final data = response.data as Map<String, dynamic>;
+      final raw = data['classDetail'] ?? data['data'] ?? data;
+      if (raw is Map<String, dynamic>) {
+        return Class.fromJson(raw);
+      }
+      throw Exception('Class not found');
+    } on DioException {
+      // Fallback: scan the list endpoint if single-class fetch isn't available.
+      final classes = await getAllClasses();
+      return classes.firstWhere(
+        (c) => c.id == id,
+        orElse: () => throw Exception('Class not found'),
+      );
+    } catch (e) {
+      try {
+        final classes = await getAllClasses();
+        return classes.firstWhere(
+          (c) => c.id == id,
+          orElse: () => throw Exception('Class not found'),
+        );
+      } catch (_) {
+        rethrow;
+      }
     }
   }
 

@@ -1,19 +1,28 @@
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/message_bloc/chat_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/message_tile.dart';
+import 'package:quadraclub_app/presentation/classes/data/classes_repo.dart';
+import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
+import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class AgendaChatScreen extends StatefulWidget {
   final String chatId;
   final String label;
   final int userCount;
 
+  /// When set (class chats), tapping the header opens class details.
+  final String? classId;
+
   const AgendaChatScreen({
     super.key,
     required this.chatId,
     required this.label,
     required this.userCount,
+    this.classId,
   });
 
   @override
@@ -23,6 +32,7 @@ class AgendaChatScreen extends StatefulWidget {
 class _AgendaChatScreenState extends State<AgendaChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  bool _openingDetails = false;
 
   @override
   void initState() {
@@ -33,6 +43,17 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
     bloc.add(LoadMessages(widget.chatId));
 
     bloc.add(JoinChat(widget.chatId));
+
+    _markChatReadLocally();
+  }
+
+  void _markChatReadLocally() {
+    final userId = context.read<AuthBloc>().state.user?.id ?? '';
+    if (userId.isEmpty || widget.chatId.isEmpty) return;
+
+    context.read<ChatsBloc>().add(
+      MarkChatReadLocally(chatId: widget.chatId, userId: userId),
+    );
   }
 
   @override
@@ -70,9 +91,44 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
     return context.read<AuthBloc>().state.user?.id ?? '';
   }
 
+  Future<void> _openClassDetails() async {
+    final classId = widget.classId;
+    if (classId == null || classId.isEmpty) return;
+    if (_openingDetails) return;
+
+    setState(() => _openingDetails = true);
+
+    try {
+      final classModel = await locator.get<ClassesRepo>().getClassById(classId);
+      if (!mounted) return;
+
+      final distance = (classModel.distanceKm is num)
+          ? (classModel.distanceKm as num).toDouble()
+          : 0.0;
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              ClassDetailsScreen(classModel: classModel, distanceKm: distance),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      context.showToast(
+        AppLocalizations.of(context)!.somethingWentWrong,
+        isError: true,
+      );
+    } finally {
+      if (mounted) setState(() => _openingDetails = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final canOpenClass = widget.classId != null && widget.classId!.isNotEmpty;
+
     return Scaffold(
       appBar: CustomAppBar(
         title: widget.label,
@@ -80,34 +136,45 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
         titleStyle: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
         showBackIcon: true,
         showActions: false,
+        onTitleTap: canOpenClass ? _openClassDetails : null,
       ),
-      body: BlocConsumer<ChatBloc, ChatState>(
-        listener: (context, state) {
-          if (state is ChatLoaded) {
-            _scrollToBottom();
-          }
-        },
-        builder: (context, state) {
-          if (state is ChatLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Stack(
+        children: [
+          BlocConsumer<ChatBloc, ChatState>(
+            listener: (context, state) {
+              if (state is ChatLoaded) {
+                _scrollToBottom();
+                _markChatReadLocally();
+              }
+            },
+            builder: (context, state) {
+              if (state is ChatLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          if (state is ChatError) {
-            return Center(child: Text(state.message));
-          }
+              if (state is ChatError) {
+                return Center(child: Text(state.message));
+              }
 
-          if (state is ChatLoaded) {
-            return Column(
-              children: [
-                Expanded(child: _buildMessageList(state.messages)),
+              if (state is ChatLoaded) {
+                return Column(
+                  children: [
+                    Expanded(child: _buildMessageList(state.messages)),
 
-                _buildInputBar(isSending: state.isSending),
-              ],
-            );
-          }
+                    _buildInputBar(isSending: state.isSending),
+                  ],
+                );
+              }
 
-          return const SizedBox.shrink();
-        },
+              return const SizedBox.shrink();
+            },
+          ),
+          if (_openingDetails)
+            const ColoredBox(
+              color: Color(0x33000000),
+              child: Center(child: CustomLoadingView()),
+            ),
+        ],
       ),
     );
   }
@@ -118,8 +185,9 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
     final today = DateTime(now.year, now.month, now.day);
     final msgDay = DateTime(dt.year, dt.month, dt.day);
     if (msgDay == today) return l10n.today;
-    if (msgDay == today.subtract(const Duration(days: 1)))
+    if (msgDay == today.subtract(const Duration(days: 1))) {
       return l10n.yesterday;
+    }
     return DateFormat('MMM d, yyyy', l10n.localeName).format(dt).toUpperCase();
   }
 
@@ -189,29 +257,6 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-// ─── Date separator ───────────────────────────────────────────────────────────
-
-class DateContainer extends StatelessWidget {
-  final String label;
-
-  const DateContainer({super.key, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: kWhiteColor.withValues(alpha: 0.40),
-        borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: kDividerColor),
-      ),
-      child: Text(
-        label,
-        style: AppStyles.w500f10inter.copyWith(color: kTextColor),
-      ).withPaddingSymmetric(8, 4),
     );
   }
 }

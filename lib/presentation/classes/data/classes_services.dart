@@ -16,6 +16,20 @@ class ClassesServices extends BaseApiProvider {
     }
   }
 
+  Future<Response> getClassById(String id) async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
+        endpoint: '/api/class/$id',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> getPortfolioBalance() async {
     try {
       final response = await request(
