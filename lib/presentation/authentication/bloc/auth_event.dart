@@ -42,17 +42,22 @@ class SetupProfile extends AuthEvent {
 }
 
 class UpdateProfile extends AuthEvent {
-  final String name;
+  final String? name;
   final String? location;
   final File? profileImage;
   final DateTime? dob;
+  final List<SportsInfo>? sportsInfo;
 
   const UpdateProfile({
-    required this.name,
+    this.name,
     this.location,
     this.profileImage,
     this.dob,
+    this.sportsInfo,
   });
+
+  @override
+  List<Object?> get props => [name, location, profileImage, dob, sportsInfo];
 }
 
 class DeleteAccountEvent extends AuthEvent {

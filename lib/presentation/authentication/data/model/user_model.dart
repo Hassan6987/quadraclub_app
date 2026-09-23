@@ -111,21 +111,37 @@ class UserModel {
 }
 
 class SportsInfo {
-  SportsInfo({required this.sport, required this.category});
+  SportsInfo({required this.sport, required this.category, this.preferredSide});
 
   final String? sport;
   final String? category;
+  final String? preferredSide;
 
-  SportsInfo copyWith({String? sport, String? category}) {
+  SportsInfo copyWith({
+    String? sport,
+    String? category,
+    String? preferredSide,
+  }) {
     return SportsInfo(
       sport: sport ?? this.sport,
       category: category ?? this.category,
+      preferredSide: preferredSide ?? this.preferredSide,
     );
   }
 
   factory SportsInfo.fromJson(Map<String, dynamic> json) {
-    return SportsInfo(sport: json["sport"], category: json["category"]);
+    return SportsInfo(
+      sport: json["sport"],
+      category: json["category"],
+      preferredSide: json["preferredSide"],
+    );
   }
+
+  Map<String, dynamic> toJson() => {
+    "sport": sport,
+    "category": category,
+    if (preferredSide != null) "preferredSide": preferredSide,
+  };
 }
 
 class FeedbackStats {

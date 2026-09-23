@@ -127,6 +127,7 @@ class AuthProvider {
     String? location,
     File? image,
     DateTime? dob,
+    List<Map<String, dynamic>>? sportsInfo,
   }) async {
     try {
       await authServices.updateProfile(
@@ -134,6 +135,7 @@ class AuthProvider {
         location: location,
         image: image,
         dob: dob,
+        sportsInfo: sportsInfo,
       );
     } catch (e) {
       rethrow;

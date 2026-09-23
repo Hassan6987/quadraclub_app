@@ -163,8 +163,23 @@ class AuthServices extends BaseApiProvider {
     String? location,
     File? image,
     DateTime? dob,
+    List<Map<String, dynamic>>? sportsInfo,
   }) async {
     try {
+      if (sportsInfo != null &&
+          name == null &&
+          location == null &&
+          image == null &&
+          dob == null) {
+        // Sports-only update — JSON body matches complete-profile.
+        final response = await request(
+          method: HttpMethod.put,
+          endpoint: '/api/auth/profile',
+          data: {"sportsInfo": sportsInfo},
+        );
+        return response;
+      }
+
       FormData formData = FormData.fromMap({
         "fullName": ?name,
         "dateOfBirth": ?dob,
@@ -174,6 +189,7 @@ class AuthServices extends BaseApiProvider {
             image.path,
             filename: image.path.split('/').last,
           ),
+        if (sportsInfo != null) "sportsInfo": sportsInfo,
       });
       final response = await request(
         method: HttpMethod.put,

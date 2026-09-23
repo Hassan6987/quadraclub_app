@@ -54,7 +54,7 @@ class GameInfoCard extends StatelessWidget {
 
 Widget buildInfoRow({required String label, required String value}) {
   return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    mainAxisAlignment: MainAxisAlignment.start,
     children: [
       Expanded(
         child: Text(
@@ -64,11 +64,9 @@ Widget buildInfoRow({required String label, required String value}) {
           ),
         ),
       ),
-      Expanded(
-        child: Text(
-          value,
-          style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
-        ),
+      Text(
+        value,
+        style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
       ),
     ],
   );

@@ -131,8 +131,6 @@ class _MyAccountState extends State<MyAccount> {
 
     context.read<AuthBloc>().add(
       UpdateProfile(
-        // `name` is required by UpdateProfile, so send the current
-        // value regardless (it's unchanged if the user didn't edit it).
         name: _nameController.text,
         location: locationChanged ? _locationController.text : null,
         profileImage: _image.value, // only non-null when a new photo was picked

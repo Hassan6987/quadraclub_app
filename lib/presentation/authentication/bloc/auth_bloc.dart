@@ -139,6 +139,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         location: event.location,
         image: event.profileImage,
         dob: event.dob,
+        sportsInfo: event.sportsInfo?.map((s) => s.toJson()).toList(),
       );
       final UserModel user = await _authenticationProvider.getUserProfile();
       emit(state.copyWith(status: AuthStateStatus.success, user: user));

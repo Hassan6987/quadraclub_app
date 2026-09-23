@@ -80,7 +80,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileHeader(user: user),
+                ProfileHeader(user: user, canEditSports: false),
                 24.heightBox,
                 StatisticsCard(
                   matchesCompleted: user.matchesCompleted,
@@ -92,11 +92,17 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 8.heightBox,
                 GameInfoCard(
                   dominantHand: user.dominantHand ?? 'Unknown',
-                  preferredSide: user.dominantHand ?? 'Unknown',
+                  preferredSide:
+                      user.sportsInfo
+                          .map((s) => s.preferredSide)
+                          .whereType<String>()
+                          .where((s) => s.isNotEmpty)
+                          .firstOrNull ??
+                      'Unknown',
                 ),
                 8.heightBox,
-                if(user.feedbackStats.isNotEmpty)
-                FeedbackCard(tags: user.feedbackStats),
+                if (user.feedbackStats.isNotEmpty)
+                  FeedbackCard(tags: user.feedbackStats),
                 8.heightBox,
                 CommonCard(
                   child: Column(
