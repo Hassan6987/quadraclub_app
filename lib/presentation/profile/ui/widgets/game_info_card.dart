@@ -56,15 +56,19 @@ Widget buildInfoRow({required String label, required String value}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Text(
-        label,
-        style: AppStyles.w400f14inter.copyWith(
-          color: kDarkTextColor.withValues(alpha: 0.70),
+      Expanded(
+        child: Text(
+          label,
+          style: AppStyles.w400f14inter.copyWith(
+            color: kDarkTextColor.withValues(alpha: 0.70),
+          ),
         ),
       ),
-      Text(
-        value,
-        style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+      Expanded(
+        child: Text(
+          value,
+          style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+        ),
       ),
     ],
   );

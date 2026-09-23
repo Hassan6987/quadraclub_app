@@ -15,8 +15,7 @@ class PlayerProfileScreen extends StatefulWidget {
 }
 
 class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
-  StatFilter _filter = StatFilter.weekly;
-  final UserProfile profile = dummyProfile;
+  StatFilter _filter = StatFilter.overall;
 
   String _localizedGender(AppLocalizations l10n, String? gender) {
     switch (gender) {
@@ -48,12 +47,16 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: kBorderColor),
             ),
-            child: Icon(Icons.arrow_back, size: 24, color: kDarkTextColor),
+            child: const Icon(
+              Icons.arrow_back,
+              size: 24,
+              color: kDarkTextColor,
+            ),
           ),
         ),
         title: Text(
@@ -65,29 +68,35 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
       body: BlocBuilder<MatchesBloc, MatchesState>(
         builder: (context, state) {
           if (state.status == MatchesStateStatus.fetching) {
-            return Center(child: CustomLoadingView());
+            return const Center(child: CustomLoadingView());
           } else if (state.status != MatchesStateStatus.fetching &&
               state.user == null) {
             return Center(child: Text(l10n.noPlayerDataFound));
           }
+
+          final user = state.user!;
+
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileHeader(profile: profile, user: state.user),
+                ProfileHeader(user: user),
                 24.heightBox,
                 StatisticsCard(
-                  stats: profile.stats,
+                  matchesCompleted: user.matchesCompleted,
+                  victories: user.victories,
+                  defeats: user.defeats,
                   selected: _filter,
                   onFilterChanged: (f) => setState(() => _filter = f),
                 ),
                 8.heightBox,
                 GameInfoCard(
-                  dominantHand: state.user?.dominantHand ?? 'Unknown',
-                  preferredSide: state.user?.dominantHand ?? 'Unknown',
+                  dominantHand: user.dominantHand ?? 'Unknown',
+                  preferredSide: user.dominantHand ?? 'Unknown',
                 ),
                 8.heightBox,
-                FeedbackCard(tags: profile.feedback),
+                if(user.feedbackStats.isNotEmpty)
+                FeedbackCard(tags: user.feedbackStats),
                 8.heightBox,
                 CommonCard(
                   child: Column(
@@ -102,18 +111,18 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                       16.heightBox,
                       buildInfoRow(
                         label: l10n.location,
-                        value: state.user?.location ?? '',
+                        value: user.location ?? '',
                       ),
                       8.heightBox,
                       buildInfoRow(
                         label: l10n.gender,
-                        value: _localizedGender(l10n, state.user?.gender),
+                        value: _localizedGender(l10n, user.gender),
                       ),
                       8.heightBox,
                       buildInfoRow(
                         label: l10n.dateOfBirth,
                         value: getFormatDateMonthYear(
-                          state.user?.dateOfBirth,
+                          user.dateOfBirth,
                           locale: l10n.localeName,
                         ),
                       ),

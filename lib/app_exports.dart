@@ -51,7 +51,6 @@ export 'package:quadraclub_app/presentation/common/widgets/login_to_book_dialog.
 export 'package:quadraclub_app/presentation/common/widgets/sports_badge.dart';
 export 'package:quadraclub_app/presentation/home/data/models/home_dummy_data.dart';
 export 'package:quadraclub_app/presentation/home/ui/home_screen.dart';
-export 'package:quadraclub_app/presentation/profile/data/player_model.dart';
 export 'package:quadraclub_app/presentation/profile/ui/profile_screen.dart';
 export 'package:quadraclub_app/presentation/profile/ui/widgets/common_card.dart';
 export 'package:quadraclub_app/presentation/profile/ui/widgets/profile_header.dart';

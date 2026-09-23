@@ -1,13 +1,19 @@
 import '/app_exports.dart';
 
+enum StatFilter { weekly, monthly, overall }
+
 class StatisticsCard extends StatelessWidget {
-  final PlayerStats stats;
+  final int matchesCompleted;
+  final int victories;
+  final int defeats;
   final StatFilter selected;
   final ValueChanged<StatFilter> onFilterChanged;
 
   const StatisticsCard({
     super.key,
-    required this.stats,
+    required this.matchesCompleted,
+    required this.victories,
+    required this.defeats,
     required this.selected,
     required this.onFilterChanged,
   });
@@ -27,32 +33,32 @@ class StatisticsCard extends StatelessWidget {
                 l10n.statistics,
                 style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
-              Row(
-                children: StatFilter.values.map((f) {
-                  final isSelected = f == selected;
-                  return GestureDetector(
-                    onTap: () => onFilterChanged(f),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      margin: const EdgeInsets.only(left: 4),
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? kPrimaryColor
-                            : kPrimaryColor.withValues(alpha: 0.20),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        _localizedStatFilter(l10n, f),
-                        style: AppStyles.w500f12inter.copyWith(
-                          color: kDarkTextColor,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+              // Row(
+              //   children: StatFilter.values.map((f) {
+              //     final isSelected = f == selected;
+              //     return GestureDetector(
+              //       onTap: () => onFilterChanged(f),
+              //       child: AnimatedContainer(
+              //         duration: const Duration(milliseconds: 180),
+              //         margin: const EdgeInsets.only(left: 4),
+              //         padding: const EdgeInsets.all(6),
+              //         decoration: BoxDecoration(
+              //           color: isSelected
+              //               ? kPrimaryColor
+              //               : kPrimaryColor.withValues(alpha: 0.20),
+              //           borderRadius: BorderRadius.circular(16),
+              //         ),
+              //         child: Text(
+              //           _localizedStatFilter(l10n, f),
+              //           style: AppStyles.w500f12inter.copyWith(
+              //             color: kDarkTextColor,
+              //             fontSize: 10,
+              //           ),
+              //         ),
+              //       ),
+              //     );
+              //   }).toList(),
+              // ),
             ],
           ),
           16.heightBox,
@@ -62,27 +68,21 @@ class StatisticsCard extends StatelessWidget {
               children: [
                 _StatItem(
                   icon: Assets.svg.personsIcon.path,
-                  value: '${stats.matches}',
+                  value: '$matchesCompleted',
                   label: l10n.matches,
                   color: kBlackColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.trophyIcon.path,
-                  value: '${stats.victories}',
+                  value: '$victories',
                   label: l10n.victories,
                   color: kLightGreenColor,
                 ),
                 _StatItem(
                   icon: Assets.svg.redCross.path,
-                  value: '${stats.defeats}',
+                  value: '$defeats',
                   label: l10n.defeats,
                   color: kRedColor,
-                ),
-                _StatItem(
-                  icon: Assets.svg.timerIcon.path,
-                  value: '${stats.hours} h',
-                  label: l10n.hours,
-                  color: kBlackColor,
                 ),
               ],
             ),
@@ -136,7 +136,6 @@ class _StatItem extends StatelessWidget {
               value,
               style: AppStyles.w600f16inter.copyWith(color: color),
             ).withPaddingSymmetric(0, 2),
-
             Text(
               label,
               textAlign: TextAlign.center,

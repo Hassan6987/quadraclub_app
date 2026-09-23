@@ -15,6 +15,10 @@ class UserModel {
     required this.sportsInfo,
     required this.registrationStep,
     required this.portfolioBalance,
+    required this.matchesCompleted,
+    required this.victories,
+    required this.defeats,
+    required this.feedbackStats,
   });
 
   final String? id;
@@ -30,6 +34,10 @@ class UserModel {
   final List<SportsInfo> sportsInfo;
   final int? registrationStep;
   final double? portfolioBalance;
+  final int matchesCompleted;
+  final int victories;
+  final int defeats;
+  final List<FeedbackStats> feedbackStats;
 
   UserModel copyWith({
     String? id,
@@ -45,6 +53,10 @@ class UserModel {
     List<SportsInfo>? sportsInfo,
     int? registrationStep,
     double? portfolioBalance,
+    int? matchesCompleted,
+    int? victories,
+    int? defeats,
+    List<FeedbackStats>? feedbackStats,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -60,6 +72,10 @@ class UserModel {
       sportsInfo: sportsInfo ?? this.sportsInfo,
       registrationStep: registrationStep ?? this.registrationStep,
       portfolioBalance: portfolioBalance ?? this.portfolioBalance,
+      matchesCompleted: matchesCompleted ?? this.matchesCompleted,
+      victories: victories ?? this.victories,
+      defeats: defeats ?? this.defeats,
+      feedbackStats: feedbackStats ?? this.feedbackStats,
     );
   }
 
@@ -82,6 +98,14 @@ class UserModel {
             ),
       registrationStep: json["registrationStep"],
       portfolioBalance: ParsingUtil.toSafeDouble(json["portfolioBalance"]),
+      matchesCompleted: json["matches"] ?? 0,
+      victories: json["victories"] ?? 0,
+      defeats: json["defeats"] ?? 0,
+      feedbackStats: json["feedbacks"] == null
+          ? []
+          : List<FeedbackStats>.from(
+              json["feedbacks"].map((x) => FeedbackStats.fromJson(x)),
+            ),
     );
   }
 }
@@ -101,5 +125,16 @@ class SportsInfo {
 
   factory SportsInfo.fromJson(Map<String, dynamic> json) {
     return SportsInfo(sport: json["sport"], category: json["category"]);
+  }
+}
+
+class FeedbackStats {
+  final String tag;
+  final int count;
+
+  FeedbackStats({required this.tag, required this.count});
+
+  factory FeedbackStats.fromJson(Map<String, dynamic> json) {
+    return FeedbackStats(tag: json["tag"], count: json["count"]);
   }
 }
