@@ -42,8 +42,26 @@ class NotificationModel {
   bool get isMatchInvite =>
       type == 'match_invite' || metadata?.action == 'match_invite';
 
+  bool get isMatchInviteAccepted =>
+      type == 'invite_accepted' ||
+      type == 'match_invite_accepted' ||
+      metadata?.action == 'invite_accepted' ||
+      metadata?.action == 'match_invite_accepted';
+
+  bool get isMatchInviteRejected =>
+      type == 'invite_rejected' ||
+      type == 'match_invite_rejected' ||
+      metadata?.action == 'invite_rejected' ||
+      metadata?.action == 'match_invite_rejected';
+
   bool get isJoinRequest =>
       type == 'join_request' || metadata?.action == 'join_request';
+
+  bool get isJoinRejected =>
+      type == 'join_rejected' || metadata?.action == 'join_rejected';
+
+  bool get isJoinAccepted =>
+      type == 'join_accepted' || metadata?.action == 'join_accepted';
 
   String timeAgo(AppLocalizations l10n) {
     final date = sendOn ?? createdAt;

@@ -117,22 +117,49 @@ class NotificationTile extends StatelessWidget {
   }
 
   void _navigateToDestination(BuildContext context) {
-    final bookingId = notification.bookingId;
-
-    if (bookingId == null || bookingId.isEmpty) {
-      // No match payload — land on Agenda.
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        RouteName.customBottomNavbar,
-        (_) => false,
-        arguments: {"index": 3},
-      );
+    // Agenda tabs: 0 = Confirmed, 1 = Pending, 2 = Past.
+    if (notification.isMatchInvite) {
+      _openAgenda(context, agendaTabIndex: 1);
       return;
     }
 
-    final initialTab = notification.isJoinRequest
-        ? MatchDetailsTab.requests
-        : MatchDetailsTab.details;
+    if (notification.isMatchInviteAccepted ||
+        notification.isJoinAccepted ||
+        notification.isJoinRejected) {
+      _openAgenda(context, agendaTabIndex: 0);
+      return;
+    }
+
+    if (notification.isMatchInviteRejected) {
+      _openMatchDetails(context, MatchDetailsTab.invited);
+      return;
+    }
+
+    if (notification.isJoinRequest) {
+      _openMatchDetails(context, MatchDetailsTab.requests);
+      return;
+    }
+
+    // Unknown type — land on Agenda Confirmed.
+    _openAgenda(context, agendaTabIndex: 0);
+  }
+
+  void _openAgenda(BuildContext context, {required int agendaTabIndex}) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RouteName.customBottomNavbar,
+      (_) => false,
+      arguments: {"index": 3, "agendaTabIndex": agendaTabIndex},
+    );
+  }
+
+  void _openMatchDetails(BuildContext context, MatchDetailsTab initialTab) {
+    final bookingId = notification.bookingId;
+
+    if (bookingId == null || bookingId.isEmpty) {
+      _openAgenda(context, agendaTabIndex: 0);
+      return;
+    }
 
     context.read<AgendaBloc>().add(GetMatchDetails(id: bookingId));
 

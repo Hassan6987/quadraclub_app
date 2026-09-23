@@ -8,7 +8,10 @@ import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class AgendaScreen extends StatefulWidget {
-  const AgendaScreen({super.key});
+  /// 0 = Confirmed, 1 = Pending, 2 = Past.
+  final int initialTabIndex;
+
+  const AgendaScreen({super.key, this.initialTabIndex = 0});
 
   @override
   State<AgendaScreen> createState() => _AgendaScreenState();
@@ -22,9 +25,14 @@ class _AgendaScreenState extends State<AgendaScreen>
   @override
   void initState() {
     super.initState();
+    final initialIndex = widget.initialTabIndex.clamp(
+      0,
+      AgendaStatus.values.length - 1,
+    );
     _tabController = TabController(
       length: AgendaStatus.values.length,
       vsync: this,
+      initialIndex: initialIndex,
     );
     _tabController.addListener(() {
       // rebuild so the action-label / anything tab-dependent updates

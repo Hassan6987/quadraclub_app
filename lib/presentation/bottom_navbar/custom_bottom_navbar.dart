@@ -12,10 +12,14 @@ class CustomBottomNavBar extends StatefulWidget {
   /// "Create a Match" instead of "Reserve Individual".
   final BookingType bookingIntent;
 
+  /// Agenda Confirmed / Pending / Past tab when [index] points at Agenda.
+  final int agendaTabIndex;
+
   const CustomBottomNavBar({
     super.key,
     this.index = 2,
     this.bookingIntent = BookingType.individual,
+    this.agendaTabIndex = 0,
   });
 
   @override
@@ -45,7 +49,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       ClassesScreen(),
       MatchesScreen(),
       HomeScreen(bookingIntent: widget.bookingIntent),
-      AgendaScreen(),
+      AgendaScreen(initialTabIndex: widget.agendaTabIndex),
       ProfileScreen(),
     ];
 

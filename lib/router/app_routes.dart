@@ -26,6 +26,7 @@ class AppGenerateRoute {
             index: args["index"] as int? ?? 2,
             bookingIntent:
                 args["bookingIntent"] as BookingType? ?? BookingType.individual,
+            agendaTabIndex: args["agendaTabIndex"] as int? ?? 0,
           ),
         );
       case RouteName.myAccount:

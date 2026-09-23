@@ -350,7 +350,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.only(right: 12, bottom: 12, top: 8),
+      padding: const EdgeInsets.only(right: 12, bottom: 8, top: 8),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
