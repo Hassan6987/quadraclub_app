@@ -196,7 +196,11 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => ChatScreen(chat: chat)),
-                  );
+                  ).then((_) {
+                    if (context.mounted) {
+                      context.read<ChatsBloc>().add(LoadChats());
+                    }
+                  });
                 },
               );
             },

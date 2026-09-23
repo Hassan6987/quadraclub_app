@@ -53,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+
+
   void _sendMessage() {
     final text = _controller.text.trim();
 
