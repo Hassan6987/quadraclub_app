@@ -1,3 +1,6 @@
+import 'package:quadraclub_app/data/service_fees/service_fees_model.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_repo.dart';
+import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
@@ -6,6 +9,7 @@ import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/request_sent_dialog.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/components/service_fee_amount.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
@@ -38,6 +42,8 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   bool _agreedToTerms = false;
   bool _fieldsValid = false;
 
+  FeeTier _serviceFeeTier = FeeTier.zero;
+
   double get _matchFee {
     if (widget.match.paymentType == "pay_my_part") {
       return widget.match.totalPrice?.toDouble() ?? 0.0;
@@ -52,6 +58,10 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     }
   }
 
+  double get _serviceFee => _serviceFeeTier.current;
+
+  double get _total => _matchFee + _serviceFee;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +69,18 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     _cardNumberController.addListener(_revalidate);
     _expiryController.addListener(_revalidate);
     _cvvController.addListener(_revalidate);
+    _loadServiceFees();
+  }
+
+  Future<void> _loadServiceFees() async {
+    try {
+      final fees = await locator.get<ServiceFeesRepo>().getServiceFees();
+      if (!mounted) return;
+      setState(() => _serviceFeeTier = fees.matches);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _serviceFeeTier = FeeTier.zero);
+    }
   }
 
   @override
@@ -183,7 +205,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         },
         builder: (context, state) {
           final portfolioBalance = state.balance.toDouble();
-          final portfolioEnabled = portfolioBalance >= _matchFee;
+          final portfolioEnabled = portfolioBalance >= _total;
 
           return Column(
             children: [
@@ -203,7 +225,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
                       PortfolioPaymentOption(
                         balance: portfolioBalance,
-                        amount: _matchFee,
+                        amount: _total,
                         isEnabled: portfolioEnabled,
                         isSelected: _usePortfolio,
                         onTap: () {
@@ -252,7 +274,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       20.heightBox,
                       _buildSectionHeader(l10n.priceDetails),
                       8.heightBox,
-                      _buildPriceDetails(_matchFee, 0, _matchFee),
+                      _buildPriceDetails(_matchFee, _serviceFeeTier, _total),
                       16.heightBox,
 
                       GestureDetector(
@@ -378,7 +400,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     );
   }
 
-  Widget _buildPriceDetails(double matchFee, double serviceFee, double total) {
+  Widget _buildPriceDetails(double matchFee, FeeTier serviceFee, double total) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -410,10 +432,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                 AppLocalizations.of(context)!.serviceFee,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
-              Text(
-                formatPrice(serviceFee),
-                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
-              ),
+              ServiceFeeAmount(fee: serviceFee),
             ],
           ),
           const Divider(height: 24, color: kBorderColor),
@@ -446,7 +465,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         cardNumber: _cardNumberController.text,
         expiry: _expiryController.text,
         message: widget.message,
-        amount: _matchFee,
+        amount: _total,
       ),
     );
   }

@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_repo.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_services.dart';
 import 'package:quadraclub_app/data/storage_service.dart';
 import 'package:quadraclub_app/presentation/agenda/data/agenda_repo.dart';
 import 'package:quadraclub_app/presentation/agenda/data/agenda_services.dart';
@@ -40,6 +42,8 @@ void initServices() {
   locator.registerSingleton<NotificationRepo>(NotificationRepo());
   locator.registerLazySingleton<ChatServices>(() => ChatServices());
   locator.registerLazySingleton<ChatRepository>(() => ChatRepository());
+  locator.registerSingleton<ServiceFeesServices>(ServiceFeesServices());
+  locator.registerSingleton<ServiceFeesRepo>(ServiceFeesRepo());
 
   ///
   /// Example how to register if something is required

@@ -1,4 +1,7 @@
 import 'package:credit_card_validator/credit_card_validator.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_model.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_repo.dart';
+import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
@@ -34,11 +37,11 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
   bool _agreedToTerms = false;
   bool _fieldsValid = false;
 
-  static const double _convenienceFee = 2.0;
+  FeeTier _convenienceFee = FeeTier.zero;
 
   double get _classPrice => widget.classModel.price?.toDouble() ?? 0.0;
 
-  double get _total => _classPrice + _convenienceFee;
+  double get _total => _classPrice + _convenienceFee.current;
 
   @override
   void initState() {
@@ -48,8 +51,20 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
     _cardNumberController.addListener(_revalidate);
     _expiryController.addListener(_revalidate);
     _cvvController.addListener(_revalidate);
+
+    _loadServiceFees();
   }
 
+  Future<void> _loadServiceFees() async {
+    try {
+      final fees = await locator.get<ServiceFeesRepo>().getServiceFees();
+      if (!mounted) return;
+      setState(() => _convenienceFee = fees.classes);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _convenienceFee = FeeTier.zero);
+    }
+  }
   // ============================================================
   // CARD VALIDATION
   // ============================================================

@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_model.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_repo.dart';
+import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
@@ -8,6 +11,7 @@ import 'package:quadraclub_app/presentation/home/data/models/match_booking_model
 import 'package:quadraclub_app/presentation/home/ui/booking/booking_confirmation_screen.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/components/service_fee_amount.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -62,8 +66,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   bool _usePortfolio = false;
   bool _agreedToTerms = false;
   bool _fieldsValid = false;
+  bool _loadingFees = true;
 
-  double get _serviceFee => (widget.amount * 2) / 100;
+  FeeTier _serviceFeeTier = FeeTier.zero;
+
+  double get _serviceFee => _serviceFeeTier.current;
 
   double get _total => widget.amount + _serviceFee;
 
@@ -75,6 +82,25 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     _cardNumberController.addListener(_revalidate);
     _expiryController.addListener(_revalidate);
     _cvvController.addListener(_revalidate);
+
+    _loadServiceFees();
+  }
+
+  Future<void> _loadServiceFees() async {
+    try {
+      final fees = await locator.get<ServiceFeesRepo>().getServiceFees();
+      if (!mounted) return;
+      setState(() {
+        _serviceFeeTier = widget.isMatch ? fees.matches : fees.courts;
+        _loadingFees = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _serviceFeeTier = FeeTier.zero;
+        _loadingFees = false;
+      });
+    }
   }
 
   /// Calculates the overall form validity silently.
@@ -476,12 +502,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                                     color: kGreyTextColor,
                                   ),
                                 ),
-                                Text(
-                                  formatPrice(_serviceFee),
-                                  style: AppStyles.w500f14inter.copyWith(
-                                    color: kDarkTextColor,
-                                  ),
-                                ),
+                                if (_loadingFees)
+                                  Text(
+                                    '…',
+                                    style: AppStyles.w500f14inter.copyWith(
+                                      color: kDarkTextColor,
+                                    ),
+                                  )
+                                else
+                                  ServiceFeeAmount(fee: _serviceFeeTier),
                               ],
                             ),
 

@@ -1,6 +1,7 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 
 class AgendaClassCard extends StatelessWidget {
   final AgendaItem item;
@@ -28,7 +29,7 @@ class AgendaClassCard extends StatelessWidget {
             ],
             const Spacer(),
             Text(
-              '\$${item.price}',
+              formatPriceWhole(item.price),
               style: AppStyles.w600f14inter.copyWith(color: kBlueF1),
             ),
           ],

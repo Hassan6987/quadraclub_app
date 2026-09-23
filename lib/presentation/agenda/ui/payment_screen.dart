@@ -1,3 +1,6 @@
+import 'package:quadraclub_app/data/service_fees/service_fees_model.dart';
+import 'package:quadraclub_app/data/service_fees/service_fees_repo.dart';
+import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
@@ -6,6 +9,7 @@ import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/components/service_fee_amount.dart';
 
 import '/app_exports.dart';
 
@@ -30,6 +34,8 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
   bool _agreedToTerms = false;
   bool _fieldsValid = false;
 
+  FeeTier _serviceFeeTier = FeeTier.zero;
+
   double get _matchFee {
     if (widget.match.paymentType == "pay_my_part") {
       return widget.match.totalPrice.toDouble();
@@ -44,6 +50,10 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
     }
   }
 
+  double get _serviceFee => _serviceFeeTier.current;
+
+  double get _total => _matchFee + _serviceFee;
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +61,18 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
     _cardNumberController.addListener(_revalidate);
     _expiryController.addListener(_revalidate);
     _cvvController.addListener(_revalidate);
+    _loadServiceFees();
+  }
+
+  Future<void> _loadServiceFees() async {
+    try {
+      final fees = await locator.get<ServiceFeesRepo>().getServiceFees();
+      if (!mounted) return;
+      setState(() => _serviceFeeTier = fees.matches);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _serviceFeeTier = FeeTier.zero);
+    }
   }
 
   @override
@@ -166,7 +188,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
         },
         builder: (context, state) {
           final portfolioBalance = state.balance;
-          final portfolioEnabled = portfolioBalance >= _matchFee;
+          final portfolioEnabled = portfolioBalance >= _total;
 
           return Column(
             children: [
@@ -186,7 +208,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
 
                       PortfolioPaymentOption(
                         balance: portfolioBalance,
-                        amount: _matchFee,
+                        amount: _total,
                         isEnabled: portfolioEnabled,
                         isSelected: _usePortfolio,
                         onTap: () {
@@ -235,7 +257,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                       20.heightBox,
                       _buildSectionHeader(l10n.priceDetails),
                       8.heightBox,
-                      _buildPriceDetails(_matchFee, 0, _matchFee),
+                      _buildPriceDetails(_matchFee, _serviceFeeTier, _total),
                       16.heightBox,
 
                       GestureDetector(
@@ -360,7 +382,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
     );
   }
 
-  Widget _buildPriceDetails(double matchFee, double serviceFee, double total) {
+  Widget _buildPriceDetails(double matchFee, FeeTier serviceFee, double total) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -392,10 +414,7 @@ class _AgendaPaymentScreenState extends State<AgendaPaymentScreen> {
                 AppLocalizations.of(context)!.serviceFee,
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
-              Text(
-                formatPrice(serviceFee),
-                style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
-              ),
+              ServiceFeeAmount(fee: serviceFee),
             ],
           ),
           const Divider(height: 24, color: kBorderColor),

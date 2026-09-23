@@ -77,7 +77,11 @@ class InvitablePlayerModel {
   });
 }
 
-String formatPrice(double amount) => '\$${amount.toStringAsFixed(2)}';
+String formatPrice(double amount) => 'R\$${amount.toStringAsFixed(2)}';
+
+/// Formats a whole-number price without decimals (e.g. class cards).
+String formatPriceWhole(num? amount) =>
+    'R\$${(amount ?? 0).toStringAsFixed(0)}';
 
 /// Adds a duration to a "HH:mm" start time string, returning "HH:mm".
 String addDurationToTime(String start, Duration duration) {

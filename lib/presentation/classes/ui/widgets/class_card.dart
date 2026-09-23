@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
@@ -63,7 +64,7 @@ class ClassCard extends StatelessWidget {
                   const Spacer(),
 
                   Text(
-                    '\$${classModel.price?.toStringAsFixed(0)}',
+                    formatPriceWhole(classModel.price),
                     style: AppStyles.w600f14inter.copyWith(color: kBlueF1),
                   ),
                 ],

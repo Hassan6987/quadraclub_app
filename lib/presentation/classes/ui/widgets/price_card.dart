@@ -1,8 +1,12 @@
+import 'package:quadraclub_app/data/service_fees/service_fees_model.dart';
+import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
+import 'package:quadraclub_app/utils/components/service_fee_amount.dart';
+
 import '../../../../app_exports.dart';
 
 class PriceCard extends StatelessWidget {
   final double classPrice;
-  final double convenienceFee;
+  final FeeTier convenienceFee;
   final double total;
 
   const PriceCard({
@@ -26,19 +30,27 @@ class PriceCard extends StatelessWidget {
         children: [
           _PriceRow(
             label: l10n.classroom,
-            value: '\$${classPrice.toStringAsFixed(2)}',
-            isTotal: false,
+            value: Text(
+              formatPrice(classPrice),
+              style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
+            ),
           ),
           const SizedBox(height: 6),
           _PriceRow(
             label: l10n.convenienceFee,
-            value: '\$${convenienceFee.toStringAsFixed(2)}',
-            isTotal: false,
+            value: ServiceFeeAmount(fee: convenienceFee),
           ),
           Divider(color: kDividerColor).withPaddingSymmetric(0, 8),
           _PriceRow(
             label: l10n.total,
-            value: '\$${total.toStringAsFixed(2)}',
+            value: Text(
+              formatPrice(total),
+              style: AppStyles.w400f14inter.copyWith(
+                color: kBlueColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             isTotal: true,
           ),
         ],
@@ -49,13 +61,13 @@ class PriceCard extends StatelessWidget {
 
 class _PriceRow extends StatelessWidget {
   final String label;
-  final String value;
+  final Widget value;
   final bool isTotal;
 
   const _PriceRow({
     required this.label,
     required this.value,
-    required this.isTotal,
+    this.isTotal = false,
   });
 
   @override
@@ -67,14 +79,7 @@ class _PriceRow extends StatelessWidget {
           label,
           style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
         ),
-        Text(
-          value,
-          style: AppStyles.w400f14inter.copyWith(
-            color: isTotal ? kBlueColor : kDarkTextColor,
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
+        value,
       ],
     );
   }
