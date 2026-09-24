@@ -761,14 +761,44 @@ abstract class AppLocalizations {
   /// No description provided for @classBooked.
   ///
   /// In en, this message translates to:
-  /// **'Class Booked'**
+  /// **'Request sent!'**
   String get classBooked;
 
   /// No description provided for @classConfirmedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Your class is confirmed. We look forward to seeing you!'**
+  /// **'Your payment was processed. The coach needs to accept your participation to confirm your spot.'**
   String get classConfirmedMessage;
+
+  /// No description provided for @whatHappensNext.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens next:'**
+  String get whatHappensNext;
+
+  /// No description provided for @coachReviewsYourRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach reviews your request'**
+  String get coachReviewsYourRequest;
+
+  /// No description provided for @ifAcceptedSpotConfirmedChatAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'If accepted: spot confirmed + chat access'**
+  String get ifAcceptedSpotConfirmedChatAccess;
+
+  /// No description provided for @ifDeclinedAutomaticFullRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'If declined: automatic full refund'**
+  String get ifDeclinedAutomaticFullRefund;
+
+  /// No description provided for @viewMyClasses.
+  ///
+  /// In en, this message translates to:
+  /// **'View my classes'**
+  String get viewMyClasses;
 
   /// No description provided for @categoryWithLevel.
   ///

@@ -90,3 +90,8 @@ class SubmitMatchFeedback extends AgendaEvent {
   @override
   List<Object?> get props => [matchId, request];
 }
+
+class CancelClassRequest extends AgendaEvent{
+  final String classId;
+  const CancelClassRequest({required this.classId});
+}

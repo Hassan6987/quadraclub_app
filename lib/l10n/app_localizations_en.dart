@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -360,11 +361,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registrationClosed => 'Registration Closed';
 
   @override
-  String get classBooked => 'Class Booked';
+  String get classBooked => 'Request sent!';
 
   @override
   String get classConfirmedMessage =>
-      'Your class is confirmed. We look forward to seeing you!';
+      'Your payment was processed. The coach needs to accept your participation to confirm your spot.';
+
+  @override
+  String get whatHappensNext => 'What happens next:';
+
+  @override
+  String get coachReviewsYourRequest => 'Coach reviews your request';
+
+  @override
+  String get ifAcceptedSpotConfirmedChatAccess =>
+      'If accepted: spot confirmed + chat access';
+
+  @override
+  String get ifDeclinedAutomaticFullRefund =>
+      'If declined: automatic full refund';
+
+  @override
+  String get viewMyClasses => 'View my classes';
 
   @override
   String categoryWithLevel(String level) {

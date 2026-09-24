@@ -247,18 +247,5 @@ Widget buildSeatsBadge(BuildContext context, Booking match) {
 Widget buildCourtStatusBadge(BuildContext context, Booking match) {
   final l10n = AppLocalizations.of(context)!;
   final isConfirmed = match.status == CourtStatus.confirmed;
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-    decoration: BoxDecoration(
-      color: isConfirmed ? kGreenColor.withValues(alpha: 0.1) : kWhiteColor,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: isConfirmed ? kGreenColor : kBorderColor),
-    ),
-    child: Text(
-      isConfirmed ? l10n.courtConfirmed : l10n.pendingConfirmed,
-      style: AppStyles.w500f10inter.copyWith(
-        color: isConfirmed ? kGreenColor : kDarkTextColor,
-      ),
-    ),
-  );
+  return CommonBadge(label: isConfirmed ? l10n.courtConfirmed : l10n.pendingConfirmed);
 }

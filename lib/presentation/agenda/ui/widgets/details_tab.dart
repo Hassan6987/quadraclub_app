@@ -1,8 +1,10 @@
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_model.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
+import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.dart';
+import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
@@ -125,22 +127,7 @@ class DetailsTab extends StatelessWidget {
           ],
         ),
         16.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (int i = 0; i < maxPlayers; i++) ...[
-              if (players.length > i)
-                _playerItem(players[i])
-              else
-                _availablePlayerItem(context),
-
-              // Divider sits in the middle: after slot 1 of 2 (singles),
-              // or after slot 2 of 4 (doubles).
-              if (i == (maxPlayers ~/ 2) - 1)
-                Container(height: 24, width: 1, color: kGreyTextColor),
-            ],
-          ],
-        ),
+        PlayersRow(players: players, format: maxPlayers == 2? MatchFormat.singles : MatchFormat.doubles),
       ],
     ).withPaddingSymmetric(20, 0);
   }

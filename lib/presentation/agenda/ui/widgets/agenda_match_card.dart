@@ -9,12 +9,14 @@ class AgendaMatchCard extends StatelessWidget {
   final AgendaItem item;
   final String? actionLabel;
   final VoidCallback? onTap;
+  final bool isJoinRequest;
 
   const AgendaMatchCard({
     super.key,
     required this.item,
     this.actionLabel,
     this.onTap,
+    this.isJoinRequest = false,
   });
 
   @override
@@ -89,7 +91,7 @@ class AgendaMatchCard extends StatelessWidget {
             ),
             16.heightBox,
             PlayersRow(players: item.players ?? const [], format: item.format),
-            if (item.tab == 'pending')
+            if (isJoinRequest)
               CustomActionButton(
                 backgroundColor: kLightPinkColor,
                 height: 40,
@@ -99,8 +101,8 @@ class AgendaMatchCard extends StatelessWidget {
                     CancelJoinRequest(matchId: item.id),
                   );
                 },
-              ).withPaddingSymmetric(24, 12),
-            if (item.tab == 'confirmed')
+              ).withPaddingSymmetric(24, 12)
+            else if (item.tab != 'past')
               CustomActionButton(
                 backgroundColor: kPrimaryColor,
                 height: 40,

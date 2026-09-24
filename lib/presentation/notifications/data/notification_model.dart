@@ -42,6 +42,9 @@ class NotificationModel {
   bool get isMatchInvite =>
       type == 'match_invite' || metadata?.action == 'match_invite';
 
+  bool get isMessage =>
+      type == 'message' || metadata?.action == 'message';
+
   bool get isMatchInviteAccepted =>
       type == 'invite_accepted' ||
       type == 'match_invite_accepted' ||

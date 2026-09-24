@@ -35,15 +35,33 @@ class ClassBookedDialog extends StatelessWidget {
             textAlign: TextAlign.center,
             style: AppStyles.w400f14inter.copyWith(color: kTextColor),
           ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.whatHappensNext,
+                textAlign: TextAlign.center,
+                style: AppStyles.w600f18inter.copyWith(
+                  color: kBlackColor,
+                  fontSize: 14,
+                ),
+              ),
+              10.heightBox,
+              buildRow(l10n.coachReviewsYourRequest,Icons.access_time, kOrangeColor),
+              5.heightBox,
+              buildRow(l10n.ifAcceptedSpotConfirmedChatAccess,Icons.check_circle_outline, kGreenColor),
+              5.heightBox,
+              buildRow(l10n.ifDeclinedAutomaticFullRefund,Icons.wallet_travel, kRedColor),
+            ],
+          ).withPaddingSymmetric(20, 20),
 
-          40.heightBox,
 
           CommonDivider(),
 
           16.heightBox,
 
           CustomActionButton(
-            buttonText: l10n.close,
+            buttonText: l10n.viewMyClasses,
             backgroundColor: kWhiteColor,
             borderColor: kBorderColor,
             onTap: () {
@@ -54,6 +72,20 @@ class ClassBookedDialog extends StatelessWidget {
           16.heightBox,
         ],
       ),
+    );
+  }
+
+  Row buildRow(String label, IconData icon, Color color,) {
+    return Row(
+      children: [
+        Icon(icon, color: color),
+        5.widthBox,
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: AppStyles.w400f14inter.copyWith(color: kTextColor),
+        ),
+      ],
     );
   }
 }

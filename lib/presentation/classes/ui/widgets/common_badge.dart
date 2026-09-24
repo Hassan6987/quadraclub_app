@@ -7,7 +7,7 @@ class CommonBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
         color: kWhiteColor,
         borderRadius: BorderRadius.circular(16),
@@ -15,7 +15,7 @@ class CommonBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppStyles.w500f10inter.copyWith(color: kDarkTextColor),
+        style: AppStyles.w500f10inter.copyWith(color: kDarkTextColor, fontSize: 10),
       ),
     );
   }

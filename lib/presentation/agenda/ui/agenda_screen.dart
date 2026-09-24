@@ -90,6 +90,109 @@ class _AgendaScreenState extends State<AgendaScreen>
     ).whenComplete(() => _showingMissingDialog = false);
   }
 
+  bool _matchesFilter(AgendaItem item) {
+    switch (_filter) {
+      case 'Courts':
+        return item.agendaType == AgendaType.court;
+      case 'Games':
+        return item.agendaType == AgendaType.game;
+      case 'Classes':
+        return item.agendaType == AgendaType.class_;
+      default:
+        return true;
+    }
+  }
+
+  Widget _agendaList(
+      List<AgendaItem> items,
+      List<AgendaInvitation> invitations,
+      List<AgendaItem> joinRequests,
+      ) {
+    final filteredItems = items.where(_matchesFilter).toList();
+    final filteredJoinRequests = joinRequests.where(_matchesFilter).toList();
+
+    final totalCount =
+        filteredItems.length + filteredJoinRequests.length + invitations.length;
+
+    if (totalCount == 0) {
+      return Center(child: Text(AppLocalizations.of(context)!.nothingHereYet));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      itemCount: totalCount,
+      itemBuilder: (context, index) {
+        // 1) pendingAgenda / confirmedAgenda / pastAgenda items
+        if (index < filteredItems.length) {
+          return _buildAgendaItemCard(
+            filteredItems[index],
+            isJoinRequest: false,
+          );
+        }
+
+        // 2) requestedBookings (join requests) — pending tab only
+        final joinRequestIndex = index - filteredItems.length;
+        if (joinRequestIndex < filteredJoinRequests.length) {
+          return _buildAgendaItemCard(
+            filteredJoinRequests[joinRequestIndex],
+            isJoinRequest: true,
+          );
+        }
+
+        // 3) invitations
+        final invitationIndex =
+            index - filteredItems.length - filteredJoinRequests.length;
+        final invitation = invitations[invitationIndex];
+        return AgendaInvitationCard(
+          item: invitation,
+          onAccept: () {
+            if (!invitation.requiresPayment) {
+              context.read<AgendaBloc>().add(
+                RespondToInvitation(id: invitation.id, action: "accept"),
+              );
+            } else {
+              context.read<AgendaBloc>().add(FetchPortfolio());
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AgendaPaymentScreen(match: invitation),
+                ),
+              );
+            }
+          },
+          onReject: () => context.read<AgendaBloc>().add(
+            RespondToInvitation(id: invitation.id, action: "reject"),
+          ),
+        ).paddingOnly(bottom: 12);
+      },
+    );
+  }
+
+  Widget _buildAgendaItemCard(AgendaItem item, {required bool isJoinRequest}) {
+    if (item.agendaType == AgendaType.class_) {
+      return AgendaClassCard(
+        item: item,
+        actionLabel: _actionLabel,
+      ).paddingOnly(bottom: 12);
+    }
+    else if (item.agendaType == AgendaType.court) {
+      return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
+    }
+    return AgendaMatchCard(
+      item: item,
+      isJoinRequest: isJoinRequest,
+      onTap: () {
+        if (item.tab == "confirmed" || (item.tab == "pending" && !isJoinRequest)) {
+          context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MatchDetailsScreen()),
+          );
+        }
+      },
+    ).paddingOnly(bottom: 12);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -152,9 +255,9 @@ class _AgendaScreenState extends State<AgendaScreen>
                       return TabBarView(
                         controller: _tabController,
                         children: [
-                          _agendaList(state.confirmedAgenda, []),
-                          _agendaList(state.pendingAgenda, state.invitations),
-                          _agendaList(state.pastAgenda, []),
+                          _agendaList(state.confirmedAgenda, [],[]),
+                          _agendaList(state.pendingAgenda, state.invitations,state.requestedBookings),
+                          _agendaList(state.pastAgenda, [],[]),
                         ],
                       );
                     },
@@ -164,83 +267,6 @@ class _AgendaScreenState extends State<AgendaScreen>
             ),
           ),
         );
-      },
-    );
-  }
-
-  Widget _agendaList(
-    List<AgendaItem> items,
-    List<AgendaInvitation> invitations,
-  ) {
-    final filtered = items.where((item) {
-      switch (_filter) {
-        case 'Courts':
-          return item.agendaType == AgendaType.court;
-        case 'Games':
-          return item.agendaType == AgendaType.game;
-        case 'Classes':
-          return item.agendaType == AgendaType.class_;
-        default:
-          return true;
-      }
-    }).toList();
-
-    final totalCount = filtered.length + invitations.length;
-
-    if (totalCount == 0) {
-      return Center(child: Text(AppLocalizations.of(context)!.nothingHereYet));
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: totalCount,
-      itemBuilder: (context, index) {
-        if (index < filtered.length) {
-          final item = filtered[index];
-          if (item.agendaType == AgendaType.class_) {
-            return AgendaClassCard(
-              item: item,
-              actionLabel: _actionLabel,
-            ).paddingOnly(bottom: 12);
-          } else if (item.agendaType == AgendaType.court) {
-            return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
-          }
-          return AgendaMatchCard(
-            item: item,
-            onTap: () {
-              if (item.tab == "confirmed") {
-                context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MatchDetailsScreen()),
-                );
-              }
-            },
-          ).paddingOnly(bottom: 12);
-        }
-
-        final invitation = invitations[index - filtered.length];
-        return AgendaInvitationCard(
-          item: invitation,
-          onAccept: () {
-            if (!invitation.requiresPayment) {
-              context.read<AgendaBloc>().add(
-                RespondToInvitation(id: invitation.id, action: "accept"),
-              );
-            } else {
-              context.read<AgendaBloc>().add(FetchPortfolio());
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AgendaPaymentScreen(match: invitation),
-                ),
-              );
-            }
-          },
-          onReject: () => context.read<AgendaBloc>().add(
-            RespondToInvitation(id: invitation.id, action: "reject"),
-          ),
-        ).paddingOnly(bottom: 12);
       },
     );
   }

@@ -31,6 +31,20 @@ class AgendaRepo {
       final response = await _services.getPendingAgenda();
       final data = response.data as Map<String, dynamic>;
       final List<dynamic> classesJson =
+          data['agenda'] as List<dynamic>? ?? [];
+      return classesJson
+          .map((json) => AgendaItem.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<AgendaItem>> getRequestedBookings() async {
+    try {
+      final response = await _services.getRequestedBookings();
+      final data = response.data as Map<String, dynamic>;
+      final List<dynamic> classesJson =
           data['requested'] as List<dynamic>? ?? [];
       return classesJson
           .map((json) => AgendaItem.fromJson(json as Map<String, dynamic>))
@@ -39,6 +53,7 @@ class AgendaRepo {
       rethrow;
     }
   }
+
 
   Future<List<AgendaItem>> getPastAgenda() async {
     try {

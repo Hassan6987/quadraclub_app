@@ -129,8 +129,15 @@
   "classFull": "Class Full",
   "confirmLesson": "Confirm Lesson",
   "registrationClosed": "Registration Closed",
-  "classBooked": "Class Booked",
-  "classConfirmedMessage": "Your class is confirmed. We look forward to seeing you!",
+  "classBooked": "Request sent!",
+  "classConfirmedMessage": "Your payment was processed. The coach needs to accept your participation to confirm your spot.",
+  "whatHappensNext": "What happens next:",
+  "coachReviewsYourRequest": "Coach reviews your request",
+  "ifAcceptedSpotConfirmedChatAccess": "If accepted: spot confirmed + chat access",
+  "ifDeclinedAutomaticFullRefund": "If declined: automatic full refund",
+  "viewMyClasses": "View my classes",
+
+
   "categoryWithLevel": "Category {level}",
   "@categoryWithLevel": {
     "placeholders": {

@@ -20,6 +20,21 @@ class AgendaServices extends BaseApiProvider {
     try {
       final response = await request(
         method: HttpMethod.get,
+        endpoint: '/api/agenda?tab=pending&type=all',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+  Future<Response> getRequestedBookings() async {
+    try {
+      final response = await request(
+        method: HttpMethod.get,
         endpoint: '/api/agenda/requested-bookings',
       );
       return response;

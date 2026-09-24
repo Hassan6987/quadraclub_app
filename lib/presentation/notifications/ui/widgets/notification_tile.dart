@@ -1,4 +1,5 @@
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+import 'package:quadraclub_app/presentation/chats/ui/my_chats_screen.dart';
 import 'package:quadraclub_app/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:quadraclub_app/presentation/notifications/data/notification_model.dart';
 
@@ -123,6 +124,11 @@ class NotificationTile extends StatelessWidget {
       return;
     }
 
+    if (notification.isMessage) {
+      _openMessage(context);
+      return;
+    }
+
     if (notification.isMatchInviteAccepted ||
         notification.isJoinAccepted ||
         notification.isJoinRejected) {
@@ -150,6 +156,15 @@ class NotificationTile extends StatelessWidget {
       RouteName.customBottomNavbar,
       (_) => false,
       arguments: {"index": 3, "agendaTabIndex": agendaTabIndex},
+    );
+  }
+
+  void _openMessage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MyChatsScreen(),
+      ),
     );
   }
 

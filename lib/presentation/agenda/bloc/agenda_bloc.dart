@@ -39,20 +39,23 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
         _repo.getConfirmedAgenda(),
         _repo.getPendingAgenda(),
         _repo.getPastAgenda(),
+        _repo.getRequestedBookings(),
         _repo.getPlayerInvitations(),
         _repo.getAllPlayers(),
       ]);
       final confirmed = response[0] as List<AgendaItem>;
       final pending = response[1] as List<AgendaItem>;
       final past = response[2] as List<AgendaItem>;
-      final invitations = response[3] as List<AgendaInvitation>;
-      final players = response[4] as List<InvitePlayerModel>;
+      final requests = response[3] as List<AgendaItem>;
+      final invitations = response[4] as List<AgendaInvitation>;
+      final players = response[5] as List<InvitePlayerModel>;
       emit(
         state.copyWith(
           status: AgendaStateStatus.success,
           confirmedAgenda: confirmed,
           pendingAgenda: pending,
           pastAgenda: past,
+          requestedBookings: requests,
           invitations: invitations,
           players: players,
         ),
