@@ -1115,7 +1115,7 @@ abstract class AppLocalizations {
   /// No description provided for @findCourtsNearYou.
   ///
   /// In en, this message translates to:
-  /// **'Find courts near you.'**
+  /// **'Find courts near you'**
   String get findCourtsNearYou;
 
   /// No description provided for @clearAll.

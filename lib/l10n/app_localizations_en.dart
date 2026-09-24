@@ -555,7 +555,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signup => 'Sign Up';
 
   @override
-  String get findCourtsNearYou => 'Find courts near you.';
+  String get findCourtsNearYou => 'Find courts near you';
 
   @override
   String get clearAll => 'Clear all';

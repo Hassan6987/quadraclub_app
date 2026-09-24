@@ -559,7 +559,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get signup => 'Inscreva-se';
 
   @override
-  String get findCourtsNearYou => 'Encontre quadras perto de você.';
+  String get findCourtsNearYou => 'Encontre quadras perto de você';
 
   @override
   String get clearAll => 'Limpar tudo';
