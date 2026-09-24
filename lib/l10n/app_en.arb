@@ -250,6 +250,8 @@
   "invite": "INVITE",
   "bookingConfirmed": "Booking Confirmed!",
   "yourCourtIsReserved": "Your court is reserved. Get ready for\nan amazing match.",
+  "matchCreated": "Match Created!",
+  "matchCreatedPendingCourt": "The court will be confirmed once all players join and full payment is done.",
   "bookingSummary": "Booking Summary",
   "courtDetails": "COURT DETAILS",
   "court": "COURT",

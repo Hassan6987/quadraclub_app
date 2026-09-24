@@ -276,6 +276,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   timeLabel: widget.timeLabel,
                   blockLabel: widget.court.courtName ?? '',
                   distance: widget.distance,
+                  isPayMyPart: widget.paymentType == 'pay_my_part',
                 ),
               ),
             );

@@ -208,6 +208,8 @@
   "invite": "CONVIDAR",
   "bookingConfirmed": "Reserva confirmada!",
   "yourCourtIsReserved": "Sua quadra está reservada. Prepare-se para\numa partida incrível.",
+  "matchCreated": "Partida criada!",
+  "matchCreatedPendingCourt": "A quadra será confirmada quando todos os jogadores entrarem e o pagamento total for concluído.",
   "bookingSummary": "Resumo da reserva",
   "courtDetails": "DETALHES DA QUADRA",
   "court": "QUADRA",

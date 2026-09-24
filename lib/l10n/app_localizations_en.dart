@@ -614,6 +614,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your court is reserved. Get ready for\nan amazing match.';
 
   @override
+  String get matchCreated => 'Match Created!';
+
+  @override
+  String get matchCreatedPendingCourt =>
+      'The court will be confirmed once all players join and full payment is done.';
+
+  @override
   String get bookingSummary => 'Booking Summary';
 
   @override

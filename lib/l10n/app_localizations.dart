@@ -1220,6 +1220,18 @@ abstract class AppLocalizations {
   /// **'Your court is reserved. Get ready for\nan amazing match.'**
   String get yourCourtIsReserved;
 
+  /// No description provided for @matchCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Created!'**
+  String get matchCreated;
+
+  /// No description provided for @matchCreatedPendingCourt.
+  ///
+  /// In en, this message translates to:
+  /// **'The court will be confirmed once all players join and full payment is done.'**
+  String get matchCreatedPendingCourt;
+
   /// No description provided for @bookingSummary.
   ///
   /// In en, this message translates to:

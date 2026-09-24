@@ -11,6 +11,9 @@ class BookingConfirmationScreen extends StatelessWidget {
   final String blockLabel;
   final double distance;
 
+  /// When true (pay-only-my-part match booking), the court is not reserved yet.
+  final bool isPayMyPart;
+
   const BookingConfirmationScreen({
     super.key,
     required this.club,
@@ -18,11 +21,15 @@ class BookingConfirmationScreen extends StatelessWidget {
     required this.timeLabel,
     required this.blockLabel,
     required this.distance,
+    this.isPayMyPart = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final title = isPayMyPart ? l10n.matchCreated : l10n.bookingConfirmed;
+    final subtitle =
+        isPayMyPart ? l10n.matchCreatedPendingCourt : l10n.yourCourtIsReserved;
 
     return Scaffold(
       backgroundColor: kWhiteColor,
@@ -71,7 +78,7 @@ class BookingConfirmationScreen extends StatelessWidget {
 
               Center(
                 child: Text(
-                  l10n.bookingConfirmed,
+                  title,
                   style: AppStyles.w600f18inter.copyWith(
                     color: kDarkTextColor,
                     fontSize: 20,
@@ -83,7 +90,7 @@ class BookingConfirmationScreen extends StatelessWidget {
 
               Center(
                 child: Text(
-                  l10n.yourCourtIsReserved,
+                  subtitle,
                   textAlign: TextAlign.center,
                   style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
                 ),

@@ -620,6 +620,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Sua quadra está reservada. Prepare-se para\numa partida incrível.';
 
   @override
+  String get matchCreated => 'Partida criada!';
+
+  @override
+  String get matchCreatedPendingCourt =>
+      'A quadra será confirmada quando todos os jogadores entrarem e o pagamento total for concluído.';
+
+  @override
   String get bookingSummary => 'Resumo da reserva';
 
   @override
