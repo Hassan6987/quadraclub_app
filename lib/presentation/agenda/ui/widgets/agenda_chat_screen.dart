@@ -109,8 +109,11 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              ClassDetailsScreen(classModel: classModel, distanceKm: distance),
+          builder: (_) => ClassDetailsScreen(
+            classModel: classModel,
+            distanceKm: distance,
+            isFromClass: false,
+          ),
         ),
       );
     } catch (_) {
