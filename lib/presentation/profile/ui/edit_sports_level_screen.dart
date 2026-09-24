@@ -3,8 +3,8 @@ import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 import '/app_exports.dart';
 
-/// Lets the signed-in user change levels (and preferred side) the same way
-/// as the signup "Define your level" step.
+/// Lets the signed-in user change levels, dominant hand, and preferred side
+/// the same way as the signup flow.
 class EditSportsLevelScreen extends StatefulWidget {
   final UserModel user;
 
@@ -29,6 +29,9 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
 
   /// One preferred side shared across every sport (same as signup).
   String? _preferredSide;
+
+  /// Dominant hand (Left / Right) — profile-level, same as signup.
+  String? _dominantHand;
   String? _openDropdownSport;
 
   @override
@@ -52,6 +55,9 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
             .where((s) => s.isNotEmpty)
             .firstOrNull ??
         'Right';
+
+    final hand = widget.user.dominantHand?.trim();
+    _dominantHand = (hand == 'Left' || hand == 'Right') ? hand : 'Right';
   }
 
   String _canonicalSportName(String? sport) {
@@ -75,9 +81,10 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
     return key == null ? category : levelApiValue(key);
   }
 
-  /// At least one sport level + a shared preferred side.
+  /// At least one sport level + preferred side + dominant hand.
   bool get _canSave =>
       _preferredSide != null &&
+      _dominantHand != null &&
       _allSports.any(
         (s) => _categories[s] != null && _categories[s]!.isNotEmpty,
       );
@@ -115,7 +122,12 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
         )
         .toList();
 
-    context.read<AuthBloc>().add(UpdateProfile(sportsInfo: sportsInfo));
+    context.read<AuthBloc>().add(
+      UpdateProfile(
+        sportsInfo: sportsInfo,
+        dominantHand: _dominantHand,
+      ),
+    );
   }
 
   @override
@@ -160,6 +172,7 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
                 ),
                 24.heightBox,
                 for (final sport in _allSports) _sportCategoryField(sport, l10n),
+                _dominantHandField(l10n),
                 // One preferred side for every sport (shared).
                 _preferredSideField(l10n),
                 8.heightBox,
@@ -283,6 +296,75 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _dominantHandField(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.dominantHand,
+            style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
+          ),
+          12.heightBox,
+          Row(
+            children: [
+              Expanded(
+                child: _handChip(
+                  label: l10n.left,
+                  selected: _dominantHand == 'Left',
+                  icon: SvgPicture.asset(Assets.svg.leftHand.path),
+                  onTap: () => setState(() => _dominantHand = 'Left'),
+                ),
+              ),
+              Expanded(
+                child: _handChip(
+                  label: l10n.right,
+                  selected: _dominantHand == 'Right',
+                  icon: SvgPicture.asset(Assets.svg.rightHand.path),
+                  onTap: () => setState(() => _dominantHand = 'Right'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _handChip({
+    required String label,
+    required bool selected,
+    required Widget icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFFF3FBCB) : kWhiteColor,
+          border: Border.all(
+            color: selected ? kPrimaryColor : kBorderColor,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            8.widthBox,
+            Text(
+              label,
+              style: AppStyles.subtitleMedium.copyWith(color: kBlackColor),
+            ),
+          ],
+        ),
       ),
     );
   }

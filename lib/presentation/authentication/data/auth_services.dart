@@ -164,6 +164,7 @@ class AuthServices extends BaseApiProvider {
     File? image,
     DateTime? dob,
     List<Map<String, dynamic>>? sportsInfo,
+    String? dominantHand,
   }) async {
     try {
       if (sportsInfo != null &&
@@ -171,11 +172,14 @@ class AuthServices extends BaseApiProvider {
           location == null &&
           image == null &&
           dob == null) {
-        // Sports-only update — JSON body matches complete-profile.
+        // Sports / hand preferences — JSON body matches complete-profile.
         final response = await request(
           method: HttpMethod.put,
           endpoint: '/api/auth/profile',
-          data: {"sportsInfo": sportsInfo},
+          data: {
+            "sportsInfo": sportsInfo,
+            if (dominantHand != null) "dominantHand": dominantHand,
+          },
         );
         return response;
       }
@@ -184,6 +188,7 @@ class AuthServices extends BaseApiProvider {
         "fullName": ?name,
         "dateOfBirth": ?dob,
         "location": ?location,
+        if (dominantHand != null) "dominantHand": dominantHand,
         if (image != null)
           "profilePhoto": await MultipartFile.fromFile(
             image.path,

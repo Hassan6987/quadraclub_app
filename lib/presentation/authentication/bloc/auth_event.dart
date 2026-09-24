@@ -47,6 +47,7 @@ class UpdateProfile extends AuthEvent {
   final File? profileImage;
   final DateTime? dob;
   final List<SportsInfo>? sportsInfo;
+  final String? dominantHand;
 
   const UpdateProfile({
     this.name,
@@ -54,10 +55,18 @@ class UpdateProfile extends AuthEvent {
     this.profileImage,
     this.dob,
     this.sportsInfo,
+    this.dominantHand,
   });
 
   @override
-  List<Object?> get props => [name, location, profileImage, dob, sportsInfo];
+  List<Object?> get props => [
+    name,
+    location,
+    profileImage,
+    dob,
+    sportsInfo,
+    dominantHand,
+  ];
 }
 
 class DeleteAccountEvent extends AuthEvent {
