@@ -5,10 +5,9 @@ import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
+import 'package:quadraclub_app/presentation/classes/ui/widgets/class_map_view.dart';
 import 'package:quadraclub_app/presentation/classes/ui/widgets/filter_bottom_sheet.dart';
-import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
-import 'package:quadraclub_app/presentation/home/ui/widgets/court_map_view.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 import '/app_exports.dart';
@@ -314,31 +313,35 @@ class _ClassesScreenState extends State<ClassesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     if (_isMapView) {
-      return CourtMapView(
-        courts: context.read<CourtsBloc>().state.courts,
-        currentLocation: _currentLocation,
-        initialCenter: _currentLatLng,
-        onLocationChanged: (LocationResult location) {
-          setState(() {
-            _currentLocation = location.address;
-            _currentLatLng = LatLng(location.latitude, location.longitude);
-          });
+      return BlocBuilder<ClassesBloc, ClassesState>(
+        builder: (context, state) {
+          return ClassMapView(
+            classes: _filtered(state.classes),
+            currentLocation: _currentLocation,
+            initialCenter: _currentLatLng,
+            onLocationChanged: (LocationResult location) {
+              setState(() {
+                _currentLocation = location.address;
+                _currentLatLng = LatLng(location.latitude, location.longitude);
+              });
+            },
+            onBackToList: () => setState(() => _isMapView = false),
+            filterTimes: _selectedTimes,
+            filterCity: _city.isEmpty ? null : _city,
+            filterDistance: _distance,
+            onApplyFilters: (times, city, dist) {
+              setState(() {
+                _selectedTimes
+                  ..clear()
+                  ..addAll(times);
+                _city = city ?? '';
+                _distance = dist ?? _defaultDistance;
+              });
+            },
+            selectedSports: _selectedSports,
+            onSportSelected: _toggleSport,
+          );
         },
-        onBackToList: () => setState(() => _isMapView = false),
-        filterTimes: _selectedTimes,
-        filterCity: _city.isEmpty ? null : _city,
-        filterDistance: _distance,
-        onApplyFilters: (times, city, dist) {
-          setState(() {
-            _selectedTimes
-              ..clear()
-              ..addAll(times);
-            _city = city ?? '';
-            _distance = dist ?? _defaultDistance;
-          });
-        },
-        selectedSports: _selectedSports,
-        onSportSelected: _toggleSport,
       );
     }
 
