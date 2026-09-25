@@ -102,7 +102,6 @@ void main() {
         CourtCardWidget(
           club: club,
           selectedDate: _date,
-          scrollSync: sync,
           onTap: () {},
         ),
       ),
@@ -152,7 +151,6 @@ void main() {
         CourtCardWidget(
           club: club,
           selectedDate: _date,
-          scrollSync: sync,
           selectedSports: const {'tennis'},
         ),
       ),
@@ -191,7 +189,6 @@ void main() {
         CourtCardWidget(
           club: club,
           selectedDate: _date,
-          scrollSync: sync,
           onTap: () => cardTaps++,
           onTimeSlotTap: (court, sport, time) => bookedTime = time,
         ),
@@ -252,7 +249,6 @@ void main() {
               CourtCardWidget(
                 club: clubWithSlots(name),
                 selectedDate: _date,
-                scrollSync: sync,
               ),
           ],
         ),

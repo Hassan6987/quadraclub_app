@@ -2114,6 +2114,12 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get notifications;
 
+  /// No description provided for @signInToViewYourNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view your notifications'**
+  String get signInToViewYourNotifications;
+
   /// No description provided for @cardholderName.
   ///
   /// In en, this message translates to:

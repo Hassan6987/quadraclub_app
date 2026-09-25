@@ -1,3 +1,6 @@
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
+import 'package:quadraclub_app/presentation/notifications/bloc/notification_bloc.dart';
+
 import '/app_exports.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -88,7 +91,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? [
               InkWell(
                 onTap: () => _onTapAction(context, RouteName.notifications),
-                child: buildContainer(Assets.svg.notification.path),
+                child: _notificationAction(context),
               ),
               8.widthBox,
               InkWell(
@@ -106,6 +109,45 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ]
           : null,
+    );
+  }
+
+  /// Bell icon with a primary/red unread dot for signed-in users who have
+  /// unread notifications. Guests never see the badge.
+  Widget _notificationAction(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (prev, curr) => (prev.user == null) != (curr.user == null),
+      builder: (context, authState) {
+        final isLoggedIn = authState.user != null;
+
+        return BlocBuilder<NotificationBloc, NotificationState>(
+          buildWhen: (prev, curr) => prev.hasUnread != curr.hasUnread,
+          builder: (context, notifState) {
+            final showBadge = isLoggedIn && notifState.hasUnread;
+
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                buildContainer(Assets.svg.notification.path),
+                if (showBadge)
+                  Positioned(
+                    right: 2,
+                    top: 2,
+                    child: Container(
+                      width: 9,
+                      height: 9,
+                      decoration: BoxDecoration(
+                        color: kRedColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: kRedColor, width: 1.5),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 

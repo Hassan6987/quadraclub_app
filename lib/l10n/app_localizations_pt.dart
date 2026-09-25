@@ -1105,6 +1105,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get notifications => 'Notificações';
 
   @override
+  String get signInToViewYourNotifications =>
+      'Entre para ver suas notificações';
+
+  @override
   String get cardholderName => 'Nome do titular';
 
   @override

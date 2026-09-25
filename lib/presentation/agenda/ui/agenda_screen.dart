@@ -104,67 +104,93 @@ class _AgendaScreenState extends State<AgendaScreen>
   }
 
   Widget _agendaList(
-      List<AgendaItem> items,
-      List<AgendaInvitation> invitations,
-      List<AgendaItem> joinRequests,
-      ) {
+    List<AgendaItem> items,
+    List<AgendaInvitation> invitations,
+    List<AgendaItem> joinRequests,
+  ) {
     final filteredItems = items.where(_matchesFilter).toList();
     final filteredJoinRequests = joinRequests.where(_matchesFilter).toList();
 
     final totalCount =
         filteredItems.length + filteredJoinRequests.length + invitations.length;
 
-    if (totalCount == 0) {
-      return Center(child: Text(AppLocalizations.of(context)!.nothingHereYet));
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: totalCount,
-      itemBuilder: (context, index) {
-        // 1) pendingAgenda / confirmedAgenda / pastAgenda items
-        if (index < filteredItems.length) {
-          return _buildAgendaItemCard(
-            filteredItems[index],
-            isJoinRequest: false,
-          );
-        }
-
-        // 2) requestedBookings (join requests) — pending tab only
-        final joinRequestIndex = index - filteredItems.length;
-        if (joinRequestIndex < filteredJoinRequests.length) {
-          return _buildAgendaItemCard(
-            filteredJoinRequests[joinRequestIndex],
-            isJoinRequest: true,
-          );
-        }
-
-        // 3) invitations
-        final invitationIndex =
-            index - filteredItems.length - filteredJoinRequests.length;
-        final invitation = invitations[invitationIndex];
-        return AgendaInvitationCard(
-          item: invitation,
-          onAccept: () {
-            if (!invitation.requiresPayment) {
-              context.read<AgendaBloc>().add(
-                RespondToInvitation(id: invitation.id, action: "accept"),
-              );
-            } else {
-              context.read<AgendaBloc>().add(FetchPortfolio());
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AgendaPaymentScreen(match: invitation),
+    return RefreshIndicator(
+      color: kPrimaryColor,
+      onRefresh: _refreshAgenda,
+      child: totalCount == 0
+          ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.45,
+                  child: Center(
+                    child: Text(AppLocalizations.of(context)!.nothingHereYet),
+                  ),
                 ),
-              );
-            }
-          },
-          onReject: () => context.read<AgendaBloc>().add(
-            RespondToInvitation(id: invitation.id, action: "reject"),
-          ),
-        ).paddingOnly(bottom: 12);
-      },
+              ],
+            )
+          : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              itemCount: totalCount,
+              itemBuilder: (context, index) {
+                // 1) pendingAgenda / confirmedAgenda / pastAgenda items
+                if (index < filteredItems.length) {
+                  return _buildAgendaItemCard(
+                    filteredItems[index],
+                    isJoinRequest: false,
+                  );
+                }
+
+                // 2) requestedBookings (join requests) — pending tab only
+                final joinRequestIndex = index - filteredItems.length;
+                if (joinRequestIndex < filteredJoinRequests.length) {
+                  return _buildAgendaItemCard(
+                    filteredJoinRequests[joinRequestIndex],
+                    isJoinRequest: true,
+                  );
+                }
+
+                // 3) invitations
+                final invitationIndex =
+                    index - filteredItems.length - filteredJoinRequests.length;
+                final invitation = invitations[invitationIndex];
+                return AgendaInvitationCard(
+                  item: invitation,
+                  onAccept: () {
+                    if (!invitation.requiresPayment) {
+                      context.read<AgendaBloc>().add(
+                        RespondToInvitation(
+                          id: invitation.id,
+                          action: "accept",
+                        ),
+                      );
+                    } else {
+                      context.read<AgendaBloc>().add(FetchPortfolio());
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AgendaPaymentScreen(match: invitation),
+                        ),
+                      );
+                    }
+                  },
+                  onReject: () => context.read<AgendaBloc>().add(
+                    RespondToInvitation(id: invitation.id, action: "reject"),
+                  ),
+                ).paddingOnly(bottom: 12);
+              },
+            ),
+    );
+  }
+
+  Future<void> _refreshAgenda() async {
+    context.read<AgendaBloc>().add(GetAllAgenda());
+    await context.read<AgendaBloc>().stream.firstWhere(
+      (s) =>
+          s.status == AgendaStateStatus.success ||
+          s.status == AgendaStateStatus.failure,
     );
   }
 
@@ -230,16 +256,31 @@ class _AgendaScreenState extends State<AgendaScreen>
                 Expanded(
                   child: BlocBuilder<AgendaBloc, AgendaState>(
                     builder: (context, state) {
-                      if (state.status == AgendaStateStatus.loading ||
-                          state.status == AgendaStateStatus.initial) {
+                      final hasData =
+                          state.confirmedAgenda.isNotEmpty ||
+                          state.pendingAgenda.isNotEmpty ||
+                          state.pastAgenda.isNotEmpty ||
+                          state.invitations.isNotEmpty ||
+                          state.requestedBookings.isNotEmpty;
+
+                      final isInitialLoad =
+                          (state.status == AgendaStateStatus.loading ||
+                              state.status == AgendaStateStatus.initial) &&
+                          !hasData;
+
+                      if (isInitialLoad) {
                         return const Center(child: CustomLoadingView());
                       }
                       return TabBarView(
                         controller: _tabController,
                         children: [
-                          _agendaList(state.confirmedAgenda, [],[]),
-                          _agendaList(state.pendingAgenda, state.invitations,state.requestedBookings),
-                          _agendaList(state.pastAgenda, [],[]),
+                          _agendaList(state.confirmedAgenda, [], []),
+                          _agendaList(
+                            state.pendingAgenda,
+                            state.invitations,
+                            state.requestedBookings,
+                          ),
+                          _agendaList(state.pastAgenda, [], []),
                         ],
                       );
                     },

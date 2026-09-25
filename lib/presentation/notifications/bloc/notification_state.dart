@@ -27,6 +27,8 @@ class NotificationState extends Equatable {
   @override
   List<Object?> get props => [status, notifications, error, processingId];
 
+  bool get hasUnread => notifications.any((n) => !n.isRead);
+
   NotificationState copyWith({
     NotificationStateStatus? status,
     List<NotificationModel>? notifications,

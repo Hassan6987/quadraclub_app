@@ -9,6 +9,8 @@ class NotificationEvent extends Equatable {
 
 class GetAllNotifications extends NotificationEvent {}
 
+class ClearNotifications extends NotificationEvent {}
+
 class MarkNotificationAsRead extends NotificationEvent {
   final String id;
 

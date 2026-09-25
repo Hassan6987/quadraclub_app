@@ -13,8 +13,16 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   NotificationBloc() : super(const NotificationState()) {
     on<GetAllNotifications>(_handleFetchNotifications);
+    on<ClearNotifications>(_handleClearNotifications);
     on<MarkNotificationAsRead>(_handleMarkAsRead);
     on<DeleteNotification>(_handleDeleteNotification);
+  }
+
+  Future<void> _handleClearNotifications(
+    ClearNotifications event,
+    Emitter<NotificationState> emit,
+  ) async {
+    emit(const NotificationState());
   }
 
   Future<void> _handleFetchNotifications(

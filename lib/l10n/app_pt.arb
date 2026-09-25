@@ -378,6 +378,7 @@
   "expireDate": "Data de validade",
   "cancel": "Cancelar",
   "notifications": "Notificações",
+  "signInToViewYourNotifications": "Entre para ver suas notificações",
   "cardholderName": "Nome do titular",
   "cardNumber": "Número do cartão",
   "mmYy": "MM/AA",

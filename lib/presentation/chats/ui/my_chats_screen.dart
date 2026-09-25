@@ -48,6 +48,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
         if (state.user == null) {
           return GuestLoginPrompt(
             title: l10n.myChats,
+            showAction: false,
             subtitle: l10n.signInToViewYourChatsAndConversations,
           );
         }

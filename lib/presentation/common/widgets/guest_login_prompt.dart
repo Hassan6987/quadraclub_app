@@ -8,11 +8,13 @@ import 'package:quadraclub_app/utils/components/language_toggle_button.dart';
 class GuestLoginPrompt extends StatelessWidget {
   final String title;
   final String subtitle;
+  final bool showAction;
 
   const GuestLoginPrompt({
     super.key,
     required this.title,
     required this.subtitle,
+    this.showAction = true,
   });
 
   @override
@@ -20,7 +22,7 @@ class GuestLoginPrompt extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: kCardColor,
-      appBar: CustomAppBar(title: title, centerTile: false),
+      appBar: CustomAppBar(title: title, centerTile: false,showActions: showAction,),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),

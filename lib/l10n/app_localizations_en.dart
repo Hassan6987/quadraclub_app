@@ -1098,6 +1098,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
+  String get signInToViewYourNotifications =>
+      'Sign in to view your notifications';
+
+  @override
   String get cardholderName => 'Cardholder name';
 
   @override

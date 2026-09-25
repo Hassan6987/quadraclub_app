@@ -98,24 +98,36 @@ class MyApp extends StatelessWidget {
             ],
             supportedLocales: const [Locale('en'), Locale('pt')],
             onGenerateRoute: AppGenerateRoute.generateRoute,
-            home: BlocBuilder<AuthBloc, AuthState>(
-              buildWhen: (previous, current) {
-                return previous.status == AuthStateStatus.initial ||
-                    previous.status == AuthStateStatus.authenticating;
+            home: BlocListener<AuthBloc, AuthState>(
+              listenWhen: (previous, current) =>
+                  (previous.user == null) != (current.user == null),
+              listener: (context, state) {
+                final notifications = context.read<NotificationBloc>();
+                if (state.user != null) {
+                  notifications.add(GetAllNotifications());
+                } else {
+                  notifications.add(ClearNotifications());
+                }
               },
-              builder: (context, state) {
-                if (state.status == AuthStateStatus.onboarding) {
-                  return const OnboardingScreen();
-                }
-                if (state.status == AuthStateStatus.success) {
-                  return const CustomBottomNavBar(index: 2);
-                }
-                // Unauthenticated users land on home as a guest (can browse freely)
-                if (state.status == AuthStateStatus.unAuthenticated) {
-                  return const CustomBottomNavBar(index: 2);
-                }
-                return const SplashScreen();
-              },
+              child: BlocBuilder<AuthBloc, AuthState>(
+                buildWhen: (previous, current) {
+                  return previous.status == AuthStateStatus.initial ||
+                      previous.status == AuthStateStatus.authenticating;
+                },
+                builder: (context, state) {
+                  if (state.status == AuthStateStatus.onboarding) {
+                    return const OnboardingScreen();
+                  }
+                  if (state.status == AuthStateStatus.success) {
+                    return const CustomBottomNavBar(index: 2);
+                  }
+                  // Unauthenticated users land on home as a guest (can browse freely)
+                  if (state.status == AuthStateStatus.unAuthenticated) {
+                    return const CustomBottomNavBar(index: 2);
+                  }
+                  return const SplashScreen();
+                },
+              ),
             ),
           ),
         );
