@@ -208,8 +208,7 @@ class _AgendaScreenState extends State<AgendaScreen>
         _maybeCheckMissingFeedback(true);
 
         return BlocListener<AgendaBloc, AgendaState>(
-          listenWhen: (prev, curr) =>
-              curr.showMissingFeedbackPrompt && !prev.showMissingFeedbackPrompt,
+          listenWhen: (prev, curr) => curr.showMissingFeedbackPrompt && !prev.showMissingFeedbackPrompt,
           listener: (context, state) => _openMissingFeedbackPrompt(state),
           child: Scaffold(
             backgroundColor: kCardColor,
@@ -235,23 +234,6 @@ class _AgendaScreenState extends State<AgendaScreen>
                           state.status == AgendaStateStatus.initial) {
                         return const Center(child: CustomLoadingView());
                       }
-                      if (state.status == AgendaStateStatus.failure) {
-                        return Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(state.error ?? l10n.somethingWentWrong),
-                              TextButton(
-                                onPressed: () => context.read<AgendaBloc>().add(
-                                  GetAllAgenda(),
-                                ),
-                                child: Text(l10n.retry),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
                       return TabBarView(
                         controller: _tabController,
                         children: [

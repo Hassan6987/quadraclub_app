@@ -58,7 +58,7 @@ class ClassesBloc extends Bloc<ClassesEvent, ClassesState> {
         expiry: event.expiry,
       );
       final classes = await _classesRepo.getAllClasses();
-      emit(state.copyWith(status: ClassStats.success, classes: classes));
+      emit(state.copyWith(status: ClassStats.booked, classes: classes));
     } catch (e) {
       emit(state.copyWith(status: ClassStats.failure, error: e.toString()));
     }

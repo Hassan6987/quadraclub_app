@@ -78,6 +78,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             body: screens[index],
             bottomNavigationBar: Container(
               height: 75,
+              padding: EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(color: kWhiteColor),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

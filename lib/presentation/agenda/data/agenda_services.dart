@@ -279,4 +279,19 @@ class AgendaServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+
+  Future<Response> cancelClassRequest(String classId) async {
+    try {
+      final response = await request(
+        method: HttpMethod.delete,
+        endpoint: '/api/classes/$classId/enrollment-request',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -141,8 +141,7 @@ class _AgendaClassCardState extends State<AgendaClassCard> {
                         : kPrimaryColor,
                     onTap: () {
                       if (actionLabel == 'Cancel request') {
-                        context.read<AgendaBloc>().add(
-                          CancelClassRequest(classId: item.id),
+                        context.read<AgendaBloc>().add(CancelClassRequest(classId: item.id),
                         );
                       } else {
                         Navigator.push(

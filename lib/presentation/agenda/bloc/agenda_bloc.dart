@@ -26,6 +26,7 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     on<CheckMissingFeedback>(_handleCheckMissingFeedback);
     on<ClearMissingFeedbackPrompt>(_handleClearMissingFeedbackPrompt);
     on<SubmitMatchFeedback>(_handleSubmitMatchFeedback);
+    on<CancelClassRequest>(_handleCancelClassRequest);
   }
 
   Future<void> _handleLoadAgenda(
@@ -225,13 +226,34 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     Emitter<AgendaState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: AgendaStateStatus.updating));
+      emit(state.copyWith(status: AgendaStateStatus.loading));
       await _repo.cancelMatchRequest(event.matchId);
-      final response = await _repo.getPendingAgenda();
+      final response = await _repo.getRequestedBookings();
       emit(
         state.copyWith(
           status: AgendaStateStatus.success,
-          pendingAgenda: response,
+          requestedBookings: response,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
+  Future<void> _handleCancelClassRequest(
+      CancelClassRequest event,
+      Emitter<AgendaState> emit,
+      ) async {
+    try {
+      emit(state.copyWith(status: AgendaStateStatus.loading));
+      await _repo.cancelClassRequest(event.classId);
+      final response = await _repo.getRequestedBookings();
+      emit(
+        state.copyWith(
+          status: AgendaStateStatus.success,
+          requestedBookings: response,
         ),
       );
     } catch (e) {

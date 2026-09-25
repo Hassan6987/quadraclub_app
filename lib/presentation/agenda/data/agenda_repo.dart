@@ -185,6 +185,14 @@ class AgendaRepo {
     }
   }
 
+  Future<void> cancelClassRequest(String classId) async {
+    try {
+      await _services.cancelClassRequest(classId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> respondToMatchInvitation({
     required String matchId,
     required String action,

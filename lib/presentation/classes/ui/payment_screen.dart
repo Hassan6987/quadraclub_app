@@ -237,7 +237,7 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
 
       body: BlocConsumer<ClassesBloc, ClassesState>(
         listener: (context, state) {
-          if (state.status == ClassStats.success) {
+          if (state.status == ClassStats.booked) {
             showDialog(
               context: context,
               builder: (_) => const ClassBookedDialog(),

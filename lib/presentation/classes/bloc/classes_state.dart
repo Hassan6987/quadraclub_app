@@ -1,6 +1,6 @@
 part of 'classes_bloc.dart';
 
-enum ClassStats { initial, loading, success, failure, fetching }
+enum ClassStats { initial, loading, success, failure, fetching,booked }
 
 class ClassesState extends Equatable {
   final ClassStats status;
