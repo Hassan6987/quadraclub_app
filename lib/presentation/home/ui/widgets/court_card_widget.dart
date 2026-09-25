@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
 import 'package:quadraclub_app/utils/helper/time_slot_helper.dart';
 import 'package:shimmer/shimmer.dart';
@@ -26,9 +25,6 @@ class CourtCardWidget extends StatefulWidget {
   /// sport row is shown; otherwise only the selected sports get a row.
   final Set<String> selectedSports;
 
-  /// Shared by every card on the screen so all slot rows scroll together.
-  final SlotScrollSync scrollSync;
-
   final VoidCallback? onTap;
   final void Function(Court court, Sport sport, String time)? onTimeSlotTap;
 
@@ -36,7 +32,6 @@ class CourtCardWidget extends StatefulWidget {
     super.key,
     required this.club,
     required this.selectedDate,
-    required this.scrollSync,
     this.selectedSports = const {},
     this.distanceKm,
     this.onTap,
@@ -48,21 +43,18 @@ class CourtCardWidget extends StatefulWidget {
 }
 
 class _CourtCardWidgetState extends State<CourtCardWidget> {
-  /// One controller per sport row, all registered with the shared group.
-  final Map<String, ScrollController> _scrollControllers = {};
+  /// One horizontal scroller for every sport in this card (same as the
+  /// reference clubs page — sports scroll together; cards do not sync).
+  final ScrollController _slotsScrollController = ScrollController();
 
-  ScrollController _controllerFor(String sportSlug) {
-    return _scrollControllers[sportSlug] ??= widget.scrollSync.create();
-  }
+  static const double _labelHeight = 16;
+  static const double _labelToChipsGap = 2;
+  static const double _chipRowHeight = 32;
+  static const double _sportBlockBottom = 8;
 
   @override
   void dispose() {
-    for (final controller in _scrollControllers.values) {
-      widget.scrollSync.release(controller);
-    }
-
-    _scrollControllers.clear();
-
+    _slotsScrollController.dispose();
     super.dispose();
   }
 
@@ -184,6 +176,11 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     return bySport;
   }
 
+  double _sportBlockHeight(List<_SportSlot> slots) {
+    final bodyHeight = slots.isEmpty ? _labelHeight : _chipRowHeight;
+    return _labelHeight + _labelToChipsGap + bodyHeight + _sportBlockBottom;
+  }
+
   // ---------------------------------------------------------------------------
   // BUILD
   // ---------------------------------------------------------------------------
@@ -215,35 +212,131 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
 
             12.heightBox,
 
-            // -----------------------------------------------------------------
-            // SPORT ROWS + VIEW DETAILS
-            // -----------------------------------------------------------------
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: slotsBySport.isEmpty
-                          ? _buildNoCourtsFallback()
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                for (final entry in slotsBySport.entries)
-                                  _buildSportRow(entry.key, entry.value),
-                              ],
-                            ),
-                    ),
-                  ),
-                ],
-              ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: slotsBySport.isEmpty
+                  ? _buildNoCourtsFallback()
+                  : _buildSyncedSportsScroller(slotsBySport),
             ),
+
             Divider(color: kBorderColor).withPaddingSymmetric(16, 0),
             Align(alignment: Alignment.centerRight, child: _buildViewDetails()),
 
             12.heightBox,
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Single horizontal scroller for the whole card: every sport's chips
+  /// move together. Labels stay pinned on the left (like CSS `sticky`).
+  Widget _buildSyncedSportsScroller(Map<String, List<_SportSlot>> slotsBySport) {
+    final entries = slotsBySport.entries.toList();
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          controller: _slotsScrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(right: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final entry in entries)
+                _buildScrollableSportBlock(entry.key, entry.value),
+            ],
+          ),
+        ),
+        // Sticky sport labels — cover chips that scroll underneath.
+        IgnorePointer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final entry in entries)
+                _buildStickySportLabel(entry.key, entry.value),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScrollableSportBlock(String slug, List<_SportSlot> slots) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return SizedBox(
+      height: _sportBlockHeight(slots),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Space reserved for the sticky label overlay.
+          const SizedBox(height: _labelHeight),
+          const SizedBox(height: _labelToChipsGap),
+          if (slots.isEmpty)
+            Text(
+              l10n.noAvailableSlotsForDay,
+              style: AppStyles.w400f12inter.copyWith(color: kTextColor),
+            )
+          else
+            SizedBox(
+              height: _chipRowHeight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i = 0; i < slots.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 4),
+                    _buildTimeChip(slots[i]),
+                  ],
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStickySportLabel(String slug, List<_SportSlot> slots) {
+    return SizedBox(
+      height: _sportBlockHeight(slots),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Container(
+          color: kWhiteColor,
+          padding: const EdgeInsets.only(right: 8),
+          height: _labelHeight,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            localizedSportName(context, slug),
+            style: AppStyles.w400f12inter.copyWith(color: kTextPrimaryColor),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeChip(_SportSlot entry) {
+    return GestureDetector(
+      // Absorbs the tap so it doesn't fall through to the
+      // card's "open club page" gesture.
+      onTap: () => widget.onTimeSlotTap?.call(
+        entry.court,
+        entry.sport,
+        entry.time,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: kWhiteColor,
+          border: Border.all(color: kBorderColor, width: 1),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Center(
+          child: Text(
+            entry.time,
+            style: AppStyles.w400f12inter.copyWith(color: kDarkTextColor),
+          ),
         ),
       ),
     );
@@ -372,78 +465,6 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   }
 
   // ---------------------------------------------------------------------------
-  // SPORT ROW
-  // ---------------------------------------------------------------------------
-
-  Widget _buildSportRow(String slug, List<_SportSlot> slots) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            localizedSportName(context, slug),
-            style: AppStyles.w400f12inter.copyWith(color: kTextPrimaryColor),
-          ),
-
-          2.heightBox,
-
-          if (slots.isEmpty)
-            Text(
-              l10n.noAvailableSlotsForDay,
-              style: AppStyles.w400f12inter.copyWith(color: kTextColor),
-            )
-          else
-            SizedBox(
-              height: 32,
-              child: ListView.separated(
-                controller: _controllerFor(slug),
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemCount: slots.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 4),
-                itemBuilder: (context, index) {
-                  final entry = slots[index];
-
-                  return GestureDetector(
-                    // Absorbs the tap so it doesn't fall through to the
-                    // card's "open club page" gesture.
-                    onTap: () => widget.onTimeSlotTap?.call(
-                      entry.court,
-                      entry.sport,
-                      entry.time,
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: kWhiteColor,
-                        border: Border.all(color: kBorderColor, width: 1),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Center(
-                        child: Text(
-                          entry.time,
-                          style: AppStyles.w400f12inter.copyWith(
-                            color: kDarkTextColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
   // NO COURTS FALLBACK
   // ---------------------------------------------------------------------------
 
@@ -459,7 +480,7 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: 4, right: 16),
       child: Wrap(
         spacing: 6,
         runSpacing: 6,

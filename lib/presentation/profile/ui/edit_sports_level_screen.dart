@@ -171,10 +171,12 @@ class _EditSportsLevelScreenState extends State<EditSportsLevelScreen> {
                   style: AppStyles.subtitleRegular.copyWith(color: kTextColor),
                 ),
                 24.heightBox,
-                for (final sport in _allSports) _sportCategoryField(sport, l10n),
+                for (var i = 0; i < _allSports.length; i++) ...[
+                  _sportCategoryField(_allSports[i], l10n),
+                  // Shared preferred side sits under Padel only (same as signup).
+                  if (i == 0) _preferredSideField(l10n),
+                ],
                 _dominantHandField(l10n),
-                // One preferred side for every sport (shared).
-                _preferredSideField(l10n),
                 8.heightBox,
                 if (saving)
                   const Center(child: CustomLoadingView())

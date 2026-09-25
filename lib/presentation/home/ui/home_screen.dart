@@ -2,7 +2,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/common/widgets/slot_scroll_sync.dart';
 import 'package:quadraclub_app/presentation/home/bloc/courts_bloc.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/presentation/home/data/models/clubs_model.dart';
@@ -46,10 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _filterCity;
   double? _filterDistance;
 
-  /// Every slot row on this screen shares one group, so dragging any club's
-  /// slots scrolls all of them.
-  final SlotScrollSync _slotScrollSync = SlotScrollSync();
-
   @override
   void initState() {
     super.initState();
@@ -70,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-    _slotScrollSync.dispose();
     super.dispose();
   }
 
@@ -447,7 +441,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             club: club,
                             selectedDate: _selectedDate,
                             selectedSports: _selectedSports,
-                            scrollSync: _slotScrollSync,
                             distanceKm: dist.isInfinite ? null : dist,
                             onTap: () {
                               if (!_requireSignIn(l10n)) return;

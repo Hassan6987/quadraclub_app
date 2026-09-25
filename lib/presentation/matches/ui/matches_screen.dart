@@ -402,6 +402,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ),
             ],
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -419,7 +420,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
               },
               child: Text(
                 "+ Create Match",
-                style: AppStyles.w600f16inter.copyWith(color: kWhiteColor),
+                style: AppStyles.w600f16inter.copyWith(color: kDeepGreen),
               ),
             ),
           ),
