@@ -75,7 +75,7 @@ class ClassCard extends StatelessWidget {
 
             Text(
               '${classModel.startTime}-${classModel.endTime}  •  '
-              '${classModel.locationName}  •  '
+              '${classModel.clubName}  •  '
               '${formatDistanceKm(distanceKm)}',
               style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
             ),

@@ -75,7 +75,7 @@ class InfoCard extends StatelessWidget {
           _InfoRow(
             icon: Assets.svg.locationIcon.path,
             text:
-                '${classModel.locationName} · ${formatDistanceKm(distanceKm)}',
+                '${classModel.clubName} · ${formatDistanceKm(distanceKm)}',
           ),
           8.heightBox,
           _InfoRow(

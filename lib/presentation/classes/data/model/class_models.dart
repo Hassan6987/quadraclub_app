@@ -137,6 +137,7 @@ class Class {
     required this.statusLabel,
     required this.court,
     required this.locationName,
+    required this.clubName,
     required this.distanceKm,
     required this.timeOfDay,
   });
@@ -164,6 +165,7 @@ class Class {
   final String? statusLabel;
   final CourtDetails? court;
   final String? locationName;
+  final String clubName;
   final dynamic distanceKm;
   final String? timeOfDay;
 
@@ -191,6 +193,7 @@ class Class {
     String? statusLabel,
     CourtDetails? court,
     String? locationName,
+    String? clubName,
     dynamic distanceKm,
     String? timeOfDay,
   }) {
@@ -218,6 +221,7 @@ class Class {
       statusLabel: statusLabel ?? this.statusLabel,
       court: court ?? this.court,
       locationName: locationName ?? this.locationName,
+      clubName: clubName ?? this.clubName,
       distanceKm: distanceKm ?? this.distanceKm,
       timeOfDay: timeOfDay ?? this.timeOfDay,
     );
@@ -256,6 +260,7 @@ class Class {
           ? null
           : CourtDetails.fromJson(json["court"]),
       locationName: json["locationName"],
+      clubName: json['clubName']?? '',
       distanceKm: json["distanceKm"],
       timeOfDay: json["timeOfDay"],
     );
