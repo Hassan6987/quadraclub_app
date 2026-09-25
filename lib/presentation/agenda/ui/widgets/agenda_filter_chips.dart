@@ -1,5 +1,4 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
 
 class AgendaFilterChips extends StatelessWidget {
   final String selectedFilter;

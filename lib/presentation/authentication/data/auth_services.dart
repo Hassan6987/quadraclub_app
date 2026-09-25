@@ -178,7 +178,7 @@ class AuthServices extends BaseApiProvider {
           endpoint: '/api/auth/profile',
           data: {
             "sportsInfo": sportsInfo,
-            if (dominantHand != null) "dominantHand": dominantHand,
+            "dominantHand": ?dominantHand,
           },
         );
         return response;
@@ -188,13 +188,13 @@ class AuthServices extends BaseApiProvider {
         "fullName": ?name,
         "dateOfBirth": ?dob,
         "location": ?location,
-        if (dominantHand != null) "dominantHand": dominantHand,
+        "dominantHand": ?dominantHand,
         if (image != null)
           "profilePhoto": await MultipartFile.fromFile(
             image.path,
             filename: image.path.split('/').last,
           ),
-        if (sportsInfo != null) "sportsInfo": sportsInfo,
+        "sportsInfo": ?sportsInfo,
       });
       final response = await request(
         method: HttpMethod.put,

@@ -47,29 +47,29 @@ dependencies:
   cached_network_image: ^3.4.1
   image_picker: ^1.2.0
   icons_launcher: ^3.0.2
-  url_launcher: ^6.3.2
+#  url_launcher: ^6.3.2
   shimmer: ^3.0.0
-  googleapis_auth: ^2.0.0
-  hive_flutter: ^1.1.0
+#  googleapis_auth: ^2.0.0
+#  hive_flutter: ^1.1.0
   flutter_dotenv: ^6.0.0
   pretty_dio_logger: ^1.4.0
   dio: ^5.9.0
   get_storage: ^2.1.1
-  file_picker: ^10.3.3
-  video_thumbnail: ^0.5.6
-  video_player: ^2.10.0
-  chewie: ^1.13.0
-  flutter_cache_manager: ^3.4.1
-  flutter_pdfview: ^1.4.3
-  path_provider: ^2.1.5
+#  file_picker: ^10.3.3
+#  video_thumbnail: ^0.5.6
+#  video_player: ^2.10.0
+#  chewie: ^1.13.0
+#  flutter_cache_manager: ^3.4.1
+#  flutter_pdfview: ^1.4.3
+#  path_provider: ^2.1.5
   parsing_util: ^0.0.1
-  screenshot: ^3.0.0
+#  screenshot: ^3.0.0
   shared_preferences: ^2.5.5
   provider: ^6.1.5+1
   flutter_localizations:
     sdk: flutter
   flutter_quill: ^11.5.0
-  webview_flutter: ^4.13.0
+#  webview_flutter: ^4.13.0
 
   #  awesome_notifications: ^0.10.1
   firebase_core: ^4.2.1

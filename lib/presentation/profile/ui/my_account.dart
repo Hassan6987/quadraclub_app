@@ -31,7 +31,7 @@ class _MyAccountState extends State<MyAccount> {
 
   // Keep the resolved coordinates alongside the display text, in case
   // you need to persist lat/lng along with the address on save.
-  LocationResult? _selectedLocation;
+  // LocationResult? _selectedLocation;
 
   // Snapshot of the values loaded from AuthState, used to diff against
   // the current field values so we know (a) whether to enable the
@@ -103,7 +103,7 @@ class _MyAccountState extends State<MyAccount> {
     await ChangeLocationSheet.show(
       context,
       onLocationSelected: (LocationResult location) {
-        _selectedLocation = location;
+        // _selectedLocation = location;
         _locationController.text = location.address;
       },
     );

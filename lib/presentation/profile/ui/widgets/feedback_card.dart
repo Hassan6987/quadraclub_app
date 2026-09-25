@@ -1,4 +1,3 @@
-import 'package:quadraclub_app/presentation/authentication/data/model/user_model.dart';
 
 import '/app_exports.dart';
 

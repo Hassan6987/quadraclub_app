@@ -1,7 +1,5 @@
 import 'dart:developer';
 
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
-
 import '/app_exports.dart';
 
 class CustomTextField extends StatefulWidget {

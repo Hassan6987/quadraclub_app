@@ -236,7 +236,7 @@ class StripeServices {
           'type': 'express',
           'country': country,
           'email': email,
-          if (businessName != null) 'business_profile[name]': businessName,
+          'business_profile[name]': ?businessName,
           'capabilities[card_payments][requested]': 'true',
           'capabilities[transfers][requested]': 'true',
         },

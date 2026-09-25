@@ -36,7 +36,7 @@ extension ExtensionOnContext on BuildContext {
     ).show(this);
   }
 
-  pop() {
+  void pop() {
     Navigator.pop(this);
   }
 

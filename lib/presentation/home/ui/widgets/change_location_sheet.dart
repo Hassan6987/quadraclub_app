@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:geolocator/geolocator.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/data/places_service.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
@@ -38,7 +37,6 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
   List<PlacePrediction> _predictions = [];
 
   bool _isSearching = false;
-  bool _isLocating = false;
 
   Timer? _debounce;
 
@@ -110,47 +108,47 @@ class _ChangeLocationSheetState extends State<ChangeLocationSheet> {
     }
   }
 
-  Future<void> _useCurrentLocation() async {
-    setState(() => _isLocating = true);
-
-    try {
-      final permission = await Geolocator.checkPermission();
-
-      if (permission == LocationPermission.denied) {
-        final requested = await Geolocator.requestPermission();
-
-        if (requested == LocationPermission.denied ||
-            requested == LocationPermission.deniedForever) {
-          setState(() => _isLocating = false);
-          return;
-        }
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-      if (!mounted) return;
-
-      final l10n = AppLocalizations.of(context)!;
-
-      widget.onLocationSelected(
-        LocationResult(
-          address: l10n.currentLocation,
-          latitude: position.latitude,
-          longitude: position.longitude,
-        ),
-      );
-
-      Navigator.pop(context);
-    } catch (_) {
-      // Swallow — user can still type a location manually.
-    } finally {
-      if (mounted) {
-        setState(() => _isLocating = false);
-      }
-    }
-  }
+  // Future<void> _useCurrentLocation() async {
+  //   setState(() => _isLocating = true);
+  //
+  //   try {
+  //     final permission = await Geolocator.checkPermission();
+  //
+  //     if (permission == LocationPermission.denied) {
+  //       final requested = await Geolocator.requestPermission();
+  //
+  //       if (requested == LocationPermission.denied ||
+  //           requested == LocationPermission.deniedForever) {
+  //         setState(() => _isLocating = false);
+  //         return;
+  //       }
+  //     }
+  //
+  //     final position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high,
+  //     );
+  //
+  //     if (!mounted) return;
+  //
+  //     final l10n = AppLocalizations.of(context)!;
+  //
+  //     widget.onLocationSelected(
+  //       LocationResult(
+  //         address: l10n.currentLocation,
+  //         latitude: position.latitude,
+  //         longitude: position.longitude,
+  //       ),
+  //     );
+  //
+  //     Navigator.pop(context);
+  //   } catch (_) {
+  //     // Swallow — user can still type a location manually.
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() => _isLocating = false);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

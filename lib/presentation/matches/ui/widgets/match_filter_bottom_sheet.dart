@@ -89,8 +89,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   final TextEditingController _searchController = TextEditingController();
 
   List<String> get _quickCities {
-    if (widget.availableCities.isNotEmpty)
+    if (widget.availableCities.isNotEmpty) {
       return widget.availableCities.take(3).toList();
+    }
     return const ['New York', 'Los Angeles', 'Chicago'];
   }
 

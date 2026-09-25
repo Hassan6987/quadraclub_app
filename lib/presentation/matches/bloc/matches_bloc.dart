@@ -1,9 +1,9 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quadraclub_app/di/locator.dart';
-import 'package:quadraclub_app/presentation/authentication/data/model/user_model.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_repo.dart';
+
+import '../../../app_exports.dart';
 
 part 'matches_event.dart';
 part 'matches_state.dart';

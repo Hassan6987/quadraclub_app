@@ -97,7 +97,7 @@ class InfoCard extends StatelessWidget {
                 style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
               ),
               Text(
-                classModel.coachName ?? '',
+                classModel.coachName,
                 style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
               ),
               Spacer(),

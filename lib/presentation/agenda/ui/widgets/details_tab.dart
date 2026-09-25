@@ -3,7 +3,6 @@ import 'package:quadraclub_app/presentation/agenda/data/model/agenda_detail_mode
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
-import 'package:quadraclub_app/presentation/common/widgets/common_plus_avatar.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
@@ -132,29 +131,6 @@ class DetailsTab extends StatelessWidget {
     ).withPaddingSymmetric(20, 0);
   }
 
-  Widget _playerItem(Player player) {
-    return Column(
-      children: [
-        AppCachedImage(
-          imageUrl: player.profilePhoto,
-          height: 48,
-          width: 48,
-          fit: BoxFit.cover,
-          borderRadius: BorderRadius.circular(48),
-        ),
-        6.heightBox,
-        Text(
-          player.name,
-          style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
-        ),
-        Text(
-          player.level,
-          style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
-        ),
-      ],
-    );
-  }
-
   Widget _groupChatSection(BuildContext context, AgendaMatchChat? chat) {
     return Container(
       decoration: BoxDecoration(
@@ -207,26 +183,5 @@ class DetailsTab extends StatelessWidget {
         ],
       ),
     ).withPaddingSymmetric(20, 0);
-  }
-
-  Widget _availablePlayerItem(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Column(
-      children: [
-        CommonPlusAvatar(size: 34),
-        6.heightBox,
-        Text(
-          l10n.available,
-          style: AppStyles.w500f14inter.copyWith(
-            color: kDarkTextColor,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        Text(
-          l10n.open,
-          style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
-        ),
-      ],
-    );
   }
 }

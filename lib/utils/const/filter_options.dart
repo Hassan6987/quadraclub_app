@@ -424,7 +424,7 @@ Set<String> _levelsBetween(String? start, String? end, String sport) {
   final ladder = levelsForSport(sport);
 
   if (ladder.isEmpty) {
-    return {if (start != null) start, if (end != null) end};
+    return {?start, ?end};
   }
 
   final i = start == null ? -1 : ladder.indexOf(start);

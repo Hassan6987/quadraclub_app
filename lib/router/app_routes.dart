@@ -5,8 +5,6 @@ import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dar
 import 'package:quadraclub_app/presentation/notifications/ui/notification_screen.dart';
 import 'package:quadraclub_app/presentation/profile/ui/my_account.dart';
 import 'package:quadraclub_app/presentation/profile/ui/screens/delete_account.dart';
-import 'package:quadraclub_app/presentation/profile/ui/screens/privacy_policy.dart';
-import 'package:quadraclub_app/presentation/profile/ui/screens/terms_screen.dart';
 
 import '/app_exports.dart';
 
@@ -35,10 +33,6 @@ class AppGenerateRoute {
         return _navigateScreen(const NotificationsScreen());
       case RouteName.myChats:
         return _navigateScreen(const MyChatsScreen());
-      case RouteName.termsConditionScreen:
-        return _navigateScreen(const TermsScreen());
-      case RouteName.privacyPolicyScreen:
-        return _navigateScreen(const PrivacyPolicy());
       case RouteName.deleteAccountScreen:
         return _navigateScreen(const DeleteAccount());
       case RouteName.confirmDeleteAccountScreen:
@@ -93,8 +87,6 @@ class RouteName {
   static const homeScreen = "/homeScreen";
   static const dotRegulationScreen = "/dotRegulationScreen";
   static const myProfileScreen = "/myProfileScreen";
-  static const privacyPolicyScreen = "/privacyPolicyScreen";
-  static const termsConditionScreen = "/termsConditionScreen";
   static const deleteAccountScreen = "/deleteAccountScreen";
   static const confirmDeleteAccountScreen = "/confirmDeleteAccountScreen";
   // static const bookingSummaryScreen = "/bookingSummaryScreen";

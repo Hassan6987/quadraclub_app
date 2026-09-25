@@ -1,4 +1,3 @@
-import 'package:quadraclub_app/l10n/app_localizations.dart';
 
 import '/app_exports.dart';
 
@@ -71,7 +70,7 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: LinearProgressIndicator(
             value: currentStep / totalSteps,
             minHeight: 4,
-            backgroundColor: kBorderColor.withOpacity(0.25),
+            backgroundColor: kBorderColor.withValues(alpha: 0.25),
             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFB4D426)),
           ),
         ),

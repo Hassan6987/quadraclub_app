@@ -92,16 +92,16 @@ class StatisticsCard extends StatelessWidget {
     );
   }
 
-  String _localizedStatFilter(AppLocalizations l10n, StatFilter filter) {
-    switch (filter) {
-      case StatFilter.weekly:
-        return l10n.weekly;
-      case StatFilter.monthly:
-        return l10n.monthly;
-      case StatFilter.overall:
-        return l10n.overall;
-    }
-  }
+  // String _localizedStatFilter(AppLocalizations l10n, StatFilter filter) {
+  //   switch (filter) {
+  //     case StatFilter.weekly:
+  //       return l10n.weekly;
+  //     case StatFilter.monthly:
+  //       return l10n.monthly;
+  //     case StatFilter.overall:
+  //       return l10n.overall;
+  //   }
+  // }
 }
 
 class _StatItem extends StatelessWidget {

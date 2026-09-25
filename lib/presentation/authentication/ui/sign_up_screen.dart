@@ -30,6 +30,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final bool _obscureConfirmPassword = true;
 
   bool get _isButtonEnabled =>
+  _data.profilePhotoPath != null &&
       _fullNameController.text.isNotEmpty &&
       _dobController.text.isNotEmpty &&
       _emailController.text.isNotEmpty &&
@@ -81,6 +82,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   void _onContinue() {
     if (!_isButtonEnabled) return;
+    if(_data.profilePhotoPath == null){
+      context.showToast("Please pick your profile photo",isError: true);
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       _data
         ..fullName = _fullNameController.text.trim()

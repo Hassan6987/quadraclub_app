@@ -1,5 +1,4 @@
 import 'package:quadraclub_app/app_exports.dart';
-import 'package:quadraclub_app/utils/extensions/padding_extension.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;

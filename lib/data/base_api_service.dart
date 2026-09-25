@@ -215,76 +215,17 @@ class BaseApiProvider {
     throw Exception(errorMessage);
   }
 
-  Future<bool> _refreshToken() async {
-    final context = navigatorKey.currentContext!;
-    final refreshToken = _storage.getRefreshToken();
-
-    if (refreshToken != null) {
-      try {
-        final response = await Dio().post(
-          '${AppConfig.baseUrl}/auth/refreshAccessToken',
-          data: {'refreshToken': refreshToken},
-        );
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          final newAccessToken = response.data['accessToken'];
-          final newRefreshToken = response.data['refreshToken'];
-
-          await Future.wait([
-            _storage.saveToken(newAccessToken),
-            _storage.saveRefreshToken(newRefreshToken),
-          ]);
-
-          _dio.options.headers['Authorization'] = 'Bearer $newAccessToken';
-          return true;
-        }
-        _storage.clearAll();
-        if (!context.mounted) return false;
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          RouteName.signIn,
-          (route) => false,
-        );
-        return false;
-      } catch (e, stackTrace) {
-        if (!context.mounted) return false;
-
-        log('Token refresh error: $e', stackTrace: stackTrace);
-        context.showToast('Session expired, please login again');
-        _storage.clearAll();
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          RouteName.signIn,
-          (route) => false,
-        );
-        return false;
-      }
-    } else {
-      if (!context.mounted) return false;
-
-      context.showToast('Session expired, please login again');
-      _storage.clearAll();
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        RouteName.signIn,
-        (route) => false,
-      );
-      return false;
-    }
-  }
-
   Future<void> _handleSessionExpired() async {
     final context = navigatorKey.currentContext!;
 
     await _storage.clearAll();
 
     if (!context.mounted) return;
-
-    context.showToast('Session expired, please login again');
     Navigator.pushNamedAndRemoveUntil(
       context,
       RouteName.signIn,
       (route) => false,
     );
+    context.showToast('Session expired, please login again',isError: true);
   }
 }

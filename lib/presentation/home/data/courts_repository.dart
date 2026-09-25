@@ -58,7 +58,7 @@ class CourtsRepository {
         throw Exception('Failed to create Stripe PaymentMethod');
       }
 
-      print('Payment Method ID: $paymentMethodId');
+      log('Payment Method ID: $paymentMethodId');
 
       await courtServices.bookIndividual(model, paymentMethodId);
     } catch (e) {
