@@ -32,10 +32,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   final Set<String> _selectedSports = {};
 
-  /// Level sections follow the header's sport selection; with nothing
-  /// selected every sport is on the table.
-  List<String> get _levelSports =>
-      _selectedSports.isEmpty ? kAllSportSlugs : _selectedSports.toList();
+  /// Level sections follow the header's sport selection.
+  List<String> get _levelSports => _selectedSports.toList();
 
   late final DateTime _anchorDate;
   DateTime? _selectedDate;
@@ -50,11 +48,20 @@ class _MatchesScreenState extends State<MatchesScreen> {
   MatchFormat? _filterFormat;
 
   @override
+  @override
   void initState() {
+    super.initState();
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
+    _selectedSports.addAll(_profileSportSlugs());
     _initUserLocation();
-    super.initState();
+  }
+
+  Set<String> _profileSportSlugs() {
+    final user = context.read<AuthBloc>().state.user;
+    return defaultSelectedSportSlugs(
+      user?.sportsInfo.map((s) => s.sport) ?? const [],
+    );
   }
 
   Future<void> _initUserLocation() async {
@@ -99,8 +106,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     final query = _searchQuery.trim().toLowerCase();
 
     final filtered = allBookings.where((match) {
-      if (_selectedSports.isNotEmpty &&
-          !_selectedSports.contains(sportSlug(match.sport.label))) {
+      if (!_selectedSports.contains(sportSlug(match.sport.label))) {
         return false;
       }
 
@@ -217,13 +223,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   void _toggleSport(String sport) {
-    setState(() {
-      if (_selectedSports.contains(sport)) {
-        _selectedSports.remove(sport);
-      } else {
-        _selectedSports.add(sport);
-      }
-    });
+    setState(() => toggleSportSelection(_selectedSports, sport));
   }
 
   bool _isSameDate(DateTime a, DateTime? b) {

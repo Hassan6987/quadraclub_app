@@ -56,7 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
     _selectedDate = _anchorDate;
+    _selectedSports.addAll(_profileSportSlugs());
     _initUserLocation();
+  }
+
+  Set<String> _profileSportSlugs() {
+    final user = context.read<AuthBloc>().state.user;
+    return defaultSelectedSportSlugs(
+      user?.sportsInfo.map((s) => s.sport) ?? const [],
+    );
   }
 
   @override
@@ -162,12 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Checks whether any court in [club] has an Available slot for
   /// _selectedDate that falls into the selected time-of-day bucket, for
-  /// any of the currently-selected sports (or any sport if none selected).
+  /// any of the currently-selected sports.
   bool _hasMatchingSlot(Club club) {
     final key = _dateKey(_selectedDate);
-    final sportsToCheck = _selectedSports.isEmpty
-        ? kAllSportSlugs.toSet()
-        : _selectedSports;
+    final sportsToCheck = _selectedSports;
 
     for (final court in club.courts) {
       final daySlots = court.weeklySlots[key];
@@ -198,9 +204,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final query = _searchQuery.trim().toLowerCase();
 
     final filtered = clubs.where((club) {
-      // Sport filter
-      if (_selectedSports.isNotEmpty &&
-          !club.sports.any((s) => _selectedSports.contains(sportSlug(s)))) {
+      // Sport filter — always at least one sport is selected.
+      if (!club.sports.any((s) => _selectedSports.contains(sportSlug(s)))) {
         return false;
       }
 
@@ -279,13 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _toggleSport(String sport) {
-    setState(() {
-      if (_selectedSports.contains(sport)) {
-        _selectedSports.remove(sport);
-      } else {
-        _selectedSports.add(sport);
-      }
-    });
+    setState(() => toggleSportSelection(_selectedSports, sport));
   }
 
   @override
@@ -424,7 +423,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 setState(() {
                                   _searchController.clear();
                                   _searchQuery = '';
-                                  _selectedSports.clear();
+                                  _selectedSports
+                                    ..clear()
+                                    ..addAll(_profileSportSlugs());
                                   _filterTimes.clear();
                                   _filterCity = null;
                                   _filterDistance = null;
