@@ -30,9 +30,9 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
   }
 
   Future<void> _handleLoadAgenda(
-    GetAllAgenda event,
-    Emitter<AgendaState> emit,
-  ) async {
+      GetAllAgenda event,
+      Emitter<AgendaState> emit,
+      ) async {
     try {
       emit(state.copyWith(status: AgendaStateStatus.loading));
 
@@ -44,18 +44,36 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
         _repo.getPlayerInvitations(),
         _repo.getAllPlayers(),
       ]);
+
       final confirmed = response[0] as List<AgendaItem>;
       final pending = response[1] as List<AgendaItem>;
       final past = response[2] as List<AgendaItem>;
       final requests = response[3] as List<AgendaItem>;
       final invitations = response[4] as List<AgendaInvitation>;
       final players = response[5] as List<InvitePlayerModel>;
+
       emit(
         state.copyWith(
           status: AgendaStateStatus.success,
-          confirmedAgenda: confirmed,
-          pendingAgenda: pending,
-          pastAgenda: past,
+
+          // Soonest first
+          confirmedAgenda: _sortAgendaItems(
+            confirmed,
+            ascending: true,
+          ),
+
+          // Soonest first
+          pendingAgenda: _sortAgendaItems(
+            pending,
+            ascending: true,
+          ),
+
+          // Most recent first
+          pastAgenda: _sortAgendaItems(
+            past,
+            ascending: false,
+          ),
+
           requestedBookings: requests,
           invitations: invitations,
           players: players,
@@ -63,7 +81,10 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
       );
     } catch (e) {
       emit(
-        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+        state.copyWith(
+          status: AgendaStateStatus.failure,
+          error: e.toString(),
+        ),
       );
     }
   }
@@ -207,11 +228,15 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
       );
       final response = await _repo.getPlayerInvitations();
       final confirmed = await _repo.getConfirmedAgenda();
+
       emit(
         state.copyWith(
           status: AgendaStateStatus.updated,
           invitations: response,
-          confirmedAgenda: confirmed,
+          confirmedAgenda: _sortAgendaItems(
+            confirmed,
+            ascending: true,
+          ),
         ),
       );
     } catch (e) {
@@ -327,5 +352,20 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
         state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
       );
     }
+  }
+
+
+  List<AgendaItem> _sortAgendaItems(
+      List<AgendaItem> items, {
+        required bool ascending,
+      }) {
+    final sortedItems = List<AgendaItem>.from(items);
+
+    sortedItems.sort((a, b) {
+      final comparison = a.bookingDate.compareTo(b.bookingDate);
+      return ascending ? comparison : -comparison;
+    });
+
+    return sortedItems;
   }
 }
