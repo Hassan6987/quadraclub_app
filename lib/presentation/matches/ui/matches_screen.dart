@@ -26,60 +26,75 @@ class MatchesScreen extends StatefulWidget {
 
 class _MatchesScreenState extends State<MatchesScreen> {
   bool _isMapView = false;
+
   String _currentLocation = 'London, UK';
+
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
+
   bool _hasUserLocation = false;
 
   /// Level sections follow the header's sport selection.
   List<String> get _levelSports => _selectedSports.toList();
 
   Set<String> get _selectedSports =>
-      context.watch<DiscoverySportFilter>().selected;
+      context.read<DiscoverySportFilter>().selected;
 
   late final DateTime _anchorDate;
 
-  /// The highlighted day in the strip. Starts on today and only changes when
-  /// the user taps an available day — it navigates the list, it never filters
-  /// it.
+  /// The highlighted day in the strip.
   late DateTime _selectedDate;
 
-  /// One key per rendered day section, so tapping a day can scroll the list
-  /// to it.
+  /// One key per rendered day section.
   final Map<String, GlobalKey> _sectionKeys = {};
 
   final ScrollController _listController = ScrollController();
 
   final TextEditingController _searchController = TextEditingController();
+
   String _searchQuery = '';
+
   final Set<TimeOfDayFilter> _filterTimes = {};
+
   GenderFilter _filterGender = GenderFilter.misto;
+
   Set<SportLevel> _filterLevels = {};
+
   String? _filterCity;
+
   double? _filterDistance;
+
   MatchFormat? _filterFormat;
 
   @override
   void initState() {
     super.initState();
+
     final now = DateTime.now();
+
     _anchorDate = DateTime(now.year, now.month, now.day);
+
     _selectedDate = _anchorDate;
+
     context.read<DiscoverySportFilter>().ensureInitialized(
       context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
           const [],
     );
+
     _initUserLocation();
   }
 
   Future<void> _initUserLocation() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
       if (!serviceEnabled) return;
 
       var permission = await Geolocator.checkPermission();
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
+
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
         final pos =
@@ -87,9 +102,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
             await Geolocator.getCurrentPosition(
               timeLimit: const Duration(seconds: 5),
             );
+
         if (mounted) {
           setState(() {
             _currentLatLng = LatLng(pos.latitude, pos.longitude);
+
             _hasUserLocation = true;
           });
         }
@@ -100,6 +117,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   List<DateTime> get _dates =>
       List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
 
+  /// Distance between the current user location and a club.
   double _clubDistance(Booking match) {
     return getDistanceKm(
       fromLat: _currentLatLng.latitude,
@@ -107,6 +125,42 @@ class _MatchesScreenState extends State<MatchesScreen> {
       toLat: match.club?.latitude,
       toLng: match.club?.longitude,
     );
+  }
+
+  /// Creates a map like:
+  ///
+  /// {
+  ///   "Balneário Camboriú": 4.2,
+  ///   "Florianópolis": 78.5,
+  ///   "Itajaí": 31.7,
+  /// }
+  ///
+  /// If multiple clubs exist in the same city, the nearest club
+  /// in that city is used.
+  Map<String, double> _buildCityDistances(List<Booking> bookings) {
+    final cityDistances = <String, double>{};
+
+    for (final booking in bookings) {
+      final city = booking.club?.city?.trim();
+
+      if (city == null || city.isEmpty) {
+        continue;
+      }
+
+      final distance = _clubDistance(booking);
+
+      if (distance.isInfinite || distance.isNaN) {
+        continue;
+      }
+
+      final existingDistance = cityDistances[city];
+
+      if (existingDistance == null || distance < existingDistance) {
+        cityDistances[city] = distance;
+      }
+    }
+
+    return cityDistances;
   }
 
   List<Booking> _filteredMatches(List<Booking> allBookings) {
@@ -123,23 +177,31 @@ class _MatchesScreenState extends State<MatchesScreen> {
         return false;
       }
 
-      // Past days are never listed: the date strip starts on today.
       final matchDate = match.bookingDate;
-      if (matchDate == null) return false;
+
+      if (matchDate == null) {
+        return false;
+      }
+
       final matchDateOnly = DateTime(
         matchDate.year,
         matchDate.month,
         matchDate.day,
       );
+
       if (matchDateOnly.isBefore(_anchorDate)) {
         return false;
       }
 
       if (_filterCity != null && _filterCity!.trim().isNotEmpty) {
         final fc = _filterCity!.trim().toLowerCase();
+
         final cc = (match.club?.city ?? '').toLowerCase();
+
         final cs = (match.club?.state ?? '').toLowerCase();
+
         final fullCity = '$cc, $cs';
+
         if (!cc.contains(fc) && !fc.contains(cc) && !fullCity.contains(fc)) {
           return false;
         }
@@ -158,13 +220,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
         return false;
       }
 
-      // Format filter — new
       if (_filterFormat != null && match.format != _filterFormat) {
         return false;
       }
 
       if (_filterDistance != null) {
         final dist = _clubDistance(match);
+
         if (dist.isInfinite || dist > _filterDistance!) {
           return false;
         }
@@ -173,18 +235,20 @@ class _MatchesScreenState extends State<MatchesScreen> {
       return true;
     }).toList();
 
-    // Chronological: the day sections then run in the same order as the date
-    // strip, so "go to this day" always lands on a real section.
     filtered.sort((a, b) {
       final aDate = a.bookingDate;
       final bDate = b.bookingDate;
 
       if (aDate != null && bDate != null) {
-        final byDay = DateTime(aDate.year, aDate.month, aDate.day).compareTo(
-          DateTime(bDate.year, bDate.month, bDate.day),
-        );
+        final byDay = DateTime(
+          aDate.year,
+          aDate.month,
+          aDate.day,
+        ).compareTo(DateTime(bDate.year, bDate.month, bDate.day));
 
-        if (byDay != 0) return byDay;
+        if (byDay != 0) {
+          return byDay;
+        }
       }
 
       return (a.startTime ?? '').compareTo(b.startTime ?? '');
@@ -201,12 +265,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
           icon: Icons.access_time,
           onClear: () => setState(() => _filterTimes.remove(time)),
         ),
+
       if (_filterGender != GenderFilter.misto)
         HeaderFilterBadge(
           label: _filterGender.label(context),
           icon: Icons.people_outline,
           onClear: () => setState(() => _filterGender = GenderFilter.misto),
         ),
+
       for (final level in _filterLevels)
         HeaderFilterBadge(
           label: localizedLevelName(context, level.level),
@@ -214,24 +280,28 @@ class _MatchesScreenState extends State<MatchesScreen> {
           onClear: () =>
               setState(() => _filterLevels = {..._filterLevels}..remove(level)),
         ),
+
       if (_filterFormat != null)
         HeaderFilterBadge(
           label: _filterFormat!.localizedLabel(context),
           icon: Icons.groups_outlined,
           onClear: () => setState(() => _filterFormat = null),
         ),
+
       if (_filterCity != null)
         HeaderFilterBadge(
           label: _filterCity!,
           icon: Icons.location_city,
           onClear: () => setState(() => _filterCity = null),
         ),
+
       if (_filterDistance != null)
         HeaderFilterBadge(
           label: l10n.distanceKm(_filterDistance!.round().toString()),
           icon: Icons.near_me_outlined,
           onClear: () => setState(() => _filterDistance = null),
         ),
+
       HeaderClearAllButton(
         onTap: () => setState(() {
           _filterTimes.clear();
@@ -253,15 +323,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
     if (b == null) {
       return true;
     }
+
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   Map<String, List<Booking>> _groupedBookings(List<Booking> matches) {
     final l10n = AppLocalizations.of(context)!;
+
     final result = <String, List<Booking>>{};
 
     for (final match in matches) {
       final date = match.bookingDate;
+
       if (date == null) {
         continue;
       }
@@ -274,14 +347,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return result;
   }
 
-  /// `yyyy-MM-dd` keys of the days that still have a match once every other
-  /// filter has been applied — the strip greys the empty ones out.
   Set<String> _availableDateKeys(List<Booking> matches) {
     final keys = <String>{};
 
     for (final match in matches) {
       final date = match.bookingDate;
-      if (date == null) continue;
+
+      if (date == null) {
+        continue;
+      }
 
       keys.add(dateKey(DateTime(date.year, date.month, date.day)));
     }
@@ -289,12 +363,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return keys;
   }
 
-  /// The label a day section is rendered with — also the key its [GlobalKey]
-  /// is filed under, which is how tapping a date finds its section.
   String _daySectionLabel(DateTime date, AppLocalizations l10n) {
     final dateOnly = DateTime(date.year, date.month, date.day);
+
     final now = DateTime.now();
+
     final today = DateTime(now.year, now.month, now.day);
+
     final formatted = DateFormat('d MMM', l10n.localeName).format(dateOnly);
 
     if (_isSameDate(dateOnly, today)) {
@@ -308,16 +383,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return formatted;
   }
 
-  /// Smoothly scrolls the list to the section of [date]. The strip only lets
-  /// days with a section be tapped, so the key is always there.
   void _scrollToDay(DateTime date) {
     final l10n = AppLocalizations.of(context)!;
-    final sectionContext = _sectionKeys[_daySectionLabel(
-      date,
-      l10n,
-    )]?.currentContext;
 
-    if (sectionContext == null) return;
+    final sectionContext =
+        _sectionKeys[_daySectionLabel(date, l10n)]?.currentContext;
+
+    if (sectionContext == null) {
+      return;
+    }
 
     Scrollable.ensureVisible(
       sectionContext,
@@ -337,6 +411,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<MatchesBloc, MatchesState>(
       builder: (context, state) {
         if (_isMapView) {
@@ -347,7 +422,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
             onLocationChanged: (LocationResult location) {
               setState(() {
                 _currentLocation = location.address;
+
                 _currentLatLng = LatLng(location.latitude, location.longitude);
+
                 _hasUserLocation = true;
               });
             },
@@ -360,7 +437,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 _filterTimes
                   ..clear()
                   ..addAll(times);
+
                 _filterCity = city;
+
                 _filterDistance = dist;
               });
             },
@@ -368,9 +447,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
             selectedSports: _selectedSports,
           );
         }
+
         final filtered = _filteredMatches(state.bookings);
+
         final grouped = _groupedBookings(filtered);
+
         final availableDateKeys = _availableDateKeys(filtered);
+
         final hasActiveFilters =
             _filterTimes.isNotEmpty ||
             _filterGender != GenderFilter.misto ||
@@ -379,13 +462,20 @@ class _MatchesScreenState extends State<MatchesScreen> {
             _filterDistance != null ||
             _filterFormat != null;
 
-        // available cities for quick-select chips, same pattern as HomeScreen
+        /// All available cities.
         final availableCities = state.bookings
-            .map((b) => b.club?.city)
+            .map((booking) => booking.club?.city)
             .whereType<String>()
-            .where((s) => s.trim().isNotEmpty)
+            .map((city) => city.trim())
+            .where((city) => city.isNotEmpty)
             .toSet()
             .toList();
+
+        /// Distance of each city from the current user.
+        ///
+        /// When multiple clubs exist in one city, the nearest club
+        /// is used as the city's distance.
+        final cityDistances = _buildCityDistances(state.bookings);
 
         return Scaffold(
           backgroundColor: kCardColor,
@@ -394,8 +484,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
             centerTile: false,
             backgroundColor: kWhiteColor,
           ),
-          // The header stays mounted while loading and when nothing comes
-          // back, so the sports, search, filters and dates are always there.
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -404,8 +492,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 onSportToggled: _toggleSport,
                 searchController: _searchController,
                 searchHint: l10n.searchByName,
-                onSearchChanged: (value) =>
-                    setState(() => _searchQuery = value),
+                onSearchChanged: (value) {
+                  setState(() => _searchQuery = value);
+                },
                 hasActiveFilters: hasActiveFilters,
                 activeFilterBadges: hasActiveFilters
                     ? _activeFilterBadges(l10n)
@@ -420,15 +509,27 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   initialDistance: _filterDistance,
                   initialFormat: _filterFormat,
                   availableCities: availableCities,
+
+                  /// NEW
+                  cityDistances: cityDistances,
+
+                  userLat: _currentLatLng.latitude,
+                  userLong: _currentLatLng.longitude,
+
                   onApply: (times, gender, levels, city, dist, format) {
                     setState(() {
                       _filterTimes
                         ..clear()
                         ..addAll(times);
+
                       _filterGender = gender;
+
                       _filterLevels = levels;
+
                       _filterCity = city;
+
                       _filterDistance = dist;
+
                       _filterFormat = format;
                     });
                   },
@@ -439,6 +540,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 availableDateKeys: availableDateKeys,
                 onDateSelected: (date) {
                   setState(() => _selectedDate = date);
+
                   _scrollToDay(date);
                 },
               ),
@@ -456,8 +558,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           ),
                         ),
                       )
-                    // Every day section is laid out, not lazily built, so a tap
-                    // on the date strip can scroll straight to its section.
                     : SingleChildScrollView(
                         controller: _listController,
                         padding: const EdgeInsets.only(top: 4, bottom: 24),
@@ -476,8 +576,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                 MatchCard(
                                   match: match,
                                   distanceKm: _clubDistance(match),
-                                  onTap: () =>
-                                      _openJoinMatch(match, _clubDistance(match)),
+                                  onTap: () => _openJoinMatch(
+                                    match,
+                                    _clubDistance(match),
+                                  ),
                                 ),
                             ],
                           ],
@@ -486,9 +588,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ),
             ],
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: kPrimaryColor,
               shape: BoxShape.rectangle,
@@ -515,7 +618,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   void _openJoinMatch(Booking match, double distanceKm) {
     final l10n = AppLocalizations.of(context)!;
-    // Gate: show login dialog for unauthenticated users
+
     final authState = context.read<AuthBloc>().state;
 
     if (authState.user == null) {
@@ -524,8 +627,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
         title: l10n.signInToJoinThismatch,
         subtitle: l10n.signInToJoinOpenMatch,
       );
+
       return;
     }
+
     MatchJoinBottomSheet.show(context, match, distanceKm);
   }
 

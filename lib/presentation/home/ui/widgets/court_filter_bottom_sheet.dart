@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/data/places_service.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart';
 
 class CourtFilterBottomSheet extends StatefulWidget {
   final Set<TimeOfDayFilter> initialTimes;
   final String? initialCity;
   final double? initialDistance;
   final List<String> availableCities;
+  final Map<String, double> cityDistances;
 
   final Function(Set<TimeOfDayFilter> times, String? city, double? distance)
   onApply;
@@ -18,6 +20,7 @@ class CourtFilterBottomSheet extends StatefulWidget {
     this.initialCity,
     this.initialDistance,
     this.availableCities = const [],
+    this.cityDistances = const {},
     required this.onApply,
   });
 
@@ -27,7 +30,12 @@ class CourtFilterBottomSheet extends StatefulWidget {
     String? initialCity,
     double? initialDistance,
     List<String> availableCities = const [],
-    required Function(Set<TimeOfDayFilter> times, String? city, double? distance)
+        Map<String, double> cityDistances = const {},
+    required Function(
+      Set<TimeOfDayFilter> times,
+      String? city,
+      double? distance,
+    )
     onApply,
   }) {
     return showModalBottomSheet(
@@ -46,6 +54,7 @@ class CourtFilterBottomSheet extends StatefulWidget {
           initialCity: initialCity,
           initialDistance: initialDistance,
           availableCities: availableCities,
+          cityDistances: cityDistances,
           onApply: onApply,
         ),
       ),
@@ -78,6 +87,40 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
     }
 
     return const ['Balneário Camboriú', 'Florianópolis', 'Itajaí'];
+  }
+
+  double? _getCityDistance(String city) {
+    final exactDistance = widget.cityDistances[city];
+
+    if (exactDistance != null) {
+      return exactDistance;
+    }
+
+    // Protection against capitalization differences.
+    for (final entry in widget.cityDistances.entries) {
+      if (entry.key.toLowerCase() == city.toLowerCase()) {
+        return entry.value;
+      }
+    }
+
+    return null;
+  }
+
+  String _formatCityDistance(
+      String city,
+      AppLocalizations l10n,
+      ) {
+    final distance = _getCityDistance(city);
+
+    if (distance == null ||
+        distance.isInfinite ||
+        distance.isNaN) {
+      return '—';
+    }
+
+    return l10n.distanceKm(
+      distance.round().toString(),
+    );
   }
 
   @override
@@ -354,23 +397,12 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                           }
                         });
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected ? kPrimaryColor : kGreyColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: isSelected
-                              ? null
-                              : Border.all(color: kBorderColor),
-                        ),
-                        child: Text(
+                      child: buildCityCard(
+                        label: cityName,
+                        isSelected: isSelected,
+                        distance: _formatCityDistance(
                           cityName,
-                          style: AppStyles.w500f12inter.copyWith(
-                            color: kDarkTextColor,
-                          ),
+                          l10n,
                         ),
                       ),
                     ),
@@ -406,9 +438,6 @@ class _CourtFilterBottomSheetState extends State<CourtFilterBottomSheet> {
                     decoration: BoxDecoration(
                       color: _enableDistance ? kPrimaryColor : kGreyColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: _enableDistance
-                          ? null
-                          : Border.all(color: kBorderColor),
                     ),
                     child: Text(
                       _enableDistance

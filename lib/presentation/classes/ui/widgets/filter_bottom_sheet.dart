@@ -1,5 +1,6 @@
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_filters.dart';
+import 'package:quadraclub_app/presentation/matches/ui/widgets/match_filter_bottom_sheet.dart';
 
 enum FormatFilter { all, group, individual }
 
@@ -8,11 +9,26 @@ class FilterBottomSheet extends StatefulWidget {
   final GenderFilter gender;
   final Set<SportLevel> levels;
 
-  /// Sports to offer level sections for — the header's selection.
+  /// Sports to offer level sections for.
   final List<String> sports;
+
   final FormatFilter format;
   final double distance;
   final String city;
+
+  /// Cities displayed in the quick city cards.
+  final List<String> availableCities;
+
+  /// Distance of each city from the user's current location.
+  ///
+  /// Example:
+  ///
+  /// {
+  ///   "Balneário Camboriú": 4.2,
+  ///   "Florianópolis": 78.5,
+  ///   "Itajaí": 31.7,
+  /// }
+  final Map<String, double> cityDistances;
 
   const FilterBottomSheet({
     super.key,
@@ -20,9 +36,11 @@ class FilterBottomSheet extends StatefulWidget {
     this.gender = GenderFilter.misto,
     this.levels = const {},
     this.sports = kAllSportSlugs,
-    this.format = FormatFilter.group,
+    this.format = FormatFilter.all,
     this.distance = 25,
     this.city = '',
+    this.availableCities = const [],
+    this.cityDistances = const {},
   });
 
   static Future<ClassFilterResult?> show(
@@ -31,9 +49,11 @@ class FilterBottomSheet extends StatefulWidget {
     GenderFilter gender = GenderFilter.misto,
     Set<SportLevel> levels = const {},
     List<String> sports = kAllSportSlugs,
-    FormatFilter format = FormatFilter.group,
+    FormatFilter format = FormatFilter.all,
     double distance = 25,
     String city = '',
+    List<String> availableCities = const [],
+    Map<String, double> cityDistances = const {},
   }) {
     return showModalBottomSheet<ClassFilterResult>(
       context: context,
@@ -47,6 +67,8 @@ class FilterBottomSheet extends StatefulWidget {
         format: format,
         distance: distance,
         city: city,
+        availableCities: availableCities,
+        cityDistances: cityDistances,
       ),
     );
   }
@@ -63,6 +85,41 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   late double _distance;
 
   late final TextEditingController _searchController;
+
+  /// First 3 cities are shown as quick-selection cards.
+  List<String> get _quickCities {
+    return widget.availableCities.take(3).toList();
+  }
+
+  /// Gets the distance for a city.
+  ///
+  /// Falls back to case-insensitive matching in case the
+  /// city capitalization differs.
+  double? _getCityDistance(String city) {
+    final exactDistance = widget.cityDistances[city];
+
+    if (exactDistance != null) {
+      return exactDistance;
+    }
+
+    for (final entry in widget.cityDistances.entries) {
+      if (entry.key.toLowerCase() == city.toLowerCase()) {
+        return entry.value;
+      }
+    }
+
+    return null;
+  }
+
+  String _formatCityDistance(String city, AppLocalizations l10n) {
+    final distance = _getCityDistance(city);
+
+    if (distance == null || distance.isInfinite || distance.isNaN) {
+      return '—';
+    }
+
+    return l10n.distanceKm(distance.round().toString());
+  }
 
   @override
   void initState() {
@@ -88,9 +145,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: kWhiteColor,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
@@ -130,10 +187,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     sports: widget.sports,
                     gender: _gender,
                     selected: _levels,
-                    onChanged: (gender, levels) => setState(() {
-                      _gender = gender;
-                      _levels = levels;
-                    }),
+                    onChanged: (gender, levels) {
+                      setState(() {
+                        _gender = gender;
+                        _levels = levels;
+                      });
+                    },
                   ),
 
                   24.heightBox,
@@ -154,7 +213,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           });
                         },
                       ),
-
                       ToggleChip(
                         label: l10n.group,
                         isSelected: _format == FormatFilter.group,
@@ -164,7 +222,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           });
                         },
                       ),
-
                       ToggleChip(
                         label: l10n.individual,
                         isSelected: _format == FormatFilter.individual,
@@ -187,29 +244,43 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     controller: _searchController,
                     hintText: l10n.search,
                     borderRadius: 999,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
                   ),
 
                   6.heightBox,
 
-                  IntrinsicHeight(
-                    child: Row(
-                      spacing: getProportionateScreenHeight(6),
-                      children: [
-                        _buildCityDistanceCard(
-                          label: 'New York',
-                          distance: '0 km',
-                        ),
-                        _buildCityDistanceCard(
-                          label: 'Los Angeles',
-                          distance: '10 km',
-                        ),
-                        _buildCityDistanceCard(
-                          label: 'Chicago',
-                          distance: '15 km',
-                        ),
-                      ],
+                  if (_quickCities.isNotEmpty)
+                    IntrinsicHeight(
+                      child: Row(
+                        spacing: getProportionateScreenHeight(6),
+                        children: _quickCities.map((city) {
+                          final isSelected =
+                              _searchController.text.trim().toLowerCase() ==
+                              city.toLowerCase();
+
+                          final distance = _formatCityDistance(city, l10n);
+
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  _searchController.clear();
+                                } else {
+                                  _searchController.text = city;
+                                }
+                              });
+                            },
+                            child: buildCityCard(
+                              label: city,
+                              distance: distance,
+                              isSelected: isSelected,
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
 
                   24.heightBox,
 
@@ -275,12 +346,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-  void _toggleTime(TimeOfDayFilter t) {
+  void _toggleTime(TimeOfDayFilter time) {
     setState(() {
-      if (_selectedTimes.contains(t)) {
-        _selectedTimes.remove(t);
+      if (_selectedTimes.contains(time)) {
+        _selectedTimes.remove(time);
       } else {
-        _selectedTimes.add(t);
+        _selectedTimes.add(time);
       }
     });
   }
@@ -301,33 +372,5 @@ Widget _sectionLabel({required String label}) {
   return Text(
     label,
     style: AppStyles.w600f14inter.copyWith(color: kDarkTextColor),
-  );
-}
-
-Widget _buildCityDistanceCard({
-  required String label,
-  required String distance,
-}) {
-  return Expanded(
-    child: Container(
-      decoration: BoxDecoration(
-        color: kGreyColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        spacing: getProportionateScreenHeight(6),
-        children: [
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
-          ),
-          Text(
-            distance,
-            style: AppStyles.w400f12inter.copyWith(color: kDarkTextColor),
-          ),
-        ],
-      ).withPaddingSymmetric(8, 8),
-    ),
   );
 }

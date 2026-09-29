@@ -42,6 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   matchesCompleted: user.matchesCompleted,
                   victories: user.victories,
                   defeats: user.defeats,
+                  hoursPlayed: user.hoursPlayed,
                   selected: _filter,
                   onFilterChanged: (f) => setState(() => _filter = f),
                 ),

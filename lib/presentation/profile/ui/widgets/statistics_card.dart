@@ -6,6 +6,7 @@ class StatisticsCard extends StatelessWidget {
   final int matchesCompleted;
   final int victories;
   final int defeats;
+  final int hoursPlayed;
   final StatFilter selected;
   final ValueChanged<StatFilter> onFilterChanged;
 
@@ -14,6 +15,7 @@ class StatisticsCard extends StatelessWidget {
     required this.matchesCompleted,
     required this.victories,
     required this.defeats,
+    required this.hoursPlayed,
     required this.selected,
     required this.onFilterChanged,
   });
@@ -83,6 +85,11 @@ class StatisticsCard extends StatelessWidget {
                   value: '$defeats',
                   label: l10n.defeats,
                   color: kRedColor,
+                ),_StatItem(
+                  icon: Assets.svg.timerIcon.path,
+                  value: '$hoursPlayed',
+                  label: l10n.hours,
+                  color: kBlackColor,
                 ),
               ],
             ),

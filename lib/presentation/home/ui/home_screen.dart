@@ -165,6 +165,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ) /
         1000.0;
   }
+  Map<String, double> _buildCityDistances(List<Club> clubs) {
+    final cityDistances = <String, double>{};
+
+    for (final club in clubs) {
+      final city = club.city?.trim();
+
+      if (city == null || city.isEmpty) {
+        continue;
+      }
+
+      final distance = _clubDistance(club);
+
+      if (distance.isInfinite || distance.isNaN) {
+        continue;
+      }
+
+      final existingDistance = cityDistances[city];
+
+      // If multiple clubs exist in the same city,
+      // keep the nearest one.
+      if (existingDistance == null || distance < existingDistance) {
+        cityDistances[city] = distance;
+      }
+    }
+
+    return cityDistances;
+  }
 
   /// Checks whether any court in [club] has an Available slot for
   /// _selectedDate that falls into the selected time-of-day bucket, for
@@ -368,17 +395,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? _activeFilterBadges(l10n)
                     : const [],
                 onFilterTap: () {
+                  final availableCities = state.courts
+                      .map((club) => club.city)
+                      .whereType<String>()
+                      .map((city) => city.trim())
+                      .where((city) => city.isNotEmpty)
+                      .toSet()
+                      .toList();
+
+                  final cityDistances = _buildCityDistances(
+                    state.courts,
+                  );
+
                   CourtFilterBottomSheet.show(
                     context,
                     initialTimes: _filterTimes,
                     initialCity: _filterCity,
                     initialDistance: _filterDistance,
-                    availableCities: state.courts
-                        .map((c) => c.city)
-                        .whereType<String>()
-                        .where((s) => s.trim().isNotEmpty)
-                        .toSet()
-                        .toList(),
+                    availableCities: availableCities,
+                    cityDistances: cityDistances,
                     onApply: (times, city, dist) {
                       setState(() {
                         _filterTimes

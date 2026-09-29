@@ -49,7 +49,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
   List<String> get _levelSports => _selectedSports.toList();
 
   Set<String> get _selectedSports =>
-      context.watch<DiscoverySportFilter>().selected;
+      context.read<DiscoverySportFilter>().selected;
 
   static const double _defaultDistance = 25;
   double _distance = _defaultDistance;
@@ -68,94 +68,96 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   List<Class> _filtered(List<Class> classes) {
     return classes.where((c) {
-      // -------------------------
-      // Sport
-      // -------------------------
-      final matchesSport = _selectedSports.contains(sportSlug(c.sportName));
+        // -------------------------
+        // Sport
+        // -------------------------
+        final matchesSport = _selectedSports.contains(sportSlug(c.sportName));
 
-      // -------------------------
-      // Search
-      // -------------------------
-      final query = _searchQuery.toLowerCase();
+        // -------------------------
+        // Search
+        // -------------------------
+        final query = _searchQuery.toLowerCase();
 
-      final matchesSearch =
-          query.isEmpty ||
-          c.className.toLowerCase().contains(query) ||
-          c.coachName.toLowerCase().contains(query) ||
-          (c.locationName?.toLowerCase().contains(query) ?? false);
+        final matchesSearch =
+            query.isEmpty ||
+            c.className.toLowerCase().contains(query) ||
+            c.coachName.toLowerCase().contains(query) ||
+            (c.locationName?.toLowerCase().contains(query) ?? false);
 
-      // -------------------------
-      // Date
-      // -------------------------
-      // Past days are never listed: the strip starts on today. The selected
-      // day does not filter anything — tapping it only scrolls the list.
-      final classDate = c.date;
-      if (classDate == null) {
-        return false;
-      }
-      if (DateTime(
-        classDate.year,
-        classDate.month,
-        classDate.day,
-      ).isBefore(_anchorDate)) {
-        return false;
-      }
+        // -------------------------
+        // Date
+        // -------------------------
+        // Past days are never listed: the strip starts on today. The selected
+        // day does not filter anything — tapping it only scrolls the list.
+        final classDate = c.date;
+        if (classDate == null) {
+          return false;
+        }
+        if (DateTime(
+          classDate.year,
+          classDate.month,
+          classDate.day,
+        ).isBefore(_anchorDate)) {
+          return false;
+        }
 
-      // -------------------------
-      // Time of day
-      // -------------------------
-      final matchesTime =
-          _selectedTimes.isEmpty ||
-          _selectedTimes.contains(_timeOfDayFromClass(c));
+        // -------------------------
+        // Time of day
+        // -------------------------
+        final matchesTime =
+            _selectedTimes.isEmpty ||
+            _selectedTimes.contains(_timeOfDayFromClass(c));
 
-      // -------------------------
-      // Level
-      // -------------------------
-      final matchesLevel = matchesSelectedLevels(
-        _levels,
-        sport: c.sportName,
-        level: c.level,
-      );
+        // -------------------------
+        // Level
+        // -------------------------
+        final matchesLevel = matchesSelectedLevels(
+          _levels,
+          sport: c.sportName,
+          level: c.level,
+        );
 
-      // -------------------------
-      // Format
-      // -------------------------
-      final matchesFormat = _matchesFormat(c.format);
+        // -------------------------
+        // Format
+        // -------------------------
+        final matchesFormat = _matchesFormat(c.format);
 
-      // -------------------------
-      // Distance
-      // -------------------------
-      final matchesDistance =
-          c.distanceKm == null ||
-          _distance >= (double.tryParse(c.distanceKm.toString()) ?? 0);
+        // -------------------------
+        // Distance
+        // -------------------------
+        final matchesDistance =
+            c.distanceKm == null ||
+            _distance >= (double.tryParse(c.distanceKm.toString()) ?? 0);
 
-      // -------------------------
-      // City
-      // -------------------------
-      final matchesCity =
-          _city.isEmpty ||
-          (c.locationName?.toLowerCase().contains(_city.toLowerCase()) ??
-              false) ||
-          (c.court?.location?.toLowerCase().contains(_city.toLowerCase()) ??
-              false);
+        // -------------------------
+        // City
+        // -------------------------
+        final matchesCity =
+            _city.isEmpty ||
+            (c.locationName?.toLowerCase().contains(_city.toLowerCase()) ??
+                false) ||
+            (c.court?.location?.toLowerCase().contains(_city.toLowerCase()) ??
+                false);
 
-      return matchesSport &&
-          matchesSearch &&
-          matchesTime &&
-          matchesLevel &&
-          matchesFormat &&
-          matchesDistance &&
-          matchesCity;
-    }).toList()
+        return matchesSport &&
+            matchesSearch &&
+            matchesTime &&
+            matchesLevel &&
+            matchesFormat &&
+            matchesDistance &&
+            matchesCity;
+      }).toList()
       // Chronological, so the day sections run in the same order as the strip.
       ..sort((a, b) {
         final aDate = a.date;
         final bDate = b.date;
 
         if (aDate != null && bDate != null) {
-          final byDay = DateTime(aDate.year, aDate.month, aDate.day).compareTo(
-            DateTime(bDate.year, bDate.month, bDate.day),
-          );
+          final byDay = DateTime(
+            aDate.year,
+            aDate.month,
+            aDate.day,
+          ).compareTo(DateTime(bDate.year, bDate.month, bDate.day));
 
           if (byDay != 0) return byDay;
         }
@@ -221,10 +223,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
   /// days with a section be tapped, so the key is always there.
   void _scrollToDay(DateTime date) {
     final l10n = AppLocalizations.of(context)!;
-    final sectionContext = _sectionKeys[_daySectionLabel(
-      date,
-      l10n,
-    )]?.currentContext;
+    final sectionContext =
+        _sectionKeys[_daySectionLabel(date, l10n)]?.currentContext;
 
     if (sectionContext == null) return;
 
@@ -273,6 +273,27 @@ class _ClassesScreenState extends State<ClassesScreen> {
           club.court!.coordinates!.longitude!,
         ) /
         1000.0;
+  }
+
+  /// If multiple classes exist in the same city, the nearest
+  /// class/court in that city is used.
+  Map<String, double> _buildCityDistances(List<Class> classes) {
+    final cityDistances = <String, double>{};
+    for (final classModel in classes) {
+      final city = classModel.court?.city.trim();
+      if (city == null || city.isEmpty) {
+        continue;
+      }
+      final distance = _clubDistance(classModel);
+      if (distance.isInfinite || distance.isNaN) {
+        continue;
+      }
+      final existingDistance = cityDistances[city];
+      if (existingDistance == null || distance < existingDistance) {
+        cityDistances[city] = distance;
+      }
+    }
+    return cityDistances;
   }
 
   @override
@@ -350,7 +371,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
     ];
   }
 
-  Future<void> _openFilters() async {
+  Future<void> _openFilters(List<Class> classes) async {
+    final availableCities = classes
+        .map((classModel) => classModel.court?.city)
+        .whereType<String>()
+        .map((city) => city.trim())
+        .where((city) => city.isNotEmpty)
+        .toSet()
+        .toList();
+    final cityDistances = _buildCityDistances(classes);
     final result = await FilterBottomSheet.show(
       context,
       selectedTimes: _selectedTimes,
@@ -360,15 +389,14 @@ class _ClassesScreenState extends State<ClassesScreen> {
       format: _format,
       distance: _distance,
       city: _city,
+      availableCities: availableCities,
+      cityDistances: cityDistances,
     );
-
     if (result == null) return;
-
     setState(() {
       _selectedTimes
         ..clear()
         ..addAll(result.selectedTimes);
-
       _gender = result.gender;
       _levels = result.levels;
       _format = result.format;
@@ -428,9 +456,6 @@ class _ClassesScreenState extends State<ClassesScreen> {
           final filtered = _filtered(state.classes);
           final grouped = _groupedClasses(filtered);
           final availableDateKeys = _availableDateKeys(filtered);
-
-          // The header stays mounted while loading and when nothing comes
-          // back, so the sports, search, filters and dates are always there.
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -445,7 +470,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 activeFilterBadges: _hasActiveFilters
                     ? _activeFilterBadges(l10n)
                     : const [],
-                onFilterTap: _openFilters,
+              onFilterTap: () => _openFilters(state.classes),
                 onMapTap: () => setState(() => _isMapView = true),
                 dates: _dates,
                 selectedDate: _selectedDate,

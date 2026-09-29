@@ -18,6 +18,7 @@ class UserModel {
     required this.matchesCompleted,
     required this.victories,
     required this.defeats,
+    required this.hoursPlayed,
     required this.feedbackStats,
   });
 
@@ -37,6 +38,7 @@ class UserModel {
   final int matchesCompleted;
   final int victories;
   final int defeats;
+  final int hoursPlayed;
   final List<FeedbackStats> feedbackStats;
 
   UserModel copyWith({
@@ -56,6 +58,7 @@ class UserModel {
     int? matchesCompleted,
     int? victories,
     int? defeats,
+    int? hoursPlayed,
     List<FeedbackStats>? feedbackStats,
   }) {
     return UserModel(
@@ -75,6 +78,7 @@ class UserModel {
       matchesCompleted: matchesCompleted ?? this.matchesCompleted,
       victories: victories ?? this.victories,
       defeats: defeats ?? this.defeats,
+      hoursPlayed: hoursPlayed ?? this.hoursPlayed,
       feedbackStats: feedbackStats ?? this.feedbackStats,
     );
   }
@@ -101,6 +105,7 @@ class UserModel {
       matchesCompleted: json["matches"] ?? 0,
       victories: json["victories"] ?? 0,
       defeats: json["defeats"] ?? 0,
+      hoursPlayed: json['hoursPlayed'] ?? 0,
       feedbackStats: json["feedbacks"] == null
           ? []
           : List<FeedbackStats>.from(

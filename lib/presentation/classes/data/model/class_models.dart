@@ -272,12 +272,14 @@ class CourtDetails {
     required this.id,
     required this.courtName,
     required this.location,
+    required this.city,
     required this.coordinates,
   });
 
   final String? id;
   final String? courtName;
   final String? location;
+  final String city;
   final Coordinates? coordinates;
 
   factory CourtDetails.fromJson(Map<String, dynamic> json) {
@@ -285,6 +287,7 @@ class CourtDetails {
       id: json["_id"],
       courtName: json["courtName"],
       location: json["location"],
+      city: json["city"] ?? '',
       coordinates: json["coordinates"] == null
           ? null
           : Coordinates.fromJson(json["coordinates"]),

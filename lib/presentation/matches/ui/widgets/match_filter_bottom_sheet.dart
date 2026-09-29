@@ -4,15 +4,38 @@ import '/app_exports.dart';
 
 class MatchFilterBottomSheet extends StatefulWidget {
   final Set<TimeOfDayFilter> initialTimes;
+
   final GenderFilter initialGender;
+
   final Set<SportLevel> initialLevels;
 
-  /// Sports to offer level sections for — the header's selection.
+  /// Sports to offer level sections for.
   final List<String> sports;
+
   final String? initialCity;
+
   final double? initialDistance;
+
   final MatchFormat? initialFormat;
+
+  /// Cities displayed in the quick city cards.
   final List<String> availableCities;
+
+  /// Distance of each city from the user's current location.
+  ///
+  /// Example:
+  ///
+  /// {
+  ///   "Balneário Camboriú": 4.2,
+  ///   "Florianópolis": 78.5,
+  ///   "Itajaí": 31.7,
+  /// }
+  final Map<String, double> cityDistances;
+
+  final double userLatitude;
+
+  final double userLongitude;
+
   final void Function(
     Set<TimeOfDayFilter> times,
     GenderFilter gender,
@@ -33,6 +56,9 @@ class MatchFilterBottomSheet extends StatefulWidget {
     this.initialDistance,
     this.initialFormat,
     this.availableCities = const [],
+    this.cityDistances = const {},
+    required this.userLatitude,
+    required this.userLongitude,
     required this.onApply,
   });
 
@@ -46,6 +72,12 @@ class MatchFilterBottomSheet extends StatefulWidget {
     double? initialDistance,
     MatchFormat? initialFormat,
     List<String> availableCities = const [],
+
+    /// NEW
+    Map<String, double> cityDistances = const {},
+
+    required double userLat,
+    required double userLong,
     required void Function(
       Set<TimeOfDayFilter> times,
       GenderFilter gender,
@@ -59,7 +91,7 @@ class MatchFilterBottomSheet extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      constraints: BoxConstraints(maxHeight: 680),
+      constraints: const BoxConstraints(maxHeight: 680),
       builder: (_) => MatchFilterBottomSheet(
         initialTimes: initialTimes,
         initialGender: initialGender,
@@ -69,6 +101,12 @@ class MatchFilterBottomSheet extends StatefulWidget {
         initialDistance: initialDistance,
         initialFormat: initialFormat,
         availableCities: availableCities,
+
+        /// NEW
+        cityDistances: cityDistances,
+
+        userLatitude: userLat,
+        userLongitude: userLong,
         onApply: onApply,
       ),
     );
@@ -80,33 +118,81 @@ class MatchFilterBottomSheet extends StatefulWidget {
 
 class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   final Set<TimeOfDayFilter> _times = {};
+
   GenderFilter _gender = GenderFilter.misto;
+
   Set<SportLevel> _levels = {};
+
   MatchFormat? _format;
+
   String? _selectedCity;
+
   double _distance = 25;
+
   bool _enableDistance = false;
+
   final TextEditingController _searchController = TextEditingController();
 
   List<String> get _quickCities {
     if (widget.availableCities.isNotEmpty) {
       return widget.availableCities.take(3).toList();
     }
+
     return const ['New York', 'Los Angeles', 'Chicago'];
+  }
+
+  /// Gets the distance for a city.
+  ///
+  /// Returns null if no coordinate/distance information
+  /// exists for that city.
+  double? _getCityDistance(String city) {
+    final exactDistance = widget.cityDistances[city];
+
+    if (exactDistance != null) {
+      return exactDistance;
+    }
+
+    /// Extra protection in case city capitalization
+    /// differs between the city list and distance map.
+    for (final entry in widget.cityDistances.entries) {
+      if (entry.key.toLowerCase() == city.toLowerCase()) {
+        return entry.value;
+      }
+    }
+
+    return null;
+  }
+
+  String _formatCityDistance(String city, AppLocalizations l10n) {
+    final distance = _getCityDistance(city);
+
+    if (distance == null || distance.isInfinite || distance.isNaN) {
+      return '—';
+    }
+
+    return l10n.distanceKm(distance.round().toString());
   }
 
   @override
   void initState() {
     super.initState();
+
     _times.addAll(widget.initialTimes);
+
     _gender = widget.initialGender;
+
     _levels = {...widget.initialLevels};
+
     _format = widget.initialFormat;
+
     _selectedCity = widget.initialCity;
+
     if (widget.initialDistance != null) {
       _distance = widget.initialDistance!;
+
       _enableDistance = true;
     }
+
     if (_selectedCity != null) {
       _searchController.text = _selectedCity!;
     }
@@ -121,12 +207,19 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   void _clearFilters() {
     setState(() {
       _times.clear();
+
       _gender = GenderFilter.misto;
+
       _levels = {};
+
       _format = null;
+
       _selectedCity = null;
+
       _distance = 25;
+
       _enableDistance = false;
+
       _searchController.clear();
     });
   }
@@ -134,8 +227,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: kWhiteColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(32),
@@ -151,15 +245,20 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                 l10n.gameFilters,
                 style: AppStyles.w600f16inter.copyWith(color: kDarkTextColor),
               ),
+
               const Spacer(),
+
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: const Icon(Icons.close, size: 22, color: kDarkTextColor),
               ),
             ],
           ).paddingOnly(top: 5, bottom: 21, left: 20, right: 20),
+
           CommonDivider(),
+
           20.heightBox,
+
           Flexible(
             child: SingleChildScrollView(
               child: Column(
@@ -167,48 +266,71 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                 children: [
                   TimeOfDayFilterSection(
                     selected: _times,
-                    onToggled: (time) => setState(() {
-                      if (!_times.remove(time)) _times.add(time);
-                    }),
+                    onToggled: (time) {
+                      setState(() {
+                        if (!_times.remove(time)) {
+                          _times.add(time);
+                        }
+                      });
+                    },
                   ),
+
                   16.heightBox,
+
                   LevelFilterSection(
                     sports: widget.sports,
                     gender: _gender,
                     selected: _levels,
-                    onChanged: (gender, levels) => setState(() {
-                      _gender = gender;
-                      _levels = levels;
-                    }),
+                    onChanged: (gender, levels) {
+                      setState(() {
+                        _gender = gender;
+
+                        _levels = levels;
+                      });
+                    },
                   ),
+
                   16.heightBox,
+
                   _sectionLabel(label: l10n.format),
+
                   8.heightBox,
+
                   Row(
                     spacing: getProportionateScreenWidth(6),
                     children: [
                       ToggleChip(
                         label: l10n.allFormats,
                         isSelected: _format == null,
-                        onTap: () => setState(() => _format = null),
+                        onTap: () {
+                          setState(() => _format = null);
+                        },
                       ),
+
                       ToggleChip(
                         label: l10n.singles,
                         isSelected: _format == MatchFormat.singles,
-                        onTap: () =>
-                            setState(() => _format = MatchFormat.singles),
+                        onTap: () {
+                          setState(() => _format = MatchFormat.singles);
+                        },
                       ),
+
                       ToggleChip(
                         label: l10n.doubles,
                         isSelected: _format == MatchFormat.doubles,
-                        onTap: () =>
-                            setState(() => _format = MatchFormat.doubles),
+                        onTap: () {
+                          setState(() => _format = MatchFormat.doubles);
+                        },
                       ),
                     ],
                   ),
+
                   16.heightBox,
+
                   _sectionLabel(label: l10n.city),
+
                   8.heightBox,
+
                   CustomTextField(
                     controller: _searchController,
                     hintText: l10n.search,
@@ -221,44 +343,57 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       });
                     },
                   ),
+
                   8.heightBox,
-                  IntrinsicHeight(
-                    child: Row(
-                      spacing: getProportionateScreenHeight(6),
-                      children: _quickCities.map((city) {
-                        final isSelected =
-                            (_selectedCity ?? '').toLowerCase() ==
-                            city.toLowerCase();
-                        return Expanded(
-                          child: GestureDetector(
+
+                  if (_quickCities.isNotEmpty)
+                    IntrinsicHeight(
+                      child: Row(
+                        spacing: getProportionateScreenHeight(6),
+                        children: _quickCities.map((city) {
+                          final isSelected =
+                              (_selectedCity ?? '').toLowerCase() ==
+                              city.toLowerCase();
+
+                          final distance = _formatCityDistance(city, l10n);
+
+                          return GestureDetector(
                             onTap: () {
                               setState(() {
                                 if (isSelected) {
                                   _selectedCity = null;
+
                                   _searchController.clear();
                                 } else {
                                   _selectedCity = city;
+
                                   _searchController.text = city;
                                 }
                               });
                             },
-                            child: _buildCityCard(
+                            child: buildCityCard(
                               label: city,
+                              distance: distance,
                               isSelected: isSelected,
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
+
                   24.heightBox,
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _sectionLabel(label: l10n.maxDistance),
+
                       GestureDetector(
-                        onTap: () =>
-                            setState(() => _enableDistance = !_enableDistance),
+                        onTap: () {
+                          setState(() {
+                            _enableDistance = !_enableDistance;
+                          });
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
@@ -283,12 +418,15 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       ),
                     ],
                   ),
+
                   6.heightBox,
+
                   DistanceSlider(
                     distance: _distance,
                     onChanged: (value) {
                       setState(() {
                         _distance = value;
+
                         _enableDistance = true;
                       });
                     },
@@ -297,9 +435,13 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
               ).withPaddingSymmetric(20, 0),
             ),
           ),
+
           32.heightBox,
+
           CommonDivider(),
+
           16.heightBox,
+
           Row(
             children: [
               Expanded(
@@ -311,7 +453,9 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                   isEnabled: true,
                 ),
               ),
+
               const SizedBox(width: 12),
+
               Expanded(
                 child: CustomActionButton(
                   buttonText: l10n.showResults,
@@ -324,6 +468,7 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
                       _enableDistance ? _distance : null,
                       _format,
                     );
+
                     Navigator.pop(context);
                   },
                 ),
@@ -336,20 +481,38 @@ class _MatchFilterBottomSheetState extends State<MatchFilterBottomSheet> {
   }
 }
 
-Widget _sectionLabel({required String label}) =>
-    FilterSectionLabel(label: label);
+Widget _sectionLabel({required String label}) {
+  return FilterSectionLabel(label: label);
+}
 
-Widget _buildCityCard({required String label, required bool isSelected}) {
+Widget buildCityCard({
+  required String label,
+  required bool isSelected,
+  required String distance,
+}) {
   return Container(
+    height: 60,
+    width: 105,
     decoration: BoxDecoration(
-      color: isSelected ? kPrimaryColor.withValues(alpha: 0.2) : kGreyColor,
+      color: isSelected ? kPrimaryColor : kGreyColor,
       borderRadius: BorderRadius.circular(12),
-      border: isSelected ? Border.all(color: kPrimaryColor) : null,
     ),
-    child: Text(
-      label,
-      textAlign: TextAlign.center,
-      style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
+    child: Column(
+      spacing: getProportionateScreenHeight(6),
+      children: [
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
+        ),
+
+        Text(
+          distance,
+          style: AppStyles.w400f12inter.copyWith(color: kDarkTextColor),
+        ),
+      ],
     ).withPaddingSymmetric(8, 8),
   );
 }

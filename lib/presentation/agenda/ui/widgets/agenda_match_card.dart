@@ -4,6 +4,7 @@ import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 class AgendaMatchCard extends StatelessWidget {
   final AgendaItem item;
@@ -21,6 +22,7 @@ class AgendaMatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -66,7 +68,7 @@ class AgendaMatchCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        item.location,
+                        "${item.location} • ${getFormatDateMonth(item.bookingDate, locale: l10n.localeName)}",
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),
@@ -75,22 +77,25 @@ class AgendaMatchCard extends StatelessWidget {
                   ),
                 ),
               ],
-            ).withPaddingAll(10),
-            4.heightBox,
-            Wrap(
-              spacing: 4,
-              runSpacing: 4,
+            ),
+            10.heightBox,
+            Row(
               children: [
-                CommonBadge(label: item.dateString),
+                CommonBadge(label: "${item.startTime}-${item.endTime}"),
+                4.widthBox,
                 CommonBadge(
                   label: localizedMatchCategory(context, item.category),
                 ),
+                4.widthBox,
+                CommonBadge(label: l10n.ranking),
+                4.widthBox,
                 if (item.courtStatusLabel != null)
                   _courtConfirmedBadge(item.courtStatusLabel!),
               ],
             ),
             16.heightBox,
             PlayersRow(players: item.players ?? const [], format: item.format),
+            10.heightBox,
             if (isJoinRequest)
               CustomActionButton(
                 backgroundColor: kLightPinkColor,
@@ -101,7 +106,7 @@ class AgendaMatchCard extends StatelessWidget {
                     CancelJoinRequest(matchId: item.id),
                   );
                 },
-              ).withPaddingSymmetric(24, 12)
+              ).withPaddingSymmetric(12, 0)
             else if (item.tab != 'past')
               CustomActionButton(
                 backgroundColor: kPrimaryColor,
@@ -119,9 +124,11 @@ class AgendaMatchCard extends StatelessWidget {
                     ),
                   );
                 },
-              ).withPaddingSymmetric(24, 12),
+              ).withPaddingSymmetric(12, 0)
+            else if(item.tab == 'past')
+              10.heightBox
           ],
-        ),
+        ).withPaddingAll(12),
       ),
     );
   }

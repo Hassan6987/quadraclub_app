@@ -63,7 +63,6 @@ class _TimeCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? kPrimaryColor : kGreyColor,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? null : Border.all(color: kBorderColor),
         ),
         child: Column(
           children: [
@@ -237,7 +236,7 @@ class _SportLevelSection extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
-                        vertical: 2,
+                        vertical: 1,
                       ),
                       decoration: BoxDecoration(
                         color: kPrimaryColor,
