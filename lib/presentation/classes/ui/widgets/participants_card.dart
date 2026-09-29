@@ -76,8 +76,8 @@ class ParticipantsCard extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AppCachedImage(
-                              height: 43,
-                              width: 43,
+                              height: 46,
+                              width: 46,
                               borderRadius: BorderRadius.circular(1000),
                               imageUrl: participant.profilePhoto ?? '',
                             ),
@@ -116,7 +116,7 @@ class ParticipantsCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const CommonPlusAvatar(),
-                          6.heightBox,
+                          4.heightBox,
                           Text(
                             'Vaga',
                             style: AppStyles.w500f12inter.copyWith(

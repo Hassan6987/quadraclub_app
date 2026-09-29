@@ -67,6 +67,15 @@ class RequestSentDialog extends StatelessWidget {
                     style: AppStyles.w500f14inter.copyWith(
                       color: kPrimaryColor,
                     ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          RouteName.customBottomNavbar,
+                              (_) => false,
+                          arguments: {"index": 3, "agendaTabIndex": 1},
+                        );
+                      },
                   ),
                 ],
               ),

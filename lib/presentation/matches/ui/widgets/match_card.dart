@@ -208,18 +208,12 @@ Booking match,
       },
       child: Column(
         children: [
-          Container(
-            width: 47,
-            height: 47,
-            decoration: const BoxDecoration(shape: BoxShape.circle),
-            child: ClipOval(
-              child: player.user?.profilePhoto != null
-                  ? Image.network(player.user!.profilePhoto!, fit: BoxFit.cover)
-                  : Container(
-                      color: kGreyColor,
-                      child: const Icon(Icons.person),
-                    ),
-            ),
+          AppCachedImage(
+            imageUrl: player.user?.profilePhoto ?? '',
+            height: 50,
+            width: 50,
+            fit: BoxFit.cover,
+            borderRadius: BorderRadius.circular(40),
           ),
           const SizedBox(height: 6),
           Text(

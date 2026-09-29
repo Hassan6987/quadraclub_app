@@ -186,6 +186,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       body: BlocConsumer<MatchesBloc, MatchesState>(
         listener: (context, state) {
           if (state.status == MatchesStateStatus.booked) {
+            context.read<AgendaBloc>().add(GetAllAgenda());
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -193,7 +194,6 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             ).then((_) {
               if (!mounted) return;
               Navigator.of(context).popUntil((route) => route.isFirst);
-              context.read<AgendaBloc>().add(GetAllAgenda());
             });
           }
 

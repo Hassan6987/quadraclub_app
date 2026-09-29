@@ -96,8 +96,8 @@ class _ParticipantsAvatars extends StatelessWidget {
               left: i * _overlap,
               child: AppCachedImage(
                 borderRadius: BorderRadius.circular(200),
-                height: _avatarSize,
-                width: _avatarSize,
+                height: 40,
+                width: 40,
                 imageUrl: i < photos.length ? photos[i] : '',
                 border: Border.all(color: kWhiteColor, width: 2),
               ),
