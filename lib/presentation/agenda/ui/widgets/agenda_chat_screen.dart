@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/message_bloc/chat_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/message_tile.dart';
 import 'package:quadraclub_app/presentation/classes/data/classes_repo.dart';
@@ -43,17 +42,6 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
     bloc.add(LoadMessages(widget.chatId));
 
     bloc.add(JoinChat(widget.chatId));
-
-    _markChatReadLocally();
-  }
-
-  void _markChatReadLocally() {
-    final userId = context.read<AuthBloc>().state.user?.id ?? '';
-    if (userId.isEmpty || widget.chatId.isEmpty) return;
-
-    context.read<ChatsBloc>().add(
-      MarkChatReadLocally(chatId: widget.chatId, userId: userId),
-    );
   }
 
   @override
@@ -147,7 +135,6 @@ class _AgendaChatScreenState extends State<AgendaChatScreen> {
             listener: (context, state) {
               if (state is ChatLoaded) {
                 _scrollToBottom();
-                _markChatReadLocally();
               }
             },
             builder: (context, state) {

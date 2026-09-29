@@ -8,6 +8,16 @@ class ChatParticipant {
   const ChatParticipant({required this.id, required this.name, this.avatarUrl});
 }
 
+class MetaInfo{
+  final String dateTime;
+  MetaInfo({required this.dateTime});
+
+  factory MetaInfo.fromJson(Map<String, dynamic>json){
+    return MetaInfo(dateTime: json['dateTime']);
+  }
+
+}
+
 class ChatPreview {
   final String id;
   final String venueName;
@@ -96,30 +106,6 @@ class ChatMessage {
     this.rawJson = const {},
   });
 
-  ChatMessage copyWith({
-    String? id,
-    ChatUser? sender,
-    String? content,
-    String? chatId,
-    List<dynamic>? attachments,
-    List<String>? seenBy,
-    bool? isSystemMessage,
-    DateTime? createdAt,
-    Map<String, dynamic>? rawJson,
-  }) {
-    return ChatMessage(
-      id: id ?? this.id,
-      sender: sender ?? this.sender,
-      content: content ?? this.content,
-      chatId: chatId ?? this.chatId,
-      attachments: attachments ?? this.attachments,
-      seenBy: seenBy ?? this.seenBy,
-      isSystemMessage: isSystemMessage ?? this.isSystemMessage,
-      createdAt: createdAt ?? this.createdAt,
-      rawJson: rawJson ?? this.rawJson,
-    );
-  }
-
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     final chat = json['chat'] ?? json['chatId'];
 
@@ -161,6 +147,7 @@ class ChatMessage {
 
 class Chat {
   final String id;
+  final MetaInfo? metaInfo;
   final String chatName;
   final bool isGroupChat;
   final List<ChatUser> users;
@@ -174,6 +161,7 @@ class Chat {
 
   const Chat({
     required this.id,
+    required this.metaInfo,
     required this.chatName,
     required this.isGroupChat,
     required this.users,
@@ -184,9 +172,7 @@ class Chat {
     this.relatedId,
   });
 
-  bool get isClassroom =>
-      chatType.toLowerCase() == 'classroom' ||
-      chatType.toLowerCase() == 'class';
+  bool get isClassroom => chatType.toLowerCase() == 'classroom' || chatType.toLowerCase() == 'class';
 
   Chat copyWith({
     String? id,
@@ -198,6 +184,7 @@ class Chat {
     DateTime? updatedAt,
     ChatMessage? latestMessage,
     String? relatedId,
+    MetaInfo? metaInfo,
   }) {
     return Chat(
       id: id ?? this.id,
@@ -209,12 +196,14 @@ class Chat {
       updatedAt: updatedAt ?? this.updatedAt,
       latestMessage: latestMessage ?? this.latestMessage,
       relatedId: relatedId ?? this.relatedId,
+      metaInfo: metaInfo ?? this.metaInfo
     );
   }
 
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
       id: json['_id']?.toString() ?? '',
+      metaInfo: MetaInfo.fromJson(json['metaInfo']),
       chatName: json['chatName']?.toString() ?? '',
       isGroupChat: json['isGroupChat'] == true,
       users:

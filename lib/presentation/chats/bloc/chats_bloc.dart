@@ -17,7 +17,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
 
   ChatsBloc() : super(const ChatsInitial()) {
     on<LoadChats>(_onLoadChats);
-    on<MarkChatReadLocally>(_onMarkChatReadLocally);
     on<NewSocketMessage>(_onNewSocketMessage);
 
     _messageSubscription = socketService.messageStream.listen((message) {
@@ -35,31 +34,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     } catch (e) {
       emit(ChatsError(message: e.toString()));
     }
-  }
-
-  void _onMarkChatReadLocally(
-    MarkChatReadLocally event,
-    Emitter<ChatsState> emit,
-  ) {
-    if (state is! ChatsLoaded) return;
-    if (event.chatId.isEmpty || event.userId.isEmpty) return;
-
-    final currentState = state as ChatsLoaded;
-    final chats = currentState.chats.map((chat) {
-      if (chat.id != event.chatId) return chat;
-
-      final latest = chat.latestMessage;
-      if (latest == null) return chat;
-      if (latest.seenBy.contains(event.userId)) return chat;
-
-      return chat.copyWith(
-        latestMessage: latest.copyWith(
-          seenBy: [...latest.seenBy, event.userId],
-        ),
-      );
-    }).toList();
-
-    emit(currentState.copyWith(chats: chats));
   }
 
   void _onNewSocketMessage(NewSocketMessage event, Emitter<ChatsState> emit) {

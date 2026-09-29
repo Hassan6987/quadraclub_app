@@ -9,6 +9,7 @@ const kCourtLightBlue = Color(0xFF3E6D81);
 const kTextPrimaryColor = Color(0xFF13140F);
 const kTextSecondary = Color(0xFF162737);
 const kDarkTextColor = Color(0xFF212121);
+const kChatMessageColor = Color(0xFF58687E);
 const kCardColor = Color(0xFFF5F5F5);
 const kGreyColor = Color(0xFFE6E8EA);
 const kTextColor = Color(0xFF666C7E);

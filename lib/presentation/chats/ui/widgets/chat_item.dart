@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 
 import '/app_exports.dart';
 
@@ -25,7 +26,7 @@ class ChatListItem extends StatelessWidget {
         latestMessage != null && !latestMessage.seenBy.contains(currentUserId);
 
     final String timeAgo = latestMessage == null
-        ? ''
+        ? _formatTimeAgo(chat.updatedAt, l10n)
         : _formatTimeAgo(latestMessage.createdAt, l10n);
 
     return GestureDetector(
@@ -38,55 +39,82 @@ class ChatListItem extends StatelessWidget {
           border: Border.all(color: kCardColor),
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(16),
+          horizontal: getProportionateScreenWidth(12),
           vertical: getProportionateScreenHeight(12),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (chat.users.isNotEmpty)
-              StackedAvatars(
-                imgUrls: chat.users.map((user) => user.profilePhoto).toList(),
-              )
-            else
-              AppCachedImage(
-                borderRadius: BorderRadius.circular(200),
-                height: 32,
-                width: 32,
-                imageUrl: '',
-              ),
-
-            12.widthBox,
-
             Expanded(
+              flex: 2,
+              child: (chat.users.isNotEmpty)
+                  ? StackedAvatars(
+                      imgUrls: chat.users
+                          .map((user) => user.profilePhoto)
+                          .toList(),
+                    )
+                  : AppCachedImage(
+                      borderRadius: BorderRadius.circular(200),
+                      height: 52,
+                      width: 52,
+                      imageUrl: '',
+                    ),
+            ),
+            Expanded(
+              flex: 6,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    chat.chatName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppStyles.w500f14inter.copyWith(
-                      color: kTextPrimaryColor,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          chat.chatName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppStyles.w500f14inter.copyWith(
+                            color: kTextPrimaryColor,
+                          ),
+                        ),
+                      ),
+                      4.widthBox,
+                      _chatTypeBadge(
+                        chat.chatType,
+                        chat.isClassroom ? kGreen06 : kBlueColor,
+                      ),
+                    ],
+                  ),
+                  2.heightBox,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: 12,
+                        color: kChatMessageColor,
+                      ),
+                      Text(
+                        chat.metaInfo?.dateTime ?? '',
+                        overflow: TextOverflow.ellipsis,
+                        style: AppStyles.w400f12inter.copyWith(
+                          color: kChatMessageColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  2.heightBox,
+                    Text(
+                      latestMessage!= null?
+                      "${_getSenderName(context,latestMessage.sender.fullName, latestMessage.sender.id)} : ${latestMessage.content}"
+                      : "New Group Created",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppStyles.w400f12inter.copyWith(color: kTextColor),
                     ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    latestMessage?.content ?? '',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppStyles.w400f12inter.copyWith(color: kTextColor),
-                  ),
                 ],
               ),
             ),
-
-            8.widthBox,
-
-            SizedBox(
-              width: 45,
+            Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -106,9 +134,7 @@ class ChatListItem extends StatelessWidget {
                         ),
                       ).withPaddingSymmetric(8, 4),
                     ),
-
                   if (hasUnread) 12.heightBox,
-
                   Text(
                     timeAgo,
                     style: AppStyles.w400f12inter.copyWith(color: kTextColor),
@@ -144,4 +170,23 @@ class ChatListItem extends StatelessWidget {
 
     return DateFormat('MMM d', l10n.localeName).format(dateTime);
   }
+
+  String _getSenderName(BuildContext context, String name, String id) {
+    final currentUserId = context.read<AuthBloc>().state.user?.id;
+
+    if (currentUserId == id) {
+      return "You";
+    }
+    return name.trim().split(RegExp(r'\s+')).first;
+  }
+
+  Widget _chatTypeBadge(String label,Color color) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.10),
+      border: Border.all(color: color),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Text(label, style: AppStyles.w500f10inter.copyWith(color: color)),
+  );
 }

@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
-import 'package:quadraclub_app/presentation/chats/bloc/chats_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/message_bloc/chat_bloc.dart';
 import 'package:quadraclub_app/presentation/chats/ui/widgets/message_tile.dart';
 import 'package:quadraclub_app/presentation/classes/data/classes_repo.dart';
@@ -33,17 +32,6 @@ class _ChatScreenState extends State<ChatScreen> {
     bloc.add(LoadMessages(widget.chat.id));
 
     bloc.add(JoinChat(widget.chat.id));
-
-    _markChatReadLocally();
-  }
-
-  void _markChatReadLocally() {
-    final userId = context.read<AuthBloc>().state.user?.id ?? '';
-    if (userId.isEmpty) return;
-
-    context.read<ChatsBloc>().add(
-      MarkChatReadLocally(chatId: widget.chat.id, userId: userId),
-    );
   }
 
   @override
@@ -155,12 +143,11 @@ class _ChatScreenState extends State<ChatScreen> {
             listener: (context, state) {
               if (state is ChatLoaded) {
                 _scrollToBottom();
-                _markChatReadLocally();
               }
             },
             builder: (context, state) {
               if (state is ChatLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CustomLoadingView());
               }
 
               if (state is ChatError) {

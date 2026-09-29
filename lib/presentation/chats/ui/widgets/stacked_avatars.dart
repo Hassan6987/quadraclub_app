@@ -8,16 +8,21 @@ class StackedAvatars extends StatelessWidget {
   const StackedAvatars({
     super.key,
     required this.imgUrls,
-    this.avatarSize = 32,
+    this.avatarSize = 35,
     this.maxVisible = 3,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool isSingleImage = imgUrls.length == 1;
     final bool showExtraCount = imgUrls.length > maxVisible;
 
-    // If more than 3 -> show first 2 + "+N"
-    // If exactly (or fewer than) 3 -> show all of them, no count bubble
+    // Single image = 52x52
+    // Multiple images = avatarSize (32x32 by default)
+    final double effectiveAvatarSize = isSingleImage ? 52 : avatarSize;
+
+    // If more than maxVisible -> show first 2 + "+N"
+    // Otherwise show all images
     final List<String?> displayList = showExtraCount
         ? imgUrls.take(2).toList()
         : imgUrls.take(maxVisible).toList();
@@ -26,36 +31,35 @@ class StackedAvatars extends StatelessWidget {
         ? imgUrls.length - displayList.length
         : 0;
 
-    final int totalSlots = displayList.length + (extraCount > 0 ? 1 : 0);
-    final double totalWidth =
-        avatarSize + (totalSlots - 1) * (avatarSize * 0.55);
-
     return SizedBox(
-      width: totalWidth,
-      height: avatarSize,
+      width: 52,
+      height: 52,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          ...displayList.asMap().entries.map((e) {
+          ...displayList.asMap().entries.map((entry) {
             return Positioned(
-              left: e.key * (avatarSize * 0.55),
+              left: entry.key * (effectiveAvatarSize * 0.55),
               child: AppCachedImage(
                 borderRadius: BorderRadius.circular(200),
-                height: avatarSize,
-                width: avatarSize,
-                imageUrl: e.value,
+                height: effectiveAvatarSize,
+                width: effectiveAvatarSize,
+                imageUrl: entry.value,
               ),
             );
           }),
+
           if (extraCount > 0)
             Positioned(
-              left: displayList.length * (avatarSize * 0.55),
+              left: displayList.length * (effectiveAvatarSize * 0.55),
               child: CircleAvatar(
-                radius: avatarSize / 2,
+                radius: effectiveAvatarSize / 2,
                 backgroundColor: kGreyColor,
                 child: Text(
                   '+$extraCount',
-                  style: AppStyles.w500f12inter.copyWith(color: kDarkTextColor),
+                  style: AppStyles.w500f12inter.copyWith(
+                    color: kDarkTextColor,
+                  ),
                 ),
               ),
             ),
