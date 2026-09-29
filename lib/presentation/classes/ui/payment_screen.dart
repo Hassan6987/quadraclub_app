@@ -5,6 +5,7 @@ import 'package:quadraclub_app/di/locator.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/profile/ui/widgets/terms_services_screen.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
@@ -390,10 +391,32 @@ class _PaymentForLessonScreenState extends State<PaymentForLessonScreen> {
                             ),
                             6.widthBox,
                             Expanded(
-                              child: Text(
-                                l10n.agreeToTermsOfUse,
-                                style: AppStyles.w400f14inter.copyWith(
-                                  color: kTextColor,
+                              child: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: l10n.agreeToThe,
+                                      style: AppStyles.w400f14inter.copyWith(
+                                        color: kTextColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: l10n.termsOfUse,
+                                      style: AppStyles.w400f14inter.copyWith(
+                                        color: kBlueColor,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const TermsScreen(),
+                                            ),
+                                          );
+                                        },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

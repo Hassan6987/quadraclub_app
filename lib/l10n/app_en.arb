@@ -176,7 +176,7 @@
   "afterPaymentCoachApproval": "After payment, your request will be sent to the Coach for approval.",
   "paymentMethod": "PAYMENT METHOD",
   "insufficientPortfolioBalance": "Insufficient portfolio balance",
-  "agreeToTermsOfUse": "I agree to the terms of use.",
+  "agreeToThe": "I agree to the ",
   "filters": "Filters",
   "timeOfDay": "Time of Day",
   "morning": "Morning",
@@ -570,5 +570,6 @@
   "tagOneOff": "One-off",
   "tagStrategic": "Strategic",
   "tagArriveEarly": "Arrive Early",
-  "tagGoodEnergy": "Good Energy"
+  "tagGoodEnergy": "Good Energy",
+  "termsOfUse": "Terms of Use"
 }

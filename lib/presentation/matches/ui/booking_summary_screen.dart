@@ -7,6 +7,7 @@ import 'package:quadraclub_app/presentation/matches/bloc/matches_bloc.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/request_sent_dialog.dart';
+import 'package:quadraclub_app/presentation/profile/ui/widgets/terms_services_screen.dart';
 import 'package:quadraclub_app/utils/card_validators.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 import 'package:quadraclub_app/utils/components/service_fee_amount.dart';
@@ -290,10 +291,32 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                                   setState(() => _agreedToTerms = val ?? false),
                             ),
                             Expanded(
-                              child: Text(
-                                l10n.agreeToTermsOfUse,
-                                style: AppStyles.w400f14inter.copyWith(
-                                  color: kTextColor,
+                              child: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: l10n.agreeToThe,
+                                      style: AppStyles.w400f14inter.copyWith(
+                                        color: kTextColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: l10n.termsOfUse,
+                                      style: AppStyles.w400f14inter.copyWith(
+                                        color: kBlueColor,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const TermsScreen(),
+                                            ),
+                                          );
+                                        },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

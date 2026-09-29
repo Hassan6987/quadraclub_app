@@ -902,11 +902,11 @@ abstract class AppLocalizations {
   /// **'Insufficient portfolio balance'**
   String get insufficientPortfolioBalance;
 
-  /// No description provided for @agreeToTermsOfUse.
+  /// No description provided for @agreeToThe.
   ///
   /// In en, this message translates to:
-  /// **'I agree to the terms of use.'**
-  String get agreeToTermsOfUse;
+  /// **'I agree to the '**
+  String get agreeToThe;
 
   /// No description provided for @filters.
   ///
@@ -2539,6 +2539,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Good Energy'**
   String get tagGoodEnergy;
+
+  /// No description provided for @termsOfUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get termsOfUse;
 }
 
 class _AppLocalizationsDelegate

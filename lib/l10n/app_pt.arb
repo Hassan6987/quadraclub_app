@@ -134,7 +134,7 @@
   "afterPaymentCoachApproval": "Após o pagamento, sua solicitação será enviada ao professor para aprovação.",
   "paymentMethod": "MÉTODO DE PAGAMENTO",
   "insufficientPortfolioBalance": "Saldo insuficiente no portfólio",
-  "agreeToTermsOfUse": "Concordo com os termos de uso.",
+  "agreeToThe": "Eu concordo com o ",
   "filters": "Filtros",
   "timeOfDay": "Horário",
   "morning": "Manhã",
@@ -518,5 +518,6 @@
   "tagOneOff": "Pontual",
   "tagStrategic": "Estratégico",
   "tagArriveEarly": "Chega Cedo",
-  "tagGoodEnergy": "Boa Energia"
+  "tagGoodEnergy": "Boa Energia",
+  "termsOfUse": "Termos de Uso"
 }

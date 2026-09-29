@@ -69,7 +69,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_quill: ^11.5.0
-#  webview_flutter: ^4.13.0
+  webview_flutter: ^4.13.0
 
   #  awesome_notifications: ^0.10.1
   firebase_core: ^4.2.1

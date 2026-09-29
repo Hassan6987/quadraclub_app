@@ -444,7 +444,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insufficientPortfolioBalance => 'Insufficient portfolio balance';
 
   @override
-  String get agreeToTermsOfUse => 'I agree to the terms of use.';
+  String get agreeToThe => 'I agree to the ';
 
   @override
   String get filters => 'Filters';
@@ -1365,4 +1365,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tagGoodEnergy => 'Good Energy';
+
+  @override
+  String get termsOfUse => 'Terms of Use';
 }
