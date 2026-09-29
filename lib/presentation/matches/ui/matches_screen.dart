@@ -30,10 +30,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
   bool _hasUserLocation = false;
 
-  final Set<String> _selectedSports = {};
-
   /// Level sections follow the header's sport selection.
   List<String> get _levelSports => _selectedSports.toList();
+
+  Set<String> get _selectedSports =>
+      context.watch<DiscoverySportFilter>().selected;
 
   late final DateTime _anchorDate;
   DateTime? _selectedDate;
@@ -48,20 +49,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
   MatchFormat? _filterFormat;
 
   @override
-  @override
   void initState() {
     super.initState();
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
-    _selectedSports.addAll(_profileSportSlugs());
-    _initUserLocation();
-  }
-
-  Set<String> _profileSportSlugs() {
-    final user = context.read<AuthBloc>().state.user;
-    return defaultSelectedSportSlugs(
-      user?.sportsInfo.map((s) => s.sport) ?? const [],
+    context.read<DiscoverySportFilter>().ensureInitialized(
+      context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
+          const [],
     );
+    _initUserLocation();
   }
 
   Future<void> _initUserLocation() async {
@@ -223,7 +219,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   void _toggleSport(String sport) {
-    setState(() => toggleSportSelection(_selectedSports, sport));
+    context.read<DiscoverySportFilter>().toggle(sport);
   }
 
   bool _isSameDate(DateTime a, DateTime? b) {

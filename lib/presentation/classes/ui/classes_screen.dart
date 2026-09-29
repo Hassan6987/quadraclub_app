@@ -1,6 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
@@ -20,8 +21,6 @@ class ClassesScreen extends StatefulWidget {
 }
 
 class _ClassesScreenState extends State<ClassesScreen> {
-  final Set<String> _selectedSports = {};
-
   bool _isMapView = false;
   String _currentLocation = 'London, UK';
 
@@ -38,6 +37,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   /// Level sections follow the header's sport selection.
   List<String> get _levelSports => _selectedSports.toList();
+
+  Set<String> get _selectedSports =>
+      context.watch<DiscoverySportFilter>().selected;
 
   static const double _defaultDistance = 25;
   double _distance = _defaultDistance;
@@ -203,20 +205,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
   }
 
   @override
-  @override
   void initState() {
     super.initState();
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
-    _selectedSports.addAll(_profileSportSlugs());
-    _initUserLocation();
-  }
-
-  Set<String> _profileSportSlugs() {
-    final user = context.read<AuthBloc>().state.user;
-    return defaultSelectedSportSlugs(
-      user?.sportsInfo.map((s) => s.sport) ?? const [],
+    context.read<DiscoverySportFilter>().ensureInitialized(
+      context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
+          const [],
     );
+    _initUserLocation();
   }
 
   @override
@@ -226,7 +223,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
   }
 
   void _toggleSport(String sport) {
-    setState(() => toggleSportSelection(_selectedSports, sport));
+    context.read<DiscoverySportFilter>().toggle(sport);
   }
 
   List<Widget> _activeFilterBadges(AppLocalizations l10n) {

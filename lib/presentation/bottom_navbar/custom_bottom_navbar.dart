@@ -102,7 +102,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                               BlendMode.srcIn,
                             ),
                           ),
-                          6.heightBox,
+
                           Text(
                             labels[i],
                             style:

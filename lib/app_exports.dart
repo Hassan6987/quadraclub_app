@@ -41,6 +41,7 @@ export 'package:quadraclub_app/presentation/classes/ui/widgets/payment_form.dart
 export 'package:quadraclub_app/presentation/classes/ui/widgets/portfolio_option.dart';
 export 'package:quadraclub_app/presentation/classes/ui/widgets/price_card.dart';
 export 'package:quadraclub_app/presentation/classes/ui/widgets/toggle_chip.dart';
+export 'package:quadraclub_app/presentation/common/discovery_sport_filter.dart';
 export 'package:quadraclub_app/presentation/common/widgets/common_avatar_stack_row.dart';
 export 'package:quadraclub_app/presentation/common/widgets/common_chip.dart';
 export 'package:quadraclub_app/presentation/common/widgets/common_date_selection_row.dart';

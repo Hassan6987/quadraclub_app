@@ -31,8 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
   bool _hasUserLocation = false;
 
-  final Set<String> _selectedSports = {};
-
   // Anchor is fixed once (today, at load time) so the two-week strip doesn't
   // shift underneath the user; _selectedDate moves as they tap a day.
   late final DateTime _anchorDate;
@@ -45,13 +43,19 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _filterCity;
   double? _filterDistance;
 
+  Set<String> get _selectedSports =>
+      context.watch<DiscoverySportFilter>().selected;
+
   @override
   void initState() {
     super.initState();
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
     _selectedDate = _anchorDate;
-    _selectedSports.addAll(_profileSportSlugs());
+    context.read<DiscoverySportFilter>().ensureInitialized(
+      context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
+          const [],
+    );
     _initUserLocation();
   }
 
@@ -278,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _toggleSport(String sport) {
-    setState(() => toggleSportSelection(_selectedSports, sport));
+    context.read<DiscoverySportFilter>().toggle(sport);
   }
 
   @override
@@ -417,13 +421,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 setState(() {
                                   _searchController.clear();
                                   _searchQuery = '';
-                                  _selectedSports
-                                    ..clear()
-                                    ..addAll(_profileSportSlugs());
                                   _filterTimes.clear();
                                   _filterCity = null;
                                   _filterDistance = null;
                                 });
+                                context.read<DiscoverySportFilter>().replace(
+                                  _profileSportSlugs(),
+                                );
                               },
                               child: Text(l10n.resetFilters),
                             ),

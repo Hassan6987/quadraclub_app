@@ -56,6 +56,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => LanguageProvider(initialLocale: initialLocale),
         ),
+        ChangeNotifierProvider(create: (_) => DiscoverySportFilter()),
         BlocProvider(create: (context) => AuthBloc()..add(AuthStarted())),
         BlocProvider(create: (context) => CourtsBloc()..add(LoadCourts())),
         BlocProvider(create: (_) => ChatsBloc()..add(const LoadChats())),
