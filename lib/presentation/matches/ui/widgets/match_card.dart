@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/player_profile_screen.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
@@ -27,18 +28,18 @@ class MatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Opacity(
-      opacity: match.isFull == true ? 0.7 : 1,
+      opacity: match.isFull == true ? 0.6 : 1,
       child: GestureDetector(
         // The player avatars have their own detectors and win the gesture
         // arena, so tapping one still opens that player's profile.
-        onTap: onTap,
+        onTap: match.isFull == true ? null :onTap,
         behavior: HitTestBehavior.opaque,
         child: Container(
           margin: EdgeInsets.symmetric(
             horizontal: getProportionateScreenWidth(20),
             vertical: getProportionateScreenHeight(12),
           ),
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.symmetric(horizontal:  0,vertical:  10),
           decoration: BoxDecoration(
             color: kWhiteColor,
             borderRadius: BorderRadius.circular(24),
@@ -86,14 +87,22 @@ class MatchCard extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              ).withPaddingSymmetric(10, 0),
               8.heightBox,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CommonBadge(label: '${match.startTime}-${match.endTime}'),
                   CommonBadge(
-                    label: localizedMatchCategory(context, match.category),
+                    label: localizedMatchCategory(context, match.bookedBy?.sportsInfo
+                        ?.firstWhere(
+                          (info) => info.sport == match.sport.label,
+                      orElse: () => SportsInfoModel(
+                        sport: '',
+                        category: 'Beginner',
+                        preferredSide: '',
+                      ),
+                    ).category ?? AppLocalizations.of(context)!.beginner,),
                   ),
                   CommonBadge(label: l10n.ranking),
                   buildCourtStatusBadge(context, match),
@@ -118,14 +127,14 @@ Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (int i = 0; i < match.playersDetail.length; i++) ...[
-          buildPlayer(cxt, match.playersDetail[i], onTap),
+          buildPlayer(cxt, match.playersDetail[i],match ,onTap),
 
           // Divider always sits at the midpoint of the format
           // (after slot 1 of 2 for singles, after slot 2 of 4 for doubles),
           // regardless of how many slots are filled vs. open.
           if (i == (totalSlots ~/ 2) - 1)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: SizedBox(
                 height: 48,
                 child: VerticalDivider(color: kBorderColor, thickness: 1),
@@ -140,6 +149,7 @@ Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
 Widget buildPlayer(
   BuildContext cxt,
   PlayersDetail player,
+Booking match,
   VoidCallback? onTap,
 ) {
   if (player.user == null) {
@@ -199,8 +209,8 @@ Widget buildPlayer(
       child: Column(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 47,
+            height: 47,
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: player.user?.profilePhoto != null
@@ -218,8 +228,19 @@ Widget buildPlayer(
             style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
           ),
           Text(
-            player.slotName ?? AppLocalizations.of(cxt)!.beginner,
-            style: AppStyles.w400f12inter.copyWith(color: kGreyTextColor),
+            player.user?.sportsInfo
+                ?.firstWhere(
+                  (info) => info.sport == match.sport.label,
+              orElse: () => SportsInfoModel(
+                sport: '',
+                category: 'Unknown',
+                preferredSide: '',
+              ),
+            ).category ??
+                AppLocalizations.of(cxt)!.beginner,
+            style: AppStyles.w400f12inter.copyWith(
+              color: kGreyTextColor,
+            ),
           ),
         ],
       ),

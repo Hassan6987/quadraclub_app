@@ -72,6 +72,7 @@ class Booking {
     required this.serviceFee,
     required this.status,
     required this.playersDetail,
+    required this.bookedBy,
     required this.createdAt,
     required this.updatedAt,
     required this.bookingId,
@@ -97,6 +98,7 @@ class Booking {
   final int? serviceFee;
   final CourtStatus status;
   final List<PlayersDetail> playersDetail;
+  final BookedBy? bookedBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? bookingId;
@@ -138,6 +140,7 @@ class Booking {
           : List<PlayersDetail>.from(
               json["playersDetail"]!.map((x) => PlayersDetail.fromJson(x)),
             ),
+      bookedBy: BookedBy.fromJson(json['bookedBy']),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       bookingId: json["bookingId"],
