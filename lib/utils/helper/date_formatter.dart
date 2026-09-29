@@ -46,6 +46,11 @@ String getFormatDateMonthYear(DateTime? date, {String? locale}) {
   return DateFormat('d MMM, yyyy', locale).format(date);
 }
 
+String getFormatDateMonthYearDashed(DateTime? date, {String? locale}) {
+  if (date == null) return '—';
+  return DateFormat('dd/MM/yyyy', locale).format(date);
+}
+
 double getDistanceKm({
   required double? fromLat,
   required double? fromLng,

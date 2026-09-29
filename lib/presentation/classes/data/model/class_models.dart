@@ -312,24 +312,28 @@ class Participant {
     required this.fullName,
     required this.email,
     required this.profilePhoto,
+    required this.level,
   });
 
   final String? id;
   final String? fullName;
   final String? email;
   final String? profilePhoto;
+  final String level;
 
   Participant copyWith({
     String? id,
     String? fullName,
     String? email,
     String? profilePhoto,
+    String? level,
   }) {
     return Participant(
       id: id ?? this.id,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
       profilePhoto: profilePhoto ?? this.profilePhoto,
+      level: level ?? this.level
     );
   }
 
@@ -339,6 +343,7 @@ class Participant {
       fullName: json["fullName"],
       email: json["email"],
       profilePhoto: json["profilePhoto"],
+      level: json["level"] ?? "Beginner"
     );
   }
 }

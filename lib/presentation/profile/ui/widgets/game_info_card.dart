@@ -64,9 +64,11 @@ Widget buildInfoRow({required String label, required String value}) {
           ),
         ),
       ),
-      Text(
-        value,
-        style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+      Flexible(
+        child: Text(
+          value,
+          style: AppStyles.w500f14inter.copyWith(color: kDarkTextColor),
+        ),
       ),
     ],
   );
