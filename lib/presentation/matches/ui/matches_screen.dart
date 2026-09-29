@@ -37,7 +37,17 @@ class _MatchesScreenState extends State<MatchesScreen> {
       context.watch<DiscoverySportFilter>().selected;
 
   late final DateTime _anchorDate;
-  DateTime? _selectedDate;
+
+  /// The highlighted day in the strip. Starts on today and only changes when
+  /// the user taps an available day — it navigates the list, it never filters
+  /// it.
+  late DateTime _selectedDate;
+
+  /// One key per rendered day section, so tapping a day can scroll the list
+  /// to it.
+  final Map<String, GlobalKey> _sectionKeys = {};
+
+  final ScrollController _listController = ScrollController();
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -53,6 +63,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     super.initState();
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
+    _selectedDate = _anchorDate;
     context.read<DiscoverySportFilter>().ensureInitialized(
       context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
           const [],
@@ -112,7 +123,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
         return false;
       }
 
-      // --- new: date filter ---
+      // Past days are never listed: the date strip starts on today.
       final matchDate = match.bookingDate;
       if (matchDate == null) return false;
       final matchDateOnly = DateTime(
@@ -120,7 +131,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
         matchDate.month,
         matchDate.day,
       );
-      if (!_isSameDate(matchDateOnly, _selectedDate)) {
+      if (matchDateOnly.isBefore(_anchorDate)) {
         return false;
       }
 
@@ -162,7 +173,23 @@ class _MatchesScreenState extends State<MatchesScreen> {
       return true;
     }).toList();
 
-    filtered.sort((a, b) => _clubDistance(a).compareTo(_clubDistance(b)));
+    // Chronological: the day sections then run in the same order as the date
+    // strip, so "go to this day" always lands on a real section.
+    filtered.sort((a, b) {
+      final aDate = a.bookingDate;
+      final bDate = b.bookingDate;
+
+      if (aDate != null && bDate != null) {
+        final byDay = DateTime(aDate.year, aDate.month, aDate.day).compareTo(
+          DateTime(bDate.year, bDate.month, bDate.day),
+        );
+
+        if (byDay != 0) return byDay;
+      }
+
+      return (a.startTime ?? '').compareTo(b.startTime ?? '');
+    });
+
     return filtered;
   }
 
@@ -229,39 +256,81 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  Map<String, List<Booking>> _groupedBookings(List<Booking> allBookings) {
+  Map<String, List<Booking>> _groupedBookings(List<Booking> matches) {
     final l10n = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final tomorrow = today.add(const Duration(days: 1));
     final result = <String, List<Booking>>{};
 
-    for (final c in _filteredMatches(allBookings)) {
-      final classDate = c.bookingDate;
-      if (classDate == null) {
+    for (final match in matches) {
+      final date = match.bookingDate;
+      if (date == null) {
         continue;
       }
-      final dateOnly = DateTime(classDate.year, classDate.month, classDate.day);
-      final date = DateFormat('d MMM', l10n.localeName).format(dateOnly);
-      final String label;
 
-      if (_isSameDate(dateOnly, today)) {
-        label = l10n.todayWithDate(date);
-      } else if (_isSameDate(dateOnly, tomorrow)) {
-        label = l10n.tomorrowWithDate(date);
-      } else {
-        label = date;
-      }
+      final label = _daySectionLabel(date, l10n);
 
-      result.putIfAbsent(label, () => []).add(c);
+      result.putIfAbsent(label, () => []).add(match);
     }
 
     return result;
   }
 
+  /// `yyyy-MM-dd` keys of the days that still have a match once every other
+  /// filter has been applied — the strip greys the empty ones out.
+  Set<String> _availableDateKeys(List<Booking> matches) {
+    final keys = <String>{};
+
+    for (final match in matches) {
+      final date = match.bookingDate;
+      if (date == null) continue;
+
+      keys.add(dateKey(DateTime(date.year, date.month, date.day)));
+    }
+
+    return keys;
+  }
+
+  /// The label a day section is rendered with — also the key its [GlobalKey]
+  /// is filed under, which is how tapping a date finds its section.
+  String _daySectionLabel(DateTime date, AppLocalizations l10n) {
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final formatted = DateFormat('d MMM', l10n.localeName).format(dateOnly);
+
+    if (_isSameDate(dateOnly, today)) {
+      return l10n.todayWithDate(formatted);
+    }
+
+    if (_isSameDate(dateOnly, today.add(const Duration(days: 1)))) {
+      return l10n.tomorrowWithDate(formatted);
+    }
+
+    return formatted;
+  }
+
+  /// Smoothly scrolls the list to the section of [date]. The strip only lets
+  /// days with a section be tapped, so the key is always there.
+  void _scrollToDay(DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
+    final sectionContext = _sectionKeys[_daySectionLabel(
+      date,
+      l10n,
+    )]?.currentContext;
+
+    if (sectionContext == null) return;
+
+    Scrollable.ensureVisible(
+      sectionContext,
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      alignment: 0,
+    );
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
+    _listController.dispose();
     super.dispose();
   }
 
@@ -299,7 +368,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
             selectedSports: _selectedSports,
           );
         }
-        final grouped = _groupedBookings(state.bookings);
+        final filtered = _filteredMatches(state.bookings);
+        final grouped = _groupedBookings(filtered);
+        final availableDateKeys = _availableDateKeys(filtered);
         final hasActiveFilters =
             _filterTimes.isNotEmpty ||
             _filterGender != GenderFilter.misto ||
@@ -365,7 +436,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 onMapTap: () => setState(() => _isMapView = true),
                 dates: _dates,
                 selectedDate: _selectedDate,
-                onDateSelected: (date) => setState(() => _selectedDate = date),
+                availableDateKeys: availableDateKeys,
+                onDateSelected: (date) {
+                  setState(() => _selectedDate = date);
+                  _scrollToDay(date);
+                },
               ),
               Expanded(
                 child:
@@ -381,19 +456,32 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           ),
                         ),
                       )
-                    : ListView(
-                        children: [
-                          for (final entry in grouped.entries) ...[
-                            _dateGroupHeader(label: entry.key),
-                            for (final match in entry.value)
-                              MatchCard(
-                                match: match,
-                                distanceKm: _clubDistance(match),
-                                onTap: () =>
-                                    _openJoinMatch(match, _clubDistance(match)),
+                    // Every day section is laid out, not lazily built, so a tap
+                    // on the date strip can scroll straight to its section.
+                    : SingleChildScrollView(
+                        controller: _listController,
+                        padding: const EdgeInsets.only(top: 4, bottom: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (final entry in grouped.entries) ...[
+                              KeyedSubtree(
+                                key: _sectionKeys.putIfAbsent(
+                                  entry.key,
+                                  () => GlobalKey(),
+                                ),
+                                child: _dateGroupHeader(label: entry.key),
                               ),
+                              for (final match in entry.value)
+                                MatchCard(
+                                  match: match,
+                                  distanceKm: _clubDistance(match),
+                                  onTap: () =>
+                                      _openJoinMatch(match, _clubDistance(match)),
+                                ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
               ),
             ],

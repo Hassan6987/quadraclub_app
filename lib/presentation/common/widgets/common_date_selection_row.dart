@@ -1,13 +1,24 @@
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 /// Horizontal date strip. Squares are sized so exactly
 /// [_visibleSquares] of them fit across the viewport, whatever the
 /// device width.
-class CommonDateSelectionRow extends StatelessWidget {
+///
+/// The strip navigates, it does not filter: tapping a day hands it to
+/// [onDateSelected] (the screen scrolls its list to that day) and slides the
+/// tapped square to the middle of the strip. Days with nothing to show are
+/// greyed out and cannot be tapped.
+class CommonDateSelectionRow extends StatefulWidget {
   final List<DateTime> dates;
   final DateTime? selectedDate;
   final ValueChanged<DateTime> onDateSelected;
+
+  /// `yyyy-MM-dd` keys of the days that actually have something to show.
+  /// `null` leaves every day selectable (Courts page, where a day always has
+  /// slots).
+  final Set<String>? availableDateKeys;
 
   /// Inset of the strip itself. Pass 0 when the row already sits inside a
   /// padded parent so the squares keep the same size everywhere.
@@ -18,11 +29,25 @@ class CommonDateSelectionRow extends StatelessWidget {
     required this.dates,
     required this.selectedDate,
     required this.onDateSelected,
+    this.availableDateKeys,
     this.horizontalPadding = 16,
   });
 
   static const double _gap = 8;
   static const int _visibleSquares = 5;
+
+  @override
+  State<CommonDateSelectionRow> createState() => _CommonDateSelectionRowState();
+}
+
+class _CommonDateSelectionRowState extends State<CommonDateSelectionRow> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,44 +57,66 @@ class CommonDateSelectionRow extends StatelessWidget {
         builder: (context, constraints) {
           final squareWidth =
               (constraints.maxWidth -
-                  (horizontalPadding * 2) -
-                  (_gap * (_visibleSquares - 1))) /
-              _visibleSquares;
+                  (widget.horizontalPadding * 2) -
+                  (CommonDateSelectionRow._gap *
+                      (CommonDateSelectionRow._visibleSquares - 1))) /
+              CommonDateSelectionRow._visibleSquares;
 
           return ListView.separated(
+            controller: _scrollController,
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-            itemCount: dates.length,
-            separatorBuilder: (_, _) => const SizedBox(width: _gap),
+            padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
+            itemCount: widget.dates.length,
+            separatorBuilder: (_, _) =>
+                const SizedBox(width: CommonDateSelectionRow._gap),
             itemBuilder: (context, index) {
-              final date = dates[index];
-              final isSelected = _isSameDay(date, selectedDate);
+              final date = widget.dates[index];
+              final isSelected = _isSameDay(date, widget.selectedDate);
+              final isAvailable = _isAvailable(date);
               final locale = Localizations.localeOf(context).toString();
               final dayName = DateFormat.E(locale).format(date);
               final month = DateFormat.MMM(locale).format(date);
 
               return GestureDetector(
-                onTap: () => onDateSelected(date),
-                child: Container(
-                  width: squareWidth,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? kPrimaryColor : kWhiteColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: isSelected ? null : Border.all(color: kBorderColor),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _label(dayName, AppStyles.w400f10inter),
-                      const SizedBox(height: 2),
-                      _label('${date.day}', AppStyles.w600f16inter),
-                      const SizedBox(height: 2),
-                      _label(month, AppStyles.w400f10inter),
-                    ],
+                onTap: isAvailable
+                    ? () {
+                        widget.onDateSelected(date);
+                        _centerSquare(
+                          index,
+                          squareWidth,
+                          constraints.maxWidth,
+                        );
+                      }
+                    : null,
+                child: Opacity(
+                  opacity: isAvailable ? 1 : 0.5,
+                  child: Container(
+                    width: squareWidth,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected ? kPrimaryColor : kWhiteColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: isSelected
+                          ? null
+                          : Border.all(color: kBorderColor),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _label(dayName, AppStyles.w400f10inter, isAvailable),
+                        const SizedBox(height: 2),
+                        _label(
+                          '${date.day}',
+                          AppStyles.w600f16inter,
+                          isAvailable,
+                        ),
+                        const SizedBox(height: 2),
+                        _label(month, AppStyles.w400f10inter, isAvailable),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -80,14 +127,45 @@ class CommonDateSelectionRow extends StatelessWidget {
     );
   }
 
+  /// Slides the tapped square to the middle of the strip without running past
+  /// either end of the list.
+  void _centerSquare(int index, double squareWidth, double viewportWidth) {
+    if (!_scrollController.hasClients) return;
+
+    final itemExtent = squareWidth + CommonDateSelectionRow._gap;
+    final target =
+        widget.horizontalPadding +
+        (index * itemExtent) +
+        (squareWidth / 2) -
+        (viewportWidth / 2);
+
+    _scrollController.animateTo(
+      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  /// Days without content are not selectable — the strip only ever points at
+  /// a day the list below can actually scroll to.
+  bool _isAvailable(DateTime date) {
+    final keys = widget.availableDateKeys;
+    if (keys == null) return true;
+
+    return keys.contains(dateKey(date));
+  }
+
   /// `height: 1` keeps every square the same size regardless of the font's
   /// natural line spacing, which is what lets 5 of them fit on screen.
-  Widget _label(String text, TextStyle style) => FittedBox(
+  Widget _label(String text, TextStyle style, bool isAvailable) => FittedBox(
     fit: BoxFit.scaleDown,
     child: Text(
       text,
       maxLines: 1,
-      style: style.copyWith(color: kDarkTextColor, height: 1),
+      style: style.copyWith(
+        color: isAvailable ? kDarkTextColor : kGreyB8,
+        height: 1,
+      ),
     ),
   );
 

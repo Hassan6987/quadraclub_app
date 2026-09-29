@@ -1,7 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/bloc/classes_bloc.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
@@ -10,6 +9,7 @@ import 'package:quadraclub_app/presentation/classes/ui/widgets/class_map_view.da
 import 'package:quadraclub_app/presentation/classes/ui/widgets/filter_bottom_sheet.dart';
 import 'package:quadraclub_app/presentation/home/data/models/location_result.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 import '/app_exports.dart';
 
@@ -25,7 +25,17 @@ class _ClassesScreenState extends State<ClassesScreen> {
   String _currentLocation = 'London, UK';
 
   late final DateTime _anchorDate;
-  DateTime? _selectedDate;
+
+  /// The highlighted day in the strip. Starts on today and only changes when
+  /// the user taps an available day — it navigates the list, it never filters
+  /// it.
+  late DateTime _selectedDate;
+
+  /// One key per rendered day section, so tapping a day can scroll the list
+  /// to it.
+  final Map<String, GlobalKey> _sectionKeys = {};
+
+  final ScrollController _listController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
@@ -77,7 +87,19 @@ class _ClassesScreenState extends State<ClassesScreen> {
       // -------------------------
       // Date
       // -------------------------
-      final matchesDate = c.date != null && _isSameDate(c.date!, _selectedDate);
+      // Past days are never listed: the strip starts on today. The selected
+      // day does not filter anything — tapping it only scrolls the list.
+      final classDate = c.date;
+      if (classDate == null) {
+        return false;
+      }
+      if (DateTime(
+        classDate.year,
+        classDate.month,
+        classDate.day,
+      ).isBefore(_anchorDate)) {
+        return false;
+      }
 
       // -------------------------
       // Time of day
@@ -119,50 +141,99 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
       return matchesSport &&
           matchesSearch &&
-          matchesDate &&
           matchesTime &&
           matchesLevel &&
           matchesFormat &&
           matchesDistance &&
           matchesCity;
-    }).toList();
+    }).toList()
+      // Chronological, so the day sections run in the same order as the strip.
+      ..sort((a, b) {
+        final aDate = a.date;
+        final bDate = b.date;
+
+        if (aDate != null && bDate != null) {
+          final byDay = DateTime(aDate.year, aDate.month, aDate.day).compareTo(
+            DateTime(bDate.year, bDate.month, bDate.day),
+          );
+
+          if (byDay != 0) return byDay;
+        }
+
+        return (a.startTime ?? '').compareTo(b.startTime ?? '');
+      });
   }
 
-  Map<String, List<Class>> _groupedClasses(List<Class> allClasses) {
+  Map<String, List<Class>> _groupedClasses(List<Class> classes) {
     final l10n = AppLocalizations.of(context)!;
-
-    final now = DateTime.now();
-
-    final today = DateTime(now.year, now.month, now.day);
-    final tomorrow = today.add(const Duration(days: 1));
-
     final result = <String, List<Class>>{};
 
-    for (final c in _filtered(allClasses)) {
-      final classDate = c.date;
+    for (final classModel in classes) {
+      final date = classModel.date;
 
-      if (classDate == null) {
+      if (date == null) {
         continue;
       }
 
-      final dateOnly = DateTime(classDate.year, classDate.month, classDate.day);
+      final label = _daySectionLabel(date, l10n);
 
-      final date = DateFormat('d MMM', l10n.localeName).format(dateOnly);
-
-      final String label;
-
-      if (_isSameDate(dateOnly, today)) {
-        label = l10n.todayWithDate(date);
-      } else if (_isSameDate(dateOnly, tomorrow)) {
-        label = l10n.tomorrowWithDate(date);
-      } else {
-        label = date;
-      }
-
-      result.putIfAbsent(label, () => []).add(c);
+      result.putIfAbsent(label, () => []).add(classModel);
     }
 
     return result;
+  }
+
+  /// `yyyy-MM-dd` keys of the days that still have a class once every other
+  /// filter has been applied — the strip greys the empty ones out.
+  Set<String> _availableDateKeys(List<Class> classes) {
+    final keys = <String>{};
+
+    for (final classModel in classes) {
+      final date = classModel.date;
+      if (date == null) continue;
+
+      keys.add(dateKey(DateTime(date.year, date.month, date.day)));
+    }
+
+    return keys;
+  }
+
+  /// The label a day section is rendered with — also the key its [GlobalKey]
+  /// is filed under, which is how tapping a date finds its section.
+  String _daySectionLabel(DateTime date, AppLocalizations l10n) {
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final formatted = DateFormat('d MMM', l10n.localeName).format(dateOnly);
+
+    if (_isSameDate(dateOnly, today)) {
+      return l10n.todayWithDate(formatted);
+    }
+
+    if (_isSameDate(dateOnly, today.add(const Duration(days: 1)))) {
+      return l10n.tomorrowWithDate(formatted);
+    }
+
+    return formatted;
+  }
+
+  /// Smoothly scrolls the list to the section of [date]. The strip only lets
+  /// days with a section be tapped, so the key is always there.
+  void _scrollToDay(DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
+    final sectionContext = _sectionKeys[_daySectionLabel(
+      date,
+      l10n,
+    )]?.currentContext;
+
+    if (sectionContext == null) return;
+
+    Scrollable.ensureVisible(
+      sectionContext,
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      alignment: 0,
+    );
   }
 
   Future<void> _initUserLocation() async {
@@ -209,6 +280,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
     super.initState();
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
+    _selectedDate = _anchorDate;
     context.read<DiscoverySportFilter>().ensureInitialized(
       context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
           const [],
@@ -219,6 +291,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _listController.dispose();
     super.dispose();
   }
 
@@ -352,7 +425,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
         builder: (context, state) {
           final isLoading = state.status == ClassStats.loading;
 
-          final grouped = _groupedClasses(state.classes);
+          final filtered = _filtered(state.classes);
+          final grouped = _groupedClasses(filtered);
+          final availableDateKeys = _availableDateKeys(filtered);
 
           // The header stays mounted while loading and when nothing comes
           // back, so the sports, search, filters and dates are always there.
@@ -374,7 +449,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 onMapTap: () => setState(() => _isMapView = true),
                 dates: _dates,
                 selectedDate: _selectedDate,
-                onDateSelected: (d) => setState(() => _selectedDate = d),
+                availableDateKeys: availableDateKeys,
+                onDateSelected: (date) {
+                  setState(() => _selectedDate = date);
+                  _scrollToDay(date);
+                },
               ),
 
               Expanded(
@@ -389,21 +468,34 @@ class _ClassesScreenState extends State<ClassesScreen> {
                           ),
                         ),
                       )
-                    : ListView(
-                        children: [
-                          for (final entry in grouped.entries) ...[
-                            _dateGroupHeader(label: entry.key),
-                            for (final classModel in entry.value)
-                              ClassCard(
-                                classModel: classModel,
-                                distanceKm: _clubDistance(classModel),
-                                onTap: () => _openDetails(
-                                  classModel,
-                                  _clubDistance(classModel),
+                    // Every day section is laid out, not lazily built, so a tap
+                    // on the date strip can scroll straight to its section.
+                    : SingleChildScrollView(
+                        controller: _listController,
+                        padding: const EdgeInsets.only(top: 4, bottom: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (final entry in grouped.entries) ...[
+                              KeyedSubtree(
+                                key: _sectionKeys.putIfAbsent(
+                                  entry.key,
+                                  () => GlobalKey(),
                                 ),
+                                child: _dateGroupHeader(label: entry.key),
                               ),
+                              for (final classModel in entry.value)
+                                ClassCard(
+                                  classModel: classModel,
+                                  distanceKm: _clubDistance(classModel),
+                                  onTap: () => _openDetails(
+                                    classModel,
+                                    _clubDistance(classModel),
+                                  ),
+                                ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
               ),
             ],

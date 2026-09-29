@@ -75,7 +75,67 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   late String _selectedStartTime;
   late String? _selectedEndTime;
 
-  int _selectedDurationSlots = 1;
+  // Replace: int _selectedDurationSlots = 1;
+  static const List<int> _durationOptionsMinutes = [60, 90, 120];
+  int _selectedDurationMinutes = 60;
+
+  int? _parseMinutes(String? t) {
+    if (t == null) return null;
+    final m = RegExp(r'(\d{1,2}):(\d{2})\s*(AM|PM)?', caseSensitive: false)
+        .firstMatch(t.trim());
+    if (m == null) return null;
+
+    var h = int.parse(m.group(1)!);
+    final min = int.parse(m.group(2)!);
+    final ampm = m.group(3)?.toUpperCase();
+
+    if (ampm == 'PM' && h < 12) h += 12;
+    if (ampm == 'AM' && h == 12) h = 0;
+
+    return h * 60 + min;
+  }
+
+  /// Length of one slot in minutes, read from the slot data.
+  int get _slotMinutes {
+    for (final s in _daySlotsForSport) {
+      final st = _parseMinutes(s.startTime);
+      final en = _parseMinutes(s.endTime);
+      if (st != null && en != null && en > st) return en - st;
+    }
+    return 60;
+  }
+
+  /// How many slots a duration needs (0 = not possible with this slot length).
+  /// Slots that must be free to cover this duration (rounded up).
+  int _slotsFor(int minutes) => (minutes / _slotMinutes).ceil();
+
+  String _formatTime(int totalMinutes) {
+    final h = (totalMinutes ~/ 60) % 24;
+    final m = totalMinutes % 60;
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+  }
+
+  /// End time = start + duration (in minutes), e.g. 08:00 + 90 -> 09:30.
+  String? _endTimeForDuration(String startTime, int durationMinutes) {
+    final all = _daySlotsForSport;
+    final startIndex = all.indexWhere((s) => s.startTime == startTime);
+    final startMin = _parseMinutes(startTime);
+    final slotsNeeded = _slotsFor(durationMinutes);
+
+    if (startIndex == -1 ||
+        startMin == null ||
+        startIndex + slotsNeeded > all.length) {
+      return null;
+    }
+
+    return _formatTime(startMin + durationMinutes);
+  }
+
+  String _formatDuration(int minutes) {
+    final h = minutes ~/ 60;
+    final r = minutes % 60;
+    return r == 0 ? '${h}h' : '$h:${r.toString().padLeft(2, '0')}h';
+  }
 
   late BookingType _bookingType;
 
@@ -159,18 +219,6 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     return count;
   }
 
-  String? _endTimeForDuration(String startTime, int durationSlots) {
-    final all = _daySlotsForSport;
-
-    final startIndex = all.indexWhere((s) => s.startTime == startTime);
-
-    if (startIndex == -1 || startIndex + durationSlots - 1 >= all.length) {
-      return null;
-    }
-
-    return all[startIndex + durationSlots - 1].endTime;
-  }
-
   Sport? get _sportInfo {
     final sport = (widget.sportName ?? '').toLowerCase();
 
@@ -185,7 +233,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
   double get _hourlyRate => (_sportInfo?.hourlyRate ?? 10).toDouble();
 
-  double get _amount => _hourlyRate * _selectedDurationSlots;
+  double get _amount => _hourlyRate * _selectedDurationMinutes / 60;
 
   @override
   void initState() {
@@ -197,7 +245,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
     _selectedEndTime =
         widget.endTime ??
-        _endTimeForDuration(_selectedStartTime, _selectedDurationSlots);
+            _endTimeForDuration(_selectedStartTime, _selectedDurationMinutes);
     if (context.read<CourtsBloc>().state.players.isEmpty) {
       context.read<CourtsBloc>().add(FetchAllUsers());
     }
@@ -206,33 +254,34 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
   void _onCourtSelected(Court court) {
     setState(() {
       _selectedCourt = court;
-      _selectedDurationSlots = 1;
+      _selectedDurationMinutes = 60;
 
       final slots = _startableSlots;
 
       final match = slots.where((s) => s.startTime == _selectedStartTime);
 
       if (match.isNotEmpty) {
-        _selectedEndTime = match.first.endTime;
+        _selectedEndTime = _endTimeForDuration(_selectedStartTime, 60);
       } else if (slots.isNotEmpty) {
         _selectedStartTime = slots.first.startTime ?? _selectedStartTime;
-
-        _selectedEndTime = slots.first.endTime;
+        _selectedEndTime = _endTimeForDuration(_selectedStartTime, 60);
       } else {
         _selectedEndTime = null;
       }
     });
   }
 
-  void _onDurationSelected(int slots) {
-    if (_maxContiguousFrom(_selectedStartTime) < slots) {
+  void _onDurationSelected(int minutes) {
+    if (_maxContiguousFrom(_selectedStartTime) < _slotsFor(minutes)) {
       return;
     }
 
-    setState(() {
-      _selectedDurationSlots = slots;
+    final end = _endTimeForDuration(_selectedStartTime, minutes);
+    if (end == null) return;
 
-      _selectedEndTime = _endTimeForDuration(_selectedStartTime, slots);
+    setState(() {
+      _selectedDurationMinutes = minutes;
+      _selectedEndTime = end;
     });
   }
 
@@ -472,7 +521,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
 
             if (startableSlots.isNotEmpty) ...[
               Text(
-                '${l10n.time} • ${_selectedDurationSlots}h',
+                '${l10n.time} • ${_formatDuration(_selectedDurationMinutes)}',
                 style: AppStyles.w500f12inter.copyWith(
                   color: kDarkTextColor.withValues(alpha: 0.7),
                 ),
@@ -481,20 +530,19 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               8.heightBox,
 
               Row(
-                children: [1, 2, 3].map((slots) {
-                  final isSelected = _selectedDurationSlots == slots;
+                children: _durationOptionsMinutes.map((minutes) {
+                  final isSelected = _selectedDurationMinutes == minutes;
+                  final enabled = maxContiguous >= _slotsFor(minutes) &&
+                      _endTimeForDuration(_selectedStartTime, minutes) != null;
 
-                  final enabled = maxContiguous >= slots;
-
-                  final end = _endTimeForDuration(_selectedStartTime, slots);
-
+                  final end = _endTimeForDuration(_selectedStartTime, minutes);
                   final label = end != null
                       ? '$_selectedStartTime-$end'
-                      : '${slots}h';
+                      : _formatDuration(minutes);
 
                   return Expanded(
                     child: GestureDetector(
-                      onTap: enabled ? () => _onDurationSelected(slots) : null,
+                      onTap: enabled ? () => _onDurationSelected(minutes) : null,
                       child: Opacity(
                         opacity: enabled ? 1.0 : 0.4,
                         child: Container(

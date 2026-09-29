@@ -2,6 +2,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:quadraclub_app/l10n/app_localizations.dart';
 
+/// Canonical `yyyy-MM-dd` key for a calendar day — the same shape the API
+/// uses for `weeklySlots`, so availability sets can be plain string lookups.
+String dateKey(DateTime date) {
+  final y = date.year.toString().padLeft(4, '0');
+  final m = date.month.toString().padLeft(2, '0');
+  final d = date.day.toString().padLeft(2, '0');
+  return '$y-$m-$d';
+}
+
 String getFormattedDate(DateTime viewedDate, [AppLocalizations? l10n]) {
   final now = DateTime.now();
   final difference = now.difference(viewedDate);

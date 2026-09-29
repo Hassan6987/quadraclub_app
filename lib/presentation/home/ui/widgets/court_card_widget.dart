@@ -173,7 +173,34 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
       slots.sort((a, b) => a.time.compareTo(b.time));
     }
 
-    return bySport;
+    // Rows follow the order of the sports filter at the top of the page
+    // instead of whatever order the club lists its sports in.
+    return {
+      for (final slug in _inFilterOrder(bySport.keys)) slug: bySport[slug]!,
+    };
+  }
+
+  /// Sorts sport slugs the way the header's pill row shows them. Sports the
+  /// filter does not know keep their incoming order, at the end.
+  List<String> _inFilterOrder(Iterable<String> slugs) {
+    final incoming = slugs.toList();
+    final positions = {
+      for (var i = 0; i < incoming.length; i++) incoming[i]: i,
+    };
+
+    incoming.sort((a, b) {
+      final byFilter = _filterPosition(a).compareTo(_filterPosition(b));
+
+      return byFilter != 0 ? byFilter : positions[a]!.compareTo(positions[b]!);
+    });
+
+    return incoming;
+  }
+
+  int _filterPosition(String slug) {
+    final index = kAllSportSlugs.indexOf(slug);
+
+    return index == -1 ? kAllSportSlugs.length : index;
   }
 
   double _sportBlockHeight(List<_SportSlot> slots) {
@@ -469,11 +496,20 @@ class _CourtCardWidgetState extends State<CourtCardWidget> {
   // ---------------------------------------------------------------------------
 
   Widget _buildNoCourtsFallback() {
-    final sports = widget.selectedSports.isEmpty
-        ? widget.club.sports
-        : widget.club.sports
-              .where((s) => widget.selectedSports.contains(sportSlug(s)))
-              .toList();
+    final sports = [
+      ...(widget.selectedSports.isEmpty
+          ? widget.club.sports
+          : widget.club.sports.where(
+              (s) => widget.selectedSports.contains(sportSlug(s)),
+            )),
+    ];
+
+    // Same order as the sports filter at the top of the page.
+    sports.sort(
+      (a, b) => _filterPosition(
+        sportSlug(a),
+      ).compareTo(_filterPosition(sportSlug(b))),
+    );
 
     if (sports.isEmpty) {
       return const SizedBox.shrink();

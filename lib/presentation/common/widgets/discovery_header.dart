@@ -201,6 +201,11 @@ class DiscoveryHeader extends StatelessWidget {
   final DateTime? selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
+  /// `yyyy-MM-dd` keys of the days that have content on this screen; every
+  /// other square is greyed out and cannot be tapped. `null` keeps the whole
+  /// strip selectable, which is what the Courts page wants.
+  final Set<String>? availableDateKeys;
+
   const DiscoveryHeader({
     super.key,
     required this.selectedSports,
@@ -213,6 +218,7 @@ class DiscoveryHeader extends StatelessWidget {
     required this.dates,
     required this.selectedDate,
     required this.onDateSelected,
+    this.availableDateKeys,
     this.hasActiveFilters = false,
     this.activeFilterBadges = const [],
   });
@@ -292,6 +298,7 @@ class DiscoveryHeader extends StatelessWidget {
             dates: dates,
             selectedDate: selectedDate,
             onDateSelected: onDateSelected,
+            availableDateKeys: availableDateKeys,
           ),
 
           12.heightBox,
