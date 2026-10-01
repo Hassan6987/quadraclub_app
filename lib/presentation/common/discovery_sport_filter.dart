@@ -1,13 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:quadraclub_app/utils/const/sports.dart';
 
-/// Shared sport-chip selection for Courts, Classes and Matches.
-///
-/// Lives above the bottom nav so toggling a pill on one tab is still
-/// selected when the user opens another.
 class DiscoverySportFilter extends ChangeNotifier {
   final Set<String> _selected = {};
   bool _initialized = false;
+  bool _disposed = false;
 
   Set<String> get selected => _selected;
 
@@ -17,7 +15,7 @@ class DiscoverySportFilter extends ChangeNotifier {
       ..clear()
       ..addAll(defaultSelectedSportSlugs(profileSports));
     _initialized = true;
-    notifyListeners();
+    _notifySafely();
   }
 
   void toggle(String sport) {
@@ -25,7 +23,7 @@ class DiscoverySportFilter extends ChangeNotifier {
       ensureInitialized(const []);
     }
     toggleSportSelection(_selected, sport);
-    notifyListeners();
+    notifyListeners(); // called from a tap, not during build
   }
 
   void replace(Set<String> sports) {
@@ -34,5 +32,23 @@ class DiscoverySportFilter extends ChangeNotifier {
       ..addAll(sports.isEmpty ? kAllSportSlugs : sports);
     _initialized = true;
     notifyListeners();
+  }
+
+  /// Notifies now if we're not building, otherwise right after the frame.
+  void _notifySafely() {
+    final phase = SchedulerBinding.instance.schedulerPhase;
+    if (phase == SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (!_disposed) notifyListeners();
+      });
+    } else {
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

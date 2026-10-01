@@ -93,6 +93,7 @@ class ChatListItem extends StatelessWidget {
                         size: 12,
                         color: kChatMessageColor,
                       ),
+                      2.widthBox,
                       Text(
                         chat.metaInfo?.dateTime ?? '',
                         overflow: TextOverflow.ellipsis,

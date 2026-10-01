@@ -37,7 +37,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   List<String> get _levelSports => _selectedSports.toList();
 
   Set<String> get _selectedSports =>
-      context.read<DiscoverySportFilter>().selected;
+      context.watch<DiscoverySportFilter>().selected;
 
   late final DateTime _anchorDate;
 
@@ -114,8 +114,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     } catch (_) {}
   }
 
-  List<DateTime> get _dates =>
-      List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
+  List<DateTime> get _dates => List.generate(14, (i) => _anchorDate.add(Duration(days: i)));
 
   /// Distance between the current user location and a club.
   double _clubDistance(Booking match) {
@@ -401,6 +400,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
+  Future<void> _refreshMatches() async {
+    context.read<MatchesBloc>().add(GetAllBookings());
+    await context.read<MatchesBloc>().stream.firstWhere(
+          (s) =>
+      s.status == MatchesStateStatus.success ||
+          s.status == MatchesStateStatus.failure,
+    );
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -545,47 +553,50 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 },
               ),
               Expanded(
-                child:
-                    (state.status == MatchesStateStatus.loading &&
-                        state.bookings.isEmpty)
-                    ? const Center(child: CustomLoadingView())
-                    : grouped.isEmpty
-                    ? Center(
-                        child: Text(
-                          l10n.noMatchesFound,
-                          style: AppStyles.w600f18inter.copyWith(
-                            color: kDarkTextColor,
+                  child:
+                      (state.status == MatchesStateStatus.loading && state.bookings.isEmpty)
+                      ? const Center(child: CustomLoadingView())
+                      : grouped.isEmpty
+                      ? Center(
+                          child: Text(
+                            l10n.noMatchesFound,
+                            style: AppStyles.w600f18inter.copyWith(
+                              color: kDarkTextColor,
+                            ),
                           ),
-                        ),
-                      )
-                    : SingleChildScrollView(
-                        controller: _listController,
-                        padding: const EdgeInsets.only(top: 4, bottom: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            for (final entry in grouped.entries) ...[
-                              KeyedSubtree(
-                                key: _sectionKeys.putIfAbsent(
-                                  entry.key,
-                                  () => GlobalKey(),
-                                ),
-                                child: _dateGroupHeader(label: entry.key),
-                              ),
-                              for (final match in entry.value)
-                                MatchCard(
-                                  match: match,
-                                  distanceKm: _clubDistance(match),
-                                  onTap: () => _openJoinMatch(
-                                    match,
-                                    _clubDistance(match),
+                        )
+                      : RefreshIndicator(
+                        color: kPrimaryColor,
+                        onRefresh: _refreshMatches,
+                        child: SingleChildScrollView(
+                            controller: _listController,
+                            padding: const EdgeInsets.only(top: 4, bottom: 24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                for (final entry in grouped.entries) ...[
+                                  KeyedSubtree(
+                                    key: _sectionKeys.putIfAbsent(
+                                      entry.key,
+                                      () => GlobalKey(),
+                                    ),
+                                    child: _dateGroupHeader(label: entry.key),
                                   ),
-                                ),
-                            ],
-                          ],
-                        ),
+                                  for (final match in entry.value)
+                                    MatchCard(
+                                      match: match,
+                                      distanceKm: _clubDistance(match),
+                                      onTap: () => _openJoinMatch(
+                                        match,
+                                        _clubDistance(match),
+                                      ),
+                                    ),
+                                ],
+                              ],
+                            ),
+                          ),
                       ),
-              ),
+                ),
             ],
           ),
           floatingActionButtonLocation:
@@ -606,7 +617,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 );
               },
               child: Text(
-                "+ Create Match",
+                "+ ${l10n.createMatch}",
                 style: AppStyles.w600f16inter.copyWith(color: kDeepGreen),
               ),
             ),

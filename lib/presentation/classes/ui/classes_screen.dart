@@ -49,7 +49,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
   List<String> get _levelSports => _selectedSports.toList();
 
   Set<String> get _selectedSports =>
-      context.read<DiscoverySportFilter>().selected;
+      context.watch<DiscoverySportFilter>().selected;
 
   static const double _defaultDistance = 25;
   double _distance = _defaultDistance;
@@ -405,6 +405,13 @@ class _ClassesScreenState extends State<ClassesScreen> {
     });
   }
 
+  Future<void> _refreshClasses() async {
+    context.read<ClassesBloc>().add(FetchAllClasses());
+    await context.read<ClassesBloc>().stream.firstWhere(
+      (s) => s.status == ClassStats.success || s.status == ClassStats.failure,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -451,8 +458,6 @@ class _ClassesScreenState extends State<ClassesScreen> {
       ),
       body: BlocBuilder<ClassesBloc, ClassesState>(
         builder: (context, state) {
-          final isLoading = state.status == ClassStats.loading;
-
           final filtered = _filtered(state.classes);
           final grouped = _groupedClasses(filtered);
           final availableDateKeys = _availableDateKeys(filtered);
@@ -470,7 +475,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 activeFilterBadges: _hasActiveFilters
                     ? _activeFilterBadges(l10n)
                     : const [],
-              onFilterTap: () => _openFilters(state.classes),
+                onFilterTap: () => _openFilters(state.classes),
                 onMapTap: () => setState(() => _isMapView = true),
                 dates: _dates,
                 selectedDate: _selectedDate,
@@ -482,7 +487,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
               ),
 
               Expanded(
-                child: isLoading
+                child: (state.status == ClassStats.loading && state.classes.isEmpty)
                     ? Center(child: CustomLoadingView())
                     : grouped.isEmpty
                     ? Center(
@@ -495,31 +500,35 @@ class _ClassesScreenState extends State<ClassesScreen> {
                       )
                     // Every day section is laid out, not lazily built, so a tap
                     // on the date strip can scroll straight to its section.
-                    : SingleChildScrollView(
-                        controller: _listController,
-                        padding: const EdgeInsets.only(top: 4, bottom: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            for (final entry in grouped.entries) ...[
-                              KeyedSubtree(
-                                key: _sectionKeys.putIfAbsent(
-                                  entry.key,
-                                  () => GlobalKey(),
-                                ),
-                                child: _dateGroupHeader(label: entry.key),
-                              ),
-                              for (final classModel in entry.value)
-                                ClassCard(
-                                  classModel: classModel,
-                                  distanceKm: _clubDistance(classModel),
-                                  onTap: () => _openDetails(
-                                    classModel,
-                                    _clubDistance(classModel),
+                    : RefreshIndicator(
+                        color: kPrimaryColor,
+                        onRefresh: _refreshClasses,
+                        child: SingleChildScrollView(
+                          controller: _listController,
+                          padding: const EdgeInsets.only(top: 4, bottom: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              for (final entry in grouped.entries) ...[
+                                KeyedSubtree(
+                                  key: _sectionKeys.putIfAbsent(
+                                    entry.key,
+                                    () => GlobalKey(),
                                   ),
+                                  child: _dateGroupHeader(label: entry.key),
                                 ),
+                                for (final classModel in entry.value)
+                                  ClassCard(
+                                    classModel: classModel,
+                                    distanceKm: _clubDistance(classModel),
+                                    onTap: () => _openDetails(
+                                      classModel,
+                                      _clubDistance(classModel),
+                                    ),
+                                  ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
               ),
