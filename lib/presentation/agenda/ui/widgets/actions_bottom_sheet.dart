@@ -1,7 +1,10 @@
+import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
+
 import '../../../../app_exports.dart';
 
 class ActionsBottomSheet extends StatelessWidget {
-  const ActionsBottomSheet({super.key});
+  final String matchId;
+  const ActionsBottomSheet({super.key, required this.matchId});
 
   @override
   Widget build(BuildContext context) {
@@ -24,19 +27,20 @@ class ActionsBottomSheet extends StatelessWidget {
             },
           ),
           CommonDivider(),
-          _actionItem(
-            icon: Icons.edit_outlined,
-            title: l10n.editDetails,
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+          // _actionItem(
+          //   icon: Icons.edit_outlined,
+          //   title: l10n.editDetails,
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
           _actionItem(
             icon: Icons.delete_outline,
             title: l10n.deleteMatch,
             color: kRed5B,
             onTap: () {
               Navigator.pop(context);
+              context.read<AgendaBloc>().add(DeleteBooking(bookingId: matchId));
             },
           ),
           24.heightBox,

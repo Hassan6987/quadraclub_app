@@ -15,6 +15,10 @@ class MessageTile extends StatelessWidget {
   });
 
   void _openProfile(BuildContext context) {
+    if(message.sender.role != "Player"){
+      context.showToast("Can not view Admin Profile",isError: true);
+      return;
+    }
     final id = message.sender.id;
     if (id.isEmpty || id == currentUserId) return;
 
@@ -27,7 +31,6 @@ class MessageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
     final isMe = message.sender.id == currentUserId;
 
     final timeStr = DateFormat(

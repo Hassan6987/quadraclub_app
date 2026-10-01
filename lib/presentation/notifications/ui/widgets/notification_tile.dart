@@ -181,7 +181,7 @@ class NotificationTile extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MatchDetailsScreen(initialTab: initialTab),
+        builder: (_) => MatchDetailsScreen(initialTab: initialTab,isOwner: true, matchId: bookingId,),
       ),
     );
   }

@@ -10,6 +10,7 @@ enum AgendaStateStatus {
   fetched,
   updating,
   updated,
+  deleted,
   submittingFeedback,
   feedbackSubmitted,
 }

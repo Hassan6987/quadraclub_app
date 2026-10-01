@@ -27,6 +27,7 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
     on<ClearMissingFeedbackPrompt>(_handleClearMissingFeedbackPrompt);
     on<SubmitMatchFeedback>(_handleSubmitMatchFeedback);
     on<CancelClassRequest>(_handleCancelClassRequest);
+    on<DeleteBooking>(_handleDeleteBooking);
   }
 
   Future<void> _handleLoadAgenda(
@@ -347,6 +348,34 @@ class AgendaBloc extends Bloc<AgendaEvent, AgendaState> {
 
       // Refresh past/confirmed lists in the background.
       add(GetAllAgenda());
+    } catch (e) {
+      emit(
+        state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
+  Future<void> _handleDeleteBooking(
+      DeleteBooking event,
+      Emitter<AgendaState> emit,
+      ) async {
+    try {
+      emit(state.copyWith(status: AgendaStateStatus.updating));
+      await _repo.deleteBooking(event.bookingId);
+      final response = await Future.wait([
+        _repo.getConfirmedAgenda(),
+        _repo.getPendingAgenda(),
+      ]);
+
+      final confirmed = response[0];
+      final pending = response[1];
+      emit(
+        state.copyWith(
+          status: AgendaStateStatus.deleted,
+          pendingAgenda: pending,
+          confirmedAgenda: confirmed
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(status: AgendaStateStatus.failure, error: e.toString()),

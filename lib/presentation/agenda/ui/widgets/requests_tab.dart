@@ -8,7 +8,16 @@ class RequestsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AgendaBloc, AgendaState>(
+    final l10n = AppLocalizations.of(context)!;
+    return BlocConsumer<AgendaBloc, AgendaState>(
+      listener: (context, state){
+        if(state.status == AgendaStateStatus.failure){
+          context.showToast(state.error ?? l10n.somethingWentWrong, isError: true);
+        }else if(state.status == AgendaStateStatus.deleted){
+          context.pop();
+          context.showToast("Match Deleted Successfully, Payment Refunded");
+        }
+      },
       builder: (context, state) {
         if (state.status == AgendaStateStatus.fetching ||
             state.status == AgendaStateStatus.updating) {

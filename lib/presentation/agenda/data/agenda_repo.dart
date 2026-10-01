@@ -193,6 +193,14 @@ class AgendaRepo {
     }
   }
 
+  Future<void> deleteBooking(String bookingId) async {
+    try {
+      await _services.deleteBooking(bookingId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> respondToMatchInvitation({
     required String matchId,
     required String action,

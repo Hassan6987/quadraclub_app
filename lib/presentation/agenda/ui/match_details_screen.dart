@@ -8,10 +8,13 @@ import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
 
 class MatchDetailsScreen extends StatefulWidget {
   final MatchDetailsTab initialTab;
+  final bool isOwner;
+  final String matchId;
 
   const MatchDetailsScreen({
     super.key,
     this.initialTab = MatchDetailsTab.details,
+    required this.isOwner, required this.matchId,
   });
 
   @override
@@ -35,12 +38,12 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
             title: l10n.matchDetails,
             showBackIcon: true,
             showActions: false,
-            showThreeDotActions: false,
+            showThreeDotActions: widget.isOwner,
             onThreeDotTap: () {
               showModalBottomSheet(
                 context: context,
                 backgroundColor: Colors.transparent,
-                builder: (context) => const ActionsBottomSheet(),
+                builder: (context) => ActionsBottomSheet(matchId: widget.matchId),
               );
             },
           ),

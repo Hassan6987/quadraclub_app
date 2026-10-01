@@ -294,4 +294,18 @@ class AgendaServices extends BaseApiProvider {
       rethrow;
     }
   }
+
+  Future<Response> deleteBooking(String id) async {
+    try {
+      final response = await request(
+        method: HttpMethod.delete,
+        endpoint: '/api/booking/$id',
+      );
+      return response;
+    } on DioException catch (e) {
+      throw await handleDioError(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

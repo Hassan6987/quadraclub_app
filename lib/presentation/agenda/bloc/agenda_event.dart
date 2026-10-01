@@ -91,6 +91,12 @@ class SubmitMatchFeedback extends AgendaEvent {
   List<Object?> get props => [matchId, request];
 }
 
+class DeleteBooking extends AgendaEvent{
+  final String bookingId;
+
+  const DeleteBooking({required this.bookingId});
+}
+
 class CancelClassRequest extends AgendaEvent{
   final String classId;
   const CancelClassRequest({required this.classId});

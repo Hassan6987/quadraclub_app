@@ -206,7 +206,7 @@ class _AgendaScreenState extends State<AgendaScreen>
           context.read<AgendaBloc>().add(GetMatchDetails(id: item.id));
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MatchDetailsScreen()),
+            MaterialPageRoute(builder: (context) => MatchDetailsScreen(isOwner: item.isOwner,matchId: item.id,)),
           );
         }
       },

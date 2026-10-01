@@ -33,7 +33,7 @@ class StackedAvatars extends StatelessWidget {
 
     return SizedBox(
       width: 52,
-      height: 52,
+      height: effectiveAvatarSize,
       child: Stack(
         clipBehavior: Clip.none,
         children: [

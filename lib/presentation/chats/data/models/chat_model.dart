@@ -65,12 +65,14 @@ class ChatUser {
   final String fullName;
   final String? email;
   final String? profilePhoto;
+  final String? role;
 
   const ChatUser({
     required this.id,
     required this.fullName,
     this.email,
     this.profilePhoto,
+    this.role,
   });
 
   factory ChatUser.fromJson(Map<String, dynamic> json) {
@@ -79,6 +81,7 @@ class ChatUser {
       fullName: json['fullName']?.toString() ?? '',
       email: json['email']?.toString(),
       profilePhoto: json['profilePhoto']?.toString(),
+      role:  json['role'] ?? ''
     );
   }
 }

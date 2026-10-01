@@ -211,9 +211,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Row(
           children: [
             StackedAvatars(avatarSize: 30, imgUrls: imgUrls),
-
-            8.widthBox,
-
+            15.widthBox,
             Text(
               l10n.playersInChat(widget.chat.users.length),
               style: AppStyles.w400f14inter.copyWith(color: kDarkTextColor),
