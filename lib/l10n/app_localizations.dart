@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @players.
   ///
   /// In en, this message translates to:
-  /// **'players'**
+  /// **'Players'**
   String get players;
 
   /// No description provided for @playersInChat.
@@ -2545,6 +2545,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms of Use'**
   String get termsOfUse;
+
+  /// No description provided for @matchesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 Match} other{{count} Matches}}'**
+  String matchesCount(int count);
 }
 
 class _AppLocalizationsDelegate

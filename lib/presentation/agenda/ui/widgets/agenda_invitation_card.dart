@@ -4,17 +4,20 @@ import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
 import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 class AgendaInvitationCard extends StatelessWidget {
   final AgendaInvitation item;
   final VoidCallback onAccept;
   final VoidCallback onReject;
+  final double distance;
 
   const AgendaInvitationCard({
     super.key,
     required this.item,
     required this.onAccept,
     required this.onReject,
+    required this.distance,
   });
 
   @override
@@ -60,7 +63,7 @@ class AgendaInvitationCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      item.location,
+                      "${item.location} • ${formatDistanceKm(distance)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

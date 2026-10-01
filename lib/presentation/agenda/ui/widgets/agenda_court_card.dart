@@ -1,9 +1,11 @@
 import 'package:quadraclub_app/app_exports.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 class AgendaCourtCard extends StatelessWidget {
+  final double distance;
   final AgendaItem item;
 
-  const AgendaCourtCard({super.key, required this.item});
+  const AgendaCourtCard({super.key, required this.item, required this.distance});
 
   bool _isBeforeToday(DateTime date) {
     final now = DateTime.now();
@@ -24,7 +26,7 @@ class AgendaCourtCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppCachedImage(
-            imageUrl: courtImageUrl,
+            imageUrl: item.clubImage,
             // still a placeholder unless API sends one
             height: 72,
             width: double.infinity,
@@ -52,7 +54,7 @@ class AgendaCourtCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      item.location,
+                      "${item.location} • ${formatDistanceKm(distance)}",
                       style: AppStyles.w400f14inter.copyWith(
                         color: kGreyTextColor,
                       ),

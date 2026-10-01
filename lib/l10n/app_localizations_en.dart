@@ -324,7 +324,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get you => 'YOU';
 
   @override
-  String get players => 'players';
+  String get players => 'Players';
 
   @override
   String playersInChat(int count) {
@@ -1369,4 +1369,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsOfUse => 'Terms of Use';
+
+  @override
+  String matchesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Matches',
+      one: '1 Match',
+    );
+    return '$_temp0';
+  }
 }

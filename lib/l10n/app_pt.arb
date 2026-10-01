@@ -519,5 +519,13 @@
   "tagStrategic": "Estratégico",
   "tagArriveEarly": "Chega Cedo",
   "tagGoodEnergy": "Boa Energia",
-  "termsOfUse": "Termos de Uso"
+  "termsOfUse": "Termos de Uso",
+  "matchesCount": "{count, plural, =1{1 Partida} other{{count} Partidas}}",
+  "@matchesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

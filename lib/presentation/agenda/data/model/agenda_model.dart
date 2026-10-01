@@ -19,6 +19,8 @@ class AgendaItem {
   final String dateString;
   final String startTime;
   final String endTime;
+  final double? lat;
+  final double? lng;
   final MatchFormat format;
   final MatchType matchType;
   final String category;
@@ -53,6 +55,8 @@ class AgendaItem {
     required this.dateString,
     required this.startTime,
     required this.endTime,
+    required this.lat,
+    required this.lng,
     required this.format,
     required this.matchType,
     required this.category,
@@ -100,6 +104,8 @@ class AgendaItem {
       dateString: json['dateString'] ?? '',
       startTime: json['startTime'] ?? '',
       endTime: json['endTime'] ?? '',
+      lat: json['lat'],
+      lng: json['lng'],
       format: MatchFormatExtension.fromString(json['format'] ?? ''),
       matchType: MatchTypeExtension.fromString(json['matchType'] ?? ''),
       category: json['category'] ?? '',

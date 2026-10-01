@@ -461,8 +461,16 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return BlocBuilder<MatchesBloc, MatchesState>(
       builder: (context, state) {
         if (_isMapView) {
+          final openMatchesByClub = <String, int>{};
+          for (final m in _filteredMatches(state.bookings)) {
+            final clubId = m.club?.id;
+            if (clubId == null) continue;
+            openMatchesByClub[clubId] = (openMatchesByClub[clubId] ?? 0) + 1;
+          }
+
           return CourtMapView(
             courts: context.read<CourtsBloc>().state.courts,
+            openMatchesByClub: openMatchesByClub,
             currentLocation: _currentLocation,
             initialCenter: _currentLatLng,
             onLocationChanged: (LocationResult location) {

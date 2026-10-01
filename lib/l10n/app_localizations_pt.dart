@@ -1377,4 +1377,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get termsOfUse => 'Termos de Uso';
+
+  @override
+  String matchesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Partidas',
+      one: '1 Partida',
+    );
+    return '$_temp0';
+  }
 }

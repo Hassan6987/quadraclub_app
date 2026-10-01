@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
@@ -9,7 +8,7 @@ import 'package:quadraclub_app/presentation/home/data/models/location_result.dar
 import 'package:quadraclub_app/presentation/home/ui/court_detail_screen.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/change_location_sheet.dart';
 import 'package:quadraclub_app/presentation/home/ui/widgets/court_filter_bottom_sheet.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 class CourtMapView extends StatefulWidget {
   final List<Club> courts;
@@ -23,8 +22,8 @@ class CourtMapView extends StatefulWidget {
   final String? filterCity;
   final double? filterDistance;
   final Set<String> selectedSports; // <-- was: final String? selectedSport;
-  final Function(String)
-  onSportSelected; // <-- was: final Function(String?) onSportSelected;
+  final Function(String)onSportSelected; // <-- was: final Function(String?) onSportSelected;
+  final Map<String, int>? openMatchesByClub;
 
   /// Carried over from "Create Match" so the Booking Summary opens on the
   /// right booking type when the user picks a club off the map.
@@ -44,6 +43,7 @@ class CourtMapView extends StatefulWidget {
     required this.selectedSports,
     required this.onSportSelected,
     this.bookingIntent = BookingType.individual,
+    this.openMatchesByClub,
   });
 
   @override
@@ -59,25 +59,31 @@ class _CourtMapViewState extends State<CourtMapView> {
   // Only courts we can actually place a pin for.
   List<Club> get _mappableCourts => widget.courts.toList();
 
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.85);
+  }
+
   double _clubDistance(Club club) {
     if (club.coordinates?.latitude == null ||
         club.coordinates?.longitude == null) {
       return double.infinity;
     }
     return Geolocator.distanceBetween(
-          _currentLatLng.latitude,
-          _currentLatLng.longitude,
-          club.coordinates!.latitude!,
-          club.coordinates!.longitude!,
-        ) /
+      widget.initialCenter.latitude,
+      widget.initialCenter.longitude,
+      club.coordinates!.latitude!,
+      club.coordinates!.longitude!,
+    ) /
         1000.0;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.85);
-    _initUserLocation();
+  String _cityAndDistance(Club club) {
+    final city = club.city ?? '';
+    final d = _clubDistance(club);
+    if (d.isInfinite || d.isNaN) return city;
+    return city.isEmpty ? formatDistanceKm(d) : '$city • ${formatDistanceKm(d)}';
   }
 
   Future<void> _initUserLocation() async {
@@ -387,7 +393,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                     right: 0,
                     bottom: 32,
                     child: SizedBox(
-                      height: 110,
+                      height: widget.openMatchesByClub != null ? 136 : 110,
                       child: PageView.builder(
                         controller: _pageController,
                         itemCount: courts.length,
@@ -395,6 +401,9 @@ class _CourtMapViewState extends State<CourtMapView> {
                         itemBuilder: (context, index) {
                           final court = courts[index];
                           final sports = court.sports;
+                          final matchCount = widget.openMatchesByClub == null
+                              ? null
+                              : (widget.openMatchesByClub![court.id] ?? 0);
                           return GestureDetector(
                             onTap: () {
                               final authState = context.read<AuthBloc>().state;
@@ -435,32 +444,7 @@ class _CourtMapViewState extends State<CourtMapView> {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: CachedNetworkImage(
-                                      imageUrl: court.photo ?? '',
-                                      height: 96,
-                                      width: 96,
-                                      placeholder: (context, url) =>
-                                          Shimmer.fromColors(
-                                            baseColor: Colors.grey.shade300,
-                                            highlightColor:
-                                                Colors.grey.shade100,
-                                            child: Container(
-                                              height: 96,
-                                              width: 96,
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                      errorWidget: (context, url, error) {
-                                        return Image.asset(
-                                          Assets.png.clubLogo.path,
-                                          height: 96,
-                                          width: 96,
-                                          fit: BoxFit.cover,
-                                        );
-                                      },
-                                    ),
+                                    child: AppCachedImage(imageUrl: court.photo,width: 86,height: 86,)
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -470,51 +454,59 @@ class _CourtMapViewState extends State<CourtMapView> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
+                                        if (matchCount != null) ...[
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color:  kGreen06.withValues(alpha: 0.1),
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: kGreen06,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              l10n.matchesCount(matchCount),
+                                              style: AppStyles.w400f12inter.copyWith(
+                                                fontSize: 10,
+                                                color: kGreen06,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                        ],
                                         Text(
                                           court.name ?? '',
-                                          style: AppStyles.w600f14inter
-                                              .copyWith(
-                                                color: kDarkTextColor,
-                                                fontSize: 15,
-                                              ),
+                                          style: AppStyles.w600f16inter
+                                              .copyWith(color: kDarkTextColor),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        const SizedBox(height: 2),
+                                        2.heightBox,
                                         Text(
-                                          court.city ?? '',
+                                          _cityAndDistance(court),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: AppStyles.w400f12inter
-                                              .copyWith(color: kTextColor),
+                                          style: AppStyles.w400f14inter.copyWith(color: kTextColor),
                                         ),
-                                        const SizedBox(height: 8),
+                                        8.heightBox,
                                         SingleChildScrollView(
                                           scrollDirection: Axis.horizontal,
                                           child: Row(
                                             children: sports.map((sport) {
                                               return Container(
-                                                margin: const EdgeInsets.only(
-                                                  right: 4,
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 3,
-                                                    ),
+                                                margin: const EdgeInsets.only(right: 4),
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                                 decoration: BoxDecoration(
-                                                  color: kPrimaryColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        100,
-                                                      ),
+                                                  color: kPrimaryColor.withValues(alpha: 0.3),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  border: Border.all(color: kPrimaryColor,width: 2)
                                                 ),
                                                 child: Text(
                                                   sport,
-                                                  style: AppStyles.w500f8inter
+                                                  style: AppStyles.w400f12inter
                                                       .copyWith(
                                                         color: kDarkTextColor,
-                                                        fontSize: 9,
+                                                        fontSize: 10,
                                                       ),
                                                 ),
                                               );

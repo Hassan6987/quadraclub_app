@@ -104,7 +104,7 @@
   "classroom": "Classroom",
   "now": "now",
   "you": "YOU",
-  "players": "players",
+  "players": "Players",
   "playersInChat": "{count} players in chat",
   "@playersInChat": {
     "placeholders": {
@@ -571,5 +571,9 @@
   "tagStrategic": "Strategic",
   "tagArriveEarly": "Arrive Early",
   "tagGoodEnergy": "Good Energy",
-  "termsOfUse": "Terms of Use"
+  "termsOfUse": "Terms of Use",
+  "matchesCount": "{count, plural, =1{1 Match} other{{count} Matches}}",
+  "@matchesCount": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

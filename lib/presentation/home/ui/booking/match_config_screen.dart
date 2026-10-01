@@ -20,6 +20,7 @@ class MatchConfigScreen extends StatefulWidget {
   final String timeLabel;
   final double amount;
   final double distance;
+  final String totalHours;
 
   const MatchConfigScreen({
     super.key,
@@ -32,6 +33,7 @@ class MatchConfigScreen extends StatefulWidget {
     required this.startTime,
     required this.endTime,
     required this.distance,
+    required this.totalHours,
   });
 
   @override
@@ -189,6 +191,7 @@ class _MatchConfigScreenState extends State<MatchConfigScreen> {
           matchFormat: _format.label,
           paymentType: _paymentOption!.type,
           distance: widget.distance,
+          totalHour: widget.totalHours,
         ),
       ),
     );

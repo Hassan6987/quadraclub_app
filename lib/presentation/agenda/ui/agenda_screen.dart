@@ -1,3 +1,5 @@
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
@@ -8,6 +10,7 @@ import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_invitation_
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/missing_feedback_dialog.dart';
 import 'package:quadraclub_app/presentation/authentication/bloc/auth_bloc.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 class AgendaScreen extends StatefulWidget {
   /// 0 = Confirmed, 1 = Pending, 2 = Past.
@@ -25,6 +28,8 @@ class _AgendaScreenState extends State<AgendaScreen>
   String _filter = 'All';
   bool _checkedMissingFeedback = false;
   bool _showingMissingDialog = false;
+  LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
+
 
   @override
   void initState() {
@@ -41,6 +46,54 @@ class _AgendaScreenState extends State<AgendaScreen>
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) setState(() {});
     });
+    _initUserLocation();
+  }
+
+  Future<void> _initUserLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+      if (!serviceEnabled) return;
+
+      var permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final pos =
+            await Geolocator.getLastKnownPosition() ??
+                await Geolocator.getCurrentPosition(
+                  timeLimit: const Duration(seconds: 5),
+                );
+
+        if (mounted) {
+          setState(() {
+            _currentLatLng = LatLng(pos.latitude, pos.longitude);
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  double _clubDistance(AgendaItem match) {
+    return getDistanceKm(
+      fromLat: _currentLatLng.latitude,
+      fromLng: _currentLatLng.longitude,
+      toLat: match.lat,
+      toLng: match.lng,
+    );
+  }
+
+  double _invitationDistance(AgendaInvitation match) {
+    return getDistanceKm(
+      fromLat: _currentLatLng.latitude,
+      fromLng: _currentLatLng.longitude,
+      toLat: match.lat,
+      toLng: match.lng,
+    );
   }
 
   @override
@@ -154,6 +207,7 @@ class _AgendaScreenState extends State<AgendaScreen>
           final invitation = entry.invitation!;
           return AgendaInvitationCard(
             item: invitation,
+            distance: _invitationDistance(invitation),
             onAccept: () {
               if (!invitation.requiresPayment) {
                 context.read<AgendaBloc>().add(
@@ -192,14 +246,16 @@ class _AgendaScreenState extends State<AgendaScreen>
     if (item.agendaType == AgendaType.class_) {
       return AgendaClassCard(
         item: item,
+        distance: _clubDistance(item),
         actionLabel: _actionLabel,
       ).paddingOnly(bottom: 12);
     }
     else if (item.agendaType == AgendaType.court) {
-      return AgendaCourtCard(item: item).paddingOnly(bottom: 12);
+      return AgendaCourtCard(item: item,distance: _clubDistance(item),).paddingOnly(bottom: 12);
     }
     return AgendaMatchCard(
       item: item,
+      distance: _clubDistance(item),
       isJoinRequest: isJoinRequest,
       onTap: () {
         if (item.tab == "confirmed" || (item.tab == "pending" && !isJoinRequest)) {

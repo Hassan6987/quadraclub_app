@@ -33,6 +33,7 @@ class PaymentMethodScreen extends StatefulWidget {
   final String? matchFormat;
   final String? paymentType;
   final double distance;
+  final String totalHour;
 
   const PaymentMethodScreen({
     super.key,
@@ -50,6 +51,7 @@ class PaymentMethodScreen extends StatefulWidget {
     this.matchFormat,
     this.paymentType,
     required this.distance,
+    required this.totalHour
   });
 
   @override
@@ -479,7 +481,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  l10n.courtFee,
+                                  "${l10n.courtFee} ${widget.totalHour}",
                                   style: AppStyles.w400f14inter.copyWith(
                                     color: kGreyTextColor,
                                   ),

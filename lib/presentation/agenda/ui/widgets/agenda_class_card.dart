@@ -7,12 +7,14 @@ import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart
 import 'package:quadraclub_app/presentation/classes/ui/class_details_screen.dart';
 import 'package:quadraclub_app/presentation/home/data/booking/booking_models.dart';
 import 'package:quadraclub_app/utils/components/custom_loading_view.dart';
+import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
 class AgendaClassCard extends StatefulWidget {
   final AgendaItem item;
   final String? actionLabel;
+  final double distance;
 
-  const AgendaClassCard({super.key, required this.item, this.actionLabel});
+  const AgendaClassCard({super.key, required this.item, this.actionLabel, required this.distance});
 
   @override
   State<AgendaClassCard> createState() => _AgendaClassCardState();
@@ -107,7 +109,7 @@ class _AgendaClassCardState extends State<AgendaClassCard> {
                 ),
                 3.heightBox,
                 Text(
-                  item.dateString,
+                "${item.dateString} • ${formatDistanceKm(widget.distance)}",
                   style: AppStyles.w400f14inter.copyWith(color: kGreyTextColor),
                 ),
                 Divider(color: kDividerColor).withPaddingSymmetric(0, 8),

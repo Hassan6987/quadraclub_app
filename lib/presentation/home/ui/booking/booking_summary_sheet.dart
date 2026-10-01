@@ -137,6 +137,13 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
     return r == 0 ? '${h}h' : '$h:${r.toString().padLeft(2, '0')}h';
   }
 
+
+  String _reFormatDuration(int minutes) {
+    final h = minutes ~/ 60;
+    final r = minutes % 60;
+    return r == 0 ? '($h${h==1? "hr" : "hrs"})' : '($h:${r.toString().padLeft(2, '0')}hrs)';
+  }
+
   late BookingType _bookingType;
 
   String _dateKey(DateTime d) {
@@ -331,6 +338,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             timeLabel: '$_selectedStartTime-$_selectedEndTime',
             amount: _amount,
             distance: widget.distance,
+            totalHour: _reFormatDuration(_selectedDurationMinutes),
+
           ),
         ),
       );
@@ -350,6 +359,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
             timeLabel: '$_selectedStartTime-$_selectedEndTime',
             amount: _amount,
             distance: widget.distance,
+            totalHours: _reFormatDuration(_selectedDurationMinutes),
           ),
         ),
       );
@@ -399,7 +409,7 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               ],
             ).withPaddingSymmetric(16, 0),
 
-            16.heightBox,
+            30.heightBox,
 
             Text(
               l10n.courtDetails,
@@ -658,6 +668,8 @@ class _BookingSummarySheetState extends State<BookingSummarySheet> {
               ],
             ).withPaddingSymmetric(16, 0),
 
+            16.heightBox,
+            Divider(color: kCardColor,thickness: 6),
             16.heightBox,
 
             GestureDetector(

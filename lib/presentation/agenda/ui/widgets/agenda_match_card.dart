@@ -12,6 +12,7 @@ class AgendaMatchCard extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onTap;
   final bool isJoinRequest;
+  final double distance;
 
   const AgendaMatchCard({
     super.key,
@@ -19,6 +20,7 @@ class AgendaMatchCard extends StatelessWidget {
     this.actionLabel,
     this.onTap,
     this.isJoinRequest = false,
+    required this.distance,
   });
 
   @override
@@ -69,7 +71,7 @@ class AgendaMatchCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${item.location} • ${getFormatDateMonth(item.bookingDate, locale: l10n.localeName)}",
+                        "${item.location} • ${formatDistanceKm(distance)} • ${getFormatDateMonth(item.bookingDate, locale: l10n.localeName)}",
                         style: AppStyles.w400f14inter.copyWith(
                           color: kGreyTextColor,
                         ),

@@ -192,7 +192,7 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
           ),
           8.heightBox,
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               CommonBadge(label: '${match.startTime}-${match.endTime}'),
               4.widthBox,
