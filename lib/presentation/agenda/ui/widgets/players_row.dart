@@ -101,7 +101,7 @@ class PlayersRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CommonPlusAvatar(size: 34),
-        6.heightBox,
+        2.heightBox,
         Text(
           l10n.available,
           textAlign: TextAlign.center,

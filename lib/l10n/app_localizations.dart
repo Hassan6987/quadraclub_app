@@ -1169,7 +1169,7 @@ abstract class AppLocalizations {
   /// No description provided for @distanceKm.
   ///
   /// In en, this message translates to:
-  /// **'< {distance} km'**
+  /// **'{distance} km'**
   String distanceKm(String distance);
 
   /// No description provided for @available.

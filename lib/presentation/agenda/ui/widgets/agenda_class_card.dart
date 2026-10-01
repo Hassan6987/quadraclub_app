@@ -83,8 +83,12 @@ class _AgendaClassCardState extends State<AgendaClassCard> {
                     SportBadge(
                       sport: SportTypeExtension.fromString(item.sport),
                     ),
+                    6.widthBox,
+                    CommonBadge(
+                      label: localizedClassLevelLabel(context, item.category),
+                    ),
                     if (item.classType != null) ...[
-                      4.widthBox,
+                      6.widthBox,
                       CommonBadge(
                         label: _localizedClassType(context, item.classType!),
                       ),

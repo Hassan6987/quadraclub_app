@@ -30,6 +30,7 @@ class AgendaInvitation {
     required this.status,
     required this.tab,
     required this.players,
+    this.bookedBy,
     required this.hostId,
     required this.hostName,
     required this.hostPhoto,
@@ -65,6 +66,7 @@ class AgendaInvitation {
   final String status;
   final String tab;
   final List<Player> players;
+  final BookedBy? bookedBy;
   final String hostId;
   final String hostName;
   final String hostPhoto;
@@ -103,6 +105,7 @@ class AgendaInvitation {
       players: json["players"] == null
           ? []
           : List<Player>.from(json["players"]!.map((x) => Player.fromJson(x))),
+      bookedBy: json["bookedBy"] != null ? BookedBy.fromJson(json['bookedBy']) : null,
       hostId: json["hostId"] ?? "",
       hostName: json["hostName"] ?? "",
       hostPhoto: json["hostPhoto"] ?? "",

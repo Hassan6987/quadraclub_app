@@ -49,9 +49,7 @@ class ParticipantsCard extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               // Equal column width so every item lines up in a grid.
-              final itemWidth =
-                  (constraints.maxWidth - _spacing * (_columns - 1)) /
-                      _columns;
+              final itemWidth = (constraints.maxWidth - _spacing * (_columns - 1)) / _columns;
 
               return Wrap(
                 spacing: _spacing,
@@ -76,7 +74,7 @@ class ParticipantsCard extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AppCachedImage(
-                              height: 46,
+                              height: 48,
                               width: 46,
                               borderRadius: BorderRadius.circular(1000),
                               imageUrl: participant.profilePhoto ?? '',

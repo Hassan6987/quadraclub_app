@@ -2,6 +2,7 @@ import 'package:quadraclub_app/app_exports.dart';
 import 'package:quadraclub_app/presentation/agenda/data/model/agenda_invitation_model.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 
 class AgendaInvitationCard extends StatelessWidget {
@@ -76,7 +77,15 @@ class AgendaInvitationCard extends StatelessWidget {
             children: [
               CommonBadge(label: item.dateString),
               CommonBadge(
-                label: localizedMatchCategory(context, item.category),
+                label: localizedMatchCategory(context, item.bookedBy?.sportsInfo
+                    ?.firstWhere(
+                      (info) => info.sport == item.sport,
+                  orElse: () => SportsInfoModel(
+                    sport: '',
+                    category: AppLocalizations.of(context)!.beginner,
+                    preferredSide: '',
+                  ),
+                ).category ?? AppLocalizations.of(context)!.beginner,),
               ),
               _courtConfirmedBadge(item.courtStatusLabel),
             ],

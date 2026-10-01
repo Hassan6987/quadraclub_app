@@ -42,11 +42,37 @@ class CommonDateSelectionRow extends StatefulWidget {
 
 class _CommonDateSelectionRowState extends State<CommonDateSelectionRow> {
   final ScrollController _scrollController = ScrollController();
+  // Last layout metrics, captured in build so didUpdateWidget can use them.
+  double _squareWidth = 0;
+  double _viewportWidth = 0;
+
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant CommonDateSelectionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final changed = !_isSameDay(
+      widget.selectedDate ?? DateTime(0),
+      oldWidget.selectedDate,
+    );
+    if (!changed || widget.selectedDate == null) return;
+
+    final index = widget.dates.indexWhere(
+          (d) => _isSameDay(d, widget.selectedDate),
+    );
+    if (index == -1) return;
+
+    // Wait for the frame so the controller has final extents.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _centerSquare(index, _squareWidth, _viewportWidth);
+    });
   }
 
   @override
@@ -60,7 +86,10 @@ class _CommonDateSelectionRowState extends State<CommonDateSelectionRow> {
                   (widget.horizontalPadding * 2) -
                   (CommonDateSelectionRow._gap *
                       (CommonDateSelectionRow._visibleSquares - 1))) /
-              CommonDateSelectionRow._visibleSquares;
+                  CommonDateSelectionRow._visibleSquares;
+
+          _squareWidth = squareWidth;
+          _viewportWidth = constraints.maxWidth;
 
           return ListView.separated(
             controller: _scrollController,
@@ -68,7 +97,7 @@ class _CommonDateSelectionRowState extends State<CommonDateSelectionRow> {
             padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
             itemCount: widget.dates.length,
             separatorBuilder: (_, _) =>
-                const SizedBox(width: CommonDateSelectionRow._gap),
+            const SizedBox(width: CommonDateSelectionRow._gap),
             itemBuilder: (context, index) {
               final date = widget.dates[index];
               final isSelected = _isSameDay(date, widget.selectedDate);
@@ -78,16 +107,9 @@ class _CommonDateSelectionRowState extends State<CommonDateSelectionRow> {
               final month = DateFormat.MMM(locale).format(date);
 
               return GestureDetector(
-                onTap: isAvailable
-                    ? () {
-                        widget.onDateSelected(date);
-                        _centerSquare(
-                          index,
-                          squareWidth,
-                          constraints.maxWidth,
-                        );
-                      }
-                    : null,
+                // Centering now happens in didUpdateWidget, which also
+                // covers taps, because onDateSelected changes selectedDate.
+                onTap: isAvailable ? () => widget.onDateSelected(date) : null,
                 child: Opacity(
                   opacity: isAvailable ? 1 : 0.5,
                   child: Container(

@@ -99,7 +99,7 @@ class MatchCard extends StatelessWidget {
                           (info) => info.sport == match.sport.label,
                       orElse: () => SportsInfoModel(
                         sport: '',
-                        category: 'Beginner',
+                        category: AppLocalizations.of(context)!.beginner,
                         preferredSide: '',
                       ),
                     ).category ?? AppLocalizations.of(context)!.beginner,),
@@ -149,8 +149,8 @@ Widget buildPlayersRow(BuildContext cxt, Booking match, VoidCallback? onTap) {
 Widget buildPlayer(
   BuildContext cxt,
   PlayersDetail player,
-Booking match,
-  VoidCallback? onTap,
+    Booking match,
+    VoidCallback? onTap,
 ) {
   if (player.user == null) {
     return Expanded(
@@ -180,7 +180,7 @@ Booking match,
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             AppLocalizations.of(cxt)!.available,
             style: AppStyles.w500f14inter.copyWith(color: kGreyTextColor),

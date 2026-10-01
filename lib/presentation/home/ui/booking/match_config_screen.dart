@@ -40,7 +40,17 @@ class MatchConfigScreen extends StatefulWidget {
 
 class _MatchConfigScreenState extends State<MatchConfigScreen> {
   MatchType _matchType = MatchType.open;
-  BookingFormat _format = BookingFormat.single;
+  late BookingFormat _format ;
+
+  @override
+  void initState() {
+    if(widget.court.sports.first.sportName?.toLowerCase() == "padel"){
+      _format = BookingFormat.double_;
+    }else{
+      _format = BookingFormat.single;
+    }
+    super.initState();
+  }
 
   /// Stays null until the user picks one, which keeps the Book button
   /// disabled and makes it obvious the section needs an answer.

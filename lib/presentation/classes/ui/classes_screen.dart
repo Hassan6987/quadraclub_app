@@ -34,7 +34,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
   /// One key per rendered day section, so tapping a day can scroll the list
   /// to it.
   final Map<String, GlobalKey> _sectionKeys = {};
-
+  /// True while a date tap is animating the list, so the scroll listener
+  /// doesn't overwrite the date the user just picked.
+  bool _isAutoScrolling = false;
+  /// Day sections in display order. Refreshed on every build.
+  List<({String label, DateTime date})> _sectionDates = [];
   final ScrollController _listController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -221,20 +225,69 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   /// Smoothly scrolls the list to the section of [date]. The strip only lets
   /// days with a section be tapped, so the key is always there.
-  void _scrollToDay(DateTime date) {
+  Future<void> _scrollToDay(DateTime date) async {
     final l10n = AppLocalizations.of(context)!;
     final sectionContext =
         _sectionKeys[_daySectionLabel(date, l10n)]?.currentContext;
 
     if (sectionContext == null) return;
 
-    Scrollable.ensureVisible(
-      sectionContext,
-      duration: const Duration(milliseconds: 420),
-      curve: Curves.easeOutCubic,
-      alignment: 0,
-    );
+    _isAutoScrolling = true;
+    try {
+      await Scrollable.ensureVisible(
+        sectionContext,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+        alignment: 0,
+      );
+    } finally {
+      _isAutoScrolling = false;
+    }
   }
+
+  void _onListScroll() {
+    if (_isAutoScrolling || !_listController.hasClients) return;
+    if (_sectionDates.isEmpty) return;
+
+    final position = _listController.position;
+
+    DateTime? active;
+
+    if (position.pixels <= 0) {
+      active = _sectionDates.first.date;
+    } else if (position.pixels >= position.maxScrollExtent - 1) {
+      active = _sectionDates.last.date;
+    } else {
+      final viewportBox =
+      position.context.storageContext.findRenderObject() as RenderBox?;
+      if (viewportBox == null || !viewportBox.attached) return;
+
+      final viewportTop = viewportBox.localToGlobal(Offset.zero).dy;
+
+      // The active day is the last section whose header has reached the top.
+      for (final section in _sectionDates) {
+        final box =
+        _sectionKeys[section.label]?.currentContext?.findRenderObject()
+        as RenderBox?;
+        if (box == null || !box.attached) continue;
+
+        final headerTop = box.localToGlobal(Offset.zero).dy;
+        if (headerTop <= viewportTop + 24) {
+          active = section.date;
+        } else {
+          break;
+        }
+      }
+      active ??= _sectionDates.first.date;
+    }
+
+    // Only update if the day exists in the date strip and actually changed.
+    final inStrip = _dates.any((d) => _isSameDate(d, active));
+    if (inStrip && !_isSameDate(_selectedDate, active)) {
+      setState(() => _selectedDate = active!);
+    }
+  }
+
 
   Future<void> _initUserLocation() async {
     try {
@@ -302,6 +355,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
     final now = DateTime.now();
     _anchorDate = DateTime(now.year, now.month, now.day);
     _selectedDate = _anchorDate;
+    _listController.addListener(_onListScroll);
     context.read<DiscoverySportFilter>().ensureInitialized(
       context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
           const [],
@@ -311,6 +365,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   @override
   void dispose() {
+    _listController.removeListener(_onListScroll);
     _searchController.dispose();
     _listController.dispose();
     super.dispose();
@@ -385,7 +440,6 @@ class _ClassesScreenState extends State<ClassesScreen> {
       selectedTimes: _selectedTimes,
       gender: _gender,
       levels: _levels,
-      sports: _levelSports,
       format: _format,
       distance: _distance,
       city: _city,
@@ -460,6 +514,18 @@ class _ClassesScreenState extends State<ClassesScreen> {
         builder: (context, state) {
           final filtered = _filtered(state.classes);
           final grouped = _groupedClasses(filtered);
+          _sectionDates = [
+            for (final entry in grouped.entries)
+              if (entry.value.first.date != null)
+                (
+                label: entry.key,
+                date: DateTime(
+                  entry.value.first.date!.year,
+                  entry.value.first.date!.month,
+                  entry.value.first.date!.day,
+                ),
+                ),
+          ];
           final availableDateKeys = _availableDateKeys(filtered);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,

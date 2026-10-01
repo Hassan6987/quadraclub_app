@@ -3,6 +3,7 @@ import 'package:quadraclub_app/presentation/agenda/bloc/agenda_bloc.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/agenda_chat_screen.dart';
 import 'package:quadraclub_app/presentation/agenda/ui/widgets/players_row.dart';
 import 'package:quadraclub_app/presentation/classes/data/model/class_models.dart';
+import 'package:quadraclub_app/presentation/matches/data/match_model.dart';
 import 'package:quadraclub_app/presentation/matches/ui/widgets/match_card.dart';
 import 'package:quadraclub_app/utils/helper/date_formatter.dart';
 
@@ -84,7 +85,15 @@ class AgendaMatchCard extends StatelessWidget {
                 CommonBadge(label: "${item.startTime}-${item.endTime}"),
                 4.widthBox,
                 CommonBadge(
-                  label: localizedMatchCategory(context, item.category),
+                  label: localizedMatchCategory(context, item.bookedBy?.sportsInfo
+                      ?.firstWhere(
+                        (info) => info.sport == item.sport,
+                    orElse: () => SportsInfoModel(
+                      sport: '',
+                      category: AppLocalizations.of(context)!.beginner,
+                      preferredSide: '',
+                    ),
+                  ).category ?? AppLocalizations.of(context)!.beginner,),
                 ),
                 4.widthBox,
                 CommonBadge(label: l10n.ranking),

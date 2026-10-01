@@ -33,6 +33,7 @@ class AgendaItem {
   final int? slotsLeft;
   final int? maxCapacity;
   final List<Player>? players;
+  final BookedBy? bookedBy;
 
   // class-only
   final String? classType;
@@ -64,6 +65,7 @@ class AgendaItem {
     this.slotsLeft,
     this.maxCapacity,
     this.players,
+    this.bookedBy,
     this.classType,
     this.coachName,
     this.coachPhoto,
@@ -112,6 +114,7 @@ class AgendaItem {
       players: (json['players'] as List<dynamic>?)
           ?.map((p) => Player.fromJson(p))
           .toList(),
+      bookedBy: json["bookedBy"] != null ? BookedBy.fromJson(json['bookedBy']) : null,
       classType: json['classType'],
       coachName: json['coachName'],
       coachPhoto: json['coachPhoto'],

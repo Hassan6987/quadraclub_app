@@ -106,8 +106,8 @@ class _ParticipantsAvatars extends StatelessWidget {
             Positioned(
               left: photoSlots * _overlap,
               child: Container(
-                height: _avatarSize,
-                width: _avatarSize,
+                height: 40,
+                width: 40,
                 decoration: BoxDecoration(
                   color: kGreyColor,
                   borderRadius: BorderRadius.circular(200),

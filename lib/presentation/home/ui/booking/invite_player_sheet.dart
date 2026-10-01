@@ -154,20 +154,9 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: ClipOval(
-                    child: Image.network(
-                      player.profilePhoto,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          Assets.png.profilePlaceholder.path,
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    ),
+                    child: AppCachedImage(
+                      imageUrl: player.profilePhoto,
+                    )
                   ),
                   title: Text(
                     player.name,

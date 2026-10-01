@@ -234,7 +234,7 @@
   "noCourtsOfferThisSport": "No courts offer this sport yet.",
   "noSlotsPublishedForDate": "No slots published for this date.",
   "clubDetails": "Club Details",
-  "distanceKm": "< {distance} km",
+  "distanceKm": "{distance} km",
   "@distanceKm": {
     "placeholders": {
       "distance": {

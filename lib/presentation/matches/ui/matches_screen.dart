@@ -26,16 +26,12 @@ class MatchesScreen extends StatefulWidget {
 
 class _MatchesScreenState extends State<MatchesScreen> {
   bool _isMapView = false;
-
   String _currentLocation = 'London, UK';
-
   LatLng _currentLatLng = const LatLng(51.5072, -0.1276);
-
   bool _hasUserLocation = false;
 
   /// Level sections follow the header's sport selection.
   List<String> get _levelSports => _selectedSports.toList();
-
   Set<String> get _selectedSports =>
       context.watch<DiscoverySportFilter>().selected;
 
@@ -48,33 +44,27 @@ class _MatchesScreenState extends State<MatchesScreen> {
   final Map<String, GlobalKey> _sectionKeys = {};
 
   final ScrollController _listController = ScrollController();
-
   final TextEditingController _searchController = TextEditingController();
-
+  /// True while a date tap is animating the list, so the scroll listener
+  /// doesn't overwrite the date the user just picked.
+  bool _isAutoScrolling = false;
+  /// Day sections in display order. Refreshed on every build.
+  List<({String label, DateTime date})> _sectionDates = [];
   String _searchQuery = '';
-
   final Set<TimeOfDayFilter> _filterTimes = {};
-
   GenderFilter _filterGender = GenderFilter.misto;
-
   Set<SportLevel> _filterLevels = {};
-
   String? _filterCity;
-
   double? _filterDistance;
-
   MatchFormat? _filterFormat;
 
   @override
   void initState() {
     super.initState();
-
     final now = DateTime.now();
-
     _anchorDate = DateTime(now.year, now.month, now.day);
-
     _selectedDate = _anchorDate;
-
+    _listController.addListener(_onListScroll);
     context.read<DiscoverySportFilter>().ensureInitialized(
       context.read<AuthBloc>().state.user?.sportsInfo.map((s) => s.sport) ??
           const [],
@@ -382,7 +372,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return formatted;
   }
 
-  void _scrollToDay(DateTime date) {
+  Future<void> _scrollToDay(DateTime date) async {
     final l10n = AppLocalizations.of(context)!;
 
     final sectionContext =
@@ -392,12 +382,59 @@ class _MatchesScreenState extends State<MatchesScreen> {
       return;
     }
 
-    Scrollable.ensureVisible(
-      sectionContext,
-      duration: const Duration(milliseconds: 420),
-      curve: Curves.easeOutCubic,
-      alignment: 0,
-    );
+    _isAutoScrolling = true;
+    try {
+      await Scrollable.ensureVisible(
+        sectionContext,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+        alignment: 0,
+      );
+    } finally {
+      _isAutoScrolling = false;
+    }
+  }
+  void _onListScroll() {
+    if (_isAutoScrolling || !_listController.hasClients) return;
+    if (_sectionDates.isEmpty) return;
+
+    final position = _listController.position;
+
+    DateTime? active;
+
+    if (position.pixels <= 0) {
+      active = _sectionDates.first.date;
+    } else if (position.pixels >= position.maxScrollExtent - 1) {
+      active = _sectionDates.last.date;
+    } else {
+      final viewportBox =
+      position.context.storageContext.findRenderObject() as RenderBox?;
+      if (viewportBox == null || !viewportBox.attached) return;
+
+      final viewportTop = viewportBox.localToGlobal(Offset.zero).dy;
+
+      // The active day is the last section whose header has reached the top.
+      for (final section in _sectionDates) {
+        final box =
+        _sectionKeys[section.label]?.currentContext?.findRenderObject()
+        as RenderBox?;
+        if (box == null || !box.attached) continue;
+
+        final headerTop = box.localToGlobal(Offset.zero).dy;
+        if (headerTop <= viewportTop + 24) {
+          active = section.date;
+        } else {
+          break;
+        }
+      }
+      active ??= _sectionDates.first.date;
+    }
+
+    // Only update if the day exists in the date strip and actually changed.
+    final inStrip = _dates.any((d) => _isSameDate(d, active));
+    if (inStrip && !_isSameDate(_selectedDate, active)) {
+      setState(() => _selectedDate = active!);
+    }
   }
 
   Future<void> _refreshMatches() async {
@@ -411,6 +448,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   void dispose() {
+    _listController.removeListener(_onListScroll);
     _searchController.dispose();
     _listController.dispose();
     super.dispose();
@@ -459,6 +497,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
         final filtered = _filteredMatches(state.bookings);
 
         final grouped = _groupedBookings(filtered);
+        _sectionDates = [
+          for (final entry in grouped.entries)
+            if (entry.value.first.bookingDate != null)
+              (
+              label: entry.key,
+              date: DateTime(
+                entry.value.first.bookingDate!.year,
+                entry.value.first.bookingDate!.month,
+                entry.value.first.bookingDate!.day,
+              ),
+              ),
+        ];
 
         final availableDateKeys = _availableDateKeys(filtered);
 
@@ -512,7 +562,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   initialTimes: _filterTimes,
                   initialGender: _filterGender,
                   initialLevels: _filterLevels,
-                  sports: _levelSports,
                   initialCity: _filterCity,
                   initialDistance: _filterDistance,
                   initialFormat: _filterFormat,
@@ -599,8 +648,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
             ],
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
