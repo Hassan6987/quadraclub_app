@@ -2551,6 +2551,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 Match} other{{count} Matches}}'**
   String matchesCount(int count);
+
+  /// No description provided for @courtPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Court Pending'**
+  String get courtPending;
+
+  /// No description provided for @newGroupCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'New Group Created'**
+  String get newGroupCreated;
+
+  /// No description provided for @matchDeletedPaymentRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Match Deleted Successfully, Payment Refunded'**
+  String get matchDeletedPaymentRefunded;
 }
 
 class _AppLocalizationsDelegate

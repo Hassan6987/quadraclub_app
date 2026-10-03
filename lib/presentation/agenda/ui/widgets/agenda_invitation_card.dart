@@ -22,6 +22,7 @@ class AgendaInvitationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: kWhiteColor,
@@ -90,7 +91,7 @@ class AgendaInvitationCard extends StatelessWidget {
                   ),
                 ).category ?? AppLocalizations.of(context)!.beginner,),
               ),
-              _courtConfirmedBadge(item.courtStatusLabel),
+              _courtConfirmedBadge(item.courtStatusLabel,l10n),
             ],
           ).withPaddingSymmetric(10, 0),
           16.heightBox,
@@ -135,14 +136,16 @@ class AgendaInvitationCard extends StatelessWidget {
     ),
   );
 
-  Widget _courtConfirmedBadge(String label) => Container(
+  Widget _courtConfirmedBadge(String label, AppLocalizations l10n) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
     decoration: BoxDecoration(
       color: kGreen06.withValues(alpha: 0.10),
       border: Border.all(color: kGreen06),
       borderRadius: BorderRadius.circular(16),
     ),
-    child: Text(label, style: AppStyles.w500f10inter.copyWith(color: kGreen06)),
+    child: Text(
+        label == "Pending Confirmation" ? l10n.courtPending : l10n.courtConfirmed,
+        style: AppStyles.w500f10inter.copyWith(color: kGreen06)),
   );
 
   Widget _iconActionButton({

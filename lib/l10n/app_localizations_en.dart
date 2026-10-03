@@ -1380,4 +1380,14 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get courtPending => 'Court Pending';
+
+  @override
+  String get newGroupCreated => 'New Group Created';
+
+  @override
+  String get matchDeletedPaymentRefunded =>
+      'Match Deleted Successfully, Payment Refunded';
 }

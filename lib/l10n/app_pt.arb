@@ -120,7 +120,7 @@
   "categoryWithLevel": "Categoria {level}",
   "group": "Grupo",
   "individual": "Individual",
-  "coach": "Professor",
+  "coach": "treinador",
   "availableClasses": "Aulas disponíveis",
   "noClassesFound": "Nenhuma aula encontrada.",
   "searchByName": "Pesquisar por nome...",
@@ -248,15 +248,15 @@
   "payNow": "Pagar Agora",
   "portfolioPayment": "Pagamento pela Carteira",
   "cardPayment": "Pagamento com Cartão",
-  "changeLocation": "Change Location",
-  "searchLocation": "Search location",
-  "noLocationsFound": "No locations found",
-  "currentLocation": "Current location",
-  "searchCity": "Search city",
-  "withinDistance": "Within {distance} km",
-  "anyDistance": "Any distance",
-  "noAvailableSlotsForDay": "No available slots for this day",
-  "viewDetails": "View Details",
+  "changeLocation": "Alterar local",
+  "searchLocation": "Local de pesquisa",
+  "noLocationsFound": "Nenhum local encontrado",
+  "currentLocation": "Localização atual",
+  "searchCity": "Pesquisar cidade",
+  "withinDistance": "Dentro de {distance} km",
+  "anyDistance": "qualquer distância",
+  "noAvailableSlotsForDay": "Não há vagas disponíveis para hoje.",
+  "viewDetails": "Ver detalhes",
   "noCourtsWithLocationToShowHereYet": "Ainda não há tribunais com localização definida para exibir aqui",
   "searchCourts": "Pesquisar quadras",
   "searchCourtsHint": "Pesquisar quadras",
@@ -271,7 +271,7 @@
   "singles": "Simples",
   "doubles": "Duplas",
   "maxDistance": "Distância máxima",
-  "ranking": "Ranking",
+  "ranking": "Classificação",
   "courtConfirmed": "Quadra confirmada",
   "pendingConfirmed": "Confirmação pendente",
   "seatsCount": "{count, plural, =1{{count} vaga} other{{count} vagas}}",
@@ -324,7 +324,7 @@
   "confirmed": "Confirmado",
   "pending": "Pendente",
   "past": "Passado",
-  "chat": "Chat",
+  "chat": "bater papo",
   "cancelRequest": "Cancelar solicitação",
   "rebook": "Reservar novamente",
   "leaveThisMatch": "Sair desta partida",
@@ -527,5 +527,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "courtPending": "Tribunal Pendente",
+  "newGroupCreated": "Novo grupo criado",
+  "matchDeletedPaymentRefunded": "Partida excluída com sucesso, pagamento reembolsado."
+
+
 }

@@ -155,6 +155,8 @@ class _InvitePlayersSheetState extends State<InvitePlayersSheet> {
                   contentPadding: EdgeInsets.zero,
                   leading: ClipOval(
                     child: AppCachedImage(
+                      height: 42,
+                      width: 42,
                       imageUrl: player.profilePhoto,
                     )
                   ),

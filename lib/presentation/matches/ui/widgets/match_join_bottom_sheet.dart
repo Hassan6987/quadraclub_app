@@ -86,14 +86,16 @@ class _MatchJoinBottomSheetState extends State<MatchJoinBottomSheet> {
                   16.heightBox,
 
                   // Description
-                  Text(
-                    l10n.sportMatchForPlayers(
-                      widget.match.sport.localizedLabel(context),
-                    ),
-                    style: AppStyles.w400f14inter.copyWith(
-                      color: kGreyTextColor,
-                    ),
-                  ).withPaddingSymmetric(10, 8),
+                  Center(
+                    child: Text(
+                      l10n.sportMatchForPlayers(
+                        widget.match.sport.localizedLabel(context),
+                      ),
+                      style: AppStyles.w400f14inter.copyWith(
+                        color: kGreyTextColor,
+                      ),
+                    ).withPaddingSymmetric(10, 8),
+                  ),
                   buildPlayersRow(
                     context,
                     widget.match,

@@ -87,21 +87,28 @@ class AgendaMatchCard extends StatelessWidget {
                 CommonBadge(label: "${item.startTime}-${item.endTime}"),
                 4.widthBox,
                 CommonBadge(
-                  label: localizedMatchCategory(context, item.bookedBy?.sportsInfo
-                      ?.firstWhere(
-                        (info) => info.sport == item.sport,
-                    orElse: () => SportsInfoModel(
-                      sport: '',
-                      category: AppLocalizations.of(context)!.beginner,
-                      preferredSide: '',
-                    ),
-                  ).category ?? AppLocalizations.of(context)!.beginner,),
+                  label: localizedMatchCategory(
+                    context,
+                    item.bookedBy?.sportsInfo
+                            ?.firstWhere(
+                              (info) => info.sport == item.sport,
+                              orElse: () => SportsInfoModel(
+                                sport: '',
+                                category: AppLocalizations.of(
+                                  context,
+                                )!.beginner,
+                                preferredSide: '',
+                              ),
+                            )
+                            .category ??
+                        AppLocalizations.of(context)!.beginner,
+                  ),
                 ),
                 4.widthBox,
                 CommonBadge(label: l10n.ranking),
                 4.widthBox,
                 if (item.courtStatusLabel != null)
-                  _courtConfirmedBadge(item.courtStatusLabel!),
+                  _courtConfirmedBadge(item.courtStatusLabel!,l10n),
               ],
             ),
             16.heightBox,
@@ -136,8 +143,8 @@ class AgendaMatchCard extends StatelessWidget {
                   );
                 },
               ).withPaddingSymmetric(12, 0)
-            else if(item.tab == 'past')
-              10.heightBox
+            else if (item.tab == 'past')
+              10.heightBox,
           ],
         ).withPaddingAll(12),
       ),
@@ -156,13 +163,18 @@ class AgendaMatchCard extends StatelessWidget {
     ),
   );
 
-  Widget _courtConfirmedBadge(String label) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-    decoration: BoxDecoration(
-      color: kGreen06.withValues(alpha: 0.10),
-      border: Border.all(color: kGreen06),
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Text(label, style: AppStyles.w500f10inter.copyWith(color: kGreen06)),
-  );
+  Widget _courtConfirmedBadge(String label, AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+      decoration: BoxDecoration(
+        color: kGreen06.withValues(alpha: 0.10),
+        border: Border.all(color: kGreen06),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        label == "Pending Confirmation" ? l10n.courtPending : l10n.courtConfirmed,
+        style: AppStyles.w500f10inter.copyWith(color: kGreen06),
+      ),
+    );
+  }
 }

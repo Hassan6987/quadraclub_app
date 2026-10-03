@@ -15,7 +15,7 @@ class RequestsTab extends StatelessWidget {
           context.showToast(state.error ?? l10n.somethingWentWrong, isError: true);
         }else if(state.status == AgendaStateStatus.deleted){
           context.pop();
-          context.showToast("Match Deleted Successfully, Payment Refunded");
+          context.showToast(l10n.matchDeletedPaymentRefunded);
         }
       },
       builder: (context, state) {

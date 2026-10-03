@@ -81,6 +81,7 @@ class ChatListItem extends StatelessWidget {
                       _chatTypeBadge(
                         chat.chatType,
                         chat.isClassroom ? kGreen06 : kBlueColor,
+                        l10n
                       ),
                     ],
                   ),
@@ -107,7 +108,7 @@ class ChatListItem extends StatelessWidget {
                     Text(
                       latestMessage!= null?
                       "${_getSenderName(context,latestMessage.sender.fullName, latestMessage.sender.id)} : ${latestMessage.content}"
-                      : "New Group Created",
+                      : l10n.newGroupCreated,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppStyles.w400f12inter.copyWith(color: kTextColor),
@@ -181,13 +182,14 @@ class ChatListItem extends StatelessWidget {
     return name.trim().split(RegExp(r'\s+')).first;
   }
 
-  Widget _chatTypeBadge(String label,Color color) => Container(
+  Widget _chatTypeBadge(String label,Color color, AppLocalizations l10n) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.10),
       border: Border.all(color: color),
       borderRadius: BorderRadius.circular(16),
     ),
-    child: Text(label, style: AppStyles.w500f10inter.copyWith(color: color)),
+    child: Text(label.toLowerCase() == "game" ? l10n.game : l10n.classroom,
+        style: AppStyles.w500f10inter.copyWith(color: color)),
   );
 }

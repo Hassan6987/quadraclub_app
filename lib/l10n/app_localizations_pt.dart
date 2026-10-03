@@ -399,7 +399,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get individual => 'Individual';
 
   @override
-  String get coach => 'Professor';
+  String get coach => 'treinador';
 
   @override
   String get availableClasses => 'Aulas disponíveis';
@@ -750,33 +750,33 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cardPayment => 'Pagamento com Cartão';
 
   @override
-  String get changeLocation => 'Change Location';
+  String get changeLocation => 'Alterar local';
 
   @override
-  String get searchLocation => 'Search location';
+  String get searchLocation => 'Local de pesquisa';
 
   @override
-  String get noLocationsFound => 'No locations found';
+  String get noLocationsFound => 'Nenhum local encontrado';
 
   @override
-  String get currentLocation => 'Current location';
+  String get currentLocation => 'Localização atual';
 
   @override
-  String get searchCity => 'Search city';
+  String get searchCity => 'Pesquisar cidade';
 
   @override
   String withinDistance(Object distance) {
-    return 'Within $distance km';
+    return 'Dentro de $distance km';
   }
 
   @override
-  String get anyDistance => 'Any distance';
+  String get anyDistance => 'qualquer distância';
 
   @override
-  String get noAvailableSlotsForDay => 'No available slots for this day';
+  String get noAvailableSlotsForDay => 'Não há vagas disponíveis para hoje.';
 
   @override
-  String get viewDetails => 'View Details';
+  String get viewDetails => 'Ver detalhes';
 
   @override
   String get noCourtsWithLocationToShowHereYet =>
@@ -823,7 +823,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get maxDistance => 'Distância máxima';
 
   @override
-  String get ranking => 'Ranking';
+  String get ranking => 'Classificação';
 
   @override
   String get courtConfirmed => 'Quadra confirmada';
@@ -955,7 +955,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get past => 'Passado';
 
   @override
-  String get chat => 'Chat';
+  String get chat => 'bater papo';
 
   @override
   String get cancelRequest => 'Cancelar solicitação';
@@ -1388,4 +1388,14 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get courtPending => 'Tribunal Pendente';
+
+  @override
+  String get newGroupCreated => 'Novo grupo criado';
+
+  @override
+  String get matchDeletedPaymentRefunded =>
+      'Partida excluída com sucesso, pagamento reembolsado.';
 }

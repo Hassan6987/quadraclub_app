@@ -262,5 +262,5 @@ Widget buildSeatsBadge(BuildContext context, Booking match) {
 Widget buildCourtStatusBadge(BuildContext context, Booking match) {
   final l10n = AppLocalizations.of(context)!;
   final isConfirmed = match.status == CourtStatus.confirmed;
-  return CommonBadge(label: isConfirmed ? l10n.courtConfirmed : l10n.pendingConfirmed,);
+  return CommonBadge(label: isConfirmed ? l10n.courtConfirmed : l10n.courtPending,);
 }

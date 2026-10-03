@@ -575,5 +575,8 @@
   "matchesCount": "{count, plural, =1{1 Match} other{{count} Matches}}",
   "@matchesCount": {
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
+  "courtPending": "Court Pending",
+  "newGroupCreated": "New Group Created",
+  "matchDeletedPaymentRefunded": "Match Deleted Successfully, Payment Refunded"
 }
